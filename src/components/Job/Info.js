@@ -20,6 +20,7 @@ import {editForm} from '../../store/jobFormActions';
 import moment from 'moment';
 import {finishTaskAlert, openTaskStatus} from '../Alerts/deleteJobAlert';
 import {ScrollView} from 'react-native';
+import TextWrapper from '../TextWrapper';
 
 const styles = StyleSheet.create({
   container: {
@@ -111,11 +112,15 @@ const Info = () => {
           </Text>
           <Text style={styles.label}>🕵️‍♀️ Observaciones</Text>
           {job?.observations ? (
-            <Text style={styles.observations}>{job?.observations}</Text>
+            <TextWrapper>
+              <Text style={styles.observations}>{job?.observations}</Text>
+            </TextWrapper>
           ) : (
-            <Text style={styles.observations}>
-              No se han detallado observaciones
-            </Text>
+            <TextWrapper>
+              <Text style={styles.observations}>
+                No se han detallado observaciones
+              </Text>
+            </TextWrapper>
           )}
           <Text style={styles.label}>👷‍♂️ Trabajadores asignados</Text>
           <View style={styles.workers}>

@@ -57,7 +57,7 @@ const getUserSignInStack = (role) => {
 };
 
 const AuthNavigator = () => {
-  const [initializing, setInitializing] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const dispatch = useDispatch();
 
   const {updateFirebase} = useUpdateFirebase('users');
@@ -79,23 +79,28 @@ const AuthNavigator = () => {
   // Handle user state changes
   const onAuthStateChanged = useCallback(
     async (result) => {
-      console.log('auth result', result);
-      if (result) {
-        const usuario = await getUser(result?.uid);
-        if (usuario.data()) {
-          setUser({...usuario.data(), uid: result.uid});
-          updateFirebase(`${result.uid}`, {
-            token: await messaging().getToken(),
-          });
+      try {
+        if (result) {
+          const usuario = await getUser(result?.uid);
+          if (usuario.data()) {
+            setUser({...usuario.data(), uid: result.uid});
+            updateFirebase(`${result.uid}`, {
+              token: await messaging().getToken(),
+            });
+          } else {
+            setUser(null);
+          }
         } else {
           setUser(null);
         }
+      } catch (err) {
+        console.log(err);
+      } finally {
         if (initializing) {
           setInitializing(false);
         }
-      } else {
-        setUser(null);
       }
+      console.log('auth result', result);
     },
     [initializing, setUser],
   );

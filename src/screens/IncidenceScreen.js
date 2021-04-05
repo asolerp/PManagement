@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {View, Text, StyleSheet, Modal, TouchableOpacity} from 'react-native';
 
@@ -11,24 +11,17 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 // Firebase
 import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
 import {useGetDocFirebase} from '../hooks/useGetDocFIrebase';
-import {useDeleteFirebase} from '../hooks/useDeleteFirebase';
-
-// Redux
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {editForm} from '../store/jobFormActions';
 
 // Utils
 import moment from 'moment';
-import {
-  finishTaskAlert,
-  openTaskStatus,
-} from '../components/Alerts/deleteJobAlert';
-import {ScrollView} from 'react-native';
+
 import PagetLayout from '../components/PageLayout';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import {ImageBackground} from 'react-native';
 
 import {finishIncidence, openIncidence} from '../components/Alerts/incidences';
+import TextWrapper from '../components/TextWrapper';
+import {firebase} from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
   container: {
@@ -114,20 +107,25 @@ const styles = StyleSheet.create({
 const IncidenceScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const dispatch = useDispatch();
+
   const {incidenceId} = route.params;
-  const {
-    document: incidence,
-    loadingIncidence,
-    errorIncidence,
-  } = useGetDocFirebase('incidences', incidenceId);
+  const {document: incidence} = useGetDocFirebase('incidences', incidenceId);
 
   const [modal, setModal] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
 
-  const {updateFirebase, loading, error} = useUpdateFirebase('incidences');
+  const {updateFirebase} = useUpdateFirebase('incidences');
 
   const handleFinishTask = async (status) => {
+    if (status) {
+      await updateFirebase('stats', {
+        count: firebase.firestore.FieldValue.increment(-1),
+      });
+    } else {
+      await updateFirebase('stats', {
+        count: firebase.firestore.FieldValue.increment(1),
+      });
+    }
     await updateFirebase(`${incidenceId}`, {
       done: status,
     });
@@ -211,7 +209,9 @@ const IncidenceScreen = () => {
           <Avatar uri={incidence?.user?.profileImage} overlap size="big" />
         </View>
         <Text style={styles.label}>⚠️ Incidencia</Text>
-        <Text style={styles.observations}>{incidence?.incidence}</Text>
+        <TextWrapper>
+          <Text style={styles.observations}>{incidence?.incidence}</Text>
+        </TextWrapper>
         <Text style={styles.label}>📷 Fotos</Text>
         <View style={styles.photosWrapper}>
           {incidence?.photos?.map((photo, i) => (

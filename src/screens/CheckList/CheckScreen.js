@@ -20,13 +20,14 @@ import {defaultLabel} from '../../styles/common';
 import {format} from 'date-fns';
 import moment from 'moment';
 import Avatar from '../../components/Avatar';
+import TextWrapper from '../../components/TextWrapper';
 
 const styles = StyleSheet.create({
   checklistContainer: {
     flex: 1,
     backgroundColor: 'white',
     borderTopRightRadius: 50,
-    marginTop: 40,
+    marginTop: 10,
     // height: '100%',
   },
   container: {
@@ -39,7 +40,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#dadada',
   },
   observationsStyle: {
-    paddingLeft: 10,
     fontSize: 15,
   },
   avatarWrapper: {
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 10,
   },
   infoWrapper: {
     flex: 6,
@@ -59,6 +60,16 @@ const styles = StyleSheet.create({
   },
   dateStyle: {
     color: '#2A7BA5',
+  },
+  date: {
+    fontSize: 18,
+    marginBottom: 20,
+    marginVertical: 10,
+    color: '#3DB6BA',
+  },
+  counter: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
@@ -135,18 +146,21 @@ const CheckScreen = ({route, navigation}) => {
       }}>
       <View style={styles.checklistContainer}>
         <View style={{marginBottom: 20}}>
-          <Text style={{...defaultLabel, marginBottom: 20}}>
+          <Text style={styles.date}>
+            🕜 {moment(checklist?.date?.toDate()).format('LL')}
+          </Text>
+          <Text style={{...defaultLabel, marginBottom: 10}}>
             🕵️ Observaciones
           </Text>
-          <Text style={styles.observationsStyle}>
-            {checklist?.observations}
-          </Text>
+          <TextWrapper>
+            <Text style={styles.observationsStyle}>
+              {checklist?.observations}
+            </Text>
+          </TextWrapper>
         </View>
         <View style={styles.labelWrapper}>
-          <Text style={{...defaultLabel, marginBottom: 20}}>
-            ✅ Listado de checks
-          </Text>
-          <Text>
+          <Text style={{...defaultLabel}}>✅ Listado de checks</Text>
+          <Text style={styles.counter}>
             {checklist.done}/{checklist.total}
           </Text>
         </View>

@@ -1,6 +1,8 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import {View, Text, StyleSheet} from 'react-native';
+
 // Screens
 import HomesStack from './HomesStack';
 import JobsStack from './JobsStack';
@@ -11,10 +13,52 @@ import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {Platform} from 'react-native';
 import IncidencesStack from './IncidencesStack';
 import CheckListStack from './CheckListStack';
+import {useGetDocFirebase} from '../hooks/useGetDocFIrebase';
 
 const Tabs = AnimatedTabBarNavigator();
 
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
+  badge: {
+    width: 20,
+    height: 20,
+    borderRadius: 100,
+    backgroundColor: 'red',
+    position: 'absolute',
+    zIndex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    right: -10,
+    top: -10,
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+});
+
+const IconWithBadge = ({badgeCount, children}) => {
+  return (
+    <View style={styles.container}>
+      {badgeCount > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{badgeCount}</Text>
+        </View>
+      )}
+      {children}
+    </View>
+  );
+};
+
 const TabNavigation = () => {
+  const {document: incidencesCounter} = useGetDocFirebase(
+    'incidences',
+    'stats',
+  );
+
   const getTabBarVisible = (route) => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (
@@ -51,6 +95,7 @@ const TabNavigation = () => {
         name="Dashboard"
         component={DashboardStack}
         options={{
+          tabBarBadge: 5,
           tabBarIcon: ({focused, color, size}) => (
             <Icon
               name="dashboard"
@@ -65,6 +110,7 @@ const TabNavigation = () => {
         name="CheckList"
         component={CheckListStack}
         options={{
+          tabBarBadge: 3,
           tabBarIcon: ({focused, color, size}) => (
             <Icon
               name="check"
@@ -96,12 +142,14 @@ const TabNavigation = () => {
         options={({route}) => ({
           tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="priority-high"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
+            <IconWithBadge badgeCount={incidencesCounter?.count}>
+              <Icon
+                name="priority-high"
+                size={size ? size : 24}
+                color={focused ? color : '#3E93A8'}
+                focused={focused}
+              />
+            </IconWithBadge>
           ),
         })}
       />
@@ -120,20 +168,6 @@ const TabNavigation = () => {
           ),
         })}
       />
-      {/* <Tabs.Screen
-        name="Perfil"
-        component={ProfileScreen}
-        options={{
-          tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="person"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
-          ),
-        }}
-      /> */}
     </Tabs.Navigator>
   );
 };

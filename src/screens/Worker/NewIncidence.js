@@ -16,6 +16,7 @@ import CustomButton from '../../components/Elements/CustomButton';
 import {useAddFirebase} from '../../hooks/useAddFirebase';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
+import {firebase} from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
   container: {
@@ -95,6 +96,9 @@ const NewIncidence = () => {
   const createIncidence = async () => {
     try {
       setLo(true);
+      await updateFirebase('stats', {
+        count: firebase.firestore.FieldValue.increment(1),
+      });
       const newIncidence = await addFirebase('incidences', {
         ...incidence,
         house: incidence.house.value[0],
