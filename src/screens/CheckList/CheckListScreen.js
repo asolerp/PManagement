@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CheckItem from '../../components/CheckItem';
 import AddButton from '../../components/Elements/AddButton';
+import HouseFilter from '../../components/Filters/HouseFilter';
 import PagetLayout from '../../components/PageLayout';
 
 //Firebase
@@ -20,6 +21,7 @@ const styles = StyleSheet.create({
   todayStyle: {
     fontSize: 22,
     fontWeight: 'bold',
+    marginBottom: 20,
   },
   checkListWrapper: {
     marginTop: 20,
@@ -39,10 +41,21 @@ const CheckListScreen = ({navigation}) => {
     />
   );
 
-  const {list: checkLists, loading, error} = useGetFirebase('checklists');
-  const [state, setState] = useState(false);
+  const {list: checkLists, loading} = useGetFirebase('checklists');
 
-  console.log(checkLists);
+  const [housesFilter, setHousesFilter] = useState([]);
+  const [filteredChecksByHouse, setFilteredChecksByHouse] = useState([]);
+
+  useEffect(() => {
+    if (housesFilter.length > 0) {
+      const fHouses = checkLists.filter((check) =>
+        housesFilter?.find((houseId) => houseId === check?.houseId),
+      );
+      setFilteredChecksByHouse(fHouses);
+    } else {
+      setFilteredChecksByHouse(checkLists);
+    }
+  }, [housesFilter, checkLists]);
 
   const handleNewCheckList = () => {
     navigation.navigate('NewCheckList');
@@ -67,10 +80,11 @@ const CheckListScreen = ({navigation}) => {
         }}>
         <View>
           <View style={styles.filterWrapper}>
-            <Text style={{...styles.todayStyle}}>✅ CheckList</Text>
+            <HouseFilter houses={housesFilter} addHouse={setHousesFilter} />
             <View style={styles.checkListWrapper}>
+              <Text style={{...styles.todayStyle}}>✅ CheckList</Text>
               <FlatList
-                data={checkLists}
+                data={filteredChecksByHouse}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
               />

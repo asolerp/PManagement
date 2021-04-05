@@ -86,39 +86,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const HouseFilter = () => {
-  const dispatch = useDispatch();
-  const {list, loading, error} = useGetFirebase('houses');
-  const [localFilter, setLocalFilter] = useState('all_houses');
-  const {houses} = useSelector(
-    ({filters: {houses}}) => ({houses}),
-    shallowEqual,
-  );
-
-  const addHouse = useCallback(
-    (payload) =>
-      dispatch({
-        type: 'ADD_HOUSE',
-        payload: payload,
-      }),
-    [dispatch],
-  );
+const HouseFilter = ({houses, addHouse}) => {
+  const {list} = useGetFirebase('houses');
 
   const isInArray = (id) => {
     return houses?.find((idHouse) => idHouse === id);
-  };
-
-  const localFilterActive = (filter) => {
-    return localFilter === filter;
-  };
-
-  const handleSetLocalFilter = (filter) => {
-    setLocalFilter(filter);
-    if (filter === 'all_houses') {
-      addHouse([]);
-    } else {
-      addHouse(null);
-    }
   };
 
   const handleSetHouse = (house) => {
@@ -130,7 +102,6 @@ const HouseFilter = () => {
     } else {
       addHouse([...(houses || []), house.id]);
     }
-    setLocalFilter(undefined);
   };
 
   return (

@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 50,
   },
   bottomScreen: {
-    backgroundColor: 'white',
+    justifyContent: 'center',
     width: '100%',
     paddingHorizontal: 20,
     height: '8%',

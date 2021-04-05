@@ -90,7 +90,7 @@ const Photos = () => {
       </Modal>
       <View style={styles.container}>
         {photos?.map((photo, i) => (
-          <Photo photo={photo} index={i} key={photo} />
+          <Photo photo={photo} index={i} key={photo.image} />
         ))}
       </View>
     </React.Fragment>

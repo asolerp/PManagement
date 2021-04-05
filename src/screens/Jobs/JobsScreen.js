@@ -64,6 +64,15 @@ const JobsScreen = () => {
     [dispatch],
   );
 
+  const addHouse = useCallback(
+    (payload) =>
+      dispatch({
+        type: 'ADD_HOUSE',
+        payload: payload,
+      }),
+    [dispatch],
+  );
+
   useEffect(() => {
     if (houses === null) {
       const fList = list
@@ -163,7 +172,7 @@ const JobsScreen = () => {
         }}>
         <View style={styles.jobsScreen}>
           <View style={styles.housesWrapper}>
-            <HouseFilter />
+            <HouseFilter houses={houses} addHouse={addHouse} />
           </View>
           <View style={styles.jobsListWrapper}>
             <View style={styles.jobsTitleWrapper}>
