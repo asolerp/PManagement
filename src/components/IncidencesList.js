@@ -1,23 +1,19 @@
 import React from 'react';
-import {useSelector, shallowEqual} from 'react-redux';
 import {useNavigation} from '@react-navigation/core';
-import {View, Text, StyleSheet, SafeAreaView, FlatList} from 'react-native';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-import {useGetFirebase} from '../hooks/useGetFirebase';
-
-// Utils
-import {minimizetext} from '../utils/parsers';
 import InfoIcon from './InfoIcon';
 
+// Utils
+import {minimizetext, parseDateWithText} from '../utils/parsers';
+import moment from 'moment';
 const styles = StyleSheet.create({
   incidenceWrapper: {
     flex: 1,
     flexDirection: 'row',
+    backgroundColor: '#ddf2ff70',
     marginBottom: 10,
-    borderColor: '#DEDEDE',
-    borderWidth: 1,
     padding: 10,
     borderRadius: 10,
   },
@@ -28,6 +24,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-end',
+  },
+  titleWrapper: {
+    marginBottom: 10,
   },
   title: {
     fontSize: 14,
@@ -54,10 +53,8 @@ const IncidencesList = ({list, loading}) => {
         style={styles.incidenceWrapper}
         onPress={() => handlePressIncidence()}>
         <View>
-          <View style={{marginBottom: 10}}>
-            <Text style={{...styles.bold, flexShrink: 1}}>
-              🏡 {item?.house?.houseName}
-            </Text>
+          <View style={styles.titleWrapper}>
+            <Text style={{...styles.bold}}>🏡 {item?.house?.houseName}</Text>
           </View>
           <Text style={styles.title}>⚠️ {item?.title} </Text>
           <Text>{minimizetext(item?.incidence)}</Text>
@@ -75,7 +72,19 @@ const IncidencesList = ({list, loading}) => {
           </View>
         </View>
         <View style={styles.rightWrapper}>
-          <Icon name="keyboard-arrow-right" color="#454545" size={30} />
+          <View style={{flex: 1}}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: 'bold',
+                marginBottom: 10,
+              }}>
+              🕜 {parseDateWithText(item?.date)}
+            </Text>
+          </View>
+          <View style={{flex: 1}}>
+            <Icon name="keyboard-arrow-right" color="#454545" size={30} />
+          </View>
         </View>
       </TouchableOpacity>
     );

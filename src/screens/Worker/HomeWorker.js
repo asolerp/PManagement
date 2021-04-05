@@ -91,9 +91,9 @@ const HomeWorker = () => {
 
   const {list: checklist} = useGetFirebase('checklists', null, [
     {
-      label: 'date',
-      operator: '>',
-      condition: subDays(new Date(), 1),
+      label: 'finished',
+      operator: '==',
+      condition: false,
     },
   ]);
 

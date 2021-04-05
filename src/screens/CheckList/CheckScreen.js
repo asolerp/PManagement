@@ -12,10 +12,11 @@ import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 // UI
 import PagetLayout from '../../components/PageLayout';
 import CheckBox from '@react-native-community/checkbox';
+import CustomButton from '../../components/Elements/CustomButton';
 
 // styles
 import {defaultLabel} from '../../styles/common';
-
+import {DARK_BLUE} from '../../styles/colors';
 // utils
 import {format} from 'date-fns';
 import moment from 'moment';
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
   counter: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: DARK_BLUE,
   },
 });
 
@@ -143,7 +145,17 @@ const CheckScreen = ({route, navigation}) => {
           checklist?.house && checklist?.house[0]?.houseName
         }`,
         color: 'white',
-      }}>
+      }}
+      footer={
+        checklist?.done === checklist?.total &&
+        user.role === 'admin' && (
+          <CustomButton
+            loading={false}
+            title="Finalizar y enviar al propietario"
+            onPress={() => {}}
+          />
+        )
+      }>
       <View style={styles.checklistContainer}>
         <View style={{marginBottom: 20}}>
           <Text style={styles.date}>

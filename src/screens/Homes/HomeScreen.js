@@ -24,6 +24,7 @@ import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 
 //Utils
 import {launchImage} from '../../utils/imageFunctions';
+import {ScrollView} from 'react-native';
 
 const styles = StyleSheet.create({
   pageWrapper: {
@@ -146,7 +147,7 @@ const HomeScreen = ({route, navigation}) => {
           color: 'white',
         }}>
         {house ? (
-          <View style={styles.pageWrapper}>
+          <ScrollView style={styles.pageWrapper}>
             <TouchableOpacity onPress={() => launchImage(setNewImage)}>
               {newImage && (
                 <View style={styles.iconContainer}>
@@ -240,7 +241,7 @@ const HomeScreen = ({route, navigation}) => {
                 </View>
               )}
             </View>
-          </View>
+          </ScrollView>
         ) : (
           <View />
         )}

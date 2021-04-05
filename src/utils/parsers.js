@@ -92,6 +92,24 @@ export const parsePirorityIcon = (priority) => {
   }
 };
 
+export const parseDateWithText = (date) => {
+  console.log(moment(date));
+  if (
+    moment(date).format('MM/DD/YYYY') ===
+    moment(new Date()).format('MM/DD/YYYY')
+  ) {
+    return 'Hoy';
+  } else if (
+    moment(date) < new Date() &&
+    moment(new Date()).subtract(7, 'days').format('MM/DD/YYYY') >
+      moment(date).format('MM/DD/YYYY')
+  ) {
+    return 'Esta semana';
+  } else {
+    return 'Más de una semana';
+  }
+};
+
 export const generateCalendarDots = (list) => {
   let dotsArray = [];
 

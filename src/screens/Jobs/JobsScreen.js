@@ -96,7 +96,9 @@ const JobsScreen = () => {
         const fList = list
           .filter((j) => j.house !== null)
           .filter((job) =>
-            houses?.find((houseId) => houseId === job?.house[0]?.id),
+            houses?.find(
+              (houseId) => houseId === job?.house && job?.house[0]?.id,
+            ),
           )
           .filter(
             (job) =>

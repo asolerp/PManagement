@@ -22,10 +22,11 @@ import {ImageBackground} from 'react-native';
 import {finishIncidence, openIncidence} from '../components/Alerts/incidences';
 import TextWrapper from '../components/TextWrapper';
 import {firebase} from '@react-native-firebase/firestore';
+import {ScrollView} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
+    marginTop: 10,
     flex: 1,
   },
   infoWrapper: {
@@ -43,6 +44,7 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 18,
     marginVertical: 10,
+    marginBottom: 20,
     color: '#3DB6BA',
   },
   label: {
@@ -179,7 +181,7 @@ const IncidenceScreen = () => {
         title: 'Incidencia',
         subPage: true,
       }}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <Modal
           visible={modal}
           transparent={true}
@@ -193,8 +195,6 @@ const IncidenceScreen = () => {
             enableSwipeDown={true}
           />
         </Modal>
-        <Text style={styles.houseName}>🏡 {incidence?.house?.houseName}</Text>
-        <Text style={styles.title}>{incidence?.title}</Text>
         <View style={styles.infoWrapper}>
           <InfoIcon
             info={incidence.done ? 'Resuelta' : 'Sin resolver'}
@@ -204,6 +204,8 @@ const IncidenceScreen = () => {
         <Text style={styles.date}>
           🕜 {moment(incidence?.date?.toDate()).format('LL')}
         </Text>
+        <Text style={styles.houseName}>🏡 {incidence?.house?.houseName}</Text>
+        <Text style={styles.title}>{incidence?.title}</Text>
         <Text style={styles.label}>🕵️‍♀️ Informador</Text>
         <View style={styles.workers}>
           <Avatar uri={incidence?.user?.profileImage} overlap size="big" />
@@ -218,7 +220,7 @@ const IncidenceScreen = () => {
             <IncidenceImage photo={photo} index={i} key={photo} />
           ))}
         </View>
-      </View>
+      </ScrollView>
     </PagetLayout>
   );
 };

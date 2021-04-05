@@ -12,7 +12,7 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 });
 
 exports.newUser = functions.auth.user().onCreate((user) => {
-  admin.firestore().collection(`users`).doc(user.uid).set({email: user.email});
+  admin.firestore().collection('users').doc(user.uid).set({email: user.email});
 });
 
 exports.onDeleteTask = functions.firestore
@@ -40,7 +40,7 @@ exports.onDeleteTask = functions.firestore
     const decrementStats = () => {
       admin
         .firestore()
-        .collection(`jobs`)
+        .collection('jobs')
         .doc(taskDeleted.jobId)
         .update({
           'stats.total': decrement,
@@ -69,6 +69,35 @@ exports.onCreateJob = functions.firestore
     };
 
     return Promise.all([addNewStats()]);
+  });
+
+exports.setCheckListAsFinished = functions.firestore
+  .document('checklists/{checklistId}')
+  .onUpdate(async (change, context) => {
+    try {
+      const checkBefore = change.before.data();
+      const checkAfter = change.after.data();
+      if (checkAfter.done === checkAfter.total) {
+        await admin
+          .firestore()
+          .collection('checklists')
+          .doc(context.params.checklistId)
+          .update({
+            finished: true,
+          });
+      }
+      if (checkBefore.finished && checkAfter.done < checkAfter.total) {
+        await admin
+          .firestore()
+          .collection('checklists')
+          .doc(context.params.checklistId)
+          .update({
+            finished: false,
+          });
+      }
+    } catch (err) {
+      console.log(err);
+    }
   });
 
 exports.sendPushNotificationUpdateStatusJob = functions.firestore

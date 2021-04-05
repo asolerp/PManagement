@@ -60,12 +60,15 @@ const DashboardScreen = ({navigation}) => {
               <JobsResume />
               <View style={styles.filterWrapper}>
                 <Text style={{...styles.todayStyle}}>🚨 Incidencias</Text>
-                <StatusIncidence onChangeFilter={setState} state={state} />
               </View>
-              <IncidencesList
-                list={list.filter((inci) => inci.done === state)}
-                loading={loading}
-              />
+              {list?.filter((inci) => inci.done === false).length > 0 ? (
+                <IncidencesList
+                  list={list.filter((inci) => inci.done === false)}
+                  loading={loading}
+                />
+              ) : (
+                <Text>No tienes incidencias sin resolver hoy</Text>
+              )}
             </View>
           </View>
         </ScrollView>
