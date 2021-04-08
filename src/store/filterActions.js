@@ -18,3 +18,14 @@ export const setStatusIncidenceFilter = (status) => {
     payload: status,
   };
 };
+
+export const setFilterByType = (storage, type, value) => {
+  return {
+    type: 'SET_FILTER_BY_TYPE',
+    payload: {
+      storage,
+      type,
+      value,
+    },
+  };
+};

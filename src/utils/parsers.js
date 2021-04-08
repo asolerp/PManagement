@@ -9,7 +9,7 @@ import {
 } from '../constants/colors';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
-  return text.length > numberOfCharts
+  return text?.length > numberOfCharts
     ? text.substring(0, numberOfCharts - 3) + '...'
     : text;
 };
@@ -92,16 +92,16 @@ export const parsePirorityIcon = (priority) => {
 };
 
 export const parseDateWithText = (date) => {
-  console.log(moment(date));
   if (
-    moment(date).format('MM/DD/YYYY') ===
+    moment(date.toDate()).format('MM/DD/YYYY') ===
     moment(new Date()).format('MM/DD/YYYY')
   ) {
     return 'Hoy';
   } else if (
-    moment(date) < new Date() &&
-    moment(new Date()).subtract(7, 'days').format('MM/DD/YYYY') >
-      moment(date).format('MM/DD/YYYY')
+    moment(date.toDate()).format('MM/DD/YYYY') <
+      moment(new Date()).format('MM/DD/YYYY') &&
+    moment(date.toDate()).format('MM/DD/YYYY') >
+      moment(new Date()).subtract(7, 'days').format('MM/DD/YYYY')
   ) {
     return 'Esta semana';
   } else {

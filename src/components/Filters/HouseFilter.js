@@ -132,17 +132,22 @@ const HouseFilter = ({houses, addHouse}) => {
   return (
     <View style={styles.filterWrapper}>
       <Text style={styles.titleFilter}>Las Casas</Text>
-      <View style={styles.container}>
-        <View style={styles.housesWrapper}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.container}>
+        <View
+          style={styles.housesWrapper}
+          onStartShouldSetResponder={() => true}>
           <FlatList
             horizontal
-            showsHorizontalScrollIndicator={false}
+            showsHorizontalScrollIndicator={true}
             data={list}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
           />
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };

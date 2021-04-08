@@ -24,6 +24,7 @@ import PagetLayout from '../../components/PageLayout';
 // Firebase
 import {resetForm} from '../../store/jobFormActions';
 import {newJob} from '../../firebase/newJob';
+import {LOW_GREY} from '../../styles/colors';
 
 const HideKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -104,7 +105,7 @@ const NewJobScreen = ({route, navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
   },
   newJobScreen: {
     flex: 1,
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
   },
   jobScreen: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     paddingTop: 20,
 

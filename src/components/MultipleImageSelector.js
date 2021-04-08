@@ -98,7 +98,6 @@ const MultipleImageSelector = () => {
       mediaType: 'photo',
       includeBase64: true,
     }).then((images) => {
-      console.log(images);
       // setImages(images.map((image) => ({url: image.path})));
       setImagesAction(
         images.map((image, i) => ({

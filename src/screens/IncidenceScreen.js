@@ -120,18 +120,24 @@ const IncidenceScreen = () => {
   const {updateFirebase} = useUpdateFirebase('incidences');
 
   const handleFinishTask = async (status) => {
-    if (status) {
-      await updateFirebase('stats', {
-        count: firebase.firestore.FieldValue.increment(-1),
+    try {
+      if (status) {
+        await updateFirebase('stats', {
+          count: firebase.firestore.FieldValue.increment(-1),
+        });
+      } else {
+        await updateFirebase('stats', {
+          count: firebase.firestore.FieldValue.increment(1),
+        });
+      }
+      await updateFirebase(`${incidenceId}`, {
+        done: status,
       });
-    } else {
-      await updateFirebase('stats', {
-        count: firebase.firestore.FieldValue.increment(1),
-      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      navigation.goBack();
     }
-    await updateFirebase(`${incidenceId}`, {
-      done: status,
-    });
   };
 
   const handlePressPhoto = (i) => {

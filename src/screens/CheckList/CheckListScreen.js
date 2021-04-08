@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
+
 import {View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CheckItem from '../../components/CheckItem';
 import AddButton from '../../components/Elements/AddButton';
-import HouseFilter from '../../components/Filters/HouseFilter';
+import StatusTaskFilter from '../../components/Filters/StatusTaskFilter';
 import PagetLayout from '../../components/PageLayout';
 
 //Firebase
@@ -10,6 +11,8 @@ import {useGetFirebase} from '../../hooks/useGetFirebase';
 
 // Styles
 import {defaultLabel, marginBottom} from '../../styles/common';
+import GlobalFilters from '../../components/GlobalFilters';
+import useFilter from '../../hooks/useFilter';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -32,6 +35,9 @@ const styles = StyleSheet.create({
 });
 
 const CheckListScreen = ({navigation}) => {
+  const {where} = useFilter('checkLists');
+  console.log(where);
+  const {list: checkLists, loading} = useGetFirebase('checklists', null, where);
   const renderItem = ({item}) => (
     <CheckItem
       key={item.id}
@@ -43,22 +49,6 @@ const CheckListScreen = ({navigation}) => {
       }
     />
   );
-
-  const {list: checkLists, loading} = useGetFirebase('checklists');
-
-  const [housesFilter, setHousesFilter] = useState([]);
-  const [filteredChecksByHouse, setFilteredChecksByHouse] = useState([]);
-
-  useEffect(() => {
-    if (housesFilter.length > 0) {
-      const fHouses = checkLists.filter((check) =>
-        housesFilter?.find((houseId) => houseId === check?.houseId),
-      );
-      setFilteredChecksByHouse(fHouses);
-    } else {
-      setFilteredChecksByHouse(checkLists);
-    }
-  }, [housesFilter, checkLists]);
 
   const handleNewCheckList = () => {
     navigation.navigate('NewCheckList');
@@ -83,13 +73,13 @@ const CheckListScreen = ({navigation}) => {
         }}>
         <View>
           <View style={styles.filterWrapper}>
-            <HouseFilter houses={housesFilter} addHouse={setHousesFilter} />
+            <GlobalFilters storage="checkLists" />
             <View style={styles.checkListWrapper}>
               <Text style={{...defaultLabel, ...marginBottom(20)}}>
                 CheckList
               </Text>
               <FlatList
-                data={filteredChecksByHouse}
+                data={checkLists}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
               />

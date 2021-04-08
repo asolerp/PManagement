@@ -19,7 +19,7 @@ import CalendarStrip from 'react-native-calendar-strip';
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 
 // Styles
-import {defaultTextTitle} from '../../styles/common';
+import {defaultTextTitle, marginTop} from '../../styles/common';
 import {DARK_BLUE, LOW_GREY, PM_COLOR} from '../../styles/colors';
 
 // Utils
@@ -32,7 +32,6 @@ const JobsScreen = () => {
   const dispatch = useDispatch();
   const {list, loading, error} = useGetFirebase('jobs');
 
-  console.log('jobs', list);
   console.log(error);
 
   const {houses, filterDate} = useSelector(
@@ -156,10 +155,10 @@ const JobsScreen = () => {
               calendarHeaderStyle={styles.calendarHeaderStyle}
             />
           </View>
-          <View style={styles.housesWrapper}>
+          {/* <View style={styles.housesWrapper}>
             <HouseFilter houses={houses} addHouse={addHouse} />
-          </View>
-          <View style={styles.jobsListWrapper}>
+          </View> */}
+          <View style={{...styles.jobsListWrapper, ...marginTop(20)}}>
             <View style={styles.jobsTitleWrapper}>
               <Text style={{...defaultTextTitle}}>Trabajos</Text>
               <StatusTaskFilter />

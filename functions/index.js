@@ -154,6 +154,13 @@ exports.sendPushNotificationUpdateStatusJob = functions.firestore
 
       await admin.messaging().sendMulticast({
         tokens: adminTokens.concat(workersTokens),
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+            },
+          },
+        },
         notification:
           status === 'finished' ? notificationFinish : notificationUnfinish,
         data,
@@ -209,7 +216,13 @@ exports.sendPushNotificationNewMessage = functions.firestore
       await admin.messaging().sendMulticast({
         tokens: adminTokens.concat(workersTokens),
         notification,
-        // data,
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+            },
+          },
+        },
       });
     } catch (err) {
       console.log(err);
@@ -238,7 +251,13 @@ exports.sendPushNotificationNewIncidence = functions.firestore
       await admin.messaging().sendMulticast({
         tokens: adminTokens,
         notification,
-        priority: 'high',
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+            },
+          },
+        },
         // data,
       });
     } catch (err) {

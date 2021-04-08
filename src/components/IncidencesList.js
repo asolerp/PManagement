@@ -10,12 +10,11 @@ import {DARK_BLUE, GREY, GREY_1, MEDIUM_GREY} from '../styles/colors';
 
 // Utils
 import {minimizetext, parseDateWithText} from '../utils/parsers';
-import {marginBottom, marginRight} from '../styles/common';
+import {marginBottom, marginRight, width} from '../styles/common';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
     flexDirection: 'row',
-    height: 220,
     backgroundColor: 'white',
     marginBottom: 10,
     padding: 10,
@@ -47,7 +46,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: 28,
+    fontSize: 25,
     marginBottom: 5,
     fontWeight: '500',
     color: DARK_BLUE,
@@ -61,7 +60,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: MEDIUM_GREY,
   },
+  buble: {
+    width: 20,
+    height: 20,
+    borderRadius: 100,
+  },
 });
+
+const BubleIncidence = ({status}) => {
+  return (
+    <View
+      style={{
+        ...styles.buble,
+        backgroundColor: status ? '#7dd891' : '#ED7A7A',
+      }}
+    />
+  );
+};
 
 const IncidencesList = ({list, loading}) => {
   const navigation = useNavigation();
@@ -77,20 +92,19 @@ const IncidencesList = ({list, loading}) => {
       <TouchableOpacity
         style={{...styles.incidenceWrapper, ...marginRight(10)}}
         onPress={() => handlePressIncidence()}>
-        <View>
+        <View style={{...width(100)}}>
           <View style={styles.titleWrapper}>
             <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
-            <InfoIcon
-              info={item.done ? 'Resuleta' : 'Sin resolver'}
-              color={item.done ? '#7dd891' : '#ED7A7A'}
-            />
+            <BubleIncidence />
           </View>
-          <Text style={styles.title}>{item?.title} </Text>
+          <Text adjustsFontSizeToFit style={styles.title}>
+            {item?.title}{' '}
+          </Text>
           <View style={styles.infoWrapper}>
             <Text style={styles.infoStyle}>
               {minimizetext(item?.incidence)}
             </Text>
-            <Text style={{...styles.bold, ...marginBottom(20)}}>
+            <Text style={{...styles.bold, ...marginBottom(10)}}>
               {item?.house?.houseName}
             </Text>
             <View style={styles.avatarWrapper}>

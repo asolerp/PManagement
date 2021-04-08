@@ -100,7 +100,6 @@ const AuthNavigator = () => {
           setInitializing(false);
         }
       }
-      console.log('auth result', result);
     },
     [initializing, setUser],
   );

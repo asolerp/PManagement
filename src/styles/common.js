@@ -27,3 +27,7 @@ export const marginTop = (number) => ({
 export const marginLeft = (number) => ({
   marginLeft: number,
 });
+
+export const width = (number) => ({
+  width: `${number}%`,
+});

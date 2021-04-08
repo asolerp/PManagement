@@ -12,17 +12,18 @@ import {useGetFirebase} from '../../hooks/useGetFirebase';
 import TaskItem from '../../components/Elements/TaskItem';
 import {setTask} from '../../store/jobFormActions';
 import PagetLayout from '../../components/PageLayout';
+import {LOW_GREY} from '../../styles/colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
   },
   iconWrapper: {
     width: 30,
     height: 30,
     borderRadius: 100,
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: {
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     height: '100%',
     paddingTop: 30,

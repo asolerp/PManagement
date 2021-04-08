@@ -53,7 +53,7 @@ const CheckItem = ({check, onPress}) => {
           />
           <View>
             <Text style={{...styles.checkText, ...styles.bold}}>
-              🏡 {check.house[0].houseName}
+              🏡 {check?.house && check?.house[0].houseName}
             </Text>
             <Text style={styles.checkText}>
               {minimizetext(check.observations, 30)}

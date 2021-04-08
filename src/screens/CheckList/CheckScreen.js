@@ -100,7 +100,6 @@ const CheckItem = ({check, handleCheck}) => {
 
 const CheckScreen = ({route, navigation}) => {
   const {checkId} = route.params;
-  console.log(checkId);
   const {document: checklist} = useGetDocFirebase('checklists', checkId);
   const {list: checks} = useGetFirebase(`checklists/${checkId}/checks`);
 

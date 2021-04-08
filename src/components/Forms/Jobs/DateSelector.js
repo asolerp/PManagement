@@ -72,7 +72,6 @@ const DateSelector = ({closeModal}) => {
   );
 
   const handleSubmit = () => {
-    console.log(job);
     setInputFormAction('date', moment(dateSelected));
     setInputFormAction('time', moment(timeSelected));
     closeModal();

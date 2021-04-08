@@ -35,7 +35,7 @@ export const useGetFirebase = (coll, order, where) => {
     return () => {
       unsuscribe();
     };
-  }, []);
+  }, [where]);
 
   return {
     list,

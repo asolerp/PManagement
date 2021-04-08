@@ -19,20 +19,21 @@ import StatusIncidence from '../components/Filters/StatusIncidence';
 import LinearGradient from 'react-native-linear-gradient';
 
 // Styles
-import {LOW_GREY, DARK_BLUE} from '../styles/colors';
+import {LOW_GREY, DARK_BLUE, PRIORITY_HEIGHT} from '../styles/colors';
 
 // Utils
 import moment from 'moment';
 import {ScrollView} from 'react-native';
 import subDays from 'date-fns/subDays';
 import {TouchableOpacity} from 'react-native';
+import {defaultLabel, marginLeft, marginRight, width} from '../styles/common';
 
 const DashboardScreen = ({navigation}) => {
   const {list, loading, error} = useGetFirebase('incidences', null, [
     {
-      label: 'date',
-      operator: '>',
-      condition: subDays(new Date(), 1),
+      label: 'done',
+      operator: '==',
+      condition: false,
     },
   ]);
   const [state, setState] = useState(false);
@@ -62,8 +63,15 @@ const DashboardScreen = ({navigation}) => {
               </Text>
               <Text style={styles.todayStyle}>Trabajos activos</Text>
               <JobsResume />
-              <View style={styles.filterWrapper}>
-                <Text style={{...styles.todayStyle}}>Incidencias</Text>
+              <View style={{...styles.filterWrapper, ...width(80)}}>
+                <Text style={{...defaultLabel, ...marginRight(10)}}>
+                  Incidencias
+                </Text>
+                <View style={styles.badget}>
+                  <Text style={{...defaultLabel, ...{color: 'white'}}}>
+                    {list.length}
+                  </Text>
+                </View>
               </View>
               {list?.filter((inci) => inci.done === false).length > 0 ? (
                 <IncidencesList
@@ -99,7 +107,7 @@ const styles = StyleSheet.create({
   },
   filterWrapper: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     marginVertical: 20,
   },
@@ -107,6 +115,15 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: DARK_BLUE,
+  },
+  badget: {
+    color: 'white',
+    backgroundColor: PRIORITY_HEIGHT,
+    width: 30,
+    height: 30,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

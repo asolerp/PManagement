@@ -25,19 +25,13 @@ const Colors = {
   OFFLINE_GRAY: '#535353',
 };
 
-const Accordian = ({
-  title,
-  subtitle,
-  iconProps,
+const Accordion = ({
   children,
-  switcher,
-  onOpen = () => {},
-  onClose = () => {},
+  expanded
 }) => {
   const [expanded, setExpanded] = useState(false);
   // const [switchStatus, setSwitchStatus] = useState(false);
 
-  const accordian = createRef();
 
   if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -61,36 +55,7 @@ const Accordian = ({
 
   return (
     <React.Fragment>
-      <TouchableOpacity
-        style={styles.container}
-        onPress={() => {
-          switcher && toggleExpand();
-        }}>
-        <View style={styles.accordianContainer}>
-          <View style={styles.iconContainer}>
-            <IconCircle name={iconProps?.name} color={iconProps?.color} />
-            <View style={styles.infoContainer}>
-              <Text style={[styles.title, styles.font]}>{title}</Text>
-              {subtitle && switcher && subtitle}
-            </View>
-          </View>
-          <Switch
-            ref={accordian}
-            style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
-            trackColor={{true: '#60AD88', false: 'grey'}}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleExpandWithSwitch}
-            value={switcher}
-          />
-        </View>
-      </TouchableOpacity>
-      <View style={styles.parentHr} />
-      {expanded && (
-        <View>
-          <View style={styles.separator} />
-          <View style={styles.child}>{children}</View>
-        </View>
-      )}
+      {expanded && <View style={styles.child}>{children}</View>}
     </React.Fragment>
   );
 };
@@ -111,6 +76,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     padding: 5,
   },
+  iconStyle: {},
   accordianContainer: {
     height: 40,
     paddingRight: 10,
@@ -144,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Accordian;
+export default Accordion;

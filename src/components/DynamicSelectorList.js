@@ -42,7 +42,6 @@ const DynamicSelectorList = ({
         if (!newValue) {
           set([]);
         } else {
-          console.log(item, 'item');
           set([item]);
         }
       } else {
@@ -54,8 +53,6 @@ const DynamicSelectorList = ({
         }
       }
     };
-
-    console.log(get?.some((i) => i?.id === item?.id));
 
     return (
       <React.Fragment>

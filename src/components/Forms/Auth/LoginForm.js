@@ -22,7 +22,6 @@ const LoginForm = () => {
     try {
       await auth().signInWithEmailAndPassword(data.username, data.password);
     } catch (err) {
-      console.log('error!!!');
       setError(
         'Ha ocurrido un error, asegúrase de que el email y la contraseña son correcotos',
       );
