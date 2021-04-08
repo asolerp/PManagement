@@ -1,10 +1,11 @@
 import React from 'react';
-import {View, Image, StyleSheet} from 'react-native';
+import {View, Text, Image, StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   ownerWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   withBorder: {
     alignItems: 'center',
@@ -21,14 +22,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Avatar = ({
-  uri,
-  name,
-  overlap,
-  position,
-  border = false,
-  size = 'small',
-}) => {
+const Avatar = ({uri, name, overlap, position, size = 'small'}) => {
   const parseSize = (sizeImage) => {
     switch (sizeImage) {
       case 'xxl': {
@@ -49,17 +43,24 @@ const Avatar = ({
     }
   };
   return (
-    <View style={[styles.ownerWrapper, {zIndex: position}]}>
-      <Image
-        style={[
-          styles.ownerImage,
-          {width: parseSize(size), height: parseSize(size)},
-          {marginRight: overlap ? -10 : 0},
-        ]}
-        source={{
-          uri: uri,
-        }}
-      />
+    <View
+      style={[
+        styles.ownerWrapper,
+        {flexDirection: name ? 'column' : 'row', zIndex: position},
+      ]}>
+      <View>
+        <Image
+          style={[
+            styles.ownerImage,
+            {width: parseSize(size), height: parseSize(size)},
+            {marginRight: overlap ? -10 : 20},
+          ]}
+          source={{
+            uri: uri,
+          }}
+        />
+        {name && <Text>{name}</Text>}
+      </View>
     </View>
   );
 };

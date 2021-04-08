@@ -15,17 +15,18 @@ import LinearGradient from 'react-native-linear-gradient';
 import JobItem from '../../components/JobItem';
 
 // Styles
-import {defaultLabel} from '../../styles/common';
+import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
 
 // Utils
 import moment from 'moment';
 import subDays from 'date-fns/subDays';
 import {ScrollView} from 'react-native';
 import CheckItem from '../../components/CheckItem';
+import {DARK_BLUE, GREY, LOW_GREY} from '../../styles/colors';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     flex: 1,
   },
   addButton: {
@@ -38,26 +39,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   home: {
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     flex: 5,
   },
   content: {
     paddingHorizontal: 20,
   },
-  todayStyle: {
-    fontSize: 20,
-    color: '#284748',
-    fontWeight: 'bold',
-    marginTop: 20,
-  },
   label: {
     fontSize: 20,
     width: '90%',
-    color: '#284748',
+    color: DARK_BLUE,
     fontWeight: '500',
-    marginTop: 20,
-    marginBottom: 20,
   },
   checksWrapper: {
     marginBottom: 20,
@@ -80,7 +73,7 @@ const HomeWorker = () => {
     {
       label: 'date',
       operator: '>',
-      condition: subDays(new Date(), 1),
+      condition: moment(new Date(), 1),
     },
     {
       label: 'workersId',
@@ -118,12 +111,19 @@ const HomeWorker = () => {
           style={styles.homeBackScreen}>
           <View style={styles.home}>
             <View style={styles.content}>
-              <Text style={styles.todayStyle}>Hoy es {date.join(' ')} ☀️</Text>
-              <Text style={styles.label}>
+              <Text
+                style={{
+                  ...defaultLabel,
+                  ...marginBottom(10),
+                  ...marginTop(20),
+                }}>
+                Hoy es {date.join(' ')} ☀️
+              </Text>
+              <Text style={{...styles.label, ...marginBottom(20)}}>
                 Estos son tus trabajos asignados para hoy 💪🏡
               </Text>
-              <Text style={{...defaultLabel, marginBottom: 20}}>
-                ✅ Check list
+              <Text style={{...defaultLabel, ...marginBottom(10)}}>
+                Check list
               </Text>
               <View style={styles.checksWrapper}>
                 {checklist?.map((check) => (

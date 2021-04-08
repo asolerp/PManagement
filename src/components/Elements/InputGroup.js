@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
+import {GREY_1} from '../../styles/colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -10,11 +11,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingBottom: 5,
     borderWidth: 1,
-    borderColor: '#EAEAEA',
+    borderColor: GREY_1,
   },
   inputContainer: {},
   separator: {
-    borderBottomColor: '#EAEAEA',
+    borderBottomColor: GREY_1,
     borderBottomWidth: 1,
   },
 });

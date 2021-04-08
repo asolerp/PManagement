@@ -21,6 +21,7 @@ import moment from 'moment';
 import {finishTaskAlert, openTaskStatus} from '../Alerts/deleteJobAlert';
 import {ScrollView} from 'react-native';
 import TextWrapper from '../TextWrapper';
+import {defaultLabel, marginBottom} from '../../styles/common';
 
 const styles = StyleSheet.create({
   container: {
@@ -108,9 +109,11 @@ const Info = () => {
             />
           </View>
           <Text style={styles.date}>
-            🕜 {moment(job?.date?.toDate()).format('LL')}
+            {moment(job?.date?.toDate()).format('LL')}
           </Text>
-          <Text style={styles.label}>🕵️‍♀️ Observaciones</Text>
+          <Text style={{...defaultLabel, ...marginBottom(10)}}>
+            Observaciones
+          </Text>
           {job?.observations ? (
             <TextWrapper>
               <Text style={styles.observations}>{job?.observations}</Text>
@@ -122,19 +125,21 @@ const Info = () => {
               </Text>
             </TextWrapper>
           )}
-          <Text style={styles.label}>👷‍♂️ Trabajadores asignados</Text>
+          <Text style={{...defaultLabel, ...marginBottom(10)}}>
+            Trabajadores asignados
+          </Text>
           <View style={styles.workers}>
             {job?.workers?.map((worker) => (
               <Avatar
+                name={worker.firstName}
                 key={worker.id}
                 uri={worker.profileImage}
-                overlap
                 size="big"
               />
             ))}
           </View>
           <Text style={styles.label}>
-            🏡 {job?.house && job?.house[0].houseName}
+            {job?.house && job?.house[0].houseName}
           </Text>
           <Text style={styles.houseItems}>
             <Text style={{fontWeight: 'bold'}}>Calle: </Text>

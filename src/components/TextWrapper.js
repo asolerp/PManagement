@@ -1,12 +1,15 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
+import {GREY_1} from '../styles/colors';
 
 const styles = StyleSheet.create({
   wrapper: {
     padding: 10,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: 'white',
     borderRadius: 10,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: GREY_1,
   },
 });
 

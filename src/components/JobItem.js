@@ -20,27 +20,24 @@ import InfoIcon from './InfoIcon';
 // Utils
 import moment from 'moment';
 import {parsePriorityColor} from '../utils/parsers';
+import {DARK_BLUE, GREY, GREY_1} from '../styles/colors';
+import {marginBottom, marginRight} from '../styles/common';
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    height: 250,
     backgroundColor: 'white',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#EAEAEA',
     padding: 10,
-    marginBottom: 10,
     flexDirection: 'row',
-  },
-  swipperContainer: {
-    borderRadius: 10,
-    marginBottom: 10,
+    width: 220,
+    borderWidth: 1,
+    borderColor: GREY_1,
   },
   firstSection: {
     flex: 1,
     flexDirection: 'row',
     height: '100%',
-    alignItems: 'center',
   },
   titleSubtitle: {
     flex: 1,
@@ -55,39 +52,24 @@ const styles = StyleSheet.create({
     color: '#3DB6BA',
   },
   priority: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
     width: 10,
-    height: '100%',
+    height: '50%',
     borderRadius: 20,
     marginLeft: 0,
     marginRight: 15,
-    backgroundColor: 'white',
-    elevation: 2,
-    shadowOffset: {
-      height: 0,
-      width: 0,
-    },
-    shadowColor: '#BCBCBC',
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
   },
   title: {
-    fontSize: 19,
+    fontSize: 28,
     marginBottom: 5,
-    fontWeight: 'bold',
-    color: '#284748',
+    fontWeight: '500',
+    color: DARK_BLUE,
   },
   subtitle: {
     fontSize: 15,
-    marginBottom: 5,
     width: '95%',
-    color: '#284748',
-  },
-  calendar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
+    color: GREY,
   },
   progressContainer: {
     flex: 1,
@@ -99,12 +81,14 @@ const styles = StyleSheet.create({
   },
   percentage: {
     textAlign: 'right',
-    marginBottom: 5,
     fontWeight: 'bold',
   },
   iconsWrapper: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  avatarWrapper: {
+    flexDirection: 'row',
   },
   workers: {
     flexDirection: 'row',
@@ -150,7 +134,7 @@ const JobItem = ({job, onPress}) => {
 
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={styles.container}>
+      <View style={{...styles.container, ...marginRight(20)}}>
         <View style={styles.firstSection}>
           {job.priority && (
             <View
@@ -161,26 +145,30 @@ const JobItem = ({job, onPress}) => {
             />
           )}
           <View style={styles.titleSubtitle}>
-            <View style={styles.firstLine}>
-              <Text style={styles.date}>
-                🕜 {moment(job.date.toDate()).format('LL')}
+            <Text style={{...styles.date, ...marginBottom(10)}}>
+              {moment(job.date.toDate()).format('LL')}
+            </Text>
+            <Text style={{...styles.title, ...marginBottom(10)}}>
+              {`Trabajos en ${job.house[0].houseName}`}
+            </Text>
+            {job?.task?.desc && (
+              <Text style={{...styles.subtitle, ...marginBottom(10)}}>
+                {job?.task?.desc}
               </Text>
+            )}
+            <View style={{...styles.avatarWrapper, ...marginBottom(10)}}>
               {job?.workers?.map((worker, i) => (
                 <Avatar
                   key={worker.id || i}
                   uri={worker.profileImage}
                   overlap
+                  size="medium"
                 />
               ))}
             </View>
-            <Text style={styles.title}>
-              🏡 {`Trabajos en ${job.house[0].houseName}`}
-            </Text>
-            {job?.task?.desc && (
-              <Text style={styles.subtitle}>{job?.task?.desc}</Text>
-            )}
             <View style={styles.iconsWrapper}>
               <InfoIcon
+                style={marginRight(10)}
                 info={noReadCounter}
                 icon={'chat'}
                 color="#ac76cc"
@@ -191,9 +179,6 @@ const JobItem = ({job, onPress}) => {
                 color={job.done ? '#7dd891' : '#ED7A7A'}
               />
             </View>
-          </View>
-          <View>
-            <Icon name="keyboard-arrow-right" color="#284748" size={30} />
           </View>
         </View>
       </View>

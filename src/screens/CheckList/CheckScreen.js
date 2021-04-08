@@ -15,8 +15,8 @@ import CheckBox from '@react-native-community/checkbox';
 import CustomButton from '../../components/Elements/CustomButton';
 
 // styles
-import {defaultLabel} from '../../styles/common';
-import {DARK_BLUE} from '../../styles/colors';
+import {defaultLabel, marginBottom} from '../../styles/common';
+import {DARK_BLUE, GREY_1, LOW_GREY} from '../../styles/colors';
 // utils
 import {format} from 'date-fns';
 import moment from 'moment';
@@ -26,7 +26,7 @@ import TextWrapper from '../../components/TextWrapper';
 const styles = StyleSheet.create({
   checklistContainer: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     marginTop: 10,
     // height: '100%',
@@ -37,15 +37,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#dadada',
+    borderWidth: 1,
+    borderColor: GREY_1,
+    borderRadius: 10,
   },
   observationsStyle: {
     fontSize: 15,
   },
-  avatarWrapper: {
-    flex: 1,
-  },
+  avatarWrapper: {},
   labelWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -54,7 +53,8 @@ const styles = StyleSheet.create({
   },
   infoWrapper: {
     flex: 6,
-    marginLeft: 10,
+    marginLeft: 0,
+    paddingRight: 20,
   },
   name: {
     fontSize: 15,
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
 
 const CheckItem = ({check, handleCheck}) => {
   return (
-    <View style={styles.container}>
+    <View style={{...styles.container, ...marginBottom(10)}}>
       {check?.worker && <Avatar uri={check?.worker?.profileImage} size="big" />}
       <View style={styles.infoWrapper}>
         <Text style={styles.name}>{check.title}</Text>
@@ -159,10 +159,10 @@ const CheckScreen = ({route, navigation}) => {
       <View style={styles.checklistContainer}>
         <View style={{marginBottom: 20}}>
           <Text style={styles.date}>
-            🕜 {moment(checklist?.date?.toDate()).format('LL')}
+            {moment(checklist?.date?.toDate()).format('LL')}
           </Text>
-          <Text style={{...defaultLabel, marginBottom: 10}}>
-            🕵️ Observaciones
+          <Text style={{...defaultLabel, ...marginBottom(10)}}>
+            Observaciones
           </Text>
           <TextWrapper>
             <Text style={styles.observationsStyle}>
@@ -171,13 +171,16 @@ const CheckScreen = ({route, navigation}) => {
           </TextWrapper>
         </View>
         <View style={styles.labelWrapper}>
-          <Text style={{...defaultLabel}}>✅ Listado de checks</Text>
+          <Text style={{...defaultLabel, ...marginBottom(10)}}>
+            Listado de checks
+          </Text>
           <Text style={styles.counter}>
             {checklist.done}/{checklist.total}
           </Text>
         </View>
         <FlatList
           data={checks}
+          showsVerticalScrollIndicator={false}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />

@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 20,
-    marginRight: 10,
   },
   icon: {
     marginLeft: 5,
@@ -20,45 +19,19 @@ const styles = StyleSheet.create({
   },
 });
 
-const InfoIcon = ({info, icon, color, active}) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const animateIcon = () => {
-    Animated.sequence([
-      Animated.delay(100),
-      Animated.timing(scaleAnim, {
-        toValue: 0.7,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      // Call on self when animation completes
-    ]).start(animateIcon);
-  };
-
-  // useEffect(() => {
-  //   if (active) {
-  //     animateIcon();
-  //   } else {
-  //     Animated.timing(scaleAnim).stop();
-  //   }
-  // }, [active]);
-
+const InfoIcon = ({info, icon, color, style}) => {
   return (
-    <Animated.View
+    <View
       style={{
+        ...style,
         ...styles.container,
-        ...{backgroundColor: color, transform: [{scale: scaleAnim}]},
+        ...{backgroundColor: color},
       }}>
       <Text style={styles.textStyle}>{info}</Text>
       {icon && (
         <Icon name={icon} size={15} color={'white'} style={styles.icon} />
       )}
-    </Animated.View>
+    </View>
   );
 };
 

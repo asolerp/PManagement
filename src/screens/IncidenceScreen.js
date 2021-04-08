@@ -23,6 +23,8 @@ import {finishIncidence, openIncidence} from '../components/Alerts/incidences';
 import TextWrapper from '../components/TextWrapper';
 import {firebase} from '@react-native-firebase/firestore';
 import {ScrollView} from 'react-native';
+import {defaultLabel, marginBottom} from '../styles/common';
+import {DARK_BLUE} from '../styles/colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,10 +65,9 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'left',
-    fontSize: 15,
+    fontSize: 20,
     width: '90%',
-    color: '#284748',
-    fontWeight: 'bold',
+    color: DARK_BLUE,
     marginTop: 10,
     marginBottom: 30,
   },
@@ -202,19 +203,23 @@ const IncidenceScreen = () => {
           />
         </View>
         <Text style={styles.date}>
-          🕜 {moment(incidence?.date?.toDate()).format('LL')}
+          {moment(incidence?.date?.toDate()).format('LL')}
         </Text>
-        <Text style={styles.houseName}>🏡 {incidence?.house?.houseName}</Text>
+        <Text style={defaultLabel}>🏡 {incidence?.house?.houseName}</Text>
         <Text style={styles.title}>{incidence?.title}</Text>
-        <Text style={styles.label}>🕵️‍♀️ Informador</Text>
+        <Text style={{...defaultLabel, ...marginBottom(10)}}>Informador</Text>
         <View style={styles.workers}>
-          <Avatar uri={incidence?.user?.profileImage} overlap size="big" />
+          <Avatar
+            uri={incidence?.user?.profileImage}
+            name={incidence?.user?.firstName}
+            size="big"
+          />
         </View>
-        <Text style={styles.label}>⚠️ Incidencia</Text>
+        <Text style={{...defaultLabel, ...marginBottom(10)}}>Incidencia</Text>
         <TextWrapper>
           <Text style={styles.observations}>{incidence?.incidence}</Text>
         </TextWrapper>
-        <Text style={styles.label}>📷 Fotos</Text>
+        <Text style={{...defaultLabel, ...marginBottom(10)}}>Fotos</Text>
         <View style={styles.photosWrapper}>
           {incidence?.photos?.map((photo, i) => (
             <IncidenceImage photo={photo} index={i} key={photo} />

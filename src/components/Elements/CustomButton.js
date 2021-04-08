@@ -6,13 +6,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import {PM_COLOR} from '../../styles/colors';
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
   },
   buttonWrapper: {
-    backgroundColor: '#2A7BA5',
+    backgroundColor: PM_COLOR,
     borderRadius: 20,
     padding: 12,
   },

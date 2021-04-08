@@ -1,11 +1,14 @@
+import {useNavigation} from '@react-navigation/core';
 import React, {useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
 import StatusIncidence from '../components/Filters/StatusIncidence';
+import IncidenceItem from '../components/IncidenceItem';
 import IncidencesList from '../components/IncidencesList';
 import PagetLayout from '../components/PageLayout';
 
 //Firebase
 import {useGetFirebase} from '../hooks/useGetFirebase';
+import {defaultLabel, marginBottom} from '../styles/common';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -21,8 +24,18 @@ const styles = StyleSheet.create({
 });
 
 const IncidencesListScreen = () => {
-  const {list, loading, error} = useGetFirebase('incidences');
+  const {list} = useGetFirebase('incidences');
   const [state, setState] = useState(false);
+  const navigation = useNavigation();
+
+  const renderItem = ({item}) => {
+    const handlePressIncidence = () => {
+      navigation.navigate('Incidence', {
+        incidenceId: item.id,
+      });
+    };
+    return <IncidenceItem incidence={item} onPress={handlePressIncidence} />;
+  };
 
   return (
     <PagetLayout
@@ -33,12 +46,15 @@ const IncidencesListScreen = () => {
       }}>
       <React.Fragment>
         <View style={styles.filterWrapper}>
-          <Text style={{...styles.todayStyle}}>🚨 Incidencias</Text>
+          <Text style={{...defaultLabel, ...marginBottom(10)}}>
+            Incidencias
+          </Text>
           <StatusIncidence onChangeFilter={setState} state={state} />
         </View>
-        <IncidencesList
-          list={list.filter((inci) => inci.done === state)}
-          loading={loading}
+        <FlatList
+          data={list.filter((inci) => inci.done === state)}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
         />
       </React.Fragment>
     </PagetLayout>

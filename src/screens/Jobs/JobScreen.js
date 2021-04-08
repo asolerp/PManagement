@@ -39,7 +39,7 @@ const ThirdRoute = () => <Photos />;
 
 const JobScreen = ({route, navigation}) => {
   const {jobId} = route.params;
-  const {document: job, loading, error} = useGetDocFirebase('jobs', jobId);
+  const {document: job} = useGetDocFirebase('jobs', jobId);
 
   const [index, setIndex] = React.useState(0);
   const [routes] = useState([

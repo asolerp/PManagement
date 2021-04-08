@@ -1,13 +1,10 @@
-import React, {useState, useCallback} from 'react';
-import {View, Image, StyleSheet, Text} from 'react-native';
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-
-import Avatar from '../Avatar';
+import React from 'react';
+import {View, Image, StyleSheet, Text, FlatList} from 'react-native';
 
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 
-import {defaultHouseFilters} from '../../constants/housesFilter';
+import {DARK_BLUE} from '../../styles/colors';
 
 const heightFilter = 120;
 const widthFilter = 90;
@@ -22,7 +19,7 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
   },
   titleFilter: {
-    color: '#284748',
+    color: DARK_BLUE,
     fontSize: 25,
     fontWeight: 'bold',
   },
@@ -104,42 +101,48 @@ const HouseFilter = ({houses, addHouse}) => {
     }
   };
 
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      key={item.id}
+      onPress={() => handleSetHouse(item)}
+      style={[
+        isInArray(item.id) && styles.activeFilter,
+        {marginHorizontal: 10},
+      ]}>
+      <View style={[styles.houseFilter]}>
+        <View style={[styles.avatarContainer]}>
+          <Image
+            style={[
+              styles.ownerImage,
+              {width: 90, height: 120, borderRadius: 20},
+            ]}
+            source={{
+              uri: item.houseImage,
+            }}
+          />
+        </View>
+        <View style={styles.maskWrapper} />
+        <View style={styles.textWrapper}>
+          <Text style={styles.textStyle}>{item.houseName}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.filterWrapper}>
-      <Text style={styles.titleFilter}>🏡 Las Casas</Text>
-      <ScrollView horizontal={true} style={styles.container}>
+      <Text style={styles.titleFilter}>Las Casas</Text>
+      <View style={styles.container}>
         <View style={styles.housesWrapper}>
-          {list.map((house, i) => {
-            return (
-              <TouchableOpacity
-                key={house.id}
-                onPress={() => handleSetHouse(house)}
-                style={[
-                  isInArray(house.id) && styles.activeFilter,
-                  {marginHorizontal: 10},
-                ]}>
-                <View style={[styles.houseFilter]}>
-                  <View style={[styles.avatarContainer]}>
-                    <Image
-                      style={[
-                        styles.ownerImage,
-                        {width: 90, height: 120, borderRadius: 20},
-                      ]}
-                      source={{
-                        uri: house.houseImage,
-                      }}
-                    />
-                  </View>
-                  <View style={styles.maskWrapper} />
-                  <View style={styles.textWrapper}>
-                    <Text style={styles.textStyle}>{house.houseName}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={list}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };

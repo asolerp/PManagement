@@ -8,14 +8,16 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {SafeAreaView} from 'react-native';
 
+import {LOW_GREY} from '../styles/colors';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
   },
   pageWrapper: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     paddingHorizontal: 20,
   },

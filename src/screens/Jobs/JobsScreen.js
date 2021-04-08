@@ -1,11 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {StatusBar} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
@@ -15,12 +9,10 @@ import {setFilterDate} from '../../store/filterActions';
 
 // UI
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import LinearGradient from 'react-native-linear-gradient';
 import AddButton from '../../components/Elements/AddButton';
 import HouseFilter from '../../components/Filters/HouseFilter';
 import StatusTaskFilter from '../../components/Filters/StatusTaskFilter';
 import JobItem from '../../components/JobItem';
-import TitlePage from '../../components/TitlePage';
 import CalendarStrip from 'react-native-calendar-strip';
 
 //Firebase
@@ -28,6 +20,7 @@ import {useGetFirebase} from '../../hooks/useGetFirebase';
 
 // Styles
 import {defaultTextTitle} from '../../styles/common';
+import {DARK_BLUE, LOW_GREY, PM_COLOR} from '../../styles/colors';
 
 // Utils
 import moment from 'moment';
@@ -110,14 +103,6 @@ const JobsScreen = () => {
     }
   }, [houses, list, filterDate, statusTaskFilter]);
 
-  if (loading) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
   const renderItem = ({item}) => {
     return (
       <JobItem
@@ -140,8 +125,13 @@ const JobsScreen = () => {
         </TouchableOpacity>
       </View>
       <PagetLayout
-        titleChildren={
-          <View style={{flex: 1}}>
+        titleProps={{
+          title: 'Listado de trabajos',
+          subtitle: 'En esta semana',
+          color: 'white',
+        }}>
+        <View style={styles.jobsScreen}>
+          <View style={{height: 100}}>
             <CalendarStrip
               startingDate={moment(new Date()).subtract(3, 'days')}
               markedDates={generateCalendarDots(list)}
@@ -149,15 +139,15 @@ const JobsScreen = () => {
               onDateSelected={(date) => setFilterDateAction(date)}
               style={styles.calendarContainer}
               scrollable
-              iconStyle={{color: 'white'}}
+              iconStyle={{color: PM_COLOR}}
               leftSelector={
-                <Icon name="keyboard-arrow-left" size={15} color="white" />
+                <Icon name="keyboard-arrow-left" size={15} color={PM_COLOR} />
               }
               rightSelector={
-                <Icon name="keyboard-arrow-right" size={15} color="white" />
+                <Icon name="keyboard-arrow-right" size={15} color={PM_COLOR} />
               }
-              dateContainerStyle={{color: 'white'}}
-              dateNameStyle={{color: 'white'}}
+              dateContainerStyle={{color: PM_COLOR}}
+              dateNameStyle={{color: PM_COLOR}}
               dateNumberStyle={styles.dateNumberStyle}
               highlightDateNameStyle={styles.highlightDateNameStyle}
               highlightDateNumberStyle={styles.highlightDateNumberStyle}
@@ -166,19 +156,12 @@ const JobsScreen = () => {
               calendarHeaderStyle={styles.calendarHeaderStyle}
             />
           </View>
-        }
-        titleProps={{
-          title: 'Listado de trabajos',
-          subtitle: 'En esta semana',
-          color: 'white',
-        }}>
-        <View style={styles.jobsScreen}>
           <View style={styles.housesWrapper}>
             <HouseFilter houses={houses} addHouse={addHouse} />
           </View>
           <View style={styles.jobsListWrapper}>
             <View style={styles.jobsTitleWrapper}>
-              <Text style={{...defaultTextTitle}}>🚀 Trabajos</Text>
+              <Text style={{...defaultTextTitle}}>Trabajos</Text>
               <StatusTaskFilter />
             </View>
             {filteredList.length > 0 ? (
@@ -192,6 +175,8 @@ const JobsScreen = () => {
                   </View>
                 ) : (
                   <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
                     data={filteredList?.filter(
                       (job) => job.done === statusTaskFilter,
                     )}
@@ -228,7 +213,7 @@ const styles = StyleSheet.create({
   jobsScreen: {
     flex: 1,
     flexBasis: 'auto',
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
   },
   housesWrapper: {
@@ -247,34 +232,29 @@ const styles = StyleSheet.create({
     right: 30,
     bottom: 30,
     zIndex: 10,
-    shadowOffset: {
-      height: 0,
-      width: 0,
-    },
-    shadowColor: '#2d2d2d',
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
   },
   calendarContainer: {
     height: '100%',
   },
-  dateNumberStyle: {color: 'white', fontSize: 15},
+  dateNumberStyle: {color: PM_COLOR, fontSize: 15},
   calendarHeaderContainerStyle: {
     marginTop: 10,
   },
   calendarHeaderStyle: {
-    color: 'white',
+    color: PM_COLOR,
     justifyContent: 'flex-start',
+    textTransform: 'capitalize',
   },
   highlightDateNameStyle: {
-    color: '#388088',
+    color: 'white',
   },
   highlightDateNumberStyle: {
     fontSize: 15,
-    color: '#388088',
+    color: 'white',
   },
   highlightDateContainerStyle: {
-    backgroundColor: 'white',
+    backgroundColor: PM_COLOR,
+    borderRadius: 15,
   },
   infoMessageWrapper: {
     height: 200,

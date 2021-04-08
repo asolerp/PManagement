@@ -14,8 +14,12 @@ import ProfileBar from '../components/ProfileBar';
 import TitlePage from '../components/TitlePage';
 import IncidencesList from '../components/IncidencesList';
 import StatusIncidence from '../components/Filters/StatusIncidence';
+
 // UI
 import LinearGradient from 'react-native-linear-gradient';
+
+// Styles
+import {LOW_GREY, DARK_BLUE} from '../styles/colors';
 
 // Utils
 import moment from 'moment';
@@ -38,7 +42,7 @@ const DashboardScreen = ({navigation}) => {
 
   return (
     <React.Fragment>
-      <View style={{backgroundColor: 'white'}}>
+      <View style={{backgroundColor: LOW_GREY}}>
         <TitlePage>
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
             <ProfileBar />
@@ -56,10 +60,10 @@ const DashboardScreen = ({navigation}) => {
               <Text style={{...styles.todayStyle, ...{marginVertical: 20}}}>
                 Hoy es {date.join(' ')} ☀️
               </Text>
-              <Text style={styles.todayStyle}>🛠 Trabajos activos</Text>
+              <Text style={styles.todayStyle}>Trabajos activos</Text>
               <JobsResume />
               <View style={styles.filterWrapper}>
-                <Text style={{...styles.todayStyle}}>🚨 Incidencias</Text>
+                <Text style={{...styles.todayStyle}}>Incidencias</Text>
               </View>
               {list?.filter((inci) => inci.done === false).length > 0 ? (
                 <IncidencesList
@@ -80,14 +84,14 @@ const DashboardScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
   },
   homeBackScreen: {
     flex: 1,
   },
   home: {
-    backgroundColor: 'white',
+    backgroundColor: LOW_GREY,
     flex: 5,
   },
   content: {
@@ -102,6 +106,7 @@ const styles = StyleSheet.create({
   todayStyle: {
     fontSize: 22,
     fontWeight: 'bold',
+    color: DARK_BLUE,
   },
 });
 

@@ -27,7 +27,7 @@ export const getHightByRoute = (route) => {
     case 'CheckList':
       return 100;
     case 'Jobs':
-      return 230;
+      return 140;
     case 'Homes':
       return 100;
     case 'Perfil':
@@ -60,7 +60,6 @@ export const parsePriorityColor = (priority) => {
 };
 
 export const parsePercentageDone = (percentage) => {
-  console.log(percentage);
   if (percentage <= 0.5) {
     return PRIORITY_HEIGHT;
   } else if (percentage > 0.5 && percentage < 1) {

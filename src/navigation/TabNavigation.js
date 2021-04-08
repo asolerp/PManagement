@@ -14,6 +14,7 @@ import {Platform} from 'react-native';
 import IncidencesStack from './IncidencesStack';
 import CheckListStack from './CheckListStack';
 import {useGetDocFirebase} from '../hooks/useGetDocFIrebase';
+import {PM_COLOR, PRIORITY_HEIGHT} from '../styles/colors';
 
 const Tabs = AnimatedTabBarNavigator();
 
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 100,
-    backgroundColor: 'red',
+    backgroundColor: PRIORITY_HEIGHT,
     position: 'absolute',
     zIndex: 2,
     justifyContent: 'center',
@@ -77,7 +78,7 @@ const TabNavigation = () => {
       tabBarOptions={{
         activeTintColor: 'white',
         inactiveTintColor: 'white',
-        activeBackgroundColor: '#3E93A8',
+        activeBackgroundColor: PM_COLOR,
         tabStyle: {
           marginTop: 0,
           paddingBottom: Platform.OS === 'ios' ? 20 : 0,
@@ -100,7 +101,7 @@ const TabNavigation = () => {
             <Icon
               name="dashboard"
               size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
+              color={focused ? color : PM_COLOR}
               focused={focused}
             />
           ),

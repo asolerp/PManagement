@@ -2,23 +2,38 @@ import React from 'react';
 import {useNavigation} from '@react-navigation/core';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import InfoIcon from './InfoIcon';
+import Avatar from './Avatar';
+
+import {DARK_BLUE, GREY, GREY_1, MEDIUM_GREY} from '../styles/colors';
 
 // Utils
 import {minimizetext, parseDateWithText} from '../utils/parsers';
-import moment from 'moment';
+import {marginBottom, marginRight} from '../styles/common';
+
 const styles = StyleSheet.create({
   incidenceWrapper: {
-    flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#ddf2ff70',
+    height: 220,
+    backgroundColor: 'white',
     marginBottom: 10,
     padding: 10,
     borderRadius: 10,
+    width: 220,
+    borderWidth: 1,
+    borderColor: GREY_1,
+  },
+  avatarWrapper: {
+    flex: 1,
+    justifyContent: 'flex-start',
   },
   infoWrapper: {
     marginTop: 10,
+  },
+  infoStyle: {
+    color: GREY,
+    marginBottom: 10,
   },
   rightWrapper: {
     flex: 1,
@@ -26,15 +41,25 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   titleWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 10,
   },
   title: {
-    fontSize: 14,
+    fontSize: 28,
     marginBottom: 5,
-    fontWeight: 'bold',
+    fontWeight: '500',
+    color: DARK_BLUE,
   },
   bold: {
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: DARK_BLUE,
+    marginBottom: 10,
+  },
+  date: {
+    fontSize: 12,
+    color: MEDIUM_GREY,
   },
 });
 
@@ -50,40 +75,27 @@ const IncidencesList = ({list, loading}) => {
 
     return (
       <TouchableOpacity
-        style={styles.incidenceWrapper}
+        style={{...styles.incidenceWrapper, ...marginRight(10)}}
         onPress={() => handlePressIncidence()}>
         <View>
           <View style={styles.titleWrapper}>
-            <Text style={{...styles.bold}}>🏡 {item?.house?.houseName}</Text>
-          </View>
-          <Text style={styles.title}>⚠️ {item?.title} </Text>
-          <Text>{minimizetext(item?.incidence)}</Text>
-          <View style={styles.infoWrapper}>
-            <Text style={{marginRight: 10}}>
-              <Text>👮‍♂️ Informador: </Text>
-              <Text style={styles.bold}>{item?.user?.firstName}</Text>
-            </Text>
-          </View>
-          <View style={{width: 110, marginTop: 10}}>
+            <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
             <InfoIcon
               info={item.done ? 'Resuleta' : 'Sin resolver'}
               color={item.done ? '#7dd891' : '#ED7A7A'}
             />
           </View>
-        </View>
-        <View style={styles.rightWrapper}>
-          <View style={{flex: 1}}>
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: 'bold',
-                marginBottom: 10,
-              }}>
-              🕜 {parseDateWithText(item?.date)}
+          <Text style={styles.title}>{item?.title} </Text>
+          <View style={styles.infoWrapper}>
+            <Text style={styles.infoStyle}>
+              {minimizetext(item?.incidence)}
             </Text>
-          </View>
-          <View style={{flex: 1}}>
-            <Icon name="keyboard-arrow-right" color="#454545" size={30} />
+            <Text style={{...styles.bold, ...marginBottom(20)}}>
+              {item?.house?.houseName}
+            </Text>
+            <View style={styles.avatarWrapper}>
+              <Avatar key={item?.user?.id} uri={item?.user?.profileImage} />
+            </View>
           </View>
         </View>
       </TouchableOpacity>
@@ -104,6 +116,8 @@ const IncidencesList = ({list, loading}) => {
         <Text>No tienes incidencias en este estado</Text>
       ) : (
         <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
           data={list}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}

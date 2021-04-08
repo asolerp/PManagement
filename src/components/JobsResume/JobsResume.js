@@ -11,15 +11,16 @@ import {useGetFirebase} from '../../hooks/useGetFirebase';
 // Utils
 
 import {parsePriority} from '../../utils/parsers';
+import {GREY_1} from '../../styles/colors';
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: 'white',
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#EAEAEA',
     marginTop: 20,
+    borderWidth: 1,
+    borderColor: GREY_1,
   },
   prioritiesWrapper: {
     flex: 1,

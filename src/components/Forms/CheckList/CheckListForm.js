@@ -1,7 +1,7 @@
 import React, {useState, useCallback} from 'react';
 
 import {BottomModal, ModalContent} from 'react-native-modals';
-import {Text, View, TextInput, StyleSheet} from 'react-native';
+import {Text, View, TextInput, StyleSheet, FlatList} from 'react-native';
 
 // Redux
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
@@ -22,6 +22,7 @@ import {defaultLabel} from '../../../styles/common';
 
 // Firebase
 import {useGetFirebase} from '../../../hooks/useGetFirebase';
+import {DARK_BLUE, PM_COLOR} from '../../../styles/colors';
 
 moment.locale('es');
 
@@ -67,11 +68,12 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 100,
-    backgroundColor: '#126D9B',
+    backgroundColor: PM_COLOR,
   },
   checkStyle: {
     marginLeft: 10,
     fontSize: 18,
+    color: DARK_BLUE,
   },
 });
 
@@ -127,6 +129,13 @@ const CheckListForm = () => {
     />
   );
 
+  const renderItem = ({item}) => (
+    <View style={styles.checkWrapper}>
+      <View style={styles.checkDot} />
+      <Text style={styles.checkStyle}>{item.title}</Text>
+    </View>
+  );
+
   return (
     <View style={[styles.newJobScreen]}>
       <BottomModal
@@ -176,15 +185,14 @@ const CheckListForm = () => {
         />
       </InputGroup>
       <Text style={{...defaultLabel, marginTop: 10}}>
-        ✅ Check list a realizar
+        Check list a realizar
       </Text>
       <View style={styles.checkListWrapper}>
-        {list?.map((check) => (
-          <View style={styles.checkWrapper}>
-            <View style={styles.checkDot} />
-            <Text style={styles.checkStyle}>{check.title}</Text>
-          </View>
-        ))}
+        <FlatList
+          data={list}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
       </View>
     </View>
   );

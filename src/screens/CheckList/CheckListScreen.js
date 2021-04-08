@@ -8,6 +8,9 @@ import PagetLayout from '../../components/PageLayout';
 //Firebase
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 
+// Styles
+import {defaultLabel, marginBottom} from '../../styles/common';
+
 const styles = StyleSheet.create({
   filterWrapper: {
     marginVertical: 20,
@@ -82,7 +85,9 @@ const CheckListScreen = ({navigation}) => {
           <View style={styles.filterWrapper}>
             <HouseFilter houses={housesFilter} addHouse={setHousesFilter} />
             <View style={styles.checkListWrapper}>
-              <Text style={{...styles.todayStyle}}>✅ CheckList</Text>
+              <Text style={{...defaultLabel, ...marginBottom(20)}}>
+                CheckList
+              </Text>
               <FlatList
                 data={filteredChecksByHouse}
                 renderItem={renderItem}

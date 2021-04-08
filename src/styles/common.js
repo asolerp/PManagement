@@ -11,3 +11,19 @@ export const defaultLabel = {
   fontWeight: 'bold',
   color: DARK_BLUE,
 };
+
+export const marginBottom = (number) => ({
+  marginBottom: number,
+});
+
+export const marginRight = (number) => ({
+  marginRight: number,
+});
+
+export const marginTop = (number) => ({
+  marginTop: number,
+});
+
+export const marginLeft = (number) => ({
+  marginLeft: number,
+});
