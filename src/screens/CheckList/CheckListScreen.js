@@ -6,9 +6,6 @@ import AddButton from '../../components/Elements/AddButton';
 import StatusTaskFilter from '../../components/Filters/StatusTaskFilter';
 import PagetLayout from '../../components/PageLayout';
 
-//Firebase
-import {useGetFirebase} from '../../hooks/useGetFirebase';
-
 // Styles
 import {defaultLabel, marginBottom} from '../../styles/common';
 import GlobalFilters from '../../components/GlobalFilters';
@@ -35,9 +32,8 @@ const styles = StyleSheet.create({
 });
 
 const CheckListScreen = ({navigation}) => {
-  const {where} = useFilter('checkLists');
-  console.log(where);
-  const {list: checkLists, loading} = useGetFirebase('checklists', null, where);
+  const {filteredList, loading} = useFilter('checklists');
+
   const renderItem = ({item}) => (
     <CheckItem
       key={item.id}
@@ -73,13 +69,13 @@ const CheckListScreen = ({navigation}) => {
         }}>
         <View>
           <View style={styles.filterWrapper}>
-            <GlobalFilters storage="checkLists" />
+            <GlobalFilters storage="checklists" />
             <View style={styles.checkListWrapper}>
               <Text style={{...defaultLabel, ...marginBottom(20)}}>
                 CheckList
               </Text>
               <FlatList
-                data={checkLists}
+                data={filteredList}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
               />

@@ -25,7 +25,6 @@ import {marginBottom, marginRight} from '../styles/common';
 
 const styles = StyleSheet.create({
   container: {
-    height: 250,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 10,

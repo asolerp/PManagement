@@ -2,9 +2,9 @@ import subDays from 'date-fns/subDays';
 
 const INITIAL_FILTER_STATE = {
   houses: [],
-  checkLists: {
+  checklists: {
+    from: subDays(new Date(), 7),
     houses: [],
-    when: subDays(new Date(), 1),
   },
   filterDate: new Date(),
   statusTaskFilter: false,

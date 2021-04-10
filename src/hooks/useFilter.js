@@ -3,51 +3,87 @@ import {useSelector, shallowEqual} from 'react-redux';
 
 import subDays from 'date-fns/subDays';
 
-const useFilter = (storage) => {
-  console.log(subDays(new Date(), 1));
+//Firebase
+import {useGetFirebase} from '../hooks/useGetFirebase';
 
+const useFilter = (storage) => {
   const [where, setWhere] = useState([
     {
       label: 'date',
-      operator: '>',
-      condition: when || subDays(new Date(), 1),
+      operator: '>=',
+      condition: from || new Date(),
     },
   ]);
 
-  const {houses, when} = useSelector(
+  const {list, loading} = useGetFirebase(storage, null, where);
+  const [filteredList, setFilteredList] = useState([]);
+  const {houses, from, to} = useSelector(
     ({
       filters: {
-        [storage]: {houses, when},
+        [storage]: {houses, from, to},
       },
-    }) => ({houses, when}),
+    }) => ({houses, from, to}),
     shallowEqual,
   );
 
   useEffect(() => {
-    if (houses.length > 0) {
+    if (list) {
+      setFilteredList(list);
+    }
+  }, [list]);
+
+  useEffect(() => {
+    if (from) {
       setWhere([
-        {
-          label: 'houseId',
-          operator: 'in',
-          condition: houses,
-        },
+        ...where
+          .filter((query) => query.operator != '>=')
+          .concat([
+            {
+              label: 'date',
+              operator: '>=',
+              condition: subDays(from, 1),
+            },
+          ]),
+      ]);
+    }
+  }, [from]);
+
+  useEffect(() => {
+    if (to) {
+      setWhere([
+        ...where
+          .filter((query) => query.operator != '<=')
+          .concat([
+            {
+              label: 'date',
+              operator: '<=',
+              condition: to,
+            },
+          ]),
+      ]);
+    }
+  }, [to]);
+
+  useEffect(() => {
+    if (houses.length > 0) {
+      console.log(
+        filteredList?.filter((item) => houses.includes(item.houseId)),
+        'casas',
+      );
+      setFilteredList([
+        ...list?.filter((item) => houses.includes(item.houseId)),
       ]);
     } else {
-      setWhere(where?.filter((query) => query.label != 'houses'));
+      setFilteredList(list);
     }
   }, [houses]);
 
-  useEffect(() => {
-    if (where) {
-      const findIndex = where?.findIndex((filter) => filter.label === 'date');
-      const copyState = [...where];
-      copyState[findIndex].condition = when;
-      setWhere(copyState);
-    }
-  }, [when]);
+  console.log(where);
+  console.log(filteredList);
 
   return {
-    where,
+    filteredList,
+    loading,
   };
 };
 

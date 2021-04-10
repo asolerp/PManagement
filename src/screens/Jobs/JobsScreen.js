@@ -155,9 +155,9 @@ const JobsScreen = () => {
               calendarHeaderStyle={styles.calendarHeaderStyle}
             />
           </View>
-          {/* <View style={styles.housesWrapper}>
+          <View style={styles.housesWrapper}>
             <HouseFilter houses={houses} addHouse={addHouse} />
-          </View> */}
+          </View>
           <View style={{...styles.jobsListWrapper, ...marginTop(20)}}>
             <View style={styles.jobsTitleWrapper}>
               <Text style={{...defaultTextTitle}}>Trabajos</Text>

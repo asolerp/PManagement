@@ -5,9 +5,12 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 import Modal from 'react-native-modal';
 import HouseFilter from './Filters/HouseFilter';
+import DateSelector from './DateSelector';
 
 import {setFilterByType} from '../store/filterActions';
-import {subDays, subHours} from 'date-fns';
+import moment from 'moment';
+import {defaultLabel, marginBottom} from '../styles/common';
+import {GREY} from '../styles/colors';
 
 const styles = StyleSheet.create({
   modal: {
@@ -42,9 +45,9 @@ const GlobalFilters = ({storage}) => {
   const filters = useSelector(
     ({
       filters: {
-        [storage]: {houses},
+        [storage]: {houses, from, to},
       },
-    }) => ({houses}),
+    }) => ({houses, from, to}),
     shallowEqual,
   );
 
@@ -55,10 +58,33 @@ const GlobalFilters = ({storage}) => {
     />
   );
 
+  const DateFilter = ({date, selectDate, minimumDate, maximumDate}) => (
+    <DateSelector
+      date={date}
+      selectDate={selectDate}
+      minimumDate={minimumDate}
+      maximumDate={maximumDate}
+    />
+  );
+
   const modalSwitcher = (modal) => {
     switch (modal) {
       case 'houses': {
         return HousesFilter();
+      }
+      case 'from': {
+        return DateFilter({
+          date: filters?.from,
+          selectDate: setFilterByTypeActionFromDates,
+          maximumDate: filters?.to,
+        });
+      }
+      case 'to': {
+        return DateFilter({
+          date: filters?.to,
+          selectDate: setFilterByTypeActionToDates,
+          minimumDate: filters?.from,
+        });
       }
       default: {
         return HousesFilter();
@@ -71,9 +97,32 @@ const GlobalFilters = ({storage}) => {
     [dispatch, storage],
   );
 
-  const setFilterByTypeActionDates = useCallback(
-    (value) => dispatch(setFilterByType(storage, 'when', value)),
+  const setFilterByTypeActionFromDates = useCallback(
+    (value) => dispatch(setFilterByType(storage, 'from', value)),
     [dispatch, storage],
+  );
+
+  const setFilterByTypeActionToDates = useCallback(
+    (value) => dispatch(setFilterByType(storage, 'to', value)),
+    [dispatch, storage],
+  );
+
+  const ItemFilterDate = ({label, value}) => (
+    <View
+      style={{
+        opacity: value ? 1 : 0.4,
+        borderColor: GREY,
+        borderWidth: 1,
+        borderRadius: 100,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+      }}>
+      <Text>{label}: </Text>
+      {value && <Text style={{fontSize: 10}}>{value}</Text>}
+    </View>
   );
 
   return (
@@ -87,27 +136,45 @@ const GlobalFilters = ({storage}) => {
         </View>
       </Modal>
       <View>
-        <Text>Filtros</Text>
-        <TouchableOpacity
+        <Text style={{...defaultLabel, ...marginBottom(10)}}>Filtros</Text>
+        {/* <TouchableOpacity
           onPress={() => {
             setModalContent('houses');
             setModalVisible(true);
           }}>
-          <Text>Casas</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setFilterByTypeActionDates(subDays(new Date(), 1));
+          <Text style={marginBottom(10)}>Casas</Text>
+        </TouchableOpacity> */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
           }}>
-          <Text>Esta semana</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setFilterByTypeActionDates(subDays(new Date(), 15));
-          }}>
-          <Text>Este mes</Text>
-        </TouchableOpacity>
-        <Text>Hace más de un mes</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setModalContent('from');
+              setModalVisible(true);
+            }}>
+            <View
+              style={{flexDirection: 'row', marginBottom: 10, marginRight: 10}}>
+              <ItemFilterDate
+                label="Desde"
+                value={moment(filters?.from).format('LL')}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setModalContent('to');
+              setModalVisible(true);
+            }}>
+            <View style={{flexDirection: 'row', marginBottom: 10}}>
+              <ItemFilterDate
+                label="Hasta"
+                value={moment(filters?.to).format('LL')}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     </React.Fragment>
   );
