@@ -10,7 +10,6 @@ import CustomButton from '../Elements/CustomButton';
 // Firebase
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
-import {useDeleteFirebase} from '../../hooks/useDeleteFirebase';
 
 // Redux
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';

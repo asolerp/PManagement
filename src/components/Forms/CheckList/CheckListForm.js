@@ -103,6 +103,9 @@ const CheckListForm = () => {
       case 'houses': {
         return ListDynamicHouse();
       }
+      case 'worker': {
+        return ListDynamicWorkers();
+      }
       case 'date': {
         return DateTimeSelector();
       }
@@ -126,6 +129,27 @@ const CheckListForm = () => {
       set={(house) =>
         setInputFormAction('house', {...checklist?.house, value: house})
       }
+    />
+  );
+
+  const ListDynamicWorkers = () => (
+    <DynamicSelectorList
+      collection="users"
+      store="jobForm"
+      where={[
+        {
+          label: 'role',
+          operator: '==',
+          condition: 'worker',
+        },
+      ]}
+      searchBy="firstName"
+      schema={{img: 'profileImage', name: 'firstName'}}
+      get={checklist?.workers?.value}
+      set={(workers) =>
+        setInputFormAction('workers', {...checklist?.workers, value: workers})
+      }
+      multiple={true}
     />
   );
 
@@ -170,6 +194,28 @@ const CheckListForm = () => {
           iconProps={{name: 'house', color: '#55A5AD'}}
           onPress={() => {
             setModalContent('houses');
+            setModalVisible(true);
+          }}
+        />
+      </InputGroup>
+      <InputGroup>
+        <CustomInput
+          title="Trabajador"
+          subtitle={
+            <View style={{flexDirection: 'row'}}>
+              {checklist?.workers?.value?.map((worker, i) => (
+                <View key={worker.id}>
+                  <Text style={styles.subtitle}>{worker.firstName}</Text>
+                  {checklist?.workers?.value?.length - 1 !== i && (
+                    <Text style={styles.subtitle}> & </Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          }
+          iconProps={{name: 'people', color: '#55A5AD'}}
+          onPress={() => {
+            setModalContent('worker');
             setModalVisible(true);
           }}
         />

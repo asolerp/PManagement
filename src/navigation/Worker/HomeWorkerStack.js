@@ -8,6 +8,7 @@ import HomeWorker from '../../screens/Worker/HomeWorker';
 import JobScreen from '../../screens/Jobs/JobScreen';
 import NewIncidence from '../../screens/Worker/NewIncidence';
 import CheckScreen from '../../screens/CheckList/CheckScreen';
+import CheckPhotosScreen from '../../screens/CheckList/CheckPhotosScreen';
 
 const Stack = createStackNavigator();
 const HomeWorkerStack = () => {
@@ -45,6 +46,7 @@ const HomeWorkerStack = () => {
     <Stack.Navigator headerMode="none" initialRouteName={initialRoute}>
       <Stack.Screen name="Home" component={HomeWorker} />
       <Stack.Screen name="Check" component={CheckScreen} />
+      <Stack.Screen name="CheckPhotos" component={CheckPhotosScreen} />
       <Stack.Screen name="JobScreen" component={JobScreen} />
       <Stack.Screen name="NewIncidence" component={NewIncidence} />
     </Stack.Navigator>

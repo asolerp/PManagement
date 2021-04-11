@@ -138,6 +138,15 @@ export const generateCalendarDots = (list) => {
   return dotsArray;
 };
 
+export const parseDeleteTextButton = (length) => {
+  console.log(length);
+  if (length === 1) {
+    return `Eliminar ${length} foto`;
+  } else {
+    return `Eliminar ${length} fotos`;
+  }
+};
+
 export const percentageOfComplete = (tasks) => {
   const completedTasks = tasks?.filter((task) => task.complete).length;
   return completedTasks / tasks?.length;

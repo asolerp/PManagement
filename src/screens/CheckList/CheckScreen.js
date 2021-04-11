@@ -7,21 +7,27 @@ import {useSelector, shallowEqual} from 'react-redux';
 //Firebase
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
+import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import {useAddFirebase} from '../../hooks/useAddFirebase';
+import {useUploadFirebaseStorageImage} from '../../hooks/useUploadFirebaseStorageImage';
 
 // UI
 import PagetLayout from '../../components/PageLayout';
-import CheckBox from '@react-native-community/checkbox';
+
 import CustomButton from '../../components/Elements/CustomButton';
 
 // styles
 import {defaultLabel, marginBottom} from '../../styles/common';
-import {DARK_BLUE, GREY_1, LOW_GREY} from '../../styles/colors';
+import {DARK_BLUE, GREY_1, LOW_GREY, PM_COLOR} from '../../styles/colors';
+
 // utils
-import {format} from 'date-fns';
 import moment from 'moment';
-import Avatar from '../../components/Avatar';
 import TextWrapper from '../../components/TextWrapper';
+
+import {Platform} from 'react-native';
+import ItemCheck from '../../components/ItemCheck';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -44,7 +50,9 @@ const styles = StyleSheet.create({
   observationsStyle: {
     fontSize: 15,
   },
-  avatarWrapper: {},
+  checkboxWrapper: {
+    flexDirection: 'row',
+  },
   labelWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -73,49 +81,93 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: DARK_BLUE,
   },
+  buttonStyle: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: PM_COLOR,
+    borderRadius: 100,
+    marginRight: 10,
+  },
 });
-
-const CheckItem = ({check, handleCheck}) => {
-  return (
-    <View style={{...styles.container, ...marginBottom(10)}}>
-      {check?.worker && <Avatar uri={check?.worker?.profileImage} size="big" />}
-      <View style={styles.infoWrapper}>
-        <Text style={styles.name}>{check.title}</Text>
-        {check?.date && (
-          <Text style={styles.dateStyle}>
-            {moment(check?.date).format('LL')}
-          </Text>
-        )}
-      </View>
-      <View style={styles.checkboxWrapper}>
-        <CheckBox
-          disabled={false}
-          value={check.done}
-          onValueChange={() => handleCheck()}
-        />
-      </View>
-    </View>
-  );
-};
 
 const CheckScreen = ({route, navigation}) => {
   const {checkId} = route.params;
   const {document: checklist} = useGetDocFirebase('checklists', checkId);
   const {list: checks} = useGetFirebase(`checklists/${checkId}/checks`);
 
+  const {updateFirebase} = useUpdateFirebase('checklists');
+  const {uploadImageToStorage, loading} = useUploadFirebaseStorageImage();
+  const {addFirebase: addPhoto} = useAddFirebase();
+
+  const [idCheckLoading, setIdCheckLoading] = useState();
+
+  // const {upload, loading} = useUploadCloudinaryImage();
+
+  const uploadImages = async (imgs, item) => {
+    setIdCheckLoading(item.id);
+    try {
+      if (imgs?.length > 0) {
+        const images = await Promise.all(
+          imgs
+            .map((img, i) => ({
+              fileName: img.filename || `image-${i}`,
+              fileUri: Platform.OS === 'android' ? img.path : img.sourceURL,
+              fileType: img.mime,
+            }))
+            .map((file) =>
+              uploadImageToStorage(
+                file.fileUri,
+                `CheckLists/${checkId}/Photos/${file.fileName}`,
+              ),
+            ),
+        );
+
+        await updateFirebase(`${checkId}/checks/${item.id}`, {
+          numberOfPhotos: item.numberOfPhotos + images.length,
+        });
+        await Promise.all(
+          images.map((image) => {
+            const name = image.name.split('/');
+            return addPhoto(`checklists/${checkId}/checks/${item.id}/photos`, {
+              ref: image.name,
+              name: name[name.length - 1],
+              url: image.downloadURL,
+            });
+          }),
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIdCheckLoading(null);
+    }
+  };
+
   const {user} = useSelector(
     ({userLoggedIn: {user}}) => ({user}),
     shallowEqual,
   );
 
-  const {updateFirebase} = useUpdateFirebase('checklists');
-
   const renderItem = ({item}) => (
-    <CheckItem
-      key={item.id}
-      check={item}
-      handleCheck={() => handleCheck(checklist, item, !item.done)}
-    />
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('CheckPhotos', {
+          checkId: checkId,
+          checkItemId: item.id,
+          title: item.title,
+          date: item.date,
+        })
+      }>
+      <ItemCheck
+        key={item.id}
+        check={item}
+        handleCheck={() => handleCheck(checklist, item, !item.done)}
+        imageHandler={(imgs) => uploadImages(imgs, item)}
+        loading={loading && item.id === idCheckLoading}
+      />
+    </TouchableOpacity>
   );
 
   const handleCheck = async (checklist, check, state) => {

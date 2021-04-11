@@ -63,11 +63,12 @@ const TitlePage = ({
                   }}>
                   <Text
                     adjustsFontSizeToFit
-                    numberOfLines={1}
+                    numberOfLines={2}
                     style={{
                       ...styles.title,
                       ...{
                         color: color,
+                        marginBottom: 10,
                         marginTop: leftSide
                           ? Platform.OS === 'ios'
                             ? 40

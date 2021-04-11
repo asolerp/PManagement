@@ -1,25 +1,16 @@
-import React, {useState, useCallback} from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
+  Platform,
   ImageBackground,
-  Modal,
-  Text,
 } from 'react-native';
 
-import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-
-import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import ImageViewer from 'react-native-image-zoom-viewer';
-import {setImages} from '../store/incidenceFormActions';
-
 // Utils
-import {launchImage} from '../utils/imageFunctions';
-import {Platform} from 'react-native';
-
+import {handleImagePicker} from '../utils/imageFunctions';
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -66,52 +57,22 @@ const styles = StyleSheet.create({
   },
 });
 
-const IncidencePhoto = (image) => {
-  return (
-    <ImageBackground
-      source={{uri: image?.fileUri}}
-      style={styles.photoIncidence}
-    />
-  );
-};
-
-const MultipleImageSelector = () => {
-  const dispatch = useDispatch();
-  const {incidenceImages} = useSelector(
-    ({incidenceForm: {incidenceImages}}) => ({incidenceImages}),
-    shallowEqual,
-  );
-  const setImagesAction = useCallback((images) => dispatch(setImages(images)), [
-    dispatch,
-  ]);
-
-  const [modal, setModal] = useState([]);
-  const [imageIndex, setImageIndex] = useState(0);
-  const handleImagePicker = () => {
-    ImagePicker.openPicker({
-      multiple: true,
-      waitAnimationEnd: false,
-      includeExif: false,
-      forceJpg: true,
-      compressImageQuality: 0.3,
-      maxFiles: 10,
-      mediaType: 'photo',
-      includeBase64: true,
-    }).then((images) => {
-      // setImages(images.map((image) => ({url: image.path})));
-      setImagesAction(
-        images.map((image, i) => ({
-          fileName: image.filename || `image-${i}`,
-          fileUri: Platform.OS === 'android' ? image.path : image.sourceURL,
-          fileType: image.mime,
-        })),
-      );
-    });
-  };
-
+const MultipleImageSelector = ({images, setImages}) => {
   const ImagePickerView = () => {
     return (
-      <TouchableOpacity onPress={() => handleImagePicker()}>
+      <TouchableOpacity
+        onPress={() =>
+          handleImagePicker((imgs) => {
+            setImages(
+              imgs.map((image, i) => ({
+                fileName: image.filename || `image-${i}`,
+                fileUri:
+                  Platform.OS === 'android' ? image.path : image.sourceURL,
+                fileType: image.mime,
+              })),
+            );
+          })
+        }>
         <View style={styles.imagePicker}>
           <Icon name="add" size={30} color={'white'} />
         </View>
@@ -119,46 +80,24 @@ const MultipleImageSelector = () => {
     );
   };
 
-  const handleImageClick = (index) => {
-    setModal(true);
-    setImageIndex(index);
-  };
-
   return (
     <View style={styles.container}>
-      {/* <Modal
-        visible={modal}
-        transparent={true}
-        onRequestClose={() => setModal(false)}>
-        <ImageViewer
-          index={imageIndex}
-          imageUrls={images}
-          onSwipeDown={() => {
-            setModal(false);
-          }}
-          enableSwipeDown={true}
-        />
-      </Modal> */}
       <ImagePickerView />
-      {incidenceImages?.length > 0 &&
-        incidenceImages?.map((photo, i) => (
+      {images?.length > 0 &&
+        images?.map((photo, i) => (
           <View style={styles.imageContainer} key={i}>
             <TouchableOpacity
               style={styles.removeImage}
               onPress={() => {
-                setImagesAction(
-                  incidenceImages?.filter((p) => p.fileName !== photo.fileName),
-                );
+                setImages(images?.filter((p) => p.fileName !== photo.fileName));
               }}>
               <Icon name="close" size={18} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleImageClick(i)}>
-              <ImageBackground
-                source={{uri: photo?.fileUri}}
-                imageStyle={{borderRadius: 10}}
-                style={styles.photoIncidence}
-              />
-            </TouchableOpacity>
+            <ImageBackground
+              source={{uri: photo?.fileUri}}
+              imageStyle={{borderRadius: 10}}
+              style={styles.photoIncidence}
+            />
           </View>
         ))}
     </View>

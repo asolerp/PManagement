@@ -71,18 +71,23 @@ const HomeWorker = () => {
 
   const {list} = useGetFirebase('jobs', null, [
     {
+      label: 'workersId',
+      operator: 'array-contains',
+      condition: user.uid,
+    },
+    {
       label: 'date',
       operator: '>',
-      condition: moment(new Date(), 1),
+      condition: subDays(new Date(), 1),
     },
+  ]);
+
+  const {list: checklist} = useGetFirebase('checklists', null, [
     {
       label: 'workersId',
       operator: 'array-contains',
       condition: user.uid,
     },
-  ]);
-
-  const {list: checklist} = useGetFirebase('checklists', null, [
     {
       label: 'finished',
       operator: '==',
@@ -122,9 +127,11 @@ const HomeWorker = () => {
               <Text style={{...styles.label, ...marginBottom(20)}}>
                 Estos son tus trabajos asignados para hoy 💪🏡
               </Text>
-              <Text style={{...defaultLabel, ...marginBottom(10)}}>
-                Check list
-              </Text>
+              {checklist?.length > 0 && (
+                <Text style={{...defaultLabel, ...marginBottom(10)}}>
+                  Check list
+                </Text>
+              )}
               <View style={styles.checksWrapper}>
                 {checklist?.map((check) => (
                   <CheckItem

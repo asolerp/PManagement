@@ -4,6 +4,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import CheckListScreen from '../screens/CheckList/CheckListScreen';
 import NewCheckListJobScreen from '../screens/CheckList/NewCheckListJobScreen';
 import CheckSceen from '../screens/CheckList/CheckScreen';
+import CheckPhotosScreen from '../screens/CheckList/CheckPhotosScreen';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,7 @@ export default function CheckListStack() {
         }}
       />
       <Stack.Screen name="Check" component={CheckSceen} />
+      <Stack.Screen name="CheckPhotos" component={CheckPhotosScreen} />
       <Stack.Screen name="NewCheckList" component={NewCheckListJobScreen} />
     </Stack.Navigator>
   );

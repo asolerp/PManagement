@@ -18,6 +18,7 @@ import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 import {firebase} from '@react-native-firebase/firestore';
 import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
+import {setImages} from '../../store/incidenceFormActions';
 
 const styles = StyleSheet.create({
   container: {
@@ -71,6 +72,10 @@ const NewIncidence = () => {
     }),
     shallowEqual,
   );
+
+  const setImagesAction = useCallback((images) => dispatch(setImages(images)), [
+    dispatch,
+  ]);
 
   const {updateFirebase} = useUpdateFirebase('incidences');
 
@@ -161,7 +166,10 @@ const NewIncidence = () => {
           </Text>
           <NewIncidenceForm />
           <Text style={styles.label}>📷 Fotos</Text>
-          <MultipleImageSelector />
+          <MultipleImageSelector
+            images={incidenceImages}
+            setImages={setImagesAction}
+          />
         </View>
       </View>
     </PagetLayout>

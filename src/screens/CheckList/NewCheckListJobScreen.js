@@ -57,9 +57,12 @@ const NewCheckListJobScreen = ({route, navigation}) => {
       const newCheckListForm = {
         observations: checklist?.observations,
         date: new Date(),
+        workers: checklist?.workers?.value,
+        workersId: checklist?.workers?.value?.map((worker) => worker.id),
         houseId: checklist?.house?.value[0].id,
         house: checklist?.house?.value,
         total: checks.length,
+        finished: false,
         done: 0,
       };
       const newCheckList = await addFirebase('checklists', newCheckListForm);
