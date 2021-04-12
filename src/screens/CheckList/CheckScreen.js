@@ -10,7 +10,6 @@ import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
 import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useAddFirebase} from '../../hooks/useAddFirebase';
-import {useUploadFirebaseStorageImage} from '../../hooks/useUploadFirebaseStorageImage';
 
 // UI
 import PagetLayout from '../../components/PageLayout';
@@ -98,42 +97,47 @@ const CheckScreen = ({route, navigation}) => {
   const {list: checks} = useGetFirebase(`checklists/${checkId}/checks`);
 
   const {updateFirebase} = useUpdateFirebase('checklists');
-  const {uploadImageToStorage, loading} = useUploadFirebaseStorageImage();
   const {addFirebase: addPhoto} = useAddFirebase();
 
   const [idCheckLoading, setIdCheckLoading] = useState();
+  const [loading, setLoading] = useState(false);
 
-  // const {upload, loading} = useUploadCloudinaryImage();
+  const {upload} = useUploadCloudinaryImage();
 
   const uploadImages = async (imgs, item) => {
+    setLoading(true);
     setIdCheckLoading(item.id);
     try {
       if (imgs?.length > 0) {
-        const images = await Promise.all(
-          imgs
-            .map((img, i) => ({
-              fileName: img.filename || `image-${i}`,
-              fileUri: Platform.OS === 'android' ? img.path : img.sourceURL,
-              fileType: img.mime,
-            }))
-            .map((file) =>
-              uploadImageToStorage(
-                file.fileUri,
-                `CheckLists/${checkId}/Photos/${file.fileName}`,
-              ),
-            ),
-        );
+        const uploadImages = imgs
+          .map((img, i) => ({
+            fileName: img.filename || `image-${i}`,
+            fileUri: Platform.OS === 'android' ? img.path : img.sourceURL,
+            fileType: img.mime,
+          }))
+          .map((file) =>
+            upload(file, `/PortManagement/CheckLists/${checkId}/Photos`),
+          );
+
+        const imagesURLs = await Promise.all(uploadImages);
 
         await updateFirebase(`${checkId}/checks/${item.id}`, {
-          numberOfPhotos: item.numberOfPhotos + images.length,
+          numberOfPhotos: item.numberOfPhotos + imagesURLs.length,
         });
         await Promise.all(
-          images.map((image) => {
-            const name = image.name.split('/');
+          imagesURLs.map((url) => {
+            const urlWithTransformation = url.split('/upload/');
+            const name = url.split('/');
+            let nameWithoutExtension = name[name.length - 1].split('.');
+            nameWithoutExtension.splice(-1, 1);
             return addPhoto(`checklists/${checkId}/checks/${item.id}/photos`, {
-              ref: image.name,
               name: name[name.length - 1],
-              url: image.downloadURL,
+              ref: `PortManagement/CheckLists/${checkId}/Photos/${nameWithoutExtension.join(
+                '.',
+              )}`,
+              url: urlWithTransformation.join(
+                '/upload/f_auto,q_auto,w_500,dpr_2.0,c_limit/',
+              ),
             });
           }),
         );
@@ -141,6 +145,7 @@ const CheckScreen = ({route, navigation}) => {
     } catch (err) {
       console.log(err);
     } finally {
+      setLoading(false);
       setIdCheckLoading(null);
     }
   };
@@ -152,13 +157,16 @@ const CheckScreen = ({route, navigation}) => {
 
   const renderItem = ({item}) => (
     <TouchableOpacity
-      onPress={() =>
-        navigation.navigate('CheckPhotos', {
-          checkId: checkId,
-          checkItemId: item.id,
-          title: item.title,
-          date: item.date,
-        })
+      onPress={
+        item.numberOfPhotos > 0
+          ? () =>
+              navigation.navigate('CheckPhotos', {
+                checkId: checkId,
+                checkItemId: item.id,
+                title: item.title,
+                date: item.date,
+              })
+          : null
       }>
       <ItemCheck
         key={item.id}

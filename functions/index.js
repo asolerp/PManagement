@@ -1,5 +1,12 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: 'enalbis',
+  api_key: '152722439921117',
+  api_secret: '2vw8GysZv9EUsv9qEToqrZueaa4',
+});
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 const FieldValue = require('firebase-admin').firestore.FieldValue;
@@ -319,4 +326,18 @@ exports.updateHouseImageJobs = functions.firestore
     } catch (err) {
       console.log(err);
     }
+  });
+
+exports.deletePhotoCloudinary = functions.firestore
+  .document('checklists/{checklistId}/checks/{checkId}/photos/{photoId}')
+  .onDelete(async (snap, context) => {
+    const deletePhoto = snap.data();
+    console.log(deletePhoto);
+    await cloudinary.uploader.destroy(
+      deletePhoto.ref,
+      {resource_type: 'image'},
+      (error, result) => {
+        console.log(result, error);
+      },
+    );
   });

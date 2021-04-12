@@ -1,5 +1,3 @@
-import firestore from '@react-native-firebase/firestore';
-
 import {useState} from 'react';
 
 export const useUploadCloudinaryImage = () => {
@@ -16,6 +14,7 @@ export const useUploadCloudinaryImage = () => {
     const data = new FormData();
     data.append('file', source);
     data.append('upload_preset', 'port_management');
+    data.append('public_id', photo.fileName);
     data.append('cloud_name', 'enalbis');
     data.append('folder', folder);
 

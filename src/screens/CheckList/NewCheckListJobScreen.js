@@ -70,6 +70,7 @@ const NewCheckListJobScreen = ({route, navigation}) => {
         checks.map((check) =>
           addFirebase(`checklists/${newCheckList.id}/checks`, {
             title: check.title,
+            numberOfPhotos: 0,
             done: false,
             worker: null,
             date: null,

@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     flexWrap: 'wrap',
     marginTop: 20,
   },
@@ -90,6 +90,7 @@ const CheckPhotosScreen = ({route, navigation}) => {
   };
 
   const handleDeletePhoto = async (photo) => {
+    setPhotosSelected(photosSelected.filter((p) => p.id != photo.id));
     await deleteImage(photo.ref);
     await deleteFirebase(
       `checklists/${checkId}/checks/${checkItemId}/photos`,
