@@ -8,7 +8,7 @@ import {BottomModal, ModalTitle, ModalContent} from 'react-native-modals';
 
 // Redux
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-import {setInputForm} from '../../../store/incidenceFormActions';
+import {setForm} from '../../../Store/CheckList/checkListSlice';
 
 const styles = StyleSheet.create({
   container: {},
@@ -25,7 +25,7 @@ const NewIncidenceForm = () => {
   );
 
   const setInputFormAction = useCallback(
-    (label, value) => dispatch(setInputForm(label, value)),
+    (label, value) => dispatch(setForm({label, value})),
     [dispatch],
   );
 

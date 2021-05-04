@@ -22,7 +22,7 @@ import CustomButton from '../../components/Elements/CustomButton';
 import PagetLayout from '../../components/PageLayout';
 
 // Firebase
-import {resetForm} from '../../store/jobFormActions';
+import {resetForm} from '../../Store/jobFormActions';
 import {newJob} from '../../firebase/newJob';
 import {LOW_GREY} from '../../styles/colors';
 

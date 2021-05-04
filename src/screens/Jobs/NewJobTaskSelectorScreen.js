@@ -10,7 +10,7 @@ import LinearGradient from 'react-native-linear-gradient';
 // Firebase
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import TaskItem from '../../components/Elements/TaskItem';
-import {setTask} from '../../store/jobFormActions';
+import {setTask} from '../../Store/jobFormActions';
 import PagetLayout from '../../components/PageLayout';
 import {LOW_GREY} from '../../styles/colors';
 

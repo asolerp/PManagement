@@ -13,7 +13,7 @@ import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
 
 // Redux
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {editForm} from '../../store/jobFormActions';
+import {editForm} from '../../Store/jobFormActions';
 
 // Utils
 import moment from 'moment';

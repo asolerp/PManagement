@@ -2,7 +2,7 @@ import React, {useCallback} from 'react';
 
 // Redux
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {changeState} from '../store/modalActions';
+import {changeState} from '../Store/modalActions';
 
 import {BottomModal, ModalContent} from 'react-native-modals';
 

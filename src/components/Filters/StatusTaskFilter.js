@@ -2,7 +2,7 @@ import React, {useCallback} from 'react';
 
 // Redux
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {setStatusTaskFilter} from '../../store/filterActions';
+import {setStatusTaskFilter} from '../../Store/filterActions';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({

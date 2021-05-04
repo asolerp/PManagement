@@ -3,7 +3,6 @@ import React, {useState, useCallback} from 'react';
 import {BottomModal, ModalContent} from 'react-native-modals';
 
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-import {setInputForm} from '../../../store/jobFormActions';
 
 import {Text, View, TextInput, StyleSheet} from 'react-native';
 
@@ -21,6 +20,7 @@ import {parsePriority} from '../../../utils/parsers';
 
 import DateSelector from './DateSelector';
 import CustomInput from '../../Elements/CustomInput';
+import {setForm} from '../../../Store/CheckList/checkListSlice';
 
 moment.locale('es');
 
@@ -68,7 +68,7 @@ const JobForm = () => {
   const {job} = useSelector(({jobForm: {job}}) => ({job}), shallowEqual);
 
   const setInputFormAction = useCallback(
-    (label, value) => dispatch(setInputForm(label, value)),
+    (label, value) => dispatch(setForm(label, value)),
     [dispatch],
   );
 

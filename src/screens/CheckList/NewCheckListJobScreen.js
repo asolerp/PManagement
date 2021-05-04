@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {resetForm} from '../../store/checkListFormAction';
+import {resetForm} from '../../Store/checkListFormAction';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -25,6 +25,11 @@ import PagetLayout from '../../components/PageLayout';
 import {useAddFirebase} from '../../hooks/useAddFirebase';
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {LOW_GREY} from '../../styles/colors';
+import {
+  houseNewChecklistSelector,
+  observationsNewChecklistSelector,
+  workersNewChecklistSelector,
+} from '../../Store/CheckList/checkListSlice';
 
 const HideKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -38,10 +43,9 @@ const NewCheckListJobScreen = ({route, navigation}) => {
 
   const {list: checks} = useGetFirebase('checks');
 
-  const {checklist} = useSelector(
-    ({checklistForm: {checklist}}) => ({checklist}),
-    shallowEqual,
-  );
+  const houseSelector = useSelector(houseNewChecklistSelector);
+  const workersSelector = useSelector(workersNewChecklistSelector);
+  // const observationSelector = useSelector(observationsNewChecklistSelector);
 
   const {addFirebase} = useAddFirebase();
 
@@ -55,12 +59,12 @@ const NewCheckListJobScreen = ({route, navigation}) => {
     try {
       setLoading(true);
       const newCheckListForm = {
-        observations: checklist?.observations,
-        date: new Date(),
-        workers: checklist?.workers?.value,
-        workersId: checklist?.workers?.value?.map((worker) => worker.id),
-        houseId: checklist?.house?.value[0].id,
-        house: checklist?.house?.value,
+        // observations: observationSelector,
+        // date: new Date(),
+        // workers: workersSelector?.value,
+        // workersId: workersSelector?.value?.map((worker) => worker.id),
+        // houseId: houseSelector?.value[0].id,
+        // house: houseSelector?.value,
         total: checks.length,
         finished: false,
         done: 0,
@@ -111,7 +115,7 @@ const NewCheckListJobScreen = ({route, navigation}) => {
       }}>
       <View style={styles.jobScreen}>
         <KeyboardAwareScrollView>
-          <CheckListForm />
+          {/* <CheckListForm /> */}
         </KeyboardAwareScrollView>
       </View>
     </PagetLayout>

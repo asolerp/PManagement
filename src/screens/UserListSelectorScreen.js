@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
-import {setUsers} from '../store/houseFormActions';
+import {setUsers} from '../Store/houseFormActions';
 
 import {
   View,

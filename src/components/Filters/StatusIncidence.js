@@ -2,7 +2,7 @@ import React, {useCallback} from 'react';
 
 // Redux
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {setStatusIncidenceFilter} from '../../store/filterActions';
+import {setStatusIncidenceFilter} from '../../Store/filterActions';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({

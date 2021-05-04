@@ -2,7 +2,6 @@ import React, {useState, useCallback} from 'react';
 import {View, SafeAreaView, Platform, StyleSheet} from 'react-native';
 
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-import {setInputForm, resetForm} from '../../../store/jobFormActions';
 
 //UI
 import CalendarStrip from 'react-native-calendar-strip';
@@ -14,6 +13,7 @@ import CustomButton from '../../Elements/CustomButton';
 import moment from 'moment';
 import setHours from 'date-fns/set';
 import {} from 'react-native';
+import {setForm} from '../../../Store/CheckList/checkListSlice';
 
 const styles = StyleSheet.create({
   container: {},
@@ -67,7 +67,7 @@ const DateSelector = ({closeModal}) => {
   const [timeSelected, setTimeSelected] = useState(job?.time || initialTime);
 
   const setInputFormAction = useCallback(
-    (label, value) => dispatch(setInputForm(label, value)),
+    (label, value) => dispatch(setForm(label, value)),
     [dispatch],
   );
 

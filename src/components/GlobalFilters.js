@@ -7,7 +7,7 @@ import Modal from 'react-native-modal';
 import HouseFilter from './Filters/HouseFilter';
 import DateSelector from './DateSelector';
 
-import {setFilterByType} from '../store/filterActions';
+import {setFilterByType} from '../Store/filterActions';
 import moment from 'moment';
 import {defaultLabel, marginBottom} from '../styles/common';
 import {GREY} from '../styles/colors';

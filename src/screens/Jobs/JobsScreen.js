@@ -5,7 +5,7 @@ import {useNavigation} from '@react-navigation/native';
 
 // Redux
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {setFilterDate} from '../../store/filterActions';
+import {setFilterDate} from '../../Store/filterActions';
 
 // UI
 import Icon from 'react-native-vector-icons/MaterialIcons';

@@ -9,7 +9,7 @@ import {
   resetTask,
   removeTask,
   addEditedTask,
-} from '../../../store/jobFormActions';
+} from '../../../Store/jobFormActions';
 
 import Task from '../../Elements/Task';
 import NewEditTask from './NewEditTask';

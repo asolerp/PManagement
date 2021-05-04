@@ -1,10 +1,9 @@
 import React, {useEffect} from 'react';
-import {Alert} from 'react-native';
-import AuthNavigator from './src/navigation/AuthNavigator';
+import AuthNavigator from './navigation/AuthNavigator';
 import {ModalPortal} from 'react-native-modals';
 
 import {Provider} from 'react-redux';
-import store from './src/store/store';
+import store from './Store';
 
 import messaging from '@react-native-firebase/messaging';
 
