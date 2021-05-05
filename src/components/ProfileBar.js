@@ -1,16 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 
-import {useSelector, shallowEqual} from 'react-redux';
+import {useSelector} from 'react-redux';
 
 // Firebase
 import firestore from '@react-native-firebase/firestore';
+import {userSelector} from '../Store/User/userSlice';
 
 const ProfileBar = () => {
-  const {user} = useSelector(
-    ({userLoggedIn: {user}}) => ({user}),
-    shallowEqual,
-  );
+  const user = useSelector(userSelector);
   const [userProfile, setUserProfile] = useState();
 
   useEffect(() => {

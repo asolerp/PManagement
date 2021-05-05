@@ -4,7 +4,7 @@ const initialState = {
   job: {},
   house: {},
   workers: {},
-  observations: 'hola',
+  observations: '',
 };
 
 export const checkListSlice = createSlice({
@@ -15,16 +15,17 @@ export const checkListSlice = createSlice({
       state[payload.label] = payload.value;
     },
     resetForm: (state) => {
-      state.checkList = {};
+      state.house = {};
+      state.workers = {};
+      state.observations = '';
     },
   },
 });
 
 // Selectors
-export const houseNewChecklistSelector = (state) => state.checklist.house;
-export const workersNewCheckListSelector = (state) => state.checklist.workers;
-export const observationsNewChecklistSelector = (state) =>
-  state.checklist.observations;
+export const houseSelector = (state) => state.checklist.house;
+export const workersSelector = (state) => state.checklist.workers;
+export const observationsSelector = (state) => state.checklist.observations;
 
 export const {setForm, resetForm} = checkListSlice.actions;
 

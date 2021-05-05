@@ -2,7 +2,6 @@
 // import thunk from 'redux-thunk';
 
 // REDUCERS
-import {userReducer} from './userReducer';
 import {filterReducer} from './filterReducer';
 import {jobFormReducer} from './jobFormReducer';
 import {houseFormReducer} from './houseFormReducer';
@@ -10,6 +9,7 @@ import {incidenceFormReducer} from './incidenceFormReducer';
 import {modalReducer} from './modalReducer';
 
 import {checkListReducer} from './CheckList';
+import {userReducer} from './User';
 
 import {configureStore} from '@reduxjs/toolkit';
 import {combineReducers} from 'redux';
@@ -20,7 +20,7 @@ const reducers = combineReducers({
   checklist: checkListReducer,
   modal: modalReducer,
   incidenceForm: incidenceFormReducer,
-  userLoggedIn: userReducer,
+  user: userReducer,
   houseForm: houseFormReducer,
 });
 

@@ -4,7 +4,7 @@ import {BottomModal, ModalContent} from 'react-native-modals';
 import {Text, View, TextInput, StyleSheet, FlatList} from 'react-native';
 
 // Redux
-import {useDispatch, useSelector, shallowEqual} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 // UI
 import InputGroup from '../../Elements/InputGroup';
@@ -23,10 +23,10 @@ import {defaultLabel} from '../../../styles/common';
 import {useGetFirebase} from '../../../hooks/useGetFirebase';
 import {DARK_BLUE, PM_COLOR} from '../../../styles/colors';
 import {
-  houseNewChecklistSelector,
-  observationsNewChecklistSelector,
+  houseSelector,
+  observationsSelector,
+  workersSelector,
   setForm,
-  workersNewCheckListSelector,
 } from '../../../Store/CheckList/checkListSlice';
 
 moment.locale('es');
@@ -89,9 +89,9 @@ const CheckListForm = () => {
 
   console.log(list);
 
-  const houseSelector = useSelector(houseNewChecklistSelector);
-  const workersSelector = useSelector(workersNewCheckListSelector);
-  const observationSelector = useSelector(observationsNewChecklistSelector);
+  const house = useSelector(houseSelector);
+  const workers = useSelector(workersSelector);
+  const observations = useSelector(observationsSelector);
 
   const setInputFormAction = useCallback(
     (label, value) => dispatch(setForm({label, value})),
@@ -129,10 +129,8 @@ const CheckListForm = () => {
       store="jobForm"
       searchBy="houseName"
       schema={{img: 'houseImage', name: 'houseName'}}
-      get={houseSelector?.value || []}
-      set={(house) =>
-        setInputFormAction('house', {...houseSelector, value: house})
-      }
+      get={house?.value || []}
+      set={(house) => setInputFormAction('house', {...house, value: house})}
     />
   );
 
@@ -149,10 +147,8 @@ const CheckListForm = () => {
       ]}
       searchBy="firstName"
       schema={{img: 'profileImage', name: 'firstName'}}
-      get={workersSelector?.value}
-      set={(ws) =>
-        setInputFormAction('workers', {...workersSelector, value: ws})
-      }
+      get={workers?.value}
+      set={(ws) => setInputFormAction('workers', {...workers, value: ws})}
       multiple={true}
     />
   );
@@ -185,10 +181,10 @@ const CheckListForm = () => {
           title="Casa"
           subtitle={
             <View style={{flexDirection: 'row'}}>
-              {houseSelector?.value?.map((house, i) => (
+              {house?.value?.map((house, i) => (
                 <View key={house.id}>
                   <Text style={styles.subtitle}>{house.houseName}</Text>
-                  {houseSelector?.value?.length - 1 !== i && (
+                  {house?.value?.length > 1 && (
                     <Text style={styles.subtitle}> & </Text>
                   )}
                 </View>
@@ -207,10 +203,10 @@ const CheckListForm = () => {
           title="Trabajador"
           subtitle={
             <View style={{flexDirection: 'row'}}>
-              {workersSelector?.value?.map((worker, i) => (
+              {workers?.value?.map((worker, i) => (
                 <View key={worker.id}>
                   <Text style={styles.subtitle}>{worker.firstName}</Text>
-                  {workersSelector?.value?.length - 1 !== i && (
+                  {workers?.value?.length - 1 !== i && (
                     <Text style={styles.subtitle}> & </Text>
                   )}
                 </View>
@@ -231,7 +227,7 @@ const CheckListForm = () => {
           style={{height: 120}}
           placeholder="Observaciones"
           onChangeText={(text) => setInputFormAction('observations', text)}
-          value={checklist?.observations}
+          value={observations}
         />
       </InputGroup>
       <Text style={{...defaultLabel, marginTop: 10}}>

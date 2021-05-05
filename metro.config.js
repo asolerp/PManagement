@@ -6,6 +6,11 @@
  */
 
 module.exports = {
+  resolver: {
+    extraNodeModules: {
+      '@': `${__dirname}/src`,
+    },
+  },
   transformer: {
     getTransformOptions: async () => ({
       transform: {

@@ -15,6 +15,7 @@ import messaging from '@react-native-firebase/messaging';
 import {getUser} from '../firebase/getUser';
 import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
 import SignInWorkerStack from './Worker/SignInWorkerStack';
+import {logUser, userSelector} from '../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -62,19 +63,8 @@ const AuthNavigator = () => {
 
   const {updateFirebase} = useUpdateFirebase('users');
 
-  const {user} = useSelector(
-    ({userLoggedIn: {user}}) => ({user}),
-    shallowEqual,
-  );
-
-  const setUser = useCallback(
-    (user) =>
-      dispatch({
-        type: 'SET_LOGED_USER',
-        payload: user,
-      }),
-    [dispatch],
-  );
+  const user = useSelector(userSelector, shallowEqual);
+  const setUser = useCallback((user) => dispatch(logUser({user})), [dispatch]);
 
   // Handle user state changes
   const onAuthStateChanged = useCallback(
@@ -106,14 +96,14 @@ const AuthNavigator = () => {
 
   useEffect(() => {
     const authSubscriber = auth().onAuthStateChanged(onAuthStateChanged);
-
-    // unsubscribe on unmount
     return authSubscriber;
   }, [onAuthStateChanged]);
 
   if (initializing) {
     return null;
   }
+
+  console.log(user, 'user');
 
   return user?.uid ? (
     <React.Fragment>

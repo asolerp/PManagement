@@ -27,6 +27,7 @@ import TextWrapper from '../../components/TextWrapper';
 import {Platform} from 'react-native';
 import ItemCheck from '../../components/ItemCheck';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {userSelector} from '../../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -150,10 +151,7 @@ const CheckScreen = ({route, navigation}) => {
     }
   };
 
-  const {user} = useSelector(
-    ({userLoggedIn: {user}}) => ({user}),
-    shallowEqual,
-  );
+  const user = useSelector(userSelector, shallowEqual);
 
   const renderItem = ({item}) => (
     <TouchableOpacity

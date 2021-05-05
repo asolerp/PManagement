@@ -21,6 +21,7 @@ import auth from '@react-native-firebase/auth';
 //Utils
 import {launchImage} from '../utils/imageFunctions';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {userSelector} from '../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -77,10 +78,7 @@ const ProfileScreen = () => {
   const [infoProfile, setInfoProfile] = useState();
   const [editLoading, setEditLoading] = useState(false);
 
-  const {user} = useSelector(
-    ({userLoggedIn: {user}}) => ({user}),
-    shallowEqual,
-  );
+  const user = useSelector(userSelector, shallowEqual);
 
   const {updateFirebase} = useUpdateFirebase('users');
 

@@ -37,6 +37,7 @@ import {launchImage} from '../../utils/imageFunctions';
 import {cloudinaryUpload} from '../../cloudinary/index';
 import {messageIdGenerator} from '../../utils/uuid';
 import {Platform} from 'react-native';
+import {userSelector} from '../../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -68,10 +69,7 @@ const Messages = () => {
     },
   );
 
-  const {user} = useSelector(
-    ({userLoggedIn: {user}}) => ({user}),
-    shallowEqual,
-  );
+  const user = useSelector(userSelector, shallowEqual);
   const {document: userLoggedIn} = useGetDocFirebase('users', user.uid);
   const {addFirebase: addMessage} = useAddFirebase();
 

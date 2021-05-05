@@ -2,14 +2,12 @@ import React, {useState, useCallback} from 'react';
 import {
   View,
   Keyboard,
-  StatusBar,
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
 
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {resetForm} from '../../Store/checkListFormAction';
+import {useSelector, useDispatch} from 'react-redux';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -26,9 +24,10 @@ import {useAddFirebase} from '../../hooks/useAddFirebase';
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {LOW_GREY} from '../../styles/colors';
 import {
-  houseNewChecklistSelector,
-  observationsNewChecklistSelector,
-  workersNewChecklistSelector,
+  houseSelector,
+  observationsSelector,
+  resetForm,
+  workersSelector,
 } from '../../Store/CheckList/checkListSlice';
 
 const HideKeyboard = ({children}) => (
@@ -43,9 +42,9 @@ const NewCheckListJobScreen = ({route, navigation}) => {
 
   const {list: checks} = useGetFirebase('checks');
 
-  const houseSelector = useSelector(houseNewChecklistSelector);
-  const workersSelector = useSelector(workersNewChecklistSelector);
-  // const observationSelector = useSelector(observationsNewChecklistSelector);
+  const house = useSelector(houseSelector);
+  const workers = useSelector(workersSelector);
+  const observations = useSelector(observationsSelector);
 
   const {addFirebase} = useAddFirebase();
 
@@ -59,12 +58,12 @@ const NewCheckListJobScreen = ({route, navigation}) => {
     try {
       setLoading(true);
       const newCheckListForm = {
-        // observations: observationSelector,
-        // date: new Date(),
-        // workers: workersSelector?.value,
-        // workersId: workersSelector?.value?.map((worker) => worker.id),
-        // houseId: houseSelector?.value[0].id,
-        // house: houseSelector?.value,
+        observations: observations,
+        date: new Date(),
+        workers: workers?.value,
+        workersId: workers?.value?.map((worker) => worker.id),
+        houseId: house?.value[0].id,
+        house: house?.value,
         total: checks.length,
         finished: false,
         done: 0,
@@ -115,7 +114,7 @@ const NewCheckListJobScreen = ({route, navigation}) => {
       }}>
       <View style={styles.jobScreen}>
         <KeyboardAwareScrollView>
-          {/* <CheckListForm /> */}
+          <CheckListForm />
         </KeyboardAwareScrollView>
       </View>
     </PagetLayout>

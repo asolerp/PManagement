@@ -22,6 +22,7 @@ import moment from 'moment';
 import {parsePriorityColor} from '../utils/parsers';
 import {DARK_BLUE, GREY, GREY_1} from '../styles/colors';
 import {marginBottom, marginRight} from '../styles/common';
+import {userSelector} from '../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -99,10 +100,7 @@ const JobItem = ({job, onPress}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
 
-  const {user} = useSelector(
-    ({userLoggedIn: {user}}) => ({user}),
-    shallowEqual,
-  );
+  const user = useSelector(userSelector);
 
   const onResult = (QuerySnapshot) => {
     setLoading(false);

@@ -19,6 +19,7 @@ import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 import {firebase} from '@react-native-firebase/firestore';
 import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
 import {setImages} from '../../Store/incidenceFormActions';
+import {userSelector} from '../../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -60,10 +61,7 @@ const NewIncidence = () => {
 
   const [lo, setLo] = useState(false);
 
-  const {user} = useSelector(
-    ({userLoggedIn: {user}}) => ({user}),
-    shallowEqual,
-  );
+  const user = useSelector(userSelector, shallowEqual);
 
   const {incidence, incidenceImages} = useSelector(
     ({incidenceForm: {incidence, incidenceImages}}) => ({

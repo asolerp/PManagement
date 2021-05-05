@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import AuthNavigator from './navigation/AuthNavigator';
+import AuthNavigator from './Navigation/AuthNavigator';
 import {ModalPortal} from 'react-native-modals';
 
 import {Provider} from 'react-redux';

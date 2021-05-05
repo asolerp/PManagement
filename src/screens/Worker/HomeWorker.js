@@ -23,6 +23,7 @@ import subDays from 'date-fns/subDays';
 import {ScrollView} from 'react-native';
 import CheckItem from '../../components/CheckItem';
 import {DARK_BLUE, GREY, LOW_GREY} from '../../styles/colors';
+import {userSelector} from '../../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,10 +60,7 @@ const styles = StyleSheet.create({
 
 const HomeWorker = () => {
   const navigation = useNavigation();
-  const {user} = useSelector(
-    ({userLoggedIn: {user}}) => ({user}),
-    shallowEqual,
-  );
+  const user = useSelector(userSelector, shallowEqual);
 
   const {statusTaskFilter} = useSelector(
     ({filters: {statusTaskFilter}}) => ({statusTaskFilter}),
@@ -105,7 +103,7 @@ const HomeWorker = () => {
           <AddButton iconName="add-alert" backColor="#F5C66D" />
         </TouchableOpacity>
       </View>
-      <ScrollView contentContainerStyle={{backgroundColor: 'white'}}>
+      <ScrollView contentContainerStyle={{backgroundColor: LOW_GREY}}>
         <TitlePage>
           <ProfileBar />
         </TitlePage>
