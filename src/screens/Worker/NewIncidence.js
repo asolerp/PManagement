@@ -1,6 +1,5 @@
 import React, {useState, useCallback} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {resetForm} from '../../Store/incidenceFormActions';
 
 import {useNavigation} from '@react-navigation/native';
 import {Alert, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
@@ -18,8 +17,11 @@ import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 import {firebase} from '@react-native-firebase/firestore';
 import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
-import {setImages} from '../../Store/incidenceFormActions';
 import {userSelector} from '../../Store/User/userSlice';
+import {
+  resetForm,
+  setImages,
+} from '../../Store/IncidenceForm/incidenceFormSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -71,9 +73,10 @@ const NewIncidence = () => {
     shallowEqual,
   );
 
-  const setImagesAction = useCallback((images) => dispatch(setImages(images)), [
-    dispatch,
-  ]);
+  const setImagesAction = useCallback(
+    (images) => dispatch(setImages({images})),
+    [dispatch],
+  );
 
   const {updateFirebase} = useUpdateFirebase('incidences');
 

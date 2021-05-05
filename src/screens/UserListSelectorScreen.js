@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
-import {setUsers} from '../Store/houseFormActions';
-
 import {
   View,
   Text,
@@ -19,26 +17,17 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import TitlePage from '../components/TitlePage';
 import {SearchBar} from 'react-native-elements';
 import ItemList from '../components/ItemList';
+import {setUser, usersSelector} from '../Store/HouseForm/houseFormSlice';
 
-const UserListSelectorScreen = ({
-  navigation,
-  userType,
-  multiSelect = false,
-  selection,
-  setSelection,
-}) => {
+const UserListSelectorScreen = ({navigation}) => {
+  const dispatch = useDispatch();
   const [search, setSearch] = useState();
   const [list, setList] = useState();
-  const dispatch = useDispatch();
 
-  const {users} = useSelector(
-    ({houseForm: {users}}) => ({users}),
-    shallowEqual,
-  );
-
-  const setUsersAction = useCallback((users) => dispatch(setUsers(users)), [
+  const setUsersAction = useCallback((users) => dispatch(setUser(users)), [
     dispatch,
   ]);
+  const users = useSelector(usersSelector);
 
   useEffect(() => {
     const listUsers = [];

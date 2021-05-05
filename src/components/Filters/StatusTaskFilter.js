@@ -2,8 +2,11 @@ import React, {useCallback} from 'react';
 
 // Redux
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {setStatusTaskFilter} from '../../Store/filterActions';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  setStatusTaskFilter,
+  statusTaskFilterSelector,
+} from '../../Store/Filters/filtersSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -37,13 +40,11 @@ const Filter = ({text, onPress, color, active}) => {
 
 const StatusTaskFilter = () => {
   const dispatch = useDispatch();
-  const {statusTaskFilter} = useSelector(
-    ({filters: {statusTaskFilter}}) => ({statusTaskFilter}),
-    shallowEqual,
-  );
+
+  const statusTaskFilter = useSelector(statusTaskFilterSelector);
 
   const handleStatusFilter = useCallback(
-    (payload) => dispatch(setStatusTaskFilter(payload)),
+    (payload) => dispatch(setStatusTaskFilter({payload})),
     [dispatch],
   );
 

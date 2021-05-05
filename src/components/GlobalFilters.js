@@ -7,10 +7,14 @@ import Modal from 'react-native-modal';
 import HouseFilter from './Filters/HouseFilter';
 import DateSelector from './DateSelector';
 
-import {setFilterByType} from '../Store/filterActions';
 import moment from 'moment';
 import {defaultLabel, marginBottom} from '../styles/common';
 import {GREY} from '../styles/colors';
+import {
+  checklistsSelector,
+  housesSelector,
+  setFilterByType,
+} from '../Store/Filters/filtersSlice';
 
 const styles = StyleSheet.create({
   modal: {
@@ -41,20 +45,11 @@ const GlobalFilters = ({storage}) => {
   const [modalContent, setModalContent] = useState();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const filters = useSelector(
-    ({
-      filters: {
-        [storage]: {houses, from, to},
-      },
-    }) => ({houses, from, to}),
-    shallowEqual,
-  );
+  const houses = useSelector(housesSelector);
+  const {from, to} = useSelector(checklistsSelector);
 
   const HousesFilter = () => (
-    <HouseFilter
-      houses={filters?.houses}
-      addHouse={setFilterByTypeActionHouses}
-    />
+    <HouseFilter houses={houses} addHouse={setFilterByTypeActionHouses} />
   );
 
   const DateFilter = ({date, selectDate, minimumDate, maximumDate}) => (
@@ -73,16 +68,16 @@ const GlobalFilters = ({storage}) => {
       }
       case 'from': {
         return DateFilter({
-          date: filters?.from,
+          date: from,
           selectDate: setFilterByTypeActionFromDates,
-          maximumDate: filters?.to,
+          maximumDate: to,
         });
       }
       case 'to': {
         return DateFilter({
-          date: filters?.to,
+          date: to,
           selectDate: setFilterByTypeActionToDates,
-          minimumDate: filters?.from,
+          minimumDate: from,
         });
       }
       default: {
@@ -92,17 +87,17 @@ const GlobalFilters = ({storage}) => {
   };
 
   const setFilterByTypeActionHouses = useCallback(
-    (value) => dispatch(setFilterByType(storage, 'houses', value)),
+    (value) => dispatch(setFilterByType({storage, type: 'houses', value})),
     [dispatch, storage],
   );
 
   const setFilterByTypeActionFromDates = useCallback(
-    (value) => dispatch(setFilterByType(storage, 'from', value)),
+    (value) => dispatch(setFilterByType({storage, type: 'from', value})),
     [dispatch, storage],
   );
 
   const setFilterByTypeActionToDates = useCallback(
-    (value) => dispatch(setFilterByType(storage, 'to', value)),
+    (value) => dispatch(setFilterByType({storage, type: 'to', value})),
     [dispatch, storage],
   );
 
@@ -155,10 +150,7 @@ const GlobalFilters = ({storage}) => {
             }}>
             <View
               style={{flexDirection: 'row', marginBottom: 10, marginRight: 10}}>
-              <ItemFilterDate
-                label="Desde"
-                value={moment(filters?.from).format('LL')}
-              />
+              <ItemFilterDate label="Desde" value={moment(from).format('LL')} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -167,10 +159,7 @@ const GlobalFilters = ({storage}) => {
               setModalVisible(true);
             }}>
             <View style={{flexDirection: 'row', marginBottom: 10}}>
-              <ItemFilterDate
-                label="Hasta"
-                value={moment(filters?.to).format('LL')}
-              />
+              <ItemFilterDate label="Hasta" value={moment(to).format('LL')} />
             </View>
           </TouchableOpacity>
         </View>

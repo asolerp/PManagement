@@ -4,8 +4,7 @@ import {StatusBar} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 // Redux
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {setFilterDate} from '../../Store/filterActions';
+import {useSelector, useDispatch} from 'react-redux';
 
 // UI
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -20,29 +19,28 @@ import {useGetFirebase} from '../../hooks/useGetFirebase';
 
 // Styles
 import {defaultTextTitle, marginTop} from '../../styles/common';
-import {DARK_BLUE, LOW_GREY, PM_COLOR} from '../../styles/colors';
+import {LOW_GREY, PM_COLOR} from '../../styles/colors';
 
 // Utils
 import moment from 'moment';
 import {generateCalendarDots} from '../../utils/parsers';
 import PagetLayout from '../../components/PageLayout';
 import {FlatList} from 'react-native';
+import {
+  filterDateSelector,
+  housesSelector,
+  setDate,
+  addHouse,
+  statusTaskFilterSelector,
+} from '../../Store/Filters/filtersSlice';
 
 const JobsScreen = () => {
   const dispatch = useDispatch();
-  const {list, loading, error} = useGetFirebase('jobs');
+  const {list} = useGetFirebase('jobs');
 
-  console.log(error);
-
-  const {houses, filterDate} = useSelector(
-    ({filters: {houses, filterDate}}) => ({houses, filterDate}),
-    shallowEqual,
-  );
-
-  const {statusTaskFilter} = useSelector(
-    ({filters: {statusTaskFilter}}) => ({statusTaskFilter}),
-    shallowEqual,
-  );
+  const houses = useSelector(housesSelector);
+  const filterDate = useSelector(filterDateSelector);
+  const statusTaskFilter = useSelector(statusTaskFilterSelector);
 
   const [filteredList, setFilteredList] = useState([]);
   const navigation = useNavigation();
@@ -51,17 +49,12 @@ const JobsScreen = () => {
     navigation.navigate('NewJobTaskSelector');
   };
 
-  const setFilterDateAction = useCallback(
-    (date) => dispatch(setFilterDate(date)),
-    [dispatch],
-  );
+  const setFilterDateAction = useCallback((date) => dispatch(setDate({date})), [
+    dispatch,
+  ]);
 
-  const addHouse = useCallback(
-    (payload) =>
-      dispatch({
-        type: 'ADD_HOUSE',
-        payload: payload,
-      }),
+  const addHouseAction = useCallback(
+    (payload) => dispatch(addHouse({houses: payload})),
     [dispatch],
   );
 
@@ -156,7 +149,7 @@ const JobsScreen = () => {
             />
           </View>
           <View style={styles.housesWrapper}>
-            <HouseFilter houses={houses} addHouse={addHouse} />
+            <HouseFilter houses={houses} addHouse={addHouseAction} />
           </View>
           <View style={{...styles.jobsListWrapper, ...marginTop(20)}}>
             <View style={styles.jobsTitleWrapper}>

@@ -1,8 +1,4 @@
-import React, {useCallback} from 'react';
-
-// Redux
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {setStatusIncidenceFilter} from '../../Store/filterActions';
+import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({

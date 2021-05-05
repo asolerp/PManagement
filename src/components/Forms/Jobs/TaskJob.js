@@ -9,7 +9,7 @@ import {
   resetTask,
   removeTask,
   addEditedTask,
-} from '../../../Store/jobFormActions';
+} from '../../../Store/JobForm';
 
 import Task from '../../Elements/Task';
 import NewEditTask from './NewEditTask';
@@ -41,14 +41,14 @@ const TaskForm = ({onNew, onEdit}) => {
   const dispatch = useDispatch();
   const {job} = useSelector(({jobForm: {job}}) => ({job}), shallowEqual);
 
-  const addTaskAction = useCallback((task) => dispatch(addTask(task)), [
+  const addTaskAction = useCallback((task) => dispatch(addTask({task})), [
     dispatch,
   ]);
 
-  const editFormAction = useCallback((task) => dispatch(editForm(task, job)), [
-    dispatch,
-    job,
-  ]);
+  const editFormAction = useCallback(
+    (task) => dispatch(editForm({task, job})),
+    [dispatch, job],
+  );
 
   const addEditedTaskAction = useCallback(
     (index, task) => dispatch(addEditedTask(index, task)),

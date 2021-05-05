@@ -2,13 +2,14 @@
 // import thunk from 'redux-thunk';
 
 // REDUCERS
-import {filterReducer} from './filterReducer';
-import {jobFormReducer} from './jobFormReducer';
-import {houseFormReducer} from './houseFormReducer';
-import {incidenceFormReducer} from './incidenceFormReducer';
+
 import {modalReducer} from './modalReducer';
 
+import {filterReducer} from './Filters';
+import {incidenceFormReducer} from './IncidenceForm';
 import {checkListReducer} from './CheckList';
+import {houseFormReducer} from './HouseForm';
+import {jobFormReducer} from './JobForm';
 import {userReducer} from './User';
 
 import {configureStore} from '@reduxjs/toolkit';
