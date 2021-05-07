@@ -12,7 +12,12 @@ const jobFormSlice = createSlice({
   initialState,
   reducers: {
     setInputForm: (state, {payload}) => {},
-    setTask: (state, {payload}) => {},
+    setTask: (state, {payload}) => {
+      state.job = {
+        ...state.job,
+        task: payload.task,
+      };
+    },
     editForm: (state, {payload}) => {
       state.job = {
         ...state.job,

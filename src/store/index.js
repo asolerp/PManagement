@@ -2,10 +2,8 @@
 // import thunk from 'redux-thunk';
 
 // REDUCERS
-
-import {modalReducer} from './modalReducer';
-
 import {filterReducer} from './Filters';
+import {modalReducer} from './Modal';
 import {incidenceFormReducer} from './IncidenceForm';
 import {checkListReducer} from './CheckList';
 import {houseFormReducer} from './HouseForm';

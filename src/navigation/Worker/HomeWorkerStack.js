@@ -4,11 +4,11 @@ import {useNavigation} from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
 
 import {createStackNavigator} from '@react-navigation/stack';
-import HomeWorker from '../../screens/Worker/HomeWorker';
-import JobScreen from '../../screens/Jobs/JobScreen';
-import NewIncidence from '../../screens/Worker/NewIncidence';
-import CheckScreen from '../../screens/CheckList/CheckScreen';
-import CheckPhotosScreen from '../../screens/CheckList/CheckPhotosScreen';
+import HomeWorker from '../../Screens/Worker/HomeWorker';
+import JobScreen from '../../Screens/Jobs/JobScreen';
+import NewIncidence from '../../Screens/Worker/NewIncidence';
+import CheckScreen from '../../Screens/CheckList/CheckScreen';
+import CheckPhotosScreen from '../../Screens/CheckList/CheckPhotosScreen';
 
 const Stack = createStackNavigator();
 const HomeWorkerStack = () => {

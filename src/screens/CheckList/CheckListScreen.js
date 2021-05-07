@@ -3,13 +3,14 @@ import React from 'react';
 import {View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CheckItem from '../../components/CheckItem';
 import AddButton from '../../components/Elements/AddButton';
-import StatusTaskFilter from '../../components/Filters/StatusTaskFilter';
+
 import PagetLayout from '../../components/PageLayout';
 
 // Styles
 import {defaultLabel, marginBottom} from '../../styles/common';
 import GlobalFilters from '../../components/GlobalFilters';
 import useFilter from '../../hooks/useFilter';
+import {useGetFirebase} from '../../hooks/useGetFirebase';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
 });
 
 const CheckListScreen = ({navigation}) => {
-  const {filteredList, loading} = useFilter('checklists');
+  const {list, loading} = useGetFirebase('checklists');
 
   const renderItem = ({item}) => (
     <CheckItem
@@ -69,13 +70,13 @@ const CheckListScreen = ({navigation}) => {
         }}>
         <View>
           <View style={styles.filterWrapper}>
-            <GlobalFilters storage="checklists" />
+            {/* <GlobalFilters storage="checklists" /> */}
             <View style={styles.checkListWrapper}>
               <Text style={{...defaultLabel, ...marginBottom(20)}}>
                 CheckList
               </Text>
               <FlatList
-                data={filteredList}
+                data={list}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
               />

@@ -2,9 +2,9 @@ import React from 'react';
 import {TouchableOpacity, StyleSheet, View, Text} from 'react-native';
 
 // Utils
-import {minimizetext} from '../utils/parsers';
-import {PRIORITY_HEIGHT, CHECKLIST_DONE} from '../constants/colors';
-import {GREY_1} from '../styles/colors';
+import {minimizetext} from '../../utils/parsers';
+import {PRIORITY_HEIGHT, CHECKLIST_DONE} from '../../constants/colors';
+import {GREY_1} from '../../styles/colors';
 
 const styles = StyleSheet.create({
   container: {},
@@ -52,9 +52,9 @@ const IncidenceItem = ({incidence, onPress}) => {
             ]}
           />
           <View>
-            <Text>🏡 {incidence.house.houseName}</Text>
+            <Text>🏡 {incidence?.house?.houseName}</Text>
             <Text style={styles.checkText}>
-              {minimizetext(incidence.incidence, 30)}
+              {minimizetext(incidence?.incidence, 30)}
             </Text>
           </View>
         </View>

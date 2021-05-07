@@ -1,17 +1,20 @@
 import React, {useCallback} from 'react';
 
 // Redux
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {changeState} from '../Store/modalActions';
+import {useSelector, useDispatch} from 'react-redux';
 
 import {BottomModal, ModalContent} from 'react-native-modals';
+import {
+  contentSelector,
+  openSelector,
+  changeState,
+} from '../Store/Modal/modalSlice';
 
 const Modal = () => {
   const dispatch = useDispatch();
-  const {open, content} = useSelector(
-    ({modal: {open, content}}) => ({open, content}),
-    shallowEqual,
-  );
+
+  const open = useSelector(openSelector);
+  const content = useSelector(contentSelector);
 
   const changeStateModalAction = useCallback(
     (state) => dispatch(changeState(state)),

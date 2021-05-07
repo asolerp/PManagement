@@ -1,8 +1,8 @@
 import React from 'react';
 
 import {createStackNavigator} from '@react-navigation/stack';
-import IncidencesListScreen from '../screens/IncidencesListScreen';
-import IncidenceScreen from '../screens/IncidenceScreen';
+import IncidencesListScreen from '../Screens/IncidencesListScreen';
+import IncidenceScreen from '../Screens/IncidenceScreen';
 
 const Stack = createStackNavigator();
 

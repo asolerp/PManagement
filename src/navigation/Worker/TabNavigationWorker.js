@@ -7,7 +7,7 @@ import HomeWorkerStack from './HomeWorkerStack';
 import {AnimatedTabBarNavigator} from 'react-native-animated-nav-tab-bar';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {Platform} from 'react-native';
-import ProfileScreen from '../../screens/ProfileScreen';
+import ProfileScreen from '../../Screens/ProfileScreen';
 
 const Tabs = AnimatedTabBarNavigator();
 

@@ -1,10 +1,10 @@
 import React from 'react';
 
 import {createStackNavigator} from '@react-navigation/stack';
-import CheckListScreen from '../screens/CheckList/CheckListScreen';
-import NewCheckListJobScreen from '../screens/CheckList/NewCheckListJobScreen';
-import CheckSceen from '../screens/CheckList/CheckScreen';
-import CheckPhotosScreen from '../screens/CheckList/CheckPhotosScreen';
+import CheckListScreen from '../Screens/CheckList/CheckListScreen';
+import NewCheckListJobScreen from '../Screens/CheckList/NewCheckListJobScreen';
+import CheckSceen from '../Screens/CheckList/CheckScreen';
+import CheckPhotosScreen from '../Screens/CheckList/CheckPhotosScreen';
 
 const Stack = createStackNavigator();
 

@@ -1,21 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   FlatList,
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
 
 // Firebase
-import firestore from '@react-native-firebase/firestore';
 
 import AddButton from '../../components/Elements/AddButton';
-import TitlePage from '../../components/TitlePage';
 import HouseItemList from '../../components/HouseItemList';
-import {Dimensions} from 'react-native';
 import PagetLayout from '../../components/PageLayout';
 
 import {useGetFirebase} from '../../hooks/useGetFirebase';
@@ -65,6 +61,7 @@ const HomesScreen = ({navigation}) => {
                   data={houses}
                   renderItem={renderItem}
                   keyExtractor={(item) => item.id}
+                  showsVerticalScrollIndicator={false}
                   contentContainerStyle={{
                     flexGrow: 1,
                     alignItems: 'center',

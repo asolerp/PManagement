@@ -2,10 +2,10 @@ import React from 'react';
 
 import {createStackNavigator} from '@react-navigation/stack';
 
-import JobsScreen from '../screens/Jobs/JobsScreen';
-import NewJobScreen from '../screens/Jobs/NewJobScreen';
-import NewJobTaskSelectorScreen from '../screens/Jobs/NewJobTaskSelectorScreen';
-import JobScreen from '../screens/Jobs/JobScreen';
+import JobsScreen from '../Screens/Jobs/JobsScreen';
+import NewJobScreen from '../Screens/Jobs/NewJobScreen';
+import NewJobTaskSelectorScreen from '../Screens/Jobs/NewJobTaskSelectorScreen';
+import JobScreen from '../Screens/Jobs/JobScreen';
 
 const Stack = createStackNavigator();
 

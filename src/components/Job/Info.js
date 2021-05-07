@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React from 'react';
 import {useRoute} from '@react-navigation/native';
 import {View, Text, StyleSheet, Image} from 'react-native';
 
@@ -10,10 +10,6 @@ import CustomButton from '../Elements/CustomButton';
 // Firebase
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
-
-// Redux
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {editForm} from '../../Store/jobFormActions';
 
 // Utils
 import moment from 'moment';
@@ -72,30 +68,16 @@ const styles = StyleSheet.create({
 
 const Info = () => {
   const route = useRoute();
-  const dispatch = useDispatch();
   const {jobId} = route.params;
-  const {document: job, loadingJob, errorJob} = useGetDocFirebase(
-    'jobs',
-    jobId,
-  );
 
-  const {job: jobFormState} = useSelector(
-    ({jobForm: {job}}) => ({job}),
-    shallowEqual,
-  );
-
-  const {updateFirebase, loading, error} = useUpdateFirebase('jobs');
+  const {document: job} = useGetDocFirebase('jobs', jobId);
+  const {updateFirebase} = useUpdateFirebase('jobs');
 
   const handleFinishTask = (status) => {
     updateFirebase(`${jobId}`, {
       done: status,
     });
   };
-
-  const editFormAaction = useCallback((task) => dispatch(editForm(task, job)), [
-    dispatch,
-    job,
-  ]);
 
   return (
     <ScrollView contentContainerStyle={{flex: 1}}>

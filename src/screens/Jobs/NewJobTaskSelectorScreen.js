@@ -3,16 +3,14 @@ import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
 // UI
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import TitlePage from '../../components/TitlePage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import LinearGradient from 'react-native-linear-gradient';
 
 // Firebase
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import TaskItem from '../../components/Elements/TaskItem';
-import {setTask} from '../../Store/jobFormActions';
 import PagetLayout from '../../components/PageLayout';
 import {LOW_GREY} from '../../styles/colors';
+import {setTask} from '../../Store/JobForm/jobFormSlice';
 
 const styles = StyleSheet.create({
   container: {
@@ -56,7 +54,7 @@ const NewJobTaskSelectorScreen = ({navigation}) => {
 
   const {list: tasks, loading: loadingTasks} = useGetFirebase('tasks');
 
-  const setTaskAction = useCallback((task) => dispatch(setTask(task)), [
+  const setTaskAction = useCallback((task) => dispatch(setTask({task})), [
     dispatch,
   ]);
 

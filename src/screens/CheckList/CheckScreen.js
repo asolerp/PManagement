@@ -7,9 +7,7 @@ import {useSelector, shallowEqual} from 'react-redux';
 //Firebase
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
-import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {useAddFirebase} from '../../hooks/useAddFirebase';
 
 // UI
 import PagetLayout from '../../components/PageLayout';
@@ -24,10 +22,10 @@ import {DARK_BLUE, GREY_1, LOW_GREY, PM_COLOR} from '../../styles/colors';
 import moment from 'moment';
 import TextWrapper from '../../components/TextWrapper';
 
-import {Platform} from 'react-native';
 import ItemCheck from '../../components/ItemCheck';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {userSelector} from '../../Store/User/userSlice';
+import useUploadImageCheck from '../../hooks/useUploadImage';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -98,58 +96,8 @@ const CheckScreen = ({route, navigation}) => {
   const {list: checks} = useGetFirebase(`checklists/${checkId}/checks`);
 
   const {updateFirebase} = useUpdateFirebase('checklists');
-  const {addFirebase: addPhoto} = useAddFirebase();
 
-  const [idCheckLoading, setIdCheckLoading] = useState();
-  const [loading, setLoading] = useState(false);
-
-  const {upload} = useUploadCloudinaryImage();
-
-  const uploadImages = async (imgs, item) => {
-    setLoading(true);
-    setIdCheckLoading(item.id);
-    try {
-      if (imgs?.length > 0) {
-        const uploadImages = imgs
-          .map((img, i) => ({
-            fileName: img.filename || `image-${i}`,
-            fileUri: Platform.OS === 'android' ? img.path : img.sourceURL,
-            fileType: img.mime,
-          }))
-          .map((file) =>
-            upload(file, `/PortManagement/CheckLists/${checkId}/Photos`),
-          );
-
-        const imagesURLs = await Promise.all(uploadImages);
-
-        await updateFirebase(`${checkId}/checks/${item.id}`, {
-          numberOfPhotos: item.numberOfPhotos + imagesURLs.length,
-        });
-        await Promise.all(
-          imagesURLs.map((url) => {
-            const urlWithTransformation = url.split('/upload/');
-            const name = url.split('/');
-            let nameWithoutExtension = name[name.length - 1].split('.');
-            nameWithoutExtension.splice(-1, 1);
-            return addPhoto(`checklists/${checkId}/checks/${item.id}/photos`, {
-              name: name[name.length - 1],
-              ref: `PortManagement/CheckLists/${checkId}/Photos/${nameWithoutExtension.join(
-                '.',
-              )}`,
-              url: urlWithTransformation.join(
-                '/upload/f_auto,q_auto,w_500,dpr_2.0,c_limit/',
-              ),
-            });
-          }),
-        );
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-      setIdCheckLoading(null);
-    }
-  };
+  const {loading, idCheckLoading, uploadImages} = useUploadImageCheck(checkId);
 
   const user = useSelector(userSelector, shallowEqual);
 

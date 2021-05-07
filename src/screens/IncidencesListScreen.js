@@ -2,8 +2,7 @@ import {useNavigation} from '@react-navigation/core';
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import StatusIncidence from '../components/Filters/StatusIncidence';
-import IncidenceItem from '../components/IncidenceItem';
-import IncidencesList from '../components/IncidencesList';
+import IncidenceItem from '../components/Items/IncidenceItem';
 import PagetLayout from '../components/PageLayout';
 
 //Firebase
@@ -37,6 +36,8 @@ const IncidencesListScreen = () => {
     return <IncidenceItem incidence={item} onPress={handlePressIncidence} />;
   };
 
+  console.log('list', list);
+
   return (
     <PagetLayout
       titleLefSide={true}
@@ -52,7 +53,7 @@ const IncidencesListScreen = () => {
           <StatusIncidence onChangeFilter={setState} state={state} />
         </View>
         <FlatList
-          data={list.filter((inci) => inci.done === state)}
+          data={list}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />

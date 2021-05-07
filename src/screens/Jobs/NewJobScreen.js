@@ -15,22 +15,15 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import JobForm from '../../components/Forms/Jobs/JobForm';
-import TaskForm from '../../components/Forms/Jobs/TaskJob';
 
 // UI
 import CustomButton from '../../components/Elements/CustomButton';
 import PagetLayout from '../../components/PageLayout';
 
 // Firebase
-import {resetForm} from '../../Store/jobFormActions';
 import {newJob} from '../../firebase/newJob';
 import {LOW_GREY} from '../../styles/colors';
-
-const HideKeyboard = ({children}) => (
-  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-    {children}
-  </TouchableWithoutFeedback>
-);
+import {resetForm} from '../../Store/JobForm/jobFormSlice';
 
 const NewJobScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
