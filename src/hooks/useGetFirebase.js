@@ -3,6 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useState, useEffect} from 'react';
 
 export const useGetFirebase = (coll, order, where) => {
+  console.log(where);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
   const [list, setList] = useState([]);

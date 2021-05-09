@@ -10,6 +10,7 @@ const initialState = {
   filterDate: new Date(),
   statusTaskFilter: false,
   statusIncidenceFilter: false,
+  cacheHouses: [],
 };
 
 const filtersSlice = createSlice({
@@ -18,6 +19,9 @@ const filtersSlice = createSlice({
   reducers: {
     addHouse: (state, {payload}) => {
       state.houses = payload.houses;
+    },
+    setCacheHouses: (state, {payload}) => {
+      state.cacheHouses = payload.houses;
     },
     setDate: (state, {payload}) => {
       state.filterDate = payload.date;
@@ -39,6 +43,7 @@ const filtersSlice = createSlice({
 
 // Selectors
 export const housesSelector = (state) => state.filters.houses;
+export const cacheHousesSelector = (state) => state.filters.cacheHouses;
 export const checklistsSelector = (state) => state.filters.checklists;
 export const filterDateSelector = (state) => state.filters.filterDate;
 export const statusTaskFilterSelector = (state) =>
@@ -50,6 +55,7 @@ export const statusIncidenceFilterSelector = (state) =>
 export const {
   addHouse,
   setDate,
+  setCacheHouses,
   setFilterByType,
   setStatusTaskFilter,
   setStatusIncidenceFilter,

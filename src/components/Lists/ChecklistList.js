@@ -80,13 +80,8 @@ const styles = StyleSheet.create({
 
 const ChecklistList = () => {
   const {Gutters, Layout, Fonts} = useTheme();
-  const {list, loading} = useGetFirebase('checklists', null, [
-    {
-      label: 'finished',
-      operator: '==',
-      condition: false,
-    },
-  ]);
+
+  const {list, loading} = useGetFirebase('checklists');
 
   const navigation = useNavigation();
 

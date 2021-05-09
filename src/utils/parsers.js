@@ -93,7 +93,7 @@ export const parsePirorityIcon = (priority) => {
 
 export const parseDateWithText = (date) => {
   if (
-    moment(date.toDate()).format('MM/DD/YYYY') ===
+    moment(date?.toDate()).format('MM/DD/YYYY') ===
     moment(new Date()).format('MM/DD/YYYY')
   ) {
     return 'Hoy';

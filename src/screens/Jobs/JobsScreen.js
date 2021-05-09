@@ -123,7 +123,7 @@ const JobsScreen = () => {
           color: 'white',
         }}>
         <View style={styles.jobsScreen}>
-          <View style={{height: 100}}>
+          {/* <View style={{height: 100}}>
             <CalendarStrip
               startingDate={moment(new Date()).subtract(3, 'days')}
               markedDates={generateCalendarDots(list)}
@@ -147,7 +147,7 @@ const JobsScreen = () => {
               calendarHeaderContainerStyle={styles.calendarHeaderContainerStyle}
               calendarHeaderStyle={styles.calendarHeaderStyle}
             />
-          </View>
+          </View> */}
           <View style={styles.housesWrapper}>
             <HouseFilter houses={houses} addHouse={addHouseAction} />
           </View>

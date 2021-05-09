@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 
 import {View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CheckItem from '../../components/CheckItem';
@@ -8,9 +8,11 @@ import PagetLayout from '../../components/PageLayout';
 
 // Styles
 import {defaultLabel, marginBottom} from '../../styles/common';
-import GlobalFilters from '../../components/GlobalFilters';
-import useFilter from '../../hooks/useFilter';
 import {useGetFirebase} from '../../hooks/useGetFirebase';
+import HouseFilter from '../../components/Filters/HouseFilter';
+import {useSelector} from 'react-redux';
+import {housesSelector} from '../../Store/Filters/filtersSlice';
+import {useTheme} from '../../Theme';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -28,12 +30,27 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   checkListWrapper: {
-    marginTop: 20,
+    marginTop: 0,
   },
+  housesWrapper: {},
 });
 
 const CheckListScreen = ({navigation}) => {
-  const {list, loading} = useGetFirebase('checklists');
+  const {Gutters} = useTheme();
+  const houses = useSelector(housesSelector);
+  const housesFilter = [
+    {
+      label: 'houseId',
+      operator: 'in',
+      condition: houses,
+    },
+  ];
+
+  const {list, loading} = useGetFirebase(
+    'checklists',
+    null,
+    houses.length > 0 && housesFilter,
+  );
 
   const renderItem = ({item}) => (
     <CheckItem
@@ -72,6 +89,14 @@ const CheckListScreen = ({navigation}) => {
           <View style={styles.filterWrapper}>
             {/* <GlobalFilters storage="checklists" /> */}
             <View style={styles.checkListWrapper}>
+              <View
+                style={[
+                  styles.housesWrapper,
+                  Gutters.tinyTMargin,
+                  Gutters.regularBMargin,
+                ]}>
+                <HouseFilter />
+              </View>
               <Text style={{...defaultLabel, ...marginBottom(20)}}>
                 CheckList
               </Text>

@@ -36,8 +36,6 @@ const IncidencesListScreen = () => {
     return <IncidenceItem incidence={item} onPress={handlePressIncidence} />;
   };
 
-  console.log('list', list);
-
   return (
     <PagetLayout
       titleLefSide={true}

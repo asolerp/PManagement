@@ -5,6 +5,9 @@ import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 
 import {DARK_BLUE} from '../../styles/colors';
+import {useCallback} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {addHouse, housesSelector} from '../../Store/Filters/filtersSlice';
 
 const heightFilter = 120;
 const widthFilter = 90;
@@ -24,10 +27,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   housesWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 140,
+    // flexGrow: 1,
+    // flexDirection: 'row',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // height: 140,
   },
   houseFilter: {
     alignItems: 'center',
@@ -83,8 +87,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const HouseFilter = ({houses, addHouse}) => {
+const HouseFilter = () => {
   const {list} = useGetFirebase('houses');
+  const dispatch = useDispatch();
+  const houses = useSelector(housesSelector);
+  const addHouseAction = useCallback(
+    (payload) => dispatch(addHouse({houses: payload})),
+    [dispatch],
+  );
 
   const isInArray = (id) => {
     return houses?.find((idHouse) => idHouse === id);
@@ -95,9 +105,9 @@ const HouseFilter = ({houses, addHouse}) => {
       const housesWithoutID = houses?.filter((id) => {
         return id !== house.id;
       });
-      addHouse(housesWithoutID);
+      addHouseAction(housesWithoutID);
     } else {
-      addHouse([...(houses || []), house.id]);
+      addHouseAction([...(houses || []), house.id]);
     }
   };
 
@@ -130,26 +140,19 @@ const HouseFilter = ({houses, addHouse}) => {
   );
 
   return (
-    <View style={styles.filterWrapper}>
-      <Text style={styles.titleFilter}>Las Casas</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.container}>
-        <View
-          style={styles.housesWrapper}
-          onStartShouldSetResponder={() => true}>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={true}
-            data={list}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
-        </View>
-      </ScrollView>
-    </View>
+    // <View style={styles.filterWrapper}>
+    //   <Text style={styles.titleFilter}>Las Casas</Text>
+    // <View style={styles.housesWrapper} onStartShouldSetResponder={() => true}>
+    <FlatList
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      data={list}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+    />
+    // </View>
+    // </View>
   );
 };
 
-export default HouseFilter;
+export default React.memo(HouseFilter);
