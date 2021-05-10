@@ -12,12 +12,11 @@ import {useGetFirebase} from '../../hooks/useGetFirebase';
 
 import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
-import {parseDateWithText} from '../../utils/parsers';
+import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
 
 const styles = StyleSheet.create({
-  incidenceWrapper: {
+  checkWrapper: {
     flexDirection: 'row',
-    backgroundColor: Colors.success,
     marginBottom: 10,
     padding: 10,
     borderRadius: 10,
@@ -94,7 +93,11 @@ const ChecklistList = () => {
 
     return (
       <TouchableOpacity
-        style={[styles.incidenceWrapper, Gutters.mediumRMargin]}
+        style={[
+          styles.checkWrapper,
+          Gutters.mediumRMargin,
+          {backgroundColor: parsePercentageDone(item?.done / item?.total)},
+        ]}
         onPress={() => handlePressIncidence()}>
         <View style={[Layout.fill]}>
           <View

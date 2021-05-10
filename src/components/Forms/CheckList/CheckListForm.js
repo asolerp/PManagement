@@ -1,7 +1,7 @@
 import React, {useState, useCallback} from 'react';
 
 import {BottomModal, ModalContent} from 'react-native-modals';
-import {Text, View, TextInput, StyleSheet, FlatList} from 'react-native';
+import {Text, View, TextInput, StyleSheet} from 'react-native';
 
 // Redux
 import {useDispatch, useSelector} from 'react-redux';
@@ -11,6 +11,7 @@ import InputGroup from '../../Elements/InputGroup';
 import DynamicSelectorList from '../../DynamicSelectorList';
 import DateSelector from '../Jobs/DateSelector';
 import CustomInput from '../../Elements/CustomInput';
+import CheckBox from '@react-native-community/checkbox';
 
 // Utils
 import moment from 'moment';
@@ -27,7 +28,10 @@ import {
   observationsSelector,
   workersSelector,
   setForm,
+  checksSelector,
+  setCheck,
 } from '../../../Store/CheckList/checkListSlice';
+import {Colors} from '../../../Theme/Variables';
 
 moment.locale('es');
 
@@ -85,16 +89,22 @@ const styles = StyleSheet.create({
 const CheckListForm = () => {
   const dispatch = useDispatch();
 
-  const {list, loading, error} = useGetFirebase('checks');
-
-  console.log(list);
+  const {list} = useGetFirebase('checks');
 
   const house = useSelector(houseSelector);
   const workers = useSelector(workersSelector);
   const observations = useSelector(observationsSelector);
+  const checks = useSelector(checksSelector);
 
   const setInputFormAction = useCallback(
     (label, value) => dispatch(setForm({label, value})),
+    [dispatch],
+  );
+
+  const setToggleCheckBox = useCallback(
+    (item, newValue) => {
+      dispatch(setCheck({check: item, checkState: newValue}));
+    },
     [dispatch],
   );
 
@@ -153,12 +163,22 @@ const CheckListForm = () => {
     />
   );
 
-  const renderItem = ({item}) => (
-    <View style={styles.checkWrapper}>
-      <View style={styles.checkDot} />
-      <Text style={styles.checkStyle}>{item.title}</Text>
-    </View>
-  );
+  const CheckItem = ({item}) => {
+    return (
+      <View style={styles.checkWrapper}>
+        <CheckBox
+          onTintColor={Colors.leftBlue}
+          onCheckColor={Colors.leftBlue}
+          disabled={false}
+          value={checks?.[item.id]?.check || false}
+          boxType="square"
+          onValueChange={(newValue) => setToggleCheckBox(item, newValue)}
+        />
+        {/* <View style={styles.checkDot} /> */}
+        <Text style={styles.checkStyle}>{item.title}</Text>
+      </View>
+    );
+  };
 
   return (
     <View style={[styles.newJobScreen]}>
@@ -234,11 +254,9 @@ const CheckListForm = () => {
         Check list a realizar
       </Text>
       <View style={styles.checkListWrapper}>
-        <FlatList
-          data={list}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
+        {list?.map((check) => (
+          <CheckItem item={check} key={check.id} />
+        ))}
       </View>
     </View>
   );

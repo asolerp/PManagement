@@ -7,6 +7,7 @@ import {
   PRIORITY_HEIGHT,
   CHECKLIST_DONE,
 } from '../constants/colors';
+import {Colors} from '../Theme/Variables';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
   return text?.length > numberOfCharts
@@ -61,11 +62,11 @@ export const parsePriorityColor = (priority) => {
 
 export const parsePercentageDone = (percentage) => {
   if (percentage <= 0.5) {
-    return PRIORITY_HEIGHT;
+    return Colors.danger;
   } else if (percentage > 0.5 && percentage < 1) {
-    return PRIORITY_MEDIUM;
+    return Colors.warning;
   } else {
-    return CHECKLIST_DONE;
+    return Colors.rightGreen;
   }
 };
 

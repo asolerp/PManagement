@@ -4,7 +4,7 @@ export const Colors = {
   lowGrey: '#F8F8F8',
   darkBlue: '#284748',
   success: '#58BFC0',
-  warning: '#DDD363',
+  warning: '#F5C66D',
   danger: '#ED7A7A',
   leftBlue: '#126D9B',
   rightGreen: '#67B26F',

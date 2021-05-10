@@ -24,6 +24,7 @@ import {useAddFirebase} from '../../hooks/useAddFirebase';
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {LOW_GREY} from '../../styles/colors';
 import {
+  checksSelector,
   houseSelector,
   observationsSelector,
   resetForm,
@@ -40,8 +41,7 @@ const NewCheckListJobScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState();
 
-  const {list: checks} = useGetFirebase('checks');
-
+  const checks = useSelector(checksSelector);
   const house = useSelector(houseSelector);
   const workers = useSelector(workersSelector);
   const observations = useSelector(observationsSelector);
@@ -64,21 +64,24 @@ const NewCheckListJobScreen = ({route, navigation}) => {
         workersId: workers?.value?.map((worker) => worker.id),
         houseId: house?.value[0].id,
         house: house?.value,
-        total: checks.length,
+        total: Object.entries(checks).filter(([key, value]) => value.check)
+          .length,
         finished: false,
         done: 0,
       };
       const newCheckList = await addFirebase('checklists', newCheckListForm);
       await Promise.all(
-        checks.map((check) =>
-          addFirebase(`checklists/${newCheckList.id}/checks`, {
-            title: check.title,
-            numberOfPhotos: 0,
-            done: false,
-            worker: null,
-            date: null,
-          }),
-        ),
+        Object.entries(checks)
+          .filter(([key, value]) => value.check)
+          .map(([key, value]) =>
+            addFirebase(`checklists/${newCheckList.id}/checks`, {
+              title: value.title,
+              numberOfPhotos: 0,
+              done: false,
+              worker: null,
+              date: null,
+            }),
+          ),
       );
     } catch (err) {
       console.log(err);

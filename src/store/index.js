@@ -9,11 +9,13 @@ import {checkListReducer} from './CheckList';
 import {houseFormReducer} from './HouseForm';
 import {jobFormReducer} from './JobForm';
 import {userReducer} from './User';
+import {appReducer} from './App';
 
 import {configureStore} from '@reduxjs/toolkit';
 import {combineReducers} from 'redux';
 
 const reducers = combineReducers({
+  app: appReducer,
   filters: filterReducer,
   jobForm: jobFormReducer,
   checklist: checkListReducer,

@@ -16,6 +16,8 @@ import {getUser} from '../firebase/getUser';
 import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
 import SignInWorkerStack from './Worker/SignInWorkerStack';
 import {logUser, userSelector} from '../Store/User/userSlice';
+import Loading from '../components/Loading';
+import {loadingSelector} from '../Store/App/appSlice';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -62,7 +64,7 @@ const AuthNavigator = () => {
   const dispatch = useDispatch();
 
   const {updateFirebase} = useUpdateFirebase('users');
-
+  const loading = useSelector(loadingSelector);
   const user = useSelector(userSelector, shallowEqual);
   const setUser = useCallback((user) => dispatch(logUser({user})), [dispatch]);
 
@@ -107,6 +109,7 @@ const AuthNavigator = () => {
 
   return user?.uid ? (
     <React.Fragment>
+      {loading && <Loading />}
       <Modal />
       <StatusBar barStyle="light-content" />
       <View style={styles.appBackground}>
