@@ -21,6 +21,9 @@ export const checkListSlice = createSlice({
         check: payload.checkState,
       };
     },
+    setAllChecks: (state, {payload}) => {
+      state.checks = payload.checks;
+    },
     resetForm: (state) => {
       state.house = {};
       state.workers = {};
@@ -36,6 +39,11 @@ export const workersSelector = (state) => state.checklist.workers;
 export const observationsSelector = (state) => state.checklist.observations;
 export const checksSelector = (state) => state.checklist.checks;
 
-export const {setForm, resetForm, setCheck} = checkListSlice.actions;
+export const {
+  setForm,
+  resetForm,
+  setCheck,
+  setAllChecks,
+} = checkListSlice.actions;
 
 export default checkListSlice.reducer;

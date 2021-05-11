@@ -16,6 +16,7 @@ import CheckBox from '@react-native-community/checkbox';
 // Utils
 import moment from 'moment';
 import 'moment/locale/es';
+import {useTheme} from '../../../Theme';
 
 // Styles
 import {defaultLabel} from '../../../styles/common';
@@ -30,8 +31,11 @@ import {
   setForm,
   checksSelector,
   setCheck,
+  setAllChecks,
 } from '../../../Store/CheckList/checkListSlice';
 import {Colors} from '../../../Theme/Variables';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import Label from '../../Elements/Label';
 
 moment.locale('es');
 
@@ -88,7 +92,7 @@ const styles = StyleSheet.create({
 
 const CheckListForm = () => {
   const dispatch = useDispatch();
-
+  const {Layout} = useTheme();
   const {list} = useGetFirebase('checks');
 
   const house = useSelector(houseSelector);
@@ -107,6 +111,17 @@ const CheckListForm = () => {
     },
     [dispatch],
   );
+
+  const allChecks = list.reduce(
+    (acc, check) => ({
+      ...acc,
+      [check.id]: {...check, check: true},
+    }),
+    {},
+  );
+  const setAllChecksActions = useCallback(() => {
+    dispatch(setAllChecks({checks: allChecks}));
+  }, [dispatch, allChecks]);
 
   // Form State
   const [modalContent, setModalContent] = useState();
@@ -174,7 +189,6 @@ const CheckListForm = () => {
           boxType="square"
           onValueChange={(newValue) => setToggleCheckBox(item, newValue)}
         />
-        {/* <View style={styles.checkDot} /> */}
         <Text style={styles.checkStyle}>{item.title}</Text>
       </View>
     );
@@ -250,9 +264,21 @@ const CheckListForm = () => {
           value={observations}
         />
       </InputGroup>
-      <Text style={{...defaultLabel, marginTop: 10}}>
-        Check list a realizar
-      </Text>
+      <View
+        style={[
+          Layout.fill,
+          Layout.rowCenter,
+          Layout.justifyContentSpaceBetween,
+        ]}>
+        <Text style={{...defaultLabel, marginTop: 10}}>
+          Checklist a realizar
+        </Text>
+        <TouchableOpacity
+          onPress={() => setAllChecksActions()}
+          style={styles.labelWrapper}>
+          <Label title="Todos" color={Colors.pm} active={true} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.checkListWrapper}>
         {list?.map((check) => (
           <CheckItem item={check} key={check.id} />

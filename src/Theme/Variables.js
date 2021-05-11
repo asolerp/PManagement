@@ -8,6 +8,7 @@ export const Colors = {
   danger: '#ED7A7A',
   leftBlue: '#126D9B',
   rightGreen: '#67B26F',
+  pm: '#55A5AD',
 };
 
 export const NavigationColors = {
