@@ -14,6 +14,8 @@ import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
 
+import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
+
 const styles = StyleSheet.create({
   checkWrapper: {
     flexDirection: 'row',
@@ -44,17 +46,17 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginBottom: 5,
     fontWeight: '500',
-    color: Colors.white,
+    color: Colors.darkBlue,
     height: 60,
   },
   bold: {
     fontWeight: '600',
-    color: Colors.white,
+    color: Colors.darkBlue,
     marginBottom: 10,
   },
   date: {
     fontSize: 12,
-    color: Colors.white,
+    color: Colors.darkBlue,
   },
   buble: {
     width: 20,
@@ -80,7 +82,7 @@ const styles = StyleSheet.create({
 const ChecklistList = () => {
   const {Gutters, Layout, Fonts} = useTheme();
 
-  const {list, loading} = useGetFirebase('checklists');
+  const {list, loading, error} = useGetFirebase('checklists');
 
   const navigation = useNavigation();
 
@@ -96,7 +98,13 @@ const ChecklistList = () => {
         style={[
           styles.checkWrapper,
           Gutters.mediumRMargin,
-          {backgroundColor: parsePercentageDone(item?.done / item?.total)},
+          {
+            backgroundColor: Colors.white,
+            borderLeftWidth: 5,
+            borderWidth: 1,
+            borderColor: Colors.lowGrey,
+            borderLeftColor: parsePercentageDone(item?.done / item?.total),
+          },
         ]}
         onPress={() => handlePressIncidence()}>
         <View style={[Layout.fill]}>
@@ -125,7 +133,7 @@ const ChecklistList = () => {
               Layout.justifyContentEnd,
               Layout.alignItemsEnd,
             ]}>
-            <Text style={[Fonts.textWhite]}>
+            <Text style={[Fonts.textSmall]}>
               {item?.done}/{item?.total}
             </Text>
           </View>
@@ -135,7 +143,7 @@ const ChecklistList = () => {
   };
 
   if (loading) {
-    return <Text>Cargando lista..</Text>;
+    return <DashboardSectionSkeleton />;
   }
 
   if (list.length === 0) {

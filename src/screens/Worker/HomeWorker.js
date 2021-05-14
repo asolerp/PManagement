@@ -87,7 +87,7 @@ const HomeWorker = () => {
       condition: user.uid,
     },
     {
-      label: 'finished',
+      label: 'send',
       operator: '==',
       condition: false,
     },

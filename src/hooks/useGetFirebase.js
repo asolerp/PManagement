@@ -1,32 +1,21 @@
-import {useCallback} from 'react';
 import firestore from '@react-native-firebase/firestore';
 
 import {useState, useEffect} from 'react';
-import {useDispatch} from 'react-redux';
-import {updateLoadingState} from '../Store/App/appSlice';
 
 export const useGetFirebase = (coll, order, where) => {
   // console.log(where);
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
-  const dispatch = useDispatch();
-
-  // const handleLoading = useCallback(
-  //   (state) => {
-  //     dispatch(updateLoadingState(state));
-  //   },
-  //   [dispatch],
-  // );
 
   const [list, setList] = useState([]);
 
   const onResult = (QuerySnapshot) => {
-    // handleLoading(false);
+    setLoading(false);
     setList(QuerySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id})));
   };
 
   const onError = (err) => {
-    // handleLoading(false);
+    setLoading(false);
     setError(err);
   };
 
@@ -48,9 +37,11 @@ export const useGetFirebase = (coll, order, where) => {
     return () => {
       unsuscribe();
     };
-  }, [where, coll, order]);
+  }, [where, coll]);
 
   return {
     list,
+    loading,
+    error,
   };
 };

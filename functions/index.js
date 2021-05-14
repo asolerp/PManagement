@@ -332,7 +332,6 @@ exports.deletePhotoCloudinary = functions.firestore
   .document('checklists/{checklistId}/checks/{checkId}/photos/{photoId}')
   .onDelete(async (snap, context) => {
     const deletePhoto = snap.data();
-    console.log(deletePhoto);
     await cloudinary.uploader.destroy(
       deletePhoto.ref,
       {resource_type: 'image'},

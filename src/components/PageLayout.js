@@ -29,10 +29,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 50,
   },
   bottomScreen: {
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     width: '100%',
     paddingHorizontal: 20,
-    height: '8%',
+    height: '7%',
   },
   iconWrapper: {
     width: 30,

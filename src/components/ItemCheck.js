@@ -11,6 +11,7 @@ import {GREY_1, PM_COLOR} from '../styles/colors';
 import {marginBottom, marginTop, width} from '../styles/common';
 import moment from 'moment';
 import InfoIcon from './InfoIcon';
+import {Colors} from '../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
@@ -82,6 +83,8 @@ const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
         <CheckBox
           disabled={false}
           value={check.done}
+          onTintColor={Colors.leftBlue}
+          onCheckColor={Colors.leftBlue}
           onValueChange={() => handleCheck()}
         />
       </View>

@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {View, Text, StyleSheet, Modal, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
+
+import {Info, Messages, Options, Photos} from '../components/Incidence';
+import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
 
 // UI
-import Avatar from '../components/Avatar';
-import InfoIcon from '../components/InfoIcon';
 import CustomButton from '../components/Elements/CustomButton';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -13,18 +14,15 @@ import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
 import {useGetDocFirebase} from '../hooks/useGetDocFIrebase';
 
 // Utils
-import moment from 'moment';
-
 import PagetLayout from '../components/PageLayout';
-import ImageViewer from 'react-native-image-zoom-viewer';
-import {ImageBackground} from 'react-native';
 
 import {finishIncidence, openIncidence} from '../components/Alerts/incidences';
-import TextWrapper from '../components/TextWrapper';
+
 import {firebase} from '@react-native-firebase/firestore';
-import {ScrollView} from 'react-native';
-import {defaultLabel, marginBottom} from '../styles/common';
+
 import {DARK_BLUE} from '../styles/colors';
+import {Dimensions} from 'react-native';
+import {useTheme} from '../Theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -46,7 +44,6 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 18,
     marginVertical: 10,
-    marginBottom: 20,
     color: '#3DB6BA',
   },
   label: {
@@ -107,15 +104,30 @@ const styles = StyleSheet.create({
   },
 });
 
+const FirstRoute = () => <Info />;
+// const SecondRoute = () => <Messages />;
+// const ThirdRoute = () => <Photos />;
+// const FourthRoute = () => <Options />;
+
 const IncidenceScreen = () => {
+  const {Layout, Gutters, Colors} = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
 
+  const [index, setIndex] = React.useState(0);
+  const [routes] = useState([
+    {key: 'info', title: 'Info', icon: 'info'},
+    // {key: 'messages', title: 'Mensajes', icon: 'message'},
+    // {key: 'photos', title: 'Fotos', icon: 'photo'},
+    // {key: 'options', title: 'Opciones', icon: 'settings'},
+  ]);
+
+  const initialLayout = {
+    width: Dimensions.get('window').width,
+  };
+
   const {incidenceId} = route.params;
   const {document: incidence} = useGetDocFirebase('incidences', incidenceId);
-
-  const [modal, setModal] = useState([]);
-  const [imageIndex, setImageIndex] = useState(0);
 
   const {updateFirebase} = useUpdateFirebase('incidences');
 
@@ -140,22 +152,33 @@ const IncidenceScreen = () => {
     }
   };
 
-  const handlePressPhoto = (i) => {
-    setModal(true);
-    setImageIndex(i);
-  };
+  const renderScene = SceneMap({
+    info: FirstRoute,
+    // messages: SecondRoute,
+    // photos: ThirdRoute,
+    // options: FourthRoute,
+  });
 
-  const IncidenceImage = ({photo, index}) => {
-    return (
-      <TouchableOpacity onPress={() => handlePressPhoto(index)}>
-        <ImageBackground
-          source={{uri: photo}}
-          style={styles.incidenceImage}
-          imageStyle={{borderRadius: 5}}
-        />
-      </TouchableOpacity>
-    );
-  };
+  const renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      renderLabel={({route}) => (
+        <View style={[Layout.fill, Layout.colCenter]}>
+          <Icon
+            name={route.icon}
+            size={45}
+            color={Colors.pm}
+            style={[styles.icon, Gutters.tinyBMargin]}
+          />
+        </View>
+      )}
+      indicatorStyle={[
+        styles.tabIndicator,
+        {left: Dimensions.get('window').width / (routes.length * 2) - 10},
+      ]}
+      style={styles.tabBarStyle}
+    />
+  );
 
   return (
     <PagetLayout
@@ -172,6 +195,7 @@ const IncidenceScreen = () => {
       footer={
         <CustomButton
           loading={false}
+          styled="rounded"
           title={
             incidence?.done ? 'Incidencia resuelta' : 'Resolver incidencia'
           }
@@ -188,50 +212,14 @@ const IncidenceScreen = () => {
         title: 'Incidencia',
         subPage: true,
       }}>
-      <ScrollView style={styles.container}>
-        <Modal
-          visible={modal}
-          transparent={true}
-          onRequestClose={() => setModal(false)}>
-          <ImageViewer
-            index={imageIndex}
-            imageUrls={incidence?.photos?.map((url) => ({url: url}))}
-            onSwipeDown={() => {
-              setModal(false);
-            }}
-            enableSwipeDown={true}
-          />
-        </Modal>
-        <View style={styles.infoWrapper}>
-          <InfoIcon
-            info={incidence.done ? 'Resuelta' : 'Sin resolver'}
-            color={incidence.done ? '#7dd891' : '#ED7A7A'}
-          />
-        </View>
-        <Text style={styles.date}>
-          {moment(incidence?.date?.toDate()).format('LL')}
-        </Text>
-        <Text style={defaultLabel}>🏡 {incidence?.house?.houseName}</Text>
-        <Text style={styles.title}>{incidence?.title}</Text>
-        <Text style={{...defaultLabel, ...marginBottom(10)}}>Informador</Text>
-        <View style={styles.workers}>
-          <Avatar
-            uri={incidence?.user?.profileImage}
-            name={incidence?.user?.firstName}
-            size="big"
-          />
-        </View>
-        <Text style={{...defaultLabel, ...marginBottom(10)}}>Incidencia</Text>
-        <TextWrapper>
-          <Text style={styles.observations}>{incidence?.incidence}</Text>
-        </TextWrapper>
-        <Text style={{...defaultLabel, ...marginBottom(10)}}>Fotos</Text>
-        <View style={styles.photosWrapper}>
-          {incidence?.photos?.map((photo, i) => (
-            <IncidenceImage photo={photo} index={i} key={photo} />
-          ))}
-        </View>
-      </ScrollView>
+      <TabView
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={setIndex}
+        initialLayout={initialLayout}
+        style={{height: Dimensions.get('window').height - 100}}
+      />
     </PagetLayout>
   );
 };

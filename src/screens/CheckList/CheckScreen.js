@@ -1,152 +1,113 @@
 import React, {useState} from 'react';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Dimensions} from 'react-native';
 
-// Redux
-import {useSelector, shallowEqual} from 'react-redux';
+import {Info, Messages, Options, Photos} from '../../components/Check';
 
-//Firebase
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
+
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import {useTheme} from '../../Theme';
 
 // UI
 import PagetLayout from '../../components/PageLayout';
-
 import CustomButton from '../../components/Elements/CustomButton';
-
-// styles
-import {defaultLabel, marginBottom} from '../../styles/common';
-import {DARK_BLUE, GREY_1, LOW_GREY, PM_COLOR} from '../../styles/colors';
-
-// utils
-import moment from 'moment';
-import TextWrapper from '../../components/TextWrapper';
-
-import ItemCheck from '../../components/ItemCheck';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {shallowEqual, useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
-import useUploadImageCheck from '../../hooks/useUploadImage';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {Colors} from '../../Theme/Variables';
+import {sendOwnerChecklist} from '../../components/Alerts/checklist';
+import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
 
 const styles = StyleSheet.create({
-  checklistContainer: {
-    flex: 1,
-    backgroundColor: LOW_GREY,
-    borderTopRightRadius: 50,
-    marginTop: 10,
-    // height: '100%',
+  tabBarStyle: {
+    backgroundColor: 'transparent',
+    color: 'black',
+    justifyContent: 'space-evenly',
   },
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    alignItems: 'center',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: GREY_1,
-    borderRadius: 10,
-  },
-  observationsStyle: {
-    fontSize: 15,
-  },
-  checkboxWrapper: {
-    flexDirection: 'row',
-  },
-  labelWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  infoWrapper: {
-    flex: 6,
-    marginLeft: 0,
-    paddingRight: 20,
-  },
-  name: {
-    fontSize: 15,
-  },
-  dateStyle: {
-    color: '#2A7BA5',
-  },
-  date: {
-    fontSize: 18,
-    marginBottom: 20,
-    marginVertical: 10,
-    color: '#3DB6BA',
-  },
-  counter: {
-    fontSize: 20,
+  tabBarLabelStyle: {
+    color: '#284748',
     fontWeight: 'bold',
-    color: DARK_BLUE,
+    fontSize: 14,
+    width: 80,
+    textAlign: 'center',
   },
-  buttonStyle: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: PM_COLOR,
+  tabIndicator: {
+    backgroundColor: Colors.pm,
+    width: 10,
+    height: 10,
     borderRadius: 100,
-    marginRight: 10,
+  },
+  jobBackScreen: {
+    flex: 1,
+  },
+  jobScreen: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderTopRightRadius: 50,
+    // height: '100%',
   },
 });
 
-const CheckScreen = ({route, navigation}) => {
+const FirstRoute = () => <Info />;
+const SecondRoute = () => <Messages />;
+const ThirdRoute = () => <Photos />;
+const FourthRoute = () => <Options />;
+
+const CheckScreen = ({route}) => {
   const {checkId} = route.params;
   const {document: checklist} = useGetDocFirebase('checklists', checkId);
-  const {list: checks} = useGetFirebase(`checklists/${checkId}/checks`);
-
-  const {updateFirebase} = useUpdateFirebase('checklists');
-
-  const {loading, idCheckLoading, uploadImages} = useUploadImageCheck(checkId);
-
   const user = useSelector(userSelector, shallowEqual);
+  const {Layout, Gutters} = useTheme();
 
-  const renderItem = ({item}) => (
-    <TouchableOpacity
-      onPress={
-        item.numberOfPhotos > 0
-          ? () =>
-              navigation.navigate('CheckPhotos', {
-                checkId: checkId,
-                checkItemId: item.id,
-                title: item.title,
-                date: item.date,
-              })
-          : null
-      }>
-      <ItemCheck
-        key={item.id}
-        check={item}
-        handleCheck={() => handleCheck(checklist, item, !item.done)}
-        imageHandler={(imgs) => uploadImages(imgs, item)}
-        loading={loading && item.id === idCheckLoading}
-      />
-    </TouchableOpacity>
-  );
+  const [index, setIndex] = React.useState(0);
+  const [routes] = useState([
+    {key: 'info', title: 'Info', icon: 'info'},
+    {key: 'messages', title: 'Mensajes', icon: 'message'},
+    {key: 'photos', title: 'Fotos', icon: 'photo'},
+    {key: 'options', title: 'Opciones', icon: 'settings'},
+  ]);
 
-  const handleCheck = async (checklist, check, state) => {
-    try {
-      await updateFirebase(`${checklist.id}`, {
-        ...checklist,
-        done: state ? checklist.done + 1 : checklist.done - 1,
-      });
-      await updateFirebase(`${checklist.id}/checks/${check.id}`, {
-        ...check,
-        date: !state ? null : new Date(),
-        done: state,
-        worker: state ? user : null,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+  const initialLayout = {
+    width: Dimensions.get('window').width,
   };
 
+  const renderScene = SceneMap({
+    info: FirstRoute,
+    messages: SecondRoute,
+    photos: ThirdRoute,
+    options: FourthRoute,
+  });
+
+  const handleFinishAndSend = () => {
+    finishAndSendChecklist(checkId);
+  };
+
+  const renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      renderLabel={({route}) => (
+        <View style={[Layout.fill, Layout.colCenter]}>
+          <Icon
+            name={route.icon}
+            size={45}
+            color={Colors.pm}
+            style={[styles.icon, Gutters.tinyBMargin]}
+          />
+        </View>
+      )}
+      indicatorStyle={[
+        styles.tabIndicator,
+        {left: Dimensions.get('window').width / (routes.length * 2) - 10},
+      ]}
+      style={styles.tabBarStyle}
+    />
+  );
   return (
     <PagetLayout
       backButton
       titleProps={{
         subPage: true,
-        title: `Check list en ${
+        title: `Checklist en ${
           checklist?.house && checklist?.house[0]?.houseName
         }`,
         color: 'white',
@@ -155,41 +116,21 @@ const CheckScreen = ({route, navigation}) => {
         checklist?.done === checklist?.total &&
         user.role === 'admin' && (
           <CustomButton
+            styled="rounded"
             loading={false}
             title="Finalizar y enviar al propietario"
-            onPress={() => {}}
+            onPress={() => sendOwnerChecklist(() => handleFinishAndSend())}
           />
         )
       }>
-      <View style={styles.checklistContainer}>
-        <View style={{marginBottom: 20}}>
-          <Text style={styles.date}>
-            {moment(checklist?.date?.toDate()).format('LL')}
-          </Text>
-          <Text style={{...defaultLabel, ...marginBottom(10)}}>
-            Observaciones
-          </Text>
-          <TextWrapper>
-            <Text style={styles.observationsStyle}>
-              {checklist?.observations}
-            </Text>
-          </TextWrapper>
-        </View>
-        <View style={styles.labelWrapper}>
-          <Text style={{...defaultLabel, ...marginBottom(10)}}>
-            Listado de checks
-          </Text>
-          <Text style={styles.counter}>
-            {checklist.done}/{checklist.total}
-          </Text>
-        </View>
-        <FlatList
-          data={checks}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
+      <TabView
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={setIndex}
+        initialLayout={initialLayout}
+        style={{height: Dimensions.get('window').height - 100}}
+      />
     </PagetLayout>
   );
 };

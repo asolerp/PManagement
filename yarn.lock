@@ -6631,6 +6631,11 @@ react-native-size-matters@^0.3.1:
   resolved "https://registry.yarnpkg.com/react-native-size-matters/-/react-native-size-matters-0.3.1.tgz#24d0cfc335a2c730f6d58bd7b43ea5a41be4b49f"
   integrity sha512-mKOfBLIBFBcs9br1rlZDvxD5+mAl8Gfr5CounwJtxI6Z82rGrMO+Kgl9EIg3RMVf3G855a85YVqHJL2f5EDRlw==
 
+react-native-skeleton-placeholder@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-skeleton-placeholder/-/react-native-skeleton-placeholder-4.0.0.tgz#8c982cd9e00ffc69d5193da94945b75191eaa7c4"
+  integrity sha512-nX0NM6GhurCIgz8Yf+H9VYIaxSF2mbtdozLgaJNh/8QIH9mi+aJ2G9BVHSpjQ0o1fNdKYbGzrXDsC+6v4hmqAA==
+
 react-native-splash-screen@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"

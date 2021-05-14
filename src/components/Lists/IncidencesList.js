@@ -5,25 +5,21 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import Avatar from '../Avatar';
 
-import {
-  defaultLabel,
-  marginRight,
-  width,
-  marginBottom,
-} from '../../styles/common';
+import {defaultLabel, marginRight, width} from '../../styles/common';
 
 //Firebase
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 
 // Utils
-import {minimizetext, parseDateWithText} from '../../utils/parsers';
+import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
 import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
+import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
     flexDirection: 'row',
-    backgroundColor: Colors.danger,
+    backgroundColor: Colors.white,
     marginBottom: 10,
     padding: 10,
     borderRadius: 10,
@@ -38,7 +34,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   infoStyle: {
-    color: Colors.white,
+    color: Colors.darkBlue,
     marginBottom: 10,
   },
   titleWrapper: {
@@ -51,21 +47,21 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginBottom: 5,
     fontWeight: '500',
-    color: Colors.white,
+    color: Colors.darkBlue,
     height: 60,
   },
   bold: {
     fontWeight: '600',
-    color: Colors.white,
+    color: Colors.darkBlue,
     marginBottom: 10,
   },
   date: {
     fontSize: 12,
-    color: Colors.white,
+    color: Colors.darkBlue,
   },
   buble: {
-    width: 20,
-    height: 20,
+    width: 10,
+    height: 10,
     borderRadius: 100,
   },
   filterWrapper: {
@@ -84,6 +80,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+const BubleIncidence = ({status}) => {
+  return (
+    <View
+      style={{
+        ...styles.buble,
+        backgroundColor: Colors.danger,
+      }}
+    />
+  );
+};
 
 const IncidencesList = () => {
   const {Gutters, Layout} = useTheme();
@@ -106,16 +113,24 @@ const IncidencesList = () => {
 
     return (
       <TouchableOpacity
-        style={[styles.incidenceWrapper, Gutters.mediumRMargin]}
+        style={[
+          styles.incidenceWrapper,
+          Gutters.mediumRMargin,
+          {
+            borderLeftWidth: 5,
+            borderLeftColor: parseStateIncidecne(item.state),
+          },
+        ]}
         onPress={() => handlePressIncidence()}>
         <View style={[Layout.fill]}>
           <View
             style={[
               Layout.rowCenter,
-              Layout.justifyContentStart,
+              Layout.justifyContentSpaceBetween,
               Gutters.smallBMargin,
             ]}>
             <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
+            <BubleIncidence />
           </View>
           <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
             {item?.title}{' '}
@@ -141,7 +156,7 @@ const IncidencesList = () => {
   };
 
   if (loading) {
-    return <Text>Cargando lista..</Text>;
+    return <DashboardSectionSkeleton />;
   }
 
   if (list.length === 0) {

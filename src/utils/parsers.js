@@ -70,6 +70,16 @@ export const parsePercentageDone = (percentage) => {
   }
 };
 
+export const parseStateIncidecne = (state) => {
+  if (state === 'iniciada') {
+    return Colors.leftBlue;
+  } else if (state === 'tramite') {
+    return Colors.warning;
+  } else {
+    return Colors.rightGreen;
+  }
+};
+
 export const parsePirorityIcon = (priority) => {
   switch (priority) {
     case 'low':

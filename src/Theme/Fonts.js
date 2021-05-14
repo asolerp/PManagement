@@ -2,6 +2,9 @@ import {StyleSheet} from 'react-native';
 
 export default function ({FontSize, Colors}) {
   return StyleSheet.create({
+    alignCenter: {
+      textAlign: 'center',
+    },
     textTitle: {
       fontSize: FontSize.regular,
       fontWeight: 'bold',
@@ -14,11 +17,13 @@ export default function ({FontSize, Colors}) {
     },
     textSmall: {
       fontSize: FontSize.small,
-      color: Colors.text,
+      color: Colors.darkBlue,
+      fontWeight: 'bold',
     },
     textRegular: {
       fontSize: FontSize.regular,
       fontWeight: 'bold',
+      color: Colors.darkBlue,
     },
     textLarge: {
       fontSize: FontSize.large,

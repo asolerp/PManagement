@@ -7,6 +7,7 @@ import {
   setStatusTaskFilter,
   statusTaskFilterSelector,
 } from '../../Store/Filters/filtersSlice';
+import {useTheme} from '../../Theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,7 +25,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const Filter = ({text, onPress, color, active}) => {
+export const Filter = ({text, onPress, color, active}) => {
+  const {Fonts, Gutters} = useTheme();
   return (
     <TouchableOpacity onPress={onPress}>
       <View
@@ -32,7 +34,7 @@ const Filter = ({text, onPress, color, active}) => {
           ...styles.filterWrapper,
           ...{backgroundColor: color, opacity: active ? 1 : 0.4},
         }}>
-        <Text style={styles.filterText}>{text}</Text>
+        <Text style={[Fonts.textWhite, Gutters.smallHPadding]}>{text}</Text>
       </View>
     </TouchableOpacity>
   );

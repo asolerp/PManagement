@@ -68,6 +68,7 @@ const TabNavigation = () => {
       routeName === 'JobScreen' ||
       routeName === 'Incidence' ||
       routeName === 'Check' ||
+      routeName === 'CheckPhotos' ||
       routeName === 'NewCheckList'
     ) {
       return false;
@@ -97,8 +98,9 @@ const TabNavigation = () => {
       <Tabs.Screen
         name="Dashboard"
         component={DashboardStack}
-        options={{
+        options={({route}) => ({
           tabBarBadge: 5,
+          tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({focused, color, size}) => (
             <Icon
               name="dashboard"
@@ -107,7 +109,7 @@ const TabNavigation = () => {
               focused={focused}
             />
           ),
-        }}
+        })}
       />
       <Tabs.Screen
         name="CheckList"

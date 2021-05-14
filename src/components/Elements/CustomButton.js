@@ -6,15 +6,15 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import {PM_COLOR} from '../../styles/colors';
+import {useTheme} from '../../Theme';
+
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
   },
   buttonWrapper: {
-    backgroundColor: PM_COLOR,
-    borderRadius: 20,
     padding: 12,
   },
   clearStyle: {
@@ -27,12 +27,26 @@ const styles = StyleSheet.create({
 });
 
 const CustomButton = ({
+  styled,
+  color = Colors.pm,
   title,
   onPress,
   loading = false,
   disabled = false,
+  containerStyle = [],
   type,
 }) => {
+  const {Fonts, Layout} = useTheme();
+
+  const parseStyled = () => {
+    switch (styled) {
+      case 'rounded':
+        return 15;
+      default:
+        return 5;
+    }
+  };
+
   const parseTypeStyle = () => {
     switch (type) {
       case 'clear':
@@ -44,15 +58,17 @@ const CustomButton = ({
 
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={containerStyle.concat([styles.container])}
       onPress={onPress}
       disabled={disabled}>
       <View
-        style={
+        style={[
+          Layout.rowCenter,
+          {backgroundColor: color, borderRadius: parseStyled()},
           disabled
             ? {...styles[parseTypeStyle(type)], ...{opacity: 0.5}}
-            : {...styles[parseTypeStyle(type)]}
-        }>
+            : {...styles[parseTypeStyle(type)]},
+        ]}>
         {loading ? (
           <ActivityIndicator
             size="small"
@@ -60,12 +76,14 @@ const CustomButton = ({
           />
         ) : (
           <Text
-            style={{
-              ...styles.titleStyle,
-              ...{
-                color: type === 'clear' ? '#2A7BA5' : 'white',
+            style={[
+              Fonts.textWhite,
+              {
+                ...{
+                  color: type === 'clear' ? '#2A7BA5' : 'white',
+                },
               },
-            }}>
+            ]}>
             {title}
           </Text>
         )}

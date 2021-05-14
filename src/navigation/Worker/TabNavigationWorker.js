@@ -17,6 +17,7 @@ const TabNavigationWorker = () => {
     if (
       routeName === 'NewJob' ||
       routeName === 'JobScreen' ||
+      routeName === 'Check' ||
       routeName === 'NewIncidence'
     ) {
       return false;
