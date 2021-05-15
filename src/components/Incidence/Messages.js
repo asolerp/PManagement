@@ -36,8 +36,6 @@ const Messages = () => {
   const route = useRoute();
   const {checkId} = route.params;
 
-  console.log(checkId);
-
   const [messageImage, setMessageImage] = useState(null);
   const [imageLoading, setImageLoading] = useState(null);
   const [local, setLocal] = useState([]);

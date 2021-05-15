@@ -78,9 +78,6 @@ const useFilter = (storage) => {
     }
   }, [houses]);
 
-  console.log(where);
-  console.log(filteredList);
-
   return {
     filteredList,
     loading,

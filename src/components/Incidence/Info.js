@@ -18,6 +18,8 @@ import Avatar from '../Avatar';
 import InfoIcon from '../InfoIcon';
 import SituationIncidence from '../SituationIncidence';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import {defaultLabel, marginBottom} from '../../styles/common';
+import TextWrapper from '../TextWrapper';
 
 const styles = StyleSheet.create({});
 
@@ -50,7 +52,7 @@ const Info = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Modal
+      {/* <Modal
         visible={modal}
         transparent={true}
         onRequestClose={() => setModal(false)}>
@@ -62,7 +64,7 @@ const Info = () => {
           }}
           enableSwipeDown={true}
         />
-      </Modal>
+      </Modal> */}
       <View
         style={[
           Layout.fill,
@@ -70,16 +72,16 @@ const Info = () => {
           Layout.alignItemsCenter,
           Layout.justifyContentSpaceBetween,
         ]}>
-        <Text style={styles.date}>
+        {/* <Text style={styles.date}>
           {moment(incidence?.date?.toDate()).format('LL')}
         </Text>
         <InfoIcon
-          info={incidence.done ? 'Resuelta' : 'Sin resolver'}
-          color={incidence.done ? '#7dd891' : '#ED7A7A'}
-        />
+          info={incidence?.done ? 'Resuelta' : 'Sin resolver'}
+          color={incidence?.done ? '#7dd891' : '#ED7A7A'}
+        /> */}
       </View>
-      <SituationIncidence incidence={incidence} />
-      <Text style={defaultLabel}>🏡 {incidence?.house?.houseName}</Text>
+      {/* <SituationIncidence incidence={incidence} /> */}
+      {/* <Text style={defaultLabel}>🏡 {incidence?.house?.houseName}</Text>
       <Text style={styles.title}>{incidence?.title}</Text>
       <Text style={{...defaultLabel, ...marginBottom(10)}}>Informador</Text>
       <View style={styles.workers}>
@@ -98,7 +100,7 @@ const Info = () => {
         {incidence?.photos?.map((photo, i) => (
           <IncidenceImage photo={photo} index={i} key={photo} />
         ))}
-      </View>
+      </View> */}
     </ScrollView>
   );
 };

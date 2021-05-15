@@ -105,8 +105,6 @@ const AuthNavigator = () => {
     return null;
   }
 
-  console.log(user, 'user');
-
   return user?.uid ? (
     <React.Fragment>
       {loading && <Loading />}

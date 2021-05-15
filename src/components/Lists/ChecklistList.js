@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   infoStyle: {
-    color: Colors.white,
+    color: Colors.darkBlue,
     marginBottom: 10,
   },
   titleWrapper: {

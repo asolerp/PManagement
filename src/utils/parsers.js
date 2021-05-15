@@ -150,7 +150,6 @@ export const generateCalendarDots = (list) => {
 };
 
 export const parseDeleteTextButton = (length) => {
-  console.log(length);
   if (length === 1) {
     return `Eliminar ${length} foto`;
   } else {
