@@ -74,7 +74,7 @@ const Messages = () => {
 
   useEffect(() => {
     if (messages.length > 0) {
-      setMessagesAsRead(checkId, user.uid);
+      setMessagesAsRead(checkId, user.uid, 'checklists');
     }
   }, [messages, checkId, user.uid]);
 

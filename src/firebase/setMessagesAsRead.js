@@ -2,14 +2,14 @@
 
 import firestore from '@react-native-firebase/firestore';
 
-export const setMessagesAsRead = async (jobId, userId) => {
+export const setMessagesAsRead = async (docId, userId, collection) => {
   // Create a new batch instance
   const batch = firestore().batch();
 
   try {
     const querySnapshot = await firestore()
-      .collection('jobs')
-      .doc(jobId)
+      .collection(collection)
+      .doc(docId)
       .collection('messages')
       // .where('received', '==', false)
       // .where('received', '==', false)
@@ -17,8 +17,8 @@ export const setMessagesAsRead = async (jobId, userId) => {
       .get();
     querySnapshot.forEach((doc) => {
       const docRef = firestore()
-        .collection('jobs')
-        .doc(jobId)
+        .collection(collection)
+        .doc(docId)
         .collection('messages')
         .doc(doc.id);
       batch.update(docRef, {received: true});

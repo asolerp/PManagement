@@ -4,7 +4,9 @@ import {useSelector} from 'react-redux';
 import {Filter} from '../components/Filters/StatusTaskFilter';
 import {userSelector} from '../Store/User/userSlice';
 import {useTheme} from '../Theme';
+
 import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
+import firestore from '@react-native-firebase/firestore';
 
 const SituationIncidence = ({incidence}) => {
   const {Layout, Gutters, Colors, Fonts} = useTheme();
@@ -12,15 +14,20 @@ const SituationIncidence = ({incidence}) => {
   const {updateFirebase} = useUpdateFirebase('incidences');
 
   const handleStateIncidence = async (stateIncidence) => {
-    if (user.role === 'admin') {
-      await updateFirebase(`${incidence.id}`, {
-        state: stateIncidence,
-      });
+    try {
+      if (user.role === 'admin') {
+        console.log('hola');
+        await firestore()
+          .doc(`incidences/${incidence.id}`)
+          .update({state: stateIncidence});
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
   return (
-    <View style={[Gutters.smallVMargin]}>
+    <View style={[Gutters.tinyVMargin]}>
       <Text style={[Fonts.textTitle]}>Estado de la incidencia</Text>
       <View
         style={[

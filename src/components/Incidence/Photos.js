@@ -7,13 +7,19 @@ import {
   Modal,
   TouchableOpacity,
   ImageBackground,
+  Dimensions,
   StyleSheet,
 } from 'react-native';
 
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-import {useGetFirebase} from '../../hooks/useGetFirebase';
-import {Dimensions} from 'react-native';
+//Firebase
+import firestore from '@react-native-firebase/firestore';
+import {
+  useCollection,
+  useDocument,
+  useDocumentOnce,
+} from 'react-firebase-hooks/firestore';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,7 +41,7 @@ const styles = StyleSheet.create({
 
 const Photos = () => {
   const route = useRoute();
-  const {jobId} = route.params;
+  const {incidenceId} = route.params;
 
   const [modal, setModal] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
@@ -49,7 +55,7 @@ const Photos = () => {
     return (
       <TouchableOpacity onPress={() => handlePressPhoto(index)}>
         <ImageBackground
-          source={{uri: photo.image}}
+          source={{uri: photo}}
           style={styles.photo}
           imageStyle={{borderRadius: 5}}
         />
@@ -57,15 +63,16 @@ const Photos = () => {
     );
   };
 
-  const {list: photos, loading: loadingPhotos} = useGetFirebase(
-    `jobs/${jobId}/photos`,
+  const [value, loading, error] = useDocument(
+    firestore().doc(`incidences/${incidenceId}`),
     {
-      field: 'createdAt',
-      type: 'desc',
+      snapshotListenOptions: {includeMetadataChanges: true},
     },
   );
 
-  if (loadingPhotos) {
+  console.log(value?.data()?.photos);
+
+  if (loading) {
     return (
       <View vtyle={styles.container}>
         <Text>Cargando imágenes..</Text>
@@ -81,7 +88,7 @@ const Photos = () => {
         onRequestClose={() => setModal(false)}>
         <ImageViewer
           index={imageIndex}
-          imageUrls={photos?.map((url) => ({url: url.image}))}
+          imageUrls={value?.data()?.photos?.map((url) => ({url: url}))}
           onSwipeDown={() => {
             setModal(false);
           }}
@@ -89,8 +96,8 @@ const Photos = () => {
         />
       </Modal>
       <View style={styles.container}>
-        {photos?.map((photo, i) => (
-          <Photo photo={photo} index={i} key={photo.image} />
+        {value?.data()?.photos?.map((photo, i) => (
+          <Photo photo={photo} index={i} key={photo} />
         ))}
       </View>
     </React.Fragment>

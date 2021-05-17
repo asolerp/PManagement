@@ -42,6 +42,9 @@ export default function ({}) {
     justifyContentSpaceBetween: {
       justifyContent: 'space-between',
     },
+    alignItemsStart: {
+      alignItems: 'flex-start',
+    },
     alignItemsCenter: {
       alignItems: 'center',
     },

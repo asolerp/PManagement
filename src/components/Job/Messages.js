@@ -39,20 +39,6 @@ import {messageIdGenerator} from '../../utils/uuid';
 import {Platform} from 'react-native';
 import {userSelector} from '../../Store/User/userSlice';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  containerStyle: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'red',
-  },
-});
-
 const Messages = () => {
   const route = useRoute();
   const {jobId} = route.params;
@@ -95,9 +81,9 @@ const Messages = () => {
 
   useEffect(() => {
     if (messages.length > 0) {
-      setMessagesAsRead(jobId, user.uid);
+      setMessagesAsRead(jobId, user.uid, 'jobs');
     }
-  }, [messages, jobId]);
+  }, [messages, jobId, user.uid]);
 
   useEffect(() => {
     const uploadImage = async () => {

@@ -6,7 +6,8 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {defaultLabel, width} from '../../styles/common';
 
 //Firebase
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+import firestore from '@react-native-firebase/firestore';
+import {useCollection} from 'react-firebase-hooks/firestore';
 
 // Utils
 
@@ -82,7 +83,9 @@ const styles = StyleSheet.create({
 const ChecklistList = () => {
   const {Gutters, Layout, Fonts} = useTheme();
 
-  const {list, loading, error} = useGetFirebase('checklists');
+  const [value, loading] = useCollection(firestore().collection('checklists'), {
+    snapshotListenOptions: {includeMetadataChanges: true},
+  });
 
   const navigation = useNavigation();
 
@@ -103,7 +106,9 @@ const ChecklistList = () => {
             borderLeftWidth: 5,
             borderWidth: 1,
             borderColor: Colors.lowGrey,
-            borderLeftColor: parsePercentageDone(item?.done / item?.total),
+            borderLeftColor: parsePercentageDone(
+              item?.data().done / item?.data().total,
+            ),
           },
         ]}
         onPress={() => handlePressIncidence()}>
@@ -114,17 +119,19 @@ const ChecklistList = () => {
               Layout.justifyContentStart,
               Gutters.smallBMargin,
             ]}>
-            <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
+            <Text style={styles.date}>
+              🕜 {parseDateWithText(item?.data().date)}
+            </Text>
           </View>
           <View style={styles.infoWrapper}>
             <Text style={[styles.bold, Gutters.smallBMargin]}>
-              {item?.house?.[0].houseName}
+              {item?.data().house?.[0].houseName}
             </Text>
             <Text
               style={styles.infoStyle}
               ellipsizeMode="tail"
               numberOfLines={2}>
-              {item?.observations}
+              {item?.data().observations}
             </Text>
           </View>
           <View
@@ -134,7 +141,7 @@ const ChecklistList = () => {
               Layout.alignItemsEnd,
             ]}>
             <Text style={[Fonts.textSmall]}>
-              {item?.done}/{item?.total}
+              {item?.data().done}/{item?.data().total}
             </Text>
           </View>
         </View>
@@ -146,7 +153,7 @@ const ChecklistList = () => {
     return <DashboardSectionSkeleton />;
   }
 
-  if (list.length === 0) {
+  if (value.docs.length === 0) {
     return <Text>No hay ningun checklist</Text>;
   }
 
@@ -156,14 +163,14 @@ const ChecklistList = () => {
         <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>Checklists</Text>
         <View style={styles.badget}>
           <Text style={{...defaultLabel, ...{color: Colors.white}}}>
-            {list.length}
+            {value.docs.length}
           </Text>
         </View>
       </View>
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={list}
+        data={value.docs}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

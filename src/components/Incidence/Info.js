@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {useTheme} from '../../Theme';
 
 // UI
@@ -21,17 +20,46 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import {defaultLabel, marginBottom} from '../../styles/common';
 import TextWrapper from '../TextWrapper';
 
-const styles = StyleSheet.create({});
+import firestore from '@react-native-firebase/firestore';
+
+import {useDocument} from 'react-firebase-hooks/firestore';
+import {TextInput} from 'react-native';
+import {Colors} from '../../Theme/Variables';
+
+const styles = StyleSheet.create({
+  incidenceImage: {
+    width: 80,
+    height: 100,
+    resizeMode: 'cover',
+    borderRadius: 10,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  observations: {
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: Colors.grey,
+  },
+});
 
 const Info = () => {
-  const {Layout} = useTheme();
+  const {Layout, Gutters, Fonts} = useTheme();
   const [modal, setModal] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
 
   const route = useRoute();
 
   const {incidenceId} = route.params;
-  const {document: incidence} = useGetFirebase('incidences', incidenceId);
+
+  const [value, loading] = useDocument(
+    firestore().doc(`incidences/${incidenceId}`),
+    {
+      snapshotListenOptions: {includeMetadataChanges: true},
+    },
+  );
 
   const handlePressPhoto = (i) => {
     setModal(true);
@@ -50,21 +78,25 @@ const Info = () => {
     );
   };
 
+  if (loading) {
+    <Text>Cargando incidencia</Text>;
+  }
+
   return (
-    <ScrollView style={styles.container}>
-      {/* <Modal
+    <ScrollView style={[styles.container, Gutters.mediumTMargin]}>
+      <Modal
         visible={modal}
         transparent={true}
         onRequestClose={() => setModal(false)}>
         <ImageViewer
           index={imageIndex}
-          imageUrls={incidence?.photos?.map((url) => ({url: url}))}
+          imageUrls={value?.data()?.photos?.map((url) => ({url: url}))}
           onSwipeDown={() => {
             setModal(false);
           }}
           enableSwipeDown={true}
         />
-      </Modal> */}
+      </Modal>
       <View
         style={[
           Layout.fill,
@@ -72,35 +104,33 @@ const Info = () => {
           Layout.alignItemsCenter,
           Layout.justifyContentSpaceBetween,
         ]}>
-        {/* <Text style={styles.date}>
-          {moment(incidence?.date?.toDate()).format('LL')}
+        <Text style={styles.date}>
+          🕜 {moment(value?.data()?.date?.toDate()).format('LL')}
         </Text>
         <InfoIcon
-          info={incidence?.done ? 'Resuelta' : 'Sin resolver'}
-          color={incidence?.done ? '#7dd891' : '#ED7A7A'}
-        /> */}
-      </View>
-      {/* <SituationIncidence incidence={incidence} /> */}
-      {/* <Text style={defaultLabel}>🏡 {incidence?.house?.houseName}</Text>
-      <Text style={styles.title}>{incidence?.title}</Text>
-      <Text style={{...defaultLabel, ...marginBottom(10)}}>Informador</Text>
-      <View style={styles.workers}>
-        <Avatar
-          uri={incidence?.user?.profileImage}
-          name={incidence?.user?.firstName}
-          size="big"
+          info={value?.data()?.done ? 'Resuelta' : 'Sin resolver'}
+          color={value?.data()?.done ? '#7dd891' : '#ED7A7A'}
         />
       </View>
+      <SituationIncidence incidence={{...value?.data(), id: value?.id}} />
+      <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
+        🏡 {value?.data()?.house?.houseName}
+      </Text>
+      <Text style={[Fonts.smallBMargin]}>{value?.data()?.title}</Text>
+      <View
+        style={[
+          Layout.colCenter,
+          Layout.justifyContentStart,
+          Layout.alignItemsStart,
+          Gutters.smallVMargin,
+        ]}>
+        <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>Informador</Text>
+        <Avatar uri={value?.data()?.user?.profileImage} size="big" />
+      </View>
       <Text style={{...defaultLabel, ...marginBottom(10)}}>Incidencia</Text>
-      <TextWrapper>
-        <Text style={styles.observations}>{incidence?.incidence}</Text>
-      </TextWrapper>
-      <Text style={{...defaultLabel, ...marginBottom(10)}}>Fotos</Text>
-      <View style={styles.photosWrapper}>
-        {incidence?.photos?.map((photo, i) => (
-          <IncidenceImage photo={photo} index={i} key={photo} />
-        ))}
-      </View> */}
+      <TextInput style={styles.observations} multiline numberOfLines={4}>
+        {value?.data()?.incidence}
+      </TextInput>
     </ScrollView>
   );
 };

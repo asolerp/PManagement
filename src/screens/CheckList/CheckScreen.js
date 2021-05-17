@@ -50,8 +50,7 @@ const styles = StyleSheet.create({
 
 const FirstRoute = () => <Info />;
 const SecondRoute = () => <Messages />;
-const ThirdRoute = () => <Photos />;
-const FourthRoute = () => <Options />;
+const ThirdRoute = () => <Options />;
 
 const CheckScreen = ({route}) => {
   const {checkId} = route.params;
@@ -63,7 +62,6 @@ const CheckScreen = ({route}) => {
   const [routes] = useState([
     {key: 'info', title: 'Info', icon: 'info'},
     {key: 'messages', title: 'Mensajes', icon: 'message'},
-    {key: 'photos', title: 'Fotos', icon: 'photo'},
     {key: 'options', title: 'Opciones', icon: 'settings'},
   ]);
 
@@ -74,8 +72,7 @@ const CheckScreen = ({route}) => {
   const renderScene = SceneMap({
     info: FirstRoute,
     messages: SecondRoute,
-    photos: ThirdRoute,
-    options: FourthRoute,
+    options: ThirdRoute,
   });
 
   const handleFinishAndSend = () => {

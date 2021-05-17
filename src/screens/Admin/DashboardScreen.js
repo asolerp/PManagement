@@ -44,8 +44,8 @@ const DashboardScreen = ({navigation}) => {
               <Text style={[Fonts.textTitle, Gutters.mediumVMargin]}>
                 Hoy es {date.join(' ')} ☀️
               </Text>
-              {/* <ChecklistList />
-              <IncidencesList /> */}
+              <ChecklistList />
+              <IncidencesList />
             </View>
           </View>
         </ScrollView>

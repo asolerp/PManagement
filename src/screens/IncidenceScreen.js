@@ -11,7 +11,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Firebase
 import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
-import {useGetDocFirebase} from '../hooks/useGetDocFIrebase';
+import firestore from '@react-native-firebase/firestore';
+import {useDocument, useDocumentOnce} from 'react-firebase-hooks/firestore';
 
 // Utils
 import PagetLayout from '../components/PageLayout';
@@ -20,17 +21,37 @@ import {finishIncidence, openIncidence} from '../components/Alerts/incidences';
 
 import {firebase} from '@react-native-firebase/firestore';
 
-import {DARK_BLUE} from '../styles/colors';
 import {Dimensions} from 'react-native';
 import {useTheme} from '../Theme';
+import {Colors} from '../Theme/Variables';
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 10,
+  tabBarStyle: {
+    backgroundColor: 'transparent',
+    color: 'black',
+    justifyContent: 'space-evenly',
+  },
+  tabBarLabelStyle: {
+    color: '#284748',
+    fontWeight: 'bold',
+    fontSize: 14,
+    width: 80,
+    textAlign: 'center',
+  },
+  tabIndicator: {
+    backgroundColor: Colors.pm,
+    width: 10,
+    height: 10,
+    borderRadius: 100,
+  },
+  jobBackScreen: {
     flex: 1,
   },
-  infoWrapper: {
-    width: '30%',
+  jobScreen: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderTopRightRadius: 50,
+    // height: '100%',
   },
   iconWrapper: {
     width: 30,
@@ -40,86 +61,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  actionButtonWrapper: {},
-  date: {
-    fontSize: 18,
-    marginVertical: 10,
-    color: '#3DB6BA',
-  },
-  label: {
-    fontSize: 20,
-    width: '90%',
-    color: '#284748',
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  houseName: {
-    textAlign: 'left',
-    fontSize: 25,
-    width: '90%',
-    color: '#284748',
-    fontWeight: 'bold',
-  },
-  title: {
-    textAlign: 'left',
-    fontSize: 20,
-    width: '90%',
-    color: DARK_BLUE,
-    marginTop: 10,
-    marginBottom: 30,
-  },
-  observations: {
-    fontSize: 18,
-    width: '90%',
-    color: '#284748',
-    marginBottom: 30,
-  },
-  houseItems: {
-    fontSize: 18,
-    width: '90%',
-    color: '#284748',
-  },
-  houseImage: {
-    width: '100%',
-    height: 180,
-    resizeMode: 'cover',
-    marginVertical: 10,
-    borderRadius: 10,
-  },
-  workers: {
-    flexDirection: 'row',
-    marginBottom: 30,
-  },
-  photosWrapper: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  incidenceImage: {
-    width: 80,
-    height: 100,
-    resizeMode: 'cover',
-    borderRadius: 10,
-    marginRight: 10,
-    marginBottom: 10,
-  },
 });
 
 const FirstRoute = () => <Info />;
-// const SecondRoute = () => <Messages />;
-// const ThirdRoute = () => <Photos />;
-// const FourthRoute = () => <Options />;
+const SecondRoute = () => <Messages />;
+const ThirdRoute = () => <Photos />;
+const FourthRoute = () => <Options />;
 
 const IncidenceScreen = () => {
-  const {Layout, Gutters, Colors} = useTheme();
+  const {Layout, Gutters} = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
 
   const [index, setIndex] = React.useState(0);
   const [routes] = useState([
     {key: 'info', title: 'Info', icon: 'info'},
-    // {key: 'messages', title: 'Mensajes', icon: 'message'},
-    // {key: 'photos', title: 'Fotos', icon: 'photo'},
-    // {key: 'options', title: 'Opciones', icon: 'settings'},
+    {key: 'messages', title: 'Mensajes', icon: 'message'},
+    {key: 'photos', title: 'Fotos', icon: 'photo'},
+    {key: 'options', title: 'Opciones', icon: 'settings'},
   ]);
 
   const initialLayout = {
@@ -127,7 +86,12 @@ const IncidenceScreen = () => {
   };
 
   const {incidenceId} = route.params;
-  const {document: incidence} = useGetDocFirebase('incidences', incidenceId);
+  const [value, loading, error] = useDocumentOnce(
+    firestore().doc(`incidences/${incidenceId}`),
+    {
+      snapshotListenOptions: {includeMetadataChanges: true},
+    },
+  );
 
   const {updateFirebase} = useUpdateFirebase('incidences');
 
@@ -154,9 +118,9 @@ const IncidenceScreen = () => {
 
   const renderScene = SceneMap({
     info: FirstRoute,
-    // messages: SecondRoute,
-    // photos: ThirdRoute,
-    // options: FourthRoute,
+    messages: SecondRoute,
+    photos: ThirdRoute,
+    options: FourthRoute,
   });
 
   const renderTabBar = (props) => (
@@ -197,10 +161,10 @@ const IncidenceScreen = () => {
           loading={false}
           styled="rounded"
           title={
-            incidence?.done ? 'Incidencia resuelta' : 'Resolver incidencia'
+            value?.data().done ? 'Incidencia resuelta' : 'Resolver incidencia'
           }
           onPress={() => {
-            if (incidence?.done) {
+            if (value?.data().done) {
               openIncidence(() => handleFinishTask(false));
             } else {
               finishIncidence(() => handleFinishTask(true));

@@ -34,14 +34,14 @@ import {userSelector} from '../../Store/User/userSlice';
 
 const Messages = () => {
   const route = useRoute();
-  const {checkId} = route.params;
+  const {incidenceId} = route.params;
 
   const [messageImage, setMessageImage] = useState(null);
   const [imageLoading, setImageLoading] = useState(null);
   const [local, setLocal] = useState([]);
 
   const {list: messages, loading: loadingMessages} = useGetFirebase(
-    `checklists/${checkId}/messages`,
+    `incidences/${incidenceId}/messages`,
     {
       field: 'createdAt',
       type: 'desc',
@@ -62,21 +62,21 @@ const Messages = () => {
 
   const onSend = useCallback(
     (messages = []) => {
-      addMessage(`checklists/${checkId}/messages`, {
+      addMessage(`incidences/${incidenceId}/messages`, {
         ...messages[0],
         createdAt: firestore.FieldValue.serverTimestamp(),
         sent: true,
         received: false,
       });
     },
-    [addMessage, checkId],
+    [addMessage, incidenceId],
   );
 
   useEffect(() => {
     if (messages.length > 0) {
-      setMessagesAsRead(checkId, user.uid);
+      setMessagesAsRead(incidenceId, user.uid);
     }
-  }, [messages, checkId, user.uid]);
+  }, [messages, incidenceId, user.uid]);
 
   useEffect(() => {
     const uploadImage = async () => {
@@ -98,21 +98,21 @@ const Messages = () => {
       };
 
       const result = await addMessage(
-        `checklists/${checkId}/messages`,
+        `incidences/${incidenceId}/messages`,
         waitingSendImageMessage,
       );
 
       const image = await cloudinaryUpload(
         messageImage,
-        `/PortManagement/Checks/${checkId}/Photos`,
+        `/PortManagement/Incidences/${incidenceId}/Photos`,
       );
 
-      updateFirebase(`${checkId}/messages/${result.id}`, {
+      updateFirebase(`${incidenceId}/messages/${result.id}`, {
         ...waitingSendImageMessage,
         image: image,
       });
 
-      addPhoto(`checklists/${checkId}/photos`, {
+      addPhoto(`incidences/${incidenceId}/photos`, {
         createdAt: firestore.FieldValue.serverTimestamp(),
         image: image,
       });
@@ -124,7 +124,7 @@ const Messages = () => {
     messageImage,
     addMessage,
     addPhoto,
-    checkId,
+    incidenceId,
     updateFirebase,
     userLoggedIn,
   ]);

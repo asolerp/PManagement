@@ -3,27 +3,21 @@ import CustomButton from '../Elements/CustomButton';
 
 import {View} from 'react-native';
 import {useTheme} from '../../Theme';
-import duplicateCheckList from '../../Services/duplicateCheckList';
-import {useNavigation, useRoute} from '@react-navigation/core';
-import {deleteCheckListAlert, sendOwnerChecklist} from '../Alerts/checklist';
 
-import {useDispatch} from 'react-redux';
-import {deleteCheckListAction} from '../../Store/App/appSlice';
+import {useNavigation, useRoute} from '@react-navigation/core';
+import {deleteCheckListAlert} from '../Alerts/checklist';
+
+import {deleteIncidence} from '../../Services';
 
 const Options = () => {
   const {Gutters, Colors} = useTheme();
-  const dispatch = useDispatch();
+
   const route = useRoute();
-  const {checkId} = route.params;
+  const {incidenceId} = route.params;
   const navigation = useNavigation();
 
-  const handleSubmit = () => {
-    duplicateCheckList(checkId);
-    navigation.goBack();
-  };
-
   const handleDelete = () => {
-    dispatch(deleteCheckListAction(checkId));
+    deleteIncidence(incidenceId);
     navigation.goBack();
   };
 
@@ -32,16 +26,7 @@ const Options = () => {
       <CustomButton
         loading={false}
         styled="rounded"
-        title="Duplicar checklikst"
-        onPress={() => {
-          sendOwnerChecklist(() => handleSubmit());
-        }}
-        containerStyle={[Gutters.tinyBMargin]}
-      />
-      <CustomButton
-        loading={false}
-        styled="rounded"
-        title="Eleminar"
+        title="Eleminar incidencia"
         color={Colors.danger}
         onPress={() => {
           deleteCheckListAlert(() => handleDelete());

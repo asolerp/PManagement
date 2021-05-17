@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: 220,
-    height: 210,
+    height: 230,
   },
   avatarWrapper: {
     flex: 1,
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   infoStyle: {
     color: Colors.darkBlue,
-    marginBottom: 10,
+    height: 50,
   },
   titleWrapper: {
     flexDirection: 'row',
@@ -136,7 +136,10 @@ const IncidencesList = () => {
             {item?.title}{' '}
           </Text>
           <View style={styles.infoWrapper}>
-            <Text style={styles.infoStyle} ellipsizeMode="tail">
+            <Text
+              style={styles.infoStyle}
+              ellipsizeMode="tail"
+              numberOfLines={2}>
               {item?.incidence}
             </Text>
             <Text style={[styles.bold, Gutters.regularBMargin]}>
