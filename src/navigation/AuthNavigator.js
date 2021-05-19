@@ -76,6 +76,7 @@ const AuthNavigator = () => {
           const usuario = await getUser(result?.uid);
           if (usuario.data()) {
             setUser({...usuario.data(), uid: result.uid});
+            console.log(await messaging().getToken());
             updateFirebase(`${result.uid}`, {
               token: await messaging().getToken(),
             });

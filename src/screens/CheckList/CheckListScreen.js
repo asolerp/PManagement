@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useState} from 'react';
 
 import {View, FlatList, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CheckItem from '../../components/CheckItem';
@@ -8,11 +8,13 @@ import PagetLayout from '../../components/PageLayout';
 
 // Styles
 import {defaultLabel, marginBottom} from '../../styles/common';
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+
 import HouseFilter from '../../components/Filters/HouseFilter';
-import {useSelector} from 'react-redux';
-import {housesSelector} from '../../Store/Filters/filtersSlice';
 import {useTheme} from '../../Theme';
+import ItemListSkeleton from '../../components/Skeleton/ItemListSkeleton';
+
+import firestore from '@react-native-firebase/firestore';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -32,24 +34,17 @@ const styles = StyleSheet.create({
   checkListWrapper: {
     marginTop: 0,
   },
-  housesWrapper: {},
 });
 
 const CheckListScreen = ({navigation}) => {
-  const {Gutters} = useTheme();
-  const houses = useSelector(housesSelector);
-  const housesFilter = [
-    {
-      label: 'houseId',
-      operator: 'in',
-      condition: houses,
-    },
-  ];
+  const {Gutters, Layout, Fonts} = useTheme();
+  const [filterHouses, setFilterHouses] = useState([]);
 
-  const {list, loading} = useGetFirebase(
-    'checklists',
-    null,
-    houses.length > 0 && housesFilter,
+  const [values, loading] = useCollectionData(
+    firestore().collection('checklists'),
+    {
+      idField: 'id',
+    },
   );
 
   const renderItem = ({item}) => (
@@ -68,9 +63,10 @@ const CheckListScreen = ({navigation}) => {
     navigation.navigate('NewCheckList');
   };
 
-  if (loading) {
-    return null;
-  }
+  const noFoundMessage = (checklist) =>
+    checklist?.filter((check) =>
+      filterHouses.length > 0 ? filterHouses.includes(check.houseId) : true,
+    ).length === 0;
 
   return (
     <React.Fragment>
@@ -87,7 +83,6 @@ const CheckListScreen = ({navigation}) => {
         }}>
         <View>
           <View style={styles.filterWrapper}>
-            {/* <GlobalFilters storage="checklists" /> */}
             <View style={styles.checkListWrapper}>
               <View
                 style={[
@@ -95,16 +90,34 @@ const CheckListScreen = ({navigation}) => {
                   Gutters.tinyTMargin,
                   Gutters.regularBMargin,
                 ]}>
-                <HouseFilter />
+                <HouseFilter
+                  houses={filterHouses}
+                  onClickHouse={(houses) => setFilterHouses(houses)}
+                />
               </View>
               <Text style={{...defaultLabel, ...marginBottom(20)}}>
                 CheckList
               </Text>
-              <FlatList
-                data={list}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-              />
+              {noFoundMessage(values) && (
+                <View style={[Layout.rowCenter]}>
+                  <Text style={[Fonts.textSmall]}>
+                    No hay ningún checklist con esta selección de casas
+                  </Text>
+                </View>
+              )}
+              {loading ? (
+                <ItemListSkeleton />
+              ) : (
+                <FlatList
+                  data={values.filter((check) =>
+                    filterHouses.length > 0
+                      ? filterHouses.includes(check.houseId)
+                      : true,
+                  )}
+                  renderItem={renderItem}
+                  keyExtractor={(item) => item.id}
+                />
+              )}
             </View>
           </View>
         </View>

@@ -107,6 +107,7 @@ const NewCheckListJobScreen = ({route, navigation}) => {
       footer={
         <CustomButton
           loading={loading}
+          styled="rounded"
           title="Crear checklist"
           onPress={() => handleSubmit()}
         />

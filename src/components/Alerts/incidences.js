@@ -15,6 +15,21 @@ export const finishIncidence = (action) =>
     {cancelable: false},
   );
 
+export const deleteIncidenceAlert = (action) =>
+  Alert.alert(
+    '🚨 Atención 🚨',
+    '¿Vas a eliminar la incidencia?',
+    [
+      {
+        text: 'Cancelar',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'Borrar', onPress: () => action()},
+    ],
+    {cancelable: false},
+  );
+
 export const openIncidence = (action) =>
   Alert.alert(
     '🚨 Atención 🚨',

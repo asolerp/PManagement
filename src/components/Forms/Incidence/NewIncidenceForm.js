@@ -8,7 +8,7 @@ import {BottomModal, ModalTitle, ModalContent} from 'react-native-modals';
 
 // Redux
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-import {setForm} from '../../../Store/CheckList/checkListSlice';
+import {setInputForm} from '../../../Store/IncidenceForm/incidenceFormSlice';
 
 const styles = StyleSheet.create({
   container: {},
@@ -25,7 +25,7 @@ const NewIncidenceForm = () => {
   );
 
   const setInputFormAction = useCallback(
-    (label, value) => dispatch(setForm({label, value})),
+    (label, value) => dispatch(setInputForm({label, value})),
     [dispatch],
   );
 
@@ -52,7 +52,9 @@ const NewIncidenceForm = () => {
         <TextInput
           style={{height: 40}}
           placeholder="Título"
-          onChangeText={(text) => setInputFormAction('title', text)}
+          onEndEditing={(event) =>
+            setInputFormAction('title', event.nativeEvent.text)
+          }
           value={incidence?.title}
         />
       </InputGroup>
@@ -63,7 +65,9 @@ const NewIncidenceForm = () => {
           textAlignVertical="top"
           style={{height: 120}}
           placeholder="Incidencia"
-          onChangeText={(text) => setInputFormAction('incidence', text)}
+          onEndEditing={(event) =>
+            setInputFormAction('incidence', event.nativeEvent.text)
+          }
           value={incidence?.incidence}
         />
       </InputGroup>

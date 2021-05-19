@@ -17,11 +17,13 @@ import {DARK_BLUE, GREY_1, LOW_GREY, PM_COLOR} from '../../styles/colors';
 import moment from 'moment';
 import TextWrapper from '../../components/TextWrapper';
 
+import EditableInput from '../Elements/EditableInput';
 import ItemCheck from '../../components/ItemCheck';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {userSelector} from '../../Store/User/userSlice';
 import useUploadImageCheck from '../../hooks/useUploadImage';
 import {useNavigation, useRoute} from '@react-navigation/core';
+import updateChecklistInput from '../../Services/updateChecklistInput';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -145,14 +147,17 @@ const Info = () => {
         <Text style={styles.date}>
           {moment(checklist?.date?.toDate()).format('LL')}
         </Text>
-        <Text style={{...defaultLabel, ...marginBottom(10)}}>
-          Observaciones
-        </Text>
-        <TextWrapper>
-          <Text style={styles.observationsStyle}>
-            {checklist?.observations}
+        <View>
+          <Text style={{...defaultLabel, ...marginBottom(10)}}>
+            Observaciones
           </Text>
-        </TextWrapper>
+          <EditableInput
+            value={checklist?.observations}
+            onPressAccept={(change) =>
+              updateChecklistInput(checkId, {observations: change})
+            }
+          />
+        </View>
       </View>
       <View style={styles.labelWrapper}>
         <Text style={{...defaultLabel, ...marginBottom(10)}}>

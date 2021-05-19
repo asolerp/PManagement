@@ -16,6 +16,8 @@ import {useTheme} from '../../Theme';
 import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
 
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
+import sortByDate from '../../utils/sorts';
+import Avatar from '../Avatar';
 
 const styles = StyleSheet.create({
   checkWrapper: {
@@ -24,7 +26,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: 220,
-    height: 150,
+    height: 160,
+    borderLeftWidth: 10,
+    borderWidth: 1,
   },
   avatarWrapper: {
     flex: 1,
@@ -83,9 +87,12 @@ const styles = StyleSheet.create({
 const ChecklistList = () => {
   const {Gutters, Layout, Fonts} = useTheme();
 
-  const [value, loading] = useCollection(firestore().collection('checklists'), {
-    snapshotListenOptions: {includeMetadataChanges: true},
-  });
+  const [value, loading] = useCollection(
+    firestore().collection('checklists').where('send', '!=', true),
+    {
+      snapshotListenOptions: {includeMetadataChanges: true},
+    },
+  );
 
   const navigation = useNavigation();
 
@@ -103,8 +110,6 @@ const ChecklistList = () => {
           Gutters.mediumRMargin,
           {
             backgroundColor: Colors.white,
-            borderLeftWidth: 5,
-            borderWidth: 1,
             borderColor: Colors.lowGrey,
             borderLeftColor: parsePercentageDone(
               item?.data().done / item?.data().total,
@@ -137,9 +142,15 @@ const ChecklistList = () => {
           <View
             style={[
               Layout.grow,
-              Layout.justifyContentEnd,
-              Layout.alignItemsEnd,
+              Layout.rowCenter,
+              Layout.justifyContentSpaceBetween,
+              Layout.alignItemsCenter,
+              Gutters.smallVMargin,
             ]}>
+            {item?.data().workers?.map((worker) => (
+              <Avatar key={worker.id} uri={worker.profileImage} size="medium" />
+            ))}
+
             <Text style={[Fonts.textSmall]}>
               {item?.data().done}/{item?.data().total}
             </Text>
@@ -170,7 +181,7 @@ const ChecklistList = () => {
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={value.docs}
+        data={value.docs.sort(sortByDate)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

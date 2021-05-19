@@ -74,7 +74,7 @@ const Messages = () => {
 
   useEffect(() => {
     if (messages.length > 0) {
-      setMessagesAsRead(incidenceId, user.uid);
+      setMessagesAsRead(incidenceId, user.uid, 'incidences');
     }
   }, [messages, incidenceId, user.uid]);
 

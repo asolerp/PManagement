@@ -110,6 +110,8 @@ const NewIncidence = () => {
         ...incidence,
         house: incidence.house.value[0],
         user: user,
+        houseId: incidence.house.value[0].id,
+        state: 'iniciada',
         date: new Date(),
         done: false,
       });

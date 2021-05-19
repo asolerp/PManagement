@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: GREY_1,
+    borderLeftWidth: 10,
   },
   checkText: {
     marginTop: 5,
@@ -43,14 +44,12 @@ const styles = StyleSheet.create({
 const CheckItem = ({check, onPress}) => {
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={styles.checkItemWrapper}>
+      <View
+        style={[
+          styles.checkItemWrapper,
+          {borderLeftColor: parsePercentageDone(check.done / check.total)},
+        ]}>
         <View style={{flexDirection: 'row'}}>
-          <View
-            style={[
-              styles.priority,
-              {backgroundColor: parsePercentageDone(check.done / check.total)},
-            ]}
-          />
           <View>
             <Text style={{...styles.checkText, ...styles.bold}}>
               🏡 {check?.house && check?.house[0].houseName}

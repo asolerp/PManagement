@@ -39,13 +39,13 @@ const SituationIncidence = ({incidence}) => {
         ]}>
         <Filter
           text="Iniciada"
-          color={Colors.leftBlue}
+          color={Colors.warning}
           active={incidence?.state === 'iniciada'}
           onPress={() => handleStateIncidence('iniciada')}
         />
         <Filter
           text="En trámite"
-          color={Colors.warning}
+          color={Colors.leftBlue}
           active={incidence?.state === 'tramite'}
           onPress={() => handleStateIncidence('tramite')}
         />

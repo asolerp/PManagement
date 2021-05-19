@@ -5,7 +5,7 @@ import {View} from 'react-native';
 import {useTheme} from '../../Theme';
 
 import {useNavigation, useRoute} from '@react-navigation/core';
-import {deleteCheckListAlert} from '../Alerts/checklist';
+import {deleteIncidenceAlert} from '../Alerts/incidences';
 
 import {deleteIncidence} from '../../Services';
 
@@ -29,7 +29,7 @@ const Options = () => {
         title="Eleminar incidencia"
         color={Colors.danger}
         onPress={() => {
-          deleteCheckListAlert(() => handleDelete());
+          deleteIncidenceAlert(() => handleDelete());
         }}
       />
     </View>

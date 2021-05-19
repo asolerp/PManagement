@@ -123,6 +123,10 @@ const CheckListForm = () => {
     dispatch(setAllChecks({checks: allChecks}));
   }, [dispatch, allChecks]);
 
+  const removeAllChecksActions = useCallback(() => {
+    dispatch(setAllChecks({checks: {}}));
+  }, [dispatch]);
+
   // Form State
   const [modalContent, setModalContent] = useState();
   const [modalVisible, setModalVisible] = useState(false);
@@ -155,7 +159,10 @@ const CheckListForm = () => {
       searchBy="houseName"
       schema={{img: 'houseImage', name: 'houseName'}}
       get={house?.value || []}
-      set={(house) => setInputFormAction('house', {...house, value: house})}
+      set={(house) => {
+        setInputFormAction('house', {...house, value: house});
+        setModalVisible(false);
+      }}
     />
   );
 
@@ -173,7 +180,10 @@ const CheckListForm = () => {
       searchBy="firstName"
       schema={{img: 'profileImage', name: 'firstName'}}
       get={workers?.value}
-      set={(ws) => setInputFormAction('workers', {...workers, value: ws})}
+      set={(ws) => {
+        setInputFormAction('workers', {...workers, value: ws});
+        setModalVisible(false);
+      }}
       multiple={true}
     />
   );
@@ -273,11 +283,18 @@ const CheckListForm = () => {
         <Text style={{...defaultLabel, marginTop: 10}}>
           Checklist a realizar
         </Text>
-        <TouchableOpacity
-          onPress={() => setAllChecksActions()}
-          style={styles.labelWrapper}>
-          <Label title="Todos" color={Colors.pm} active={true} />
-        </TouchableOpacity>
+        <View style={[Layout.rowCenter, Layout.justifyContentCenter]}>
+          <TouchableOpacity
+            onPress={() => setAllChecksActions()}
+            style={styles.labelWrapper}>
+            <Label title="Todos" color={Colors.pm} active={true} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => removeAllChecksActions()}
+            style={styles.labelWrapper}>
+            <Label title="Ninguno" color={Colors.danger} active={true} />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.checkListWrapper}>
         {list?.map((check) => (

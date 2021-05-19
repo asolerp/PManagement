@@ -13,13 +13,17 @@ import AddButton from '../../components/Elements/AddButton';
 import DeleteModal from '../../components/Modals/DeleteModal';
 import PagetLayout from '../../components/PageLayout';
 
-import {useGetFirebase} from '../../hooks/useGetFirebase';
-import {useDeleteFirebase} from '../../hooks/useDeleteFirebase';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {PM_COLOR} from '../../styles/colors';
 import {parseDeleteTextButton} from '../../utils/parsers';
+
+//Firestore
+import firestore from '@react-native-firebase/firestore';
+import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import {useDeleteFirebase} from '../../hooks/useDeleteFirebase';
+import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {firebase} from '@react-native-firebase/firestore';
 import {useDeleteFirebaseImage} from '../../hooks/useDeleteFirebaseImage';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 const styles = StyleSheet.create({
   container: {
@@ -75,10 +79,22 @@ const CheckPhotosScreen = ({route, navigation}) => {
   const {deleteFirebase} = useDeleteFirebase();
   const {updateFirebase} = useUpdateFirebase('checklists');
 
-  const {list: photos, loading: loadingPhotos} = useGetFirebase(
-    `checklists/${checkId}/checks/${checkItemId}/photos`,
+  const [values, loading] = useCollectionData(
+    firestore()
+      .collection('checklists')
+      .doc(checkId)
+      .collection('checks')
+      .doc(checkItemId)
+      .collection('photos'),
+    {
+      idField: 'id',
+    },
   );
 
+  const handlePressPhoto = (i) => {
+    setModal(true);
+    setImageIndex(i);
+  };
   const handleSelectDeletePhoto = ({id, ref}) => {
     const urlExists = photosSelected.some((photo) => photo.id === id);
     const selectedPhotos = photosSelected.filter((photo) => photo.id != id);
@@ -107,7 +123,7 @@ const CheckPhotosScreen = ({route, navigation}) => {
         onLongPress={() =>
           handleSelectDeletePhoto({id: photo.id, ref: photo.ref})
         }
-        onPress={() => {}}>
+        onPress={() => handlePressPhoto(index)}>
         <View style={styles.photo}>
           {photosSelected.some((p) => photo.id === p.id) && (
             <View style={styles.deleteMask}>
@@ -134,43 +150,46 @@ const CheckPhotosScreen = ({route, navigation}) => {
         title: title,
         color: 'white',
       }}>
-      <View style={{flex: 1}}>
-        {photosSelected.length > 0 && (
-          <View style={styles.deletePhotos}>
-            <TouchableOpacity onPress={() => setDeleteModal(true)}>
-              <AddButton iconName="delete" backColor={PM_COLOR} />
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <DeleteModal
-          visible={deleteModal}
-          handleVisibility={setDeleteModal}
-          info="Las fotos que se eliminen no se podrán recuperar"
-          textButton={parseDeleteTextButton(photosSelected.length)}
-          handleDelete={() =>
-            Promise.all(photosSelected.map((photo) => handleDeletePhoto(photo)))
-          }
-        />
+      <React.Fragment>
         <Modal
           visible={modal}
           transparent={true}
           onRequestClose={() => setModal(false)}>
           <ImageViewer
             index={imageIndex}
-            imageUrls={photos?.map((photo) => ({url: photo.url}))}
+            imageUrls={values?.map((photo) => ({url: photo.url}))}
             onSwipeDown={() => {
               setModal(false);
             }}
             enableSwipeDown={true}
           />
         </Modal>
-        <View style={styles.container}>
-          {photos?.map((photo, i) => (
-            <Photo photo={photo} index={i} key={photo.id} />
-          ))}
+        <View style={{flex: 1}}>
+          {photosSelected.length > 0 && (
+            <View style={styles.deletePhotos}>
+              <TouchableOpacity onPress={() => setDeleteModal(true)}>
+                <AddButton iconName="delete" backColor={PM_COLOR} />
+              </TouchableOpacity>
+            </View>
+          )}
+          <DeleteModal
+            visible={deleteModal}
+            handleVisibility={setDeleteModal}
+            info="Las fotos que se eliminen no se podrán recuperar"
+            textButton={parseDeleteTextButton(photosSelected.length)}
+            handleDelete={() =>
+              Promise.all(
+                photosSelected.map((photo) => handleDeletePhoto(photo)),
+              )
+            }
+          />
+          <View style={styles.container}>
+            {values?.map((photo, i) => (
+              <Photo photo={photo} index={i} key={photo.id} />
+            ))}
+          </View>
         </View>
-      </View>
+      </React.Fragment>
     </PagetLayout>
   );
 };

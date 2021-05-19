@@ -12,14 +12,11 @@ import {
 } from 'react-native';
 
 import ImageViewer from 'react-native-image-zoom-viewer';
-
+import AddButton from '../Elements/AddButton';
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {
-  useCollection,
-  useDocument,
-  useDocumentOnce,
-} from 'react-firebase-hooks/firestore';
+import {useDocument} from 'react-firebase-hooks/firestore';
+import PhotoCameraModal from '../Modals/PhotoCameraModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,6 +25,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexWrap: 'wrap',
     marginTop: 20,
+  },
+  addPhoto: {
+    position: 'absolute',
+    right: 30,
+    bottom: 40,
+    zIndex: 10,
   },
   photo: {
     width: (Dimensions.get('window').width - 65 - 10) / 3,
@@ -42,7 +45,7 @@ const styles = StyleSheet.create({
 const Photos = () => {
   const route = useRoute();
   const {incidenceId} = route.params;
-
+  const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const [modal, setModal] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
 
@@ -70,8 +73,6 @@ const Photos = () => {
     },
   );
 
-  console.log(value?.data()?.photos);
-
   if (loading) {
     return (
       <View vtyle={styles.container}>
@@ -82,6 +83,27 @@ const Photos = () => {
 
   return (
     <React.Fragment>
+      <View style={styles.addPhoto}>
+        <TouchableOpacity onPress={() => {}}>
+          <AddButton iconName="camera" />
+        </TouchableOpacity>
+      </View>
+      <PhotoCameraModal
+        visible={photoCameraModal}
+        handleVisibility={setPhotoCameraModal}
+        handleClickCamera={() =>
+          handleCamera((imgs) => {
+            imageHandler(imgs);
+            setPhotoCameraModal(false);
+          })
+        }
+        handleClickLibrary={() =>
+          handleImagePicker((imgs) => {
+            imageHandler(imgs);
+            setPhotoCameraModal(false);
+          })
+        }
+      />
       <Modal
         visible={modal}
         transparent={true}

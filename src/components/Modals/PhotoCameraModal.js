@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button} from 'react-native';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Divider} from 'react-native-elements';
 
 import Modal from 'react-native-modal';
@@ -19,13 +19,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const DeleteModal = ({
+const PhotoCameraModal = ({
   visible,
   handleVisibility,
-  handleDelete,
-  info,
-  onPress,
-  textButton,
+  handleClickCamera,
+  handleClickLibrary,
 }) => {
   return (
     <Modal
@@ -34,16 +32,9 @@ const DeleteModal = ({
       style={styles.view}>
       <View style={styles.content}>
         <InputGroup>
-          <Text style={{padding: 10}}>{info}</Text>
+          <Button title="Abrir fotos" onPress={handleClickLibrary} />
           <Divider />
-          <Button
-            title={textButton}
-            onPress={() => {
-              handleDelete();
-              handleVisibility(false);
-            }}
-            color="red"
-          />
+          <Button title="Abrir cámara" onPress={handleClickCamera} />
         </InputGroup>
         <InputGroup>
           <Button title="Cancelar" onPress={() => handleVisibility(false)} />
@@ -53,4 +44,4 @@ const DeleteModal = ({
   );
 };
 
-export default DeleteModal;
+export default PhotoCameraModal;

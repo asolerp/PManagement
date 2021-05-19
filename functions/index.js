@@ -2,6 +2,9 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const cloudinary = require('cloudinary').v2;
 
+// Notifications
+const sendPushNotificationUpdateCheckList = require('./notifications/sendPushNotificationUpdateStatusJob');
+
 cloudinary.config({
   cloud_name: 'enalbis',
   api_key: '152722439921117',
@@ -12,11 +15,6 @@ cloudinary.config({
 const FieldValue = require('firebase-admin').firestore.FieldValue;
 
 admin.initializeApp(functions.config().firebase);
-
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info('Hello logs!', {structuredData: true});
-  response.send('Hello from Firebase!');
-});
 
 exports.newUser = functions.auth.user().onCreate((user) => {
   admin.firestore().collection('users').doc(user.uid).set({email: user.email});
@@ -101,6 +99,57 @@ exports.setCheckListAsFinished = functions.firestore
           .update({
             finished: false,
           });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+exports.sendPushNotificationUpdateCheckList = functions.firestore
+  .document('checklists/{checklistId}/checks/{checkId}')
+  .onUpdate(async (change, context) => {
+    try {
+      const checkAfter = change.after.data();
+
+      if (checkAfter.done) {
+        const updatedChecklistSnapshot = await admin
+          .firestore()
+          .collection('checklists')
+          .doc(context.params.checklistId)
+          .get();
+
+        const notificationUpdateChecklist = {
+          title: 'Actualización de trabajo',
+          body: `${checkAfter.worker.firstName} ha completado la tarea ${
+            checkAfter.title
+          } en ${updatedChecklistSnapshot.data().house[0].houseName}.`,
+        };
+
+        const adminsSnapshot = await admin
+          .firestore()
+          .collection('users')
+          .where('role', '==', 'admin')
+          .get();
+
+        const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
+
+        let data = {
+          screen: 'Check',
+          checklistId: context.params.checklistId,
+        };
+
+        await admin.messaging().sendMulticast({
+          tokens: adminTokens,
+          apns: {
+            payload: {
+              aps: {
+                sound: 'default',
+              },
+            },
+          },
+          notification: notificationUpdateChecklist,
+          data,
+        });
       }
     } catch (err) {
       console.log(err);

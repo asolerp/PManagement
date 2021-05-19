@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
 
 import CheckBox from '@react-native-community/checkbox';
@@ -6,12 +6,14 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Avatar from '../components/Avatar';
 
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {handleImagePicker} from '../utils/imageFunctions';
+import {handleCamera, handleImagePicker} from '../utils/imageFunctions';
 import {GREY_1, PM_COLOR} from '../styles/colors';
-import {marginBottom, marginTop, width} from '../styles/common';
+import {marginBottom, marginTop} from '../styles/common';
 import moment from 'moment';
 import InfoIcon from './InfoIcon';
 import {Colors} from '../Theme/Variables';
+import {useTheme} from '../Theme';
+import PhotoCameraModal from './Modals/PhotoCameraModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -50,45 +52,80 @@ const styles = StyleSheet.create({
 });
 
 const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
+  const {Layout} = useTheme();
+  const [photoCameraModal, setPhotoCameraModal] = useState(false);
   return (
-    <View style={{...styles.container, ...marginBottom(10)}}>
-      {/* {check?.worker && <Avatar uri={check?.worker?.profileImage} size="big" />} */}
-      <View style={styles.infoWrapper}>
-        <Text style={styles.name}>{check.title}</Text>
-        {check?.date && (
-          <Text style={styles.dateStyle}>
-            {moment(check?.date).format('LL')}
-          </Text>
-        )}
-        {check?.numberOfPhotos > 0 && (
-          <View style={{...marginTop(10), ...width(30)}}>
-            <InfoIcon
-              info={`Fotos: ${check?.numberOfPhotos}`}
-              color={PM_COLOR}
-            />
-          </View>
-        )}
-      </View>
-      <View style={styles.checkboxWrapper}>
-        <TouchableOpacity
-          onPress={() => handleImagePicker((imgs) => imageHandler(imgs))}>
-          <View style={styles.buttonStyle}>
-            {loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Icon name="camera-alt" size={18} color="white" />
+    <React.Fragment>
+      <PhotoCameraModal
+        visible={photoCameraModal}
+        handleVisibility={setPhotoCameraModal}
+        handleClickCamera={() =>
+          handleCamera((imgs) => {
+            imageHandler(imgs);
+            setPhotoCameraModal(false);
+          })
+        }
+        handleClickLibrary={() =>
+          handleImagePicker((imgs) => {
+            imageHandler(imgs);
+            setPhotoCameraModal(false);
+          })
+        }
+      />
+      <View style={{...styles.container, ...marginBottom(10)}}>
+        <View style={styles.infoWrapper}>
+          <Text style={styles.name}>{check.title}</Text>
+          {check?.date && (
+            <Text style={styles.dateStyle}>
+              {moment(check?.date).format('LL')}
+            </Text>
+          )}
+          <View
+            style={[
+              Layout.fill,
+              Layout.rowCenter,
+              Layout.justifyContentStart,
+              {...marginTop(10)},
+            ]}>
+            {check?.worker && (
+              <View>
+                <Avatar
+                  key={check?.worker?.uid}
+                  uri={check?.worker?.profileImage}
+                  size="medium"
+                />
+              </View>
+            )}
+            {check?.numberOfPhotos > 0 && (
+              <View style={[Layout.rowCenter, Layout.justifyContentStart]}>
+                <InfoIcon
+                  info={`Fotos: ${check?.numberOfPhotos}`}
+                  color={PM_COLOR}
+                />
+              </View>
             )}
           </View>
-        </TouchableOpacity>
-        <CheckBox
-          disabled={false}
-          value={check.done}
-          onTintColor={Colors.leftBlue}
-          onCheckColor={Colors.leftBlue}
-          onValueChange={() => handleCheck()}
-        />
+        </View>
+        <View style={styles.checkboxWrapper}>
+          <TouchableOpacity onPress={() => setPhotoCameraModal(true)}>
+            <View style={styles.buttonStyle}>
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Icon name="camera-alt" size={18} color="white" />
+              )}
+            </View>
+          </TouchableOpacity>
+          <CheckBox
+            disabled={false}
+            value={check.done}
+            onTintColor={Colors.leftBlue}
+            onCheckColor={Colors.leftBlue}
+            onValueChange={() => handleCheck()}
+          />
+        </View>
       </View>
-    </View>
+    </React.Fragment>
   );
 };
 

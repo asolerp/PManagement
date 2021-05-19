@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     width: 75,
     height: 75,
     borderRadius: 100,
-    borderWidth: 4,
+    borderWidth: 2,
     borderColor: 'white',
     resizeMode: 'cover',
   },

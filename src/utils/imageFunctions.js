@@ -28,6 +28,22 @@ export const launchImage = (setter) => {
   });
 };
 
+export const handleCamera = (callback) => {
+  ImagePicker.openCamera({
+    compressImageMaxWidth: 300,
+    compressImageQuality: 0.3,
+    multiple: true,
+    waitAnimationEnd: false,
+    includeExif: false,
+    forceJpg: true,
+    maxFiles: 10,
+    mediaType: 'photo',
+    includeBase64: true,
+  }).then((imgs) => {
+    callback([imgs]);
+  });
+};
+
 export const handleImagePicker = (callback) => {
   ImagePicker.openPicker({
     compressImageMaxWidth: 300,

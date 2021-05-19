@@ -1,13 +1,21 @@
 import React from 'react';
-import {View, Image, StyleSheet, Text, FlatList} from 'react-native';
+import {
+  View,
+  Image,
+  StyleSheet,
+  Text,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 
-import {useGetFirebase} from '../../hooks/useGetFirebase';
-import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
+import {Colors} from '../../Theme/Variables';
 
-import {DARK_BLUE} from '../../styles/colors';
-import {useCallback} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {addHouse, housesSelector} from '../../Store/Filters/filtersSlice';
+import firestore from '@react-native-firebase/firestore';
+import {
+  useCollection,
+  useCollectionData,
+  useDocument,
+} from 'react-firebase-hooks/firestore';
 
 const heightFilter = 120;
 const widthFilter = 90;
@@ -22,16 +30,9 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
   },
   titleFilter: {
-    color: DARK_BLUE,
+    color: Colors.darkBlue,
     fontSize: 25,
     fontWeight: 'bold',
-  },
-  housesWrapper: {
-    // flexGrow: 1,
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // height: 140,
   },
   houseFilter: {
     alignItems: 'center',
@@ -87,15 +88,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const HouseFilter = () => {
-  const {list} = useGetFirebase('houses');
-  const dispatch = useDispatch();
-  const houses = useSelector(housesSelector);
-  const addHouseAction = useCallback(
-    (payload) => dispatch(addHouse({houses: payload})),
-    [dispatch],
-  );
-
+const HouseFilter = ({houses, onClickHouse}) => {
+  const [values] = useCollectionData(firestore().collection('houses'), {
+    idField: 'id',
+  });
   const isInArray = (id) => {
     return houses?.find((idHouse) => idHouse === id);
   };
@@ -105,9 +101,9 @@ const HouseFilter = () => {
       const housesWithoutID = houses?.filter((id) => {
         return id !== house.id;
       });
-      addHouseAction(housesWithoutID);
+      onClickHouse(housesWithoutID);
     } else {
-      addHouseAction([...(houses || []), house.id]);
+      onClickHouse([...(houses || []), house.id]);
     }
   };
 
@@ -140,19 +136,14 @@ const HouseFilter = () => {
   );
 
   return (
-    // <View style={styles.filterWrapper}>
-    //   <Text style={styles.titleFilter}>Las Casas</Text>
-    // <View style={styles.housesWrapper} onStartShouldSetResponder={() => true}>
     <FlatList
       horizontal
       showsHorizontalScrollIndicator={false}
-      data={list}
+      data={values}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
     />
-    // </View>
-    // </View>
   );
 };
 
-export default React.memo(HouseFilter);
+export default HouseFilter;

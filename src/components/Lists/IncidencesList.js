@@ -8,13 +8,15 @@ import Avatar from '../Avatar';
 import {defaultLabel, marginRight, width} from '../../styles/common';
 
 //Firebase
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+import firestore from '@react-native-firebase/firestore';
+import {useCollection} from 'react-firebase-hooks/firestore';
 
 // Utils
 import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
 import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
+import sortByDate from '../../utils/sorts';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -25,6 +27,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 220,
     height: 230,
+    borderLeftWidth: 10,
   },
   avatarWrapper: {
     flex: 1,
@@ -94,13 +97,9 @@ const BubleIncidence = ({status}) => {
 
 const IncidencesList = () => {
   const {Gutters, Layout} = useTheme();
-  const {list, loading} = useGetFirebase('incidences', null, [
-    {
-      label: 'done',
-      operator: '==',
-      condition: false,
-    },
-  ]);
+  const [values, loading, error] = useCollection(
+    firestore().collection('incidences').where('done', '!=', true),
+  );
 
   const navigation = useNavigation();
 
@@ -117,8 +116,7 @@ const IncidencesList = () => {
           styles.incidenceWrapper,
           Gutters.mediumRMargin,
           {
-            borderLeftWidth: 5,
-            borderLeftColor: parseStateIncidecne(item.state),
+            borderLeftColor: parseStateIncidecne(item?.data().state),
           },
         ]}
         onPress={() => handlePressIncidence()}>
@@ -129,26 +127,28 @@ const IncidencesList = () => {
               Layout.justifyContentSpaceBetween,
               Gutters.smallBMargin,
             ]}>
-            <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
+            <Text style={styles.date}>
+              🕜 {parseDateWithText(item?.data().date)}
+            </Text>
             <BubleIncidence />
           </View>
           <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
-            {item?.title}{' '}
+            {item?.data().title}{' '}
           </Text>
           <View style={styles.infoWrapper}>
             <Text
               style={styles.infoStyle}
               ellipsizeMode="tail"
               numberOfLines={2}>
-              {item?.incidence}
+              {item?.data().incidence}
             </Text>
             <Text style={[styles.bold, Gutters.regularBMargin]}>
-              {item?.house?.houseName}
+              {item?.data().house?.houseName}
             </Text>
             <View style={styles.avatarWrapper}>
               <Avatar
-                key={item?.user?.id}
-                uri={item?.user?.profileImage}
+                key={item?.data().user?.id}
+                uri={item?.data().user?.profileImage}
                 size="medium"
               />
             </View>
@@ -162,7 +162,7 @@ const IncidencesList = () => {
     return <DashboardSectionSkeleton />;
   }
 
-  if (list.length === 0) {
+  if (values?.docs?.length === 0) {
     return <Text>No hay ninguna incidencia</Text>;
   }
 
@@ -172,21 +172,19 @@ const IncidencesList = () => {
         <Text style={{...defaultLabel, ...marginRight(10)}}>Incidencias</Text>
         <View style={styles.badget}>
           <Text style={{...defaultLabel, ...{color: 'white'}}}>
-            {list.length}
+            {values?.docs.filter((item) => item.id !== 'stats').length}
           </Text>
         </View>
       </View>
-      {list.length === 0 ? (
-        <Text>No tienes incidencias en este estado</Text>
-      ) : (
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={list}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      )}
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={values?.docs
+          .filter((item) => item.id !== 'stats')
+          .sort(sortByDate)}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
     </React.Fragment>
   );
 };
