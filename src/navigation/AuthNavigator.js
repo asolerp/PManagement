@@ -18,6 +18,7 @@ import SignInWorkerStack from './Worker/SignInWorkerStack';
 import {logUser, userSelector} from '../Store/User/userSlice';
 import Loading from '../components/Loading';
 import {loadingSelector} from '../Store/App/appSlice';
+import SignInOwnerStack from './Owner/SignInOwnerStack';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -54,8 +55,12 @@ const styles = StyleSheet.create({
 const getUserSignInStack = (role) => {
   if (role === 'admin') {
     return <SignInStack />;
-  } else {
+  }
+  if (role === 'worker') {
     return <SignInWorkerStack />;
+  }
+  if (role === 'owner') {
+    return <SignInOwnerStack />;
   }
 };
 
@@ -72,26 +77,15 @@ const AuthNavigator = () => {
   const onAuthStateChanged = useCallback(
     async (result) => {
       try {
-        if (result) {
-          const usuario = await getUser(result?.uid);
-          if (usuario.data()) {
-            setUser({...usuario.data(), uid: result.uid});
-            console.log(await messaging().getToken());
-            updateFirebase(`${result.uid}`, {
-              token: await messaging().getToken(),
-            });
-          } else {
-            setUser(null);
-          }
-        } else {
-          setUser(null);
-        }
+        const usuario = await getUser(result?.uid);
+        setUser({...usuario.data(), uid: result.uid});
+        updateFirebase(`${result.uid}`, {
+          token: await messaging().getToken(),
+        });
       } catch (err) {
         console.log(err);
       } finally {
-        if (initializing) {
-          setInitializing(false);
-        }
+        setInitializing(false);
       }
     },
     [initializing, setUser],

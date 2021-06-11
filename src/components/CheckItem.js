@@ -1,6 +1,8 @@
+import moment from 'moment';
 import React from 'react';
 import {TouchableOpacity, StyleSheet, View, Text} from 'react-native';
 import {DARK_BLUE, GREY_1} from '../styles/colors';
+import {useTheme} from '../Theme';
 
 // Utils
 import {minimizetext} from '../utils/parsers';
@@ -34,6 +36,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: 'white',
   },
+  date: {
+    fontSize: 10,
+  },
   countStyle: {
     color: DARK_BLUE,
     fontWeight: '600',
@@ -42,27 +47,38 @@ const styles = StyleSheet.create({
 });
 
 const CheckItem = ({check, onPress}) => {
+  const {Layout} = useTheme();
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} style={[Layout.fill]}>
       <View
         style={[
+          Layout.fill,
           styles.checkItemWrapper,
           {borderLeftColor: parsePercentageDone(check.done / check.total)},
         ]}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={[Layout.fill]}>
           <View>
-            <Text style={{...styles.checkText, ...styles.bold}}>
-              🏡 {check?.house && check?.house[0].houseName}
-            </Text>
+            <View
+              style={[
+                Layout.fill,
+                Layout.rowCenter,
+                Layout.justifyContentSpaceBetween,
+              ]}>
+              <Text>🏡 {check?.house?.[0].houseName}</Text>
+              <Text style={styles.date}>
+                ⏱ {moment(check?.date?.toDate()).format('LL')}
+              </Text>
+            </View>
             <Text style={styles.checkText}>
               {minimizetext(check.observations, 30)}
             </Text>
           </View>
-        </View>
-        <View>
-          <Text style={styles.countStyle}>
-            {check.done}/{check.total}
-          </Text>
+          <View
+            style={[Layout.fill, Layout.rowCenter, Layout.justifyContentEnd]}>
+            <Text style={styles.countStyle}>
+              {check.done}/{check.total}
+            </Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>

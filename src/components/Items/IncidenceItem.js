@@ -5,6 +5,8 @@ import {TouchableOpacity, StyleSheet, View, Text} from 'react-native';
 import {minimizetext, parseStateIncidecne} from '../../utils/parsers';
 import {PRIORITY_HEIGHT, CHECKLIST_DONE} from '../../constants/colors';
 import {GREY_1} from '../../styles/colors';
+import {useTheme} from '../../Theme';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   container: {},
@@ -19,6 +21,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderLeftWidth: 10,
     borderColor: GREY_1,
+  },
+  date: {
+    fontSize: 10,
   },
   checkText: {
     marginTop: 5,
@@ -38,18 +43,28 @@ const styles = StyleSheet.create({
 });
 
 const IncidenceItem = ({incidence, onPress}) => {
+  const {Fonts, Gutters, Layout} = useTheme();
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} style={[Layout.fill]}>
       <View
         style={[
+          Layout.fill,
           styles.checkItemWrapper,
           {
             borderLeftColor: parseStateIncidecne(incidence?.state),
           },
         ]}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={[Layout.fill]}>
           <View>
-            <Text>🏡 {incidence?.house?.houseName}</Text>
+            <View style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
+              <Text>🏡 {incidence?.house?.houseName}</Text>
+              <Text style={styles.date}>
+                ⏱ {moment(incidence?.date?.toDate()).format('LL')}
+              </Text>
+            </View>
+            <Text style={[Fonts.textTitle, Gutters.tinyTMargin]}>
+              {incidence?.title}
+            </Text>
             <Text style={styles.checkText}>
               {minimizetext(incidence?.incidence, 30)}
             </Text>

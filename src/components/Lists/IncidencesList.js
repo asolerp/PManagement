@@ -97,7 +97,7 @@ const BubleIncidence = ({status}) => {
 
 const IncidencesList = () => {
   const {Gutters, Layout} = useTheme();
-  const [values, loading, error] = useCollection(
+  const [values, loading] = useCollection(
     firestore().collection('incidences').where('done', '!=', true),
   );
 

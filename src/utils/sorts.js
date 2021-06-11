@@ -1,9 +1,9 @@
-const sortByDate = (a, b) => {
-  if (a?.data()?.date < b?.data()?.date) {
-    return 1;
+const sortByDate = (a, b, order = 'asc') => {
+  if (a?.date < b?.date) {
+    return order === 'asc' ? -1 : 1;
   }
-  if (a?.data()?.date > b?.data()?.date) {
-    return -1;
+  if (a?.date > b?.date) {
+    return order === 'asc' ? 1 : -1;
   }
   return 0;
 };

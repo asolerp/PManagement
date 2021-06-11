@@ -7,7 +7,7 @@ import {defaultLabel, width} from '../../styles/common';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useCollection} from 'react-firebase-hooks/firestore';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Utils
 
@@ -84,22 +84,37 @@ const styles = StyleSheet.create({
   },
 });
 
-const ChecklistList = () => {
+const ChecklistList = ({uid, house}) => {
   const {Gutters, Layout, Fonts} = useTheme();
+  let firestoreQuery;
+  if (house) {
+    firestoreQuery = firestore()
+      .collection('checklists')
+      .where('send', '==', false)
+      .where('houseId', '==', house?.id);
+  }
+  if (uid) {
+    firestoreQuery = firestore()
+      .collection('checklists')
+      .where('send', '==', false)
+      .where('workersId', 'array-contains', uid);
+  }
+  if (!uid && !house) {
+    firestoreQuery = firestore()
+      .collection('checklists')
+      .where('send', '==', false);
+  }
 
-  const [value, loading] = useCollection(
-    firestore().collection('checklists').where('send', '!=', true),
-    {
-      snapshotListenOptions: {includeMetadataChanges: true},
-    },
-  );
+  const [value, loading] = useCollectionData(firestoreQuery, {
+    idField: 'id',
+  });
 
   const navigation = useNavigation();
 
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {
       navigation.navigate('Check', {
-        checkId: item.id,
+        docId: item.id,
       });
     };
 
@@ -111,9 +126,7 @@ const ChecklistList = () => {
           {
             backgroundColor: Colors.white,
             borderColor: Colors.lowGrey,
-            borderLeftColor: parsePercentageDone(
-              item?.data().done / item?.data().total,
-            ),
+            borderLeftColor: parsePercentageDone(item?.done / item?.total),
           },
         ]}
         onPress={() => handlePressIncidence()}>
@@ -124,19 +137,17 @@ const ChecklistList = () => {
               Layout.justifyContentStart,
               Gutters.smallBMargin,
             ]}>
-            <Text style={styles.date}>
-              🕜 {parseDateWithText(item?.data().date)}
-            </Text>
+            <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
           </View>
           <View style={styles.infoWrapper}>
             <Text style={[styles.bold, Gutters.smallBMargin]}>
-              {item?.data().house?.[0].houseName}
+              {item?.house?.[0].houseName}
             </Text>
             <Text
               style={styles.infoStyle}
               ellipsizeMode="tail"
               numberOfLines={2}>
-              {item?.data().observations}
+              {item?.observations}
             </Text>
           </View>
           <View
@@ -147,12 +158,18 @@ const ChecklistList = () => {
               Layout.alignItemsCenter,
               Gutters.smallVMargin,
             ]}>
-            {item?.data().workers?.map((worker) => (
-              <Avatar key={worker.id} uri={worker.profileImage} size="medium" />
-            ))}
-
+            <View style={[Layout.rowCenter, Gutters.smallLMargin]}>
+              {item?.workers?.map((worker) => (
+                <Avatar
+                  key={worker.id}
+                  uri={worker.profileImage}
+                  size="medium"
+                  overlap={item?.workers?.length > 0}
+                />
+              ))}
+            </View>
             <Text style={[Fonts.textSmall]}>
-              {item?.data().done}/{item?.data().total}
+              {item?.done}/{item?.total}
             </Text>
           </View>
         </View>
@@ -164,7 +181,7 @@ const ChecklistList = () => {
     return <DashboardSectionSkeleton />;
   }
 
-  if (value.docs.length === 0) {
+  if (!value || value?.length === 0) {
     return <Text>No hay ningun checklist</Text>;
   }
 
@@ -172,16 +189,18 @@ const ChecklistList = () => {
     <React.Fragment>
       <View style={{...styles.filterWrapper, ...width(80)}}>
         <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>Checklists</Text>
-        <View style={styles.badget}>
-          <Text style={{...defaultLabel, ...{color: Colors.white}}}>
-            {value.docs.length}
-          </Text>
-        </View>
+        {!house && (
+          <View style={styles.badget}>
+            <Text style={{...defaultLabel, ...{color: Colors.white}}}>
+              {value?.length || 0}
+            </Text>
+          </View>
+        )}
       </View>
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={value.docs.sort(sortByDate)}
+        data={value.sort((a, b) => sortByDate(a, b, 'des'))}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

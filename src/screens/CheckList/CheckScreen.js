@@ -1,11 +1,10 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
+import React, {useState, useMemo} from 'react';
+import {View, StyleSheet, Dimensions} from 'react-native';
 
-import {Info, Messages, Options, Photos} from '../../components/Check';
+import {Info, Messages, Options} from '../../components/Check';
 
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
 
-import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
 import {useTheme} from '../../Theme';
 
 // UI
@@ -17,6 +16,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Colors} from '../../Theme/Variables';
 import {sendOwnerChecklist} from '../../components/Alerts/checklist';
 import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
+
+import firestore from '@react-native-firebase/firestore';
+import {useDocumentData} from 'react-firebase-hooks/firestore';
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -52,18 +54,36 @@ const FirstRoute = () => <Info />;
 const SecondRoute = () => <Messages />;
 const ThirdRoute = () => <Options />;
 
+const screensByRole = (role) => {
+  if (role === 'owner') {
+    return [
+      {key: 'info', title: 'Info', icon: 'info'},
+      {key: 'messages', title: 'Mensajes', icon: 'message'},
+    ];
+  }
+  return [
+    {key: 'info', title: 'Info', icon: 'info'},
+    {key: 'messages', title: 'Mensajes', icon: 'message'},
+    {key: 'options', title: 'Opciones', icon: 'settings'},
+  ];
+};
+
 const CheckScreen = ({route}) => {
-  const {checkId} = route.params;
-  const {document: checklist} = useGetDocFirebase('checklists', checkId);
+  const {docId} = route.params;
+
+  const query = useMemo(() => {
+    return firestore().collection('checklists').doc(docId);
+  }, [docId]);
+
+  const [checklist] = useDocumentData(query, {
+    idField: 'id',
+  });
+
   const user = useSelector(userSelector, shallowEqual);
   const {Layout, Gutters} = useTheme();
 
   const [index, setIndex] = React.useState(0);
-  const [routes] = useState([
-    {key: 'info', title: 'Info', icon: 'info'},
-    {key: 'messages', title: 'Mensajes', icon: 'message'},
-    {key: 'options', title: 'Opciones', icon: 'settings'},
-  ]);
+  const [routes] = useState(screensByRole(user.role));
 
   const initialLayout = {
     width: Dimensions.get('window').width,
@@ -76,7 +96,7 @@ const CheckScreen = ({route}) => {
   });
 
   const handleFinishAndSend = () => {
-    finishAndSendChecklist(checkId);
+    finishAndSendChecklist(docId);
   };
 
   const renderTabBar = (props) => (
@@ -94,7 +114,7 @@ const CheckScreen = ({route}) => {
       )}
       indicatorStyle={[
         styles.tabIndicator,
-        {left: Dimensions.get('window').width / (routes.length * 2) - 10},
+        {left: Dimensions.get('window').width / (routes.length * 2) - 15},
       ]}
       style={styles.tabBarStyle}
     />

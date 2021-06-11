@@ -11,11 +11,7 @@ import {
 import {Colors} from '../../Theme/Variables';
 
 import firestore from '@react-native-firebase/firestore';
-import {
-  useCollection,
-  useCollectionData,
-  useDocument,
-} from 'react-firebase-hooks/firestore';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 const heightFilter = 120;
 const widthFilter = 90;

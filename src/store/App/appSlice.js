@@ -8,6 +8,7 @@ const initialState = {
 export const deleteCheckListAction = createAsyncThunk(
   'checklist/delete',
   async (checkId) => {
+    console.log(checkId);
     deleteChecklist(checkId);
   },
 );

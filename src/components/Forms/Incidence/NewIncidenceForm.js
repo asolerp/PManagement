@@ -1,5 +1,6 @@
 import React, {useState, useCallback} from 'react';
 import {View, Text, TextInput, StyleSheet} from 'react-native';
+import {useTranslation} from 'react-i18next';
 
 import InputGroup from '../../../components/Elements/InputGroup';
 import DynamicSelectorList from '../../../components/DynamicSelectorList';
@@ -9,6 +10,7 @@ import {BottomModal, ModalTitle, ModalContent} from 'react-native-modals';
 // Redux
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
 import {setInputForm} from '../../../Store/IncidenceForm/incidenceFormSlice';
+import {userSelector} from '../../../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   container: {},
@@ -16,6 +18,7 @@ const styles = StyleSheet.create({
 
 const NewIncidenceForm = () => {
   const dispatch = useDispatch();
+  const {t} = useTranslation();
   const [modalContent, setModalContent] = useState();
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -23,6 +26,8 @@ const NewIncidenceForm = () => {
     ({incidenceForm: {incidence}}) => ({incidence}),
     shallowEqual,
   );
+
+  const user = useSelector(userSelector);
 
   const setInputFormAction = useCallback(
     (label, value) => dispatch(setInputForm({label, value})),
@@ -51,7 +56,7 @@ const NewIncidenceForm = () => {
       <InputGroup>
         <TextInput
           style={{height: 40}}
-          placeholder="Título"
+          placeholder={t('newIncidence.form.title')}
           onEndEditing={(event) =>
             setInputFormAction('title', event.nativeEvent.text)
           }
@@ -64,50 +69,52 @@ const NewIncidenceForm = () => {
           numberOfLines={10}
           textAlignVertical="top"
           style={{height: 120}}
-          placeholder="Incidencia"
+          placeholder={t('newIncidence.form.incidence')}
           onEndEditing={(event) =>
             setInputFormAction('incidence', event.nativeEvent.text)
           }
           value={incidence?.incidence}
         />
       </InputGroup>
-      <InputGroup>
-        <CustomInput
-          title="Casa"
-          subtitle={
-            <View style={{flexDirection: 'row'}}>
-              {incidence?.house?.value.map((house, i) => (
-                <View key={i}>
-                  <Text style={styles.subtitle}>{house.houseName}</Text>
-                  {incidence?.house?.value?.length - 1 !== i && (
-                    <Text style={styles.subtitle}> & </Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          }
-          iconProps={{name: 'house', color: '#55A5AD'}}
-          onPress={() => {
-            setModalContent(
-              <DynamicSelectorList
-                collection="houses"
-                store="incidence"
-                searchBy="houseName"
-                schema={{img: 'houseImage', name: 'houseName'}}
-                get={incidence?.house?.value}
-                set={(house) => {
-                  setInputFormAction('house', {
-                    ...incidence.house,
-                    value: house,
-                  });
-                  setModalVisible(false);
-                }}
-              />,
-            );
-            setModalVisible(true);
-          }}
-        />
-      </InputGroup>
+      {user.role !== 'owner' && (
+        <InputGroup>
+          <CustomInput
+            title="Casa"
+            subtitle={
+              <View style={{flexDirection: 'row'}}>
+                {incidence?.house?.value.map((house, i) => (
+                  <View key={i}>
+                    <Text style={styles.subtitle}>{house.houseName}</Text>
+                    {incidence?.house?.value?.length - 1 !== i && (
+                      <Text style={styles.subtitle}> & </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            }
+            iconProps={{name: 'house', color: '#55A5AD'}}
+            onPress={() => {
+              setModalContent(
+                <DynamicSelectorList
+                  collection="houses"
+                  store="incidence"
+                  searchBy="houseName"
+                  schema={{img: 'houseImage', name: 'houseName'}}
+                  get={incidence?.house?.value}
+                  set={(house) => {
+                    setInputFormAction('house', {
+                      ...incidence.house,
+                      value: house,
+                    });
+                    setModalVisible(false);
+                  }}
+                />,
+              );
+              setModalVisible(true);
+            }}
+          />
+        </InputGroup>
+      )}
     </View>
   );
 };

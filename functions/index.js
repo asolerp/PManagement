@@ -105,56 +105,7 @@ exports.setCheckListAsFinished = functions.firestore
     }
   });
 
-exports.sendPushNotificationUpdateCheckList = functions.firestore
-  .document('checklists/{checklistId}/checks/{checkId}')
-  .onUpdate(async (change, context) => {
-    try {
-      const checkAfter = change.after.data();
-
-      if (checkAfter.done) {
-        const updatedChecklistSnapshot = await admin
-          .firestore()
-          .collection('checklists')
-          .doc(context.params.checklistId)
-          .get();
-
-        const notificationUpdateChecklist = {
-          title: 'Actualización de trabajo',
-          body: `${checkAfter.worker.firstName} ha completado la tarea ${
-            checkAfter.title
-          } en ${updatedChecklistSnapshot.data().house[0].houseName}.`,
-        };
-
-        const adminsSnapshot = await admin
-          .firestore()
-          .collection('users')
-          .where('role', '==', 'admin')
-          .get();
-
-        const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-
-        let data = {
-          screen: 'Check',
-          checklistId: context.params.checklistId,
-        };
-
-        await admin.messaging().sendMulticast({
-          tokens: adminTokens,
-          apns: {
-            payload: {
-              aps: {
-                sound: 'default',
-              },
-            },
-          },
-          notification: notificationUpdateChecklist,
-          data,
-        });
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  });
+exports.sendPushNotificationUpdateCheckList = sendPushNotificationUpdateCheckList;
 
 exports.sendPushNotificationUpdateStatusJob = functions.firestore
   .document('jobs/{jobId}')
@@ -200,8 +151,8 @@ exports.sendPushNotificationUpdateStatusJob = functions.firestore
 
       const workersTokens = users.map((user) => user.data().token);
 
-      const adminsSnapshot = await admin
-        .firestore()
+      const adminsSnapshot = await admin.firestore();
+      updatedChecklistSnapshot
         .collection('users')
         .where('role', '==', 'admin')
         .get();
@@ -388,4 +339,32 @@ exports.deletePhotoCloudinary = functions.firestore
         console.log(result, error);
       },
     );
+  });
+
+exports.recursiveDelete = functions
+  .runWith({
+    timeoutSeconds: 540,
+    memory: '2GB',
+  })
+  .https.onCall(async (data, context) => {
+    // Only allow admin users to execute this function.
+
+    const path = data.path;
+    console.log(
+      `User ${context.auth.uid} has requested to delete path ${path}`,
+    );
+
+    // Run a recursive delete on the given document or collection path.
+    // The 'token' must be set in the functions config, and can be generated
+    // at the command line by running 'firebase login:ci'.
+    await firebase_tools.firestore.delete(path, {
+      project: process.env.GCLOUD_PROJECT,
+      recursive: true,
+      yes: true,
+      token: functions.config().fb.token,
+    });
+
+    return {
+      path: path,
+    };
   });

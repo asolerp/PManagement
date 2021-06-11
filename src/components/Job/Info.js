@@ -1,5 +1,5 @@
 import React from 'react';
-import {useRoute} from '@react-navigation/native';
+import {useRoute, useNavigation} from '@react-navigation/native';
 import {View, Text, StyleSheet, Image} from 'react-native';
 
 // UI
@@ -17,6 +17,8 @@ import {finishTaskAlert, openTaskStatus} from '../Alerts/deleteJobAlert';
 import {ScrollView} from 'react-native';
 import TextWrapper from '../TextWrapper';
 import {defaultLabel, marginBottom} from '../../styles/common';
+import EditableInput from '../Elements/EditableInput';
+import updateDocument from '../../Services/updateDocument';
 
 const styles = StyleSheet.create({
   container: {
@@ -71,16 +73,9 @@ const Info = () => {
   const {jobId} = route.params;
 
   const {document: job} = useGetDocFirebase('jobs', jobId);
-  const {updateFirebase} = useUpdateFirebase('jobs');
-
-  const handleFinishTask = (status) => {
-    updateFirebase(`${jobId}`, {
-      done: status,
-    });
-  };
 
   return (
-    <ScrollView contentContainerStyle={{flex: 1}}>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         <View style={{flex: 1}}>
           <View style={styles.infoWrapper}>
@@ -95,17 +90,12 @@ const Info = () => {
           <Text style={{...defaultLabel, ...marginBottom(10)}}>
             Observaciones
           </Text>
-          {job?.observations ? (
-            <TextWrapper>
-              <Text style={styles.observations}>{job?.observations}</Text>
-            </TextWrapper>
-          ) : (
-            <TextWrapper>
-              <Text style={styles.observations}>
-                No se han detallado observaciones
-              </Text>
-            </TextWrapper>
-          )}
+          <EditableInput
+            value={job?.observations}
+            onPressAccept={(change) =>
+              updateDocument('jobs', jobId, {observations: change})
+            }
+          />
           <Text style={{...defaultLabel, ...marginBottom(10)}}>
             Trabajadores asignados
           </Text>
@@ -134,18 +124,6 @@ const Info = () => {
             style={styles.houseImage}
             source={{
               uri: job?.house && job?.house[0]?.houseImage,
-            }}
-          />
-        </View>
-        <View style={styles.actionButtonWrapper}>
-          <CustomButton
-            title={job?.done ? 'No está terminada' : 'Finalizar'}
-            onPress={() => {
-              if (job?.done) {
-                openTaskStatus(() => handleFinishTask(false));
-              } else {
-                finishTaskAlert(() => handleFinishTask(true));
-              }
             }}
           />
         </View>

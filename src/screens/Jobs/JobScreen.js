@@ -1,14 +1,15 @@
-import React, {useState} from 'react';
-import {Text, StyleSheet, Dimensions} from 'react-native';
+import React, {useState, useMemo} from 'react';
 
-import {Info, Messages, Photos} from '../../components/Job';
-
-import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
-
-import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
+import firestore from '@react-native-firebase/firestore';
+import {useDocumentData} from 'react-firebase-hooks/firestore';
 
 // UI
+import {Text, StyleSheet, Dimensions} from 'react-native';
+import {Info, Messages, Photos} from '../../components/Job';
+import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
 import PagetLayout from '../../components/PageLayout';
+import CustomButton from '../../components/Elements/CustomButton';
+import updateJobStatus from '../../Services/updateJobStatus';
 
 const styles = StyleSheet.create({
   tabBarStyle: {
@@ -39,7 +40,14 @@ const ThirdRoute = () => <Photos />;
 
 const JobScreen = ({route, navigation}) => {
   const {jobId} = route.params;
-  const {document: job} = useGetDocFirebase('jobs', jobId);
+
+  const query = useMemo(() => {
+    return firestore().collection('jobs').doc(jobId);
+  }, [jobId]);
+
+  const [job] = useDocumentData(query, {
+    idField: 'id',
+  });
 
   const [index, setIndex] = React.useState(0);
   const [routes] = useState([
@@ -57,6 +65,10 @@ const JobScreen = ({route, navigation}) => {
     messages: SecondRoute,
     photos: ThirdRoute,
   });
+
+  const onSubmit = () => {
+    updateJobStatus(jobId, {done: !job?.done});
+  };
 
   const renderTabBar = (props) => (
     <TabBar
@@ -79,7 +91,15 @@ const JobScreen = ({route, navigation}) => {
         title: `Trabajos en ${job?.house && job?.house[0]?.houseName}`,
         subtitle: job?.task?.desc,
         color: 'white',
-      }}>
+      }}
+      footer={
+        <CustomButton
+          styled="rounded"
+          loading={false}
+          title={job?.done ? 'No está terminada' : 'Finalizar'}
+          onPress={onSubmit}
+        />
+      }>
       <TabView
         navigationState={{index, routes}}
         renderScene={renderScene}

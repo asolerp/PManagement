@@ -41,7 +41,7 @@ const CheckListScreen = ({navigation}) => {
   const [filterHouses, setFilterHouses] = useState([]);
 
   const [values, loading] = useCollectionData(
-    firestore().collection('checklists'),
+    firestore().collection('checklists').orderBy('date', 'asc'),
     {
       idField: 'id',
     },
@@ -53,7 +53,7 @@ const CheckListScreen = ({navigation}) => {
       check={item}
       onPress={() =>
         navigation.navigate('Check', {
-          checkId: item.id,
+          docId: item.id,
         })
       }
     />
@@ -81,9 +81,9 @@ const CheckListScreen = ({navigation}) => {
           title: 'CheckList',
           subPage: false,
         }}>
-        <View>
-          <View style={styles.filterWrapper}>
-            <View style={styles.checkListWrapper}>
+        <View style={[Layout.fill]}>
+          <View style={[Layout.fill, styles.filterWrapper]}>
+            <View style={[Layout.fill, styles.checkListWrapper]}>
               <View
                 style={[
                   styles.housesWrapper,
@@ -108,15 +108,18 @@ const CheckListScreen = ({navigation}) => {
               {loading ? (
                 <ItemListSkeleton />
               ) : (
-                <FlatList
-                  data={values.filter((check) =>
-                    filterHouses.length > 0
-                      ? filterHouses.includes(check.houseId)
-                      : true,
-                  )}
-                  renderItem={renderItem}
-                  keyExtractor={(item) => item.id}
-                />
+                <View style={[Layout.fill]}>
+                  <FlatList
+                    showsVerticalScrollIndicator={false}
+                    data={values.filter((check) =>
+                      filterHouses.length > 0
+                        ? filterHouses.includes(check.houseId)
+                        : true,
+                    )}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                  />
+                </View>
               )}
             </View>
           </View>

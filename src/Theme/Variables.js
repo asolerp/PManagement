@@ -8,6 +8,7 @@ export const Colors = {
   warning: '#F5C66D',
   danger: '#ED7A7A',
   leftBlue: '#126D9B',
+  mediterranean: '#54A3AC',
   rightGreen: '#67B26F',
   pm: '#55A5AD',
 };

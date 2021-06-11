@@ -6,21 +6,23 @@ import {useDispatch, useSelector, shallowEqual} from 'react-redux';
 
 import {Text, View, TextInput, StyleSheet} from 'react-native';
 
-import Accordian from '../../../components/Elements/Accordian';
 import InputGroup from '../../../components/Elements/InputGroup';
 import DynamicSelectorList from '../../../components/DynamicSelectorList';
-import PrioritySelector from '../../../components/Elements/PrioritySelector';
 
 import moment from 'moment';
 import 'moment/locale/es';
-
-import {parsePriority} from '../../../utils/parsers';
 
 // Firebase
 
 import DateSelector from './DateSelector';
 import CustomInput from '../../Elements/CustomInput';
-import {setForm} from '../../../Store/CheckList/checkListSlice';
+import {
+  dateSelector,
+  houseSelector,
+  observationsSelector,
+  setForm,
+  workersSelector,
+} from '../../../Store/JobForm/jobFormSlice';
 
 moment.locale('es');
 
@@ -65,10 +67,13 @@ const styles = StyleSheet.create({
 const JobForm = () => {
   const dispatch = useDispatch();
 
-  const {job} = useSelector(({jobForm: {job}}) => ({job}), shallowEqual);
+  const house = useSelector(houseSelector);
+  const workers = useSelector(workersSelector);
+  const date = useSelector(dateSelector);
+  const observations = useSelector(observationsSelector);
 
   const setInputFormAction = useCallback(
-    (label, value) => dispatch(setForm(label, value)),
+    (label, value) => dispatch(setForm({label, value})),
     [dispatch],
   );
 
@@ -94,7 +99,11 @@ const JobForm = () => {
   };
 
   const DateTimeSelector = () => (
-    <DateSelector closeModal={() => setModalVisible(false)} />
+    <DateSelector
+      get={date || null}
+      set={(date) => setInputFormAction('date', date)}
+      closeModal={() => setModalVisible(false)}
+    />
   );
 
   const ListDynamicHouse = () => (
@@ -103,8 +112,9 @@ const JobForm = () => {
       store="jobForm"
       searchBy="houseName"
       schema={{img: 'houseImage', name: 'houseName'}}
-      get={job?.house?.value || []}
-      set={(house) => setInputFormAction('house', {...job.house, value: house})}
+      get={house?.value || []}
+      set={(house) => setInputFormAction('house', {...house, value: house})}
+      closeModal={() => setModalVisible(false)}
     />
   );
 
@@ -121,11 +131,12 @@ const JobForm = () => {
       ]}
       searchBy="firstName"
       schema={{img: 'profileImage', name: 'firstName'}}
-      get={job?.workers?.value}
+      get={workers?.value}
       set={(workers) =>
-        setInputFormAction('workers', {...job.workers, value: workers})
+        setInputFormAction('workers', {...workers, value: workers})
       }
       multiple={true}
+      closeModal={() => setModalVisible(false)}
     />
   );
 
@@ -133,7 +144,7 @@ const JobForm = () => {
     <View style={[styles.newJobScreen]}>
       <BottomModal
         modalStyle={{borderRadius: 30}}
-        height={modalContent === 'date' ? 0.5 : 0.9}
+        height={modalContent === 'date' ? 0.4 : 0.9}
         visible={modalVisible}
         onSwipeOut={(event) => {
           setModalVisible(false);
@@ -149,12 +160,8 @@ const JobForm = () => {
         <CustomInput
           title="Fecha"
           subtitle={
-            job?.date && (
-              <Text style={styles.subtitle}>
-                {moment(job?.date).format('LL') +
-                  ' ' +
-                  moment(job?.time).format('LT')}
-              </Text>
+            date && (
+              <Text style={styles.subtitle}>{moment(date).format('LLL')}</Text>
             )
           }
           iconProps={{name: 'alarm', color: '#55A5AD'}}
@@ -169,10 +176,10 @@ const JobForm = () => {
           title="Asignar a.."
           subtitle={
             <View style={{flexDirection: 'row'}}>
-              {job.workers?.value?.map((worker, i) => (
+              {workers?.value?.map((worker, i) => (
                 <View key={worker.id} style={{flexDirection: 'row'}}>
                   <Text style={styles.subtitle}>{worker.firstName}</Text>
-                  {job.workers?.value?.length - 1 !== i && (
+                  {workers?.value?.length - 1 !== i && (
                     <Text style={styles.subtitle}> & </Text>
                   )}
                 </View>
@@ -189,12 +196,9 @@ const JobForm = () => {
           title="Casa"
           subtitle={
             <View style={{flexDirection: 'row'}}>
-              {job?.house?.value?.map((house, i) => (
+              {house?.value?.map((house, i) => (
                 <View key={house.id}>
                   <Text style={styles.subtitle}>{house.houseName}</Text>
-                  {job?.house?.value?.length - 1 !== i && (
-                    <Text style={styles.subtitle}> & </Text>
-                  )}
                 </View>
               ))}
             </View>
@@ -207,43 +211,13 @@ const JobForm = () => {
         />
       </InputGroup>
       <InputGroup>
-        <Accordian
-          title="Prioridad"
-          subtitle={[
-            <Text style={styles.subtitle}>
-              {parsePriority(job?.priority?.value)}
-            </Text>,
-          ]}
-          switcher={job.priority?.switch}
-          iconProps={{name: 'house', color: '#55A5AD'}}
-          onOpen={() =>
-            setInputFormAction('priority', {value: undefined, switch: true})
-          }
-          onClose={() =>
-            setInputFormAction('priority', {
-              value: undefined,
-              switch: false,
-            })
-          }>
-          <PrioritySelector
-            get={job.priority?.value || []}
-            set={(priority) => {
-              setInputFormAction('priority', {
-                ...job.priority,
-                value: priority,
-              });
-            }}
-          />
-        </Accordian>
-      </InputGroup>
-      <InputGroup>
         <TextInput
           multiline
           numberOfLines={10}
           style={{height: 120}}
           placeholder="Observaciones"
           onChangeText={(text) => setInputFormAction('observations', text)}
-          value={job.description}
+          value={observations}
         />
       </InputGroup>
     </View>

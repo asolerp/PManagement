@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Button, View, Text, TextInput, StyleSheet} from 'react-native';
 
 // UI
@@ -10,7 +10,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import ImageBlurLoading from 'react-native-image-blur-loading';
 
 //Redux
-import {useSelector, shallowEqual} from 'react-redux';
+import {useSelector, shallowEqual, useDispatch} from 'react-redux';
 
 //Firebase
 import {useGetDocFirebase} from '../hooks/useGetDocFIrebase';
@@ -21,7 +21,7 @@ import auth from '@react-native-firebase/auth';
 //Utils
 import {launchImage} from '../utils/imageFunctions';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {userSelector} from '../Store/User/userSlice';
+import {logout, userSelector} from '../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -77,6 +77,9 @@ const ProfileScreen = () => {
   const [newImage, setNewImage] = useState();
   const [infoProfile, setInfoProfile] = useState();
   const [editLoading, setEditLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  const logOutUser = useCallback((user) => dispatch(logout()), [dispatch]);
 
   const user = useSelector(userSelector, shallowEqual);
 
@@ -112,6 +115,7 @@ const ProfileScreen = () => {
 
   const logOut = async () => {
     try {
+      logOutUser();
       await auth().signOut();
     } catch (e) {
       console.error(e);
@@ -120,9 +124,15 @@ const ProfileScreen = () => {
 
   return (
     <PagetLayout
-      footer={<CustomButton title="Desconectarse" onPress={() => logOut()} />}
+      footer={
+        <CustomButton
+          styled="rounded"
+          title="Desconectarse"
+          onPress={() => logOut()}
+        />
+      }
       titleLefSide={true}
-      backButton
+      backButton={user?.role === 'admin'}
       titleProps={{
         title: 'Perfil',
         subPage: true,
@@ -183,7 +193,7 @@ const ProfileScreen = () => {
               <CustomButton
                 loading={editLoading}
                 title="Editar perfil"
-                type="clear"
+                styled="rounded"
                 onPress={() => handleEdit()}
               />
             </View>

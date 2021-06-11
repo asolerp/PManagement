@@ -9,21 +9,22 @@ import {deleteCheckListAlert, sendOwnerChecklist} from '../Alerts/checklist';
 
 import {useDispatch} from 'react-redux';
 import {deleteCheckListAction} from '../../Store/App/appSlice';
+import deleteCheckList from '../../Services/deleteCheckList';
 
 const Options = () => {
   const {Gutters, Colors} = useTheme();
   const dispatch = useDispatch();
   const route = useRoute();
-  const {checkId} = route.params;
+  const {docId} = route.params;
   const navigation = useNavigation();
 
   const handleSubmit = () => {
-    duplicateCheckList(checkId);
+    duplicateCheckList(docId);
     navigation.goBack();
   };
 
   const handleDelete = () => {
-    dispatch(deleteCheckListAction(checkId));
+    deleteCheckList(`checklists/${docId}/checks`);
     navigation.goBack();
   };
 

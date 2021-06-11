@@ -20,44 +20,39 @@ import {useAddFirebase} from '../../hooks/useAddFirebase';
 
 // Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {setMessagesAsRead} from '../../firebase/setMessagesAsRead';
 
 // Utils
 import {launchImage} from '../../utils/imageFunctions';
-import {cloudinaryUpload} from '../../cloudinary/index';
-import {messageIdGenerator} from '../../utils/uuid';
 import {Platform} from 'react-native';
 import {userSelector} from '../../Store/User/userSlice';
+import uploadMessagePhoto from '../../Services/uploadMessagePhoto';
 
 const Messages = () => {
   const route = useRoute();
   const {incidenceId} = route.params;
 
-  const [messageImage, setMessageImage] = useState(null);
-  const [imageLoading, setImageLoading] = useState(null);
   const [local, setLocal] = useState([]);
 
-  const {list: messages, loading: loadingMessages} = useGetFirebase(
-    `incidences/${incidenceId}/messages`,
+  const [messages] = useCollectionData(
+    firestore()
+      .collection('incidences')
+      .doc(incidenceId)
+      .collection('messages')
+      .orderBy('createdAt', 'desc'),
     {
-      field: 'createdAt',
-      type: 'desc',
+      idField: 'id',
     },
   );
 
   const user = useSelector(userSelector, shallowEqual);
-  const {document: userLoggedIn} = useGetDocFirebase('users', user.uid);
   const {addFirebase: addMessage} = useAddFirebase();
 
-  const {updateFirebase} = useUpdateFirebase('jobs');
-
-  const {addFirebase: addPhoto, loading: loadingAddPhoto} = useAddFirebase();
-
   const onSendImage = () => {
-    launchImage(setMessageImage);
+    launchImage((messageImage) =>
+      uploadMessagePhoto('incidences', incidenceId, messageImage, user),
+    );
   };
 
   const onSend = useCallback(
@@ -73,65 +68,10 @@ const Messages = () => {
   );
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages?.length > 0) {
       setMessagesAsRead(incidenceId, user.uid, 'incidences');
     }
   }, [messages, incidenceId, user.uid]);
-
-  useEffect(() => {
-    const uploadImage = async () => {
-      const messageID = messageIdGenerator();
-
-      const waitingSendImageMessage = {
-        _id: messageID,
-        image:
-          'https://res.cloudinary.com/enalbis/image/upload/v1614849090/PortManagement/loader_ro9a3e.gif',
-        messageType: 'image',
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        user: {
-          _id: userLoggedIn?.id,
-          name: userLoggedIn?.firstName,
-          avatar: userLoggedIn?.profileImage,
-          token: userLoggedIn?.token,
-          role: userLoggedIn?.role,
-        },
-      };
-
-      const result = await addMessage(
-        `incidences/${incidenceId}/messages`,
-        waitingSendImageMessage,
-      );
-
-      const image = await cloudinaryUpload(
-        messageImage,
-        `/PortManagement/Incidences/${incidenceId}/Photos`,
-      );
-
-      updateFirebase(`${incidenceId}/messages/${result.id}`, {
-        ...waitingSendImageMessage,
-        image: image,
-      });
-
-      addPhoto(`incidences/${incidenceId}/photos`, {
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        image: image,
-      });
-    };
-    if (messageImage !== null) {
-      uploadImage();
-    }
-  }, [
-    messageImage,
-    addMessage,
-    addPhoto,
-    incidenceId,
-    updateFirebase,
-    userLoggedIn,
-  ]);
-
-  const renderCustomView = (props) => {
-    return <CustomView {...props} />;
-  };
 
   return (
     <View
@@ -142,7 +82,6 @@ const Messages = () => {
       }}>
       <GiftedChat
         bottomOffset={-3}
-        isLoadingEarlier={loadingAddPhoto}
         renderBubble={(props) => (
           <Bubble
             {...props}
@@ -219,11 +158,11 @@ const Messages = () => {
         showUserAvatar
         onSend={(messages) => onSend(messages)}
         user={{
-          _id: userLoggedIn?.id,
-          name: userLoggedIn?.firstName,
-          avatar: userLoggedIn?.profileImage,
-          token: userLoggedIn?.token,
-          role: userLoggedIn?.role,
+          _id: user?.id,
+          name: user?.firstName,
+          avatar: user?.profileImage,
+          token: user?.token,
+          role: user?.role,
         }}
       />
     </View>

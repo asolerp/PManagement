@@ -15,7 +15,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import AddButton from '../Elements/AddButton';
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useDocument} from 'react-firebase-hooks/firestore';
+import {useCollectionData, useDocument} from 'react-firebase-hooks/firestore';
 import PhotoCameraModal from '../Modals/PhotoCameraModal';
 
 const styles = StyleSheet.create({
@@ -56,7 +56,7 @@ const Photos = () => {
 
   const Photo = ({photo, index}) => {
     return (
-      <TouchableOpacity onPress={() => handlePressPhoto(index)}>
+      <TouchableOpacity onPress={() => handlePressPhoto(index)} key={index}>
         <ImageBackground
           source={{uri: photo}}
           style={styles.photo}
@@ -66,7 +66,13 @@ const Photos = () => {
     );
   };
 
-  const [value, loading, error] = useDocument(
+  const [values] = useCollectionData(
+    firestore().collection('incidences').doc(incidenceId).collection('photos'),
+    {
+      idField: 'id',
+    },
+  );
+  const [value, loading] = useDocument(
     firestore().doc(`incidences/${incidenceId}`),
     {
       snapshotListenOptions: {includeMetadataChanges: true},
@@ -110,7 +116,10 @@ const Photos = () => {
         onRequestClose={() => setModal(false)}>
         <ImageViewer
           index={imageIndex}
-          imageUrls={value?.data()?.photos?.map((url) => ({url: url}))}
+          imageUrls={value
+            ?.data()
+            ?.photos?.concat(values?.map((p) => p.image))
+            .map((url) => ({url: url}))}
           onSwipeDown={() => {
             setModal(false);
           }}
@@ -118,9 +127,14 @@ const Photos = () => {
         />
       </Modal>
       <View style={styles.container}>
-        {value?.data()?.photos?.map((photo, i) => (
-          <Photo photo={photo} index={i} key={photo} />
-        ))}
+        {value
+          ?.data()
+          ?.photos?.concat(values?.map((p) => p.image))
+          .map((photo, i) => (
+            <View key={i}>
+              <Photo photo={photo} index={photo} />
+            </View>
+          ))}
       </View>
     </React.Fragment>
   );

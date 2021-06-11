@@ -2,7 +2,6 @@ import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
 // Components
-import JobsResume from '../../components/JobsResume/JobsResume';
 import ProfileBar from '../../components/ProfileBar';
 import TitlePage from '../../components/TitlePage';
 import IncidencesList from '../../components/Lists/IncidencesList';

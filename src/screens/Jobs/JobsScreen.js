@@ -1,99 +1,65 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useMemo} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {StatusBar} from 'react-native';
+
 import {useNavigation} from '@react-navigation/native';
 
 // Redux
-import {useSelector, useDispatch} from 'react-redux';
 
 // UI
-import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import AddButton from '../../components/Elements/AddButton';
 import HouseFilter from '../../components/Filters/HouseFilter';
-import StatusTaskFilter from '../../components/Filters/StatusTaskFilter';
+
 import JobItem from '../../components/JobItem';
-import CalendarStrip from 'react-native-calendar-strip';
 
 //Firebase
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+import firestore from '@react-native-firebase/firestore';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Styles
-import {defaultTextTitle, marginTop} from '../../styles/common';
+import {defaultLabel, marginBottom} from '../../styles/common';
 import {LOW_GREY, PM_COLOR} from '../../styles/colors';
 
 // Utils
-import moment from 'moment';
-import {generateCalendarDots} from '../../utils/parsers';
+
 import PagetLayout from '../../components/PageLayout';
 import {FlatList} from 'react-native';
-import {
-  filterDateSelector,
-  housesSelector,
-  setDate,
-  addHouse,
-  statusTaskFilterSelector,
-} from '../../Store/Filters/filtersSlice';
+
+import {useTheme} from '../../Theme';
+import sortByDate from '../../utils/sorts';
+import WorkersFilter from '../../components/Filters/WorkeresFilter';
+import StatusIncidence from '../../components/Filters/StatusIncidence';
 
 const JobsScreen = () => {
-  const dispatch = useDispatch();
-  const {list} = useGetFirebase('jobs');
+  const {Gutters, Layout, Fonts} = useTheme();
+  const [filterHouses, setFilterHouses] = useState([]);
+  const [filterWorkers, setFilterWorkers] = useState([]);
+  const [state, setState] = useState(false);
 
-  const houses = useSelector(housesSelector);
-  const filterDate = useSelector(filterDateSelector);
-  const statusTaskFilter = useSelector(statusTaskFilterSelector);
+  const query = useMemo(() => {
+    return firestore().collection('jobs').where('done', '==', state);
+  }, [state]);
 
-  const [filteredList, setFilteredList] = useState([]);
+  const [jobs] = useCollectionData(query, {
+    idField: 'id',
+  });
+
   const navigation = useNavigation();
 
   const handleNewJob = () => {
     navigation.navigate('NewJobTaskSelector');
   };
 
-  const setFilterDateAction = useCallback((date) => dispatch(setDate({date})), [
-    dispatch,
-  ]);
-
-  const addHouseAction = useCallback(
-    (payload) => dispatch(addHouse({houses: payload})),
-    [dispatch],
-  );
-
-  useEffect(() => {
-    if (houses === null) {
-      const fList = list
-        .filter((job) => job.house === null)
-        .filter(
-          (job) =>
-            moment(job?.date?.toDate()).format('DD-MM-YY') ===
-            moment(filterDate).format('DD-MM-YY'),
-        );
-      setFilteredList(fList);
-    } else {
-      if (houses?.length === 0) {
-        setFilteredList(
-          list.filter(
-            (job) =>
-              moment(job?.date?.toDate()).format('DD-MM-YY') ===
-              moment(filterDate).format('DD-MM-YY'),
-          ),
-        );
-      } else {
-        const fList = list
-          .filter((j) => j.house !== null)
-          .filter((job) =>
-            houses?.find(
-              (houseId) => houseId === job?.house && job?.house[0]?.id,
-            ),
-          )
-          .filter(
-            (job) =>
-              moment(job?.date?.toDate()).format('DD-MM-YY') ===
-              moment(filterDate).format('DD-MM-YY'),
-          );
-        setFilteredList(fList);
-      }
-    }
-  }, [houses, list, filterDate, statusTaskFilter]);
+  const jobsList = jobs
+    ?.filter((job) =>
+      filterWorkers.length > 0
+        ? filterWorkers.some((fworker) => job?.workersId?.includes(fworker))
+        : true,
+    )
+    .filter((job) =>
+      filterHouses.length > 0 ? filterHouses.includes(job.houseId) : true,
+    )
+    .sort((a, b) => sortByDate(a, b, 'desc'));
 
   const renderItem = ({item}) => {
     return (
@@ -110,77 +76,52 @@ const JobsScreen = () => {
 
   return (
     <React.Fragment>
-      <StatusBar barStyle="default" />
       <View style={styles.addButton}>
         <TouchableOpacity onPress={() => handleNewJob()}>
           <AddButton iconName="add" />
         </TouchableOpacity>
       </View>
       <PagetLayout
+        titleLefSide={true}
         titleProps={{
-          title: 'Listado de trabajos',
-          subtitle: 'En esta semana',
-          color: 'white',
+          title: 'Trabajos',
+          subPage: false,
         }}>
-        <View style={styles.jobsScreen}>
-          {/* <View style={{height: 100}}>
-            <CalendarStrip
-              startingDate={moment(new Date()).subtract(3, 'days')}
-              markedDates={generateCalendarDots(list)}
-              selectedDate={moment(filterDate) || moment(new Date())}
-              onDateSelected={(date) => setFilterDateAction(date)}
-              style={styles.calendarContainer}
-              scrollable
-              iconStyle={{color: PM_COLOR}}
-              leftSelector={
-                <Icon name="keyboard-arrow-left" size={15} color={PM_COLOR} />
-              }
-              rightSelector={
-                <Icon name="keyboard-arrow-right" size={15} color={PM_COLOR} />
-              }
-              dateContainerStyle={{color: PM_COLOR}}
-              dateNameStyle={{color: PM_COLOR}}
-              dateNumberStyle={styles.dateNumberStyle}
-              highlightDateNameStyle={styles.highlightDateNameStyle}
-              highlightDateNumberStyle={styles.highlightDateNumberStyle}
-              highlightDateContainerStyle={styles.highlightDateContainerStyle}
-              calendarHeaderContainerStyle={styles.calendarHeaderContainerStyle}
-              calendarHeaderStyle={styles.calendarHeaderStyle}
+        <View style={[Layout.fill]}>
+          <View style={[styles.housesWrapper, Gutters.regularBMargin]}>
+            <WorkersFilter
+              workers={filterWorkers}
+              onClickWorker={setFilterWorkers}
             />
-          </View> */}
-          <View style={styles.housesWrapper}>
-            <HouseFilter houses={houses} addHouse={addHouseAction} />
+            <HouseFilter houses={filterHouses} onClickHouse={setFilterHouses} />
           </View>
-          <View style={{...styles.jobsListWrapper, ...marginTop(20)}}>
-            <View style={styles.jobsTitleWrapper}>
-              <Text style={{...defaultTextTitle}}>Trabajos</Text>
-              <StatusTaskFilter />
-            </View>
-            {filteredList.length > 0 ? (
-              <View style={{marginTop: 20, flex: 1}}>
-                {filteredList?.filter((job) => job.done === statusTaskFilter)
-                  .length === 0 ? (
-                  <View style={styles.infoMessageWrapper}>
-                    <Text style={styles.infoMessageStyle}>
-                      No tienes ninguna en este estado.
-                    </Text>
-                  </View>
-                ) : (
-                  <FlatList
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={filteredList?.filter(
-                      (job) => job.done === statusTaskFilter,
-                    )}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                  />
-                )}
-              </View>
+          <View
+            style={[
+              Layout.rowCenter,
+              Layout.justifyContentSpaceBetween,
+              Gutters.smallBMargin,
+            ]}>
+            <Text style={{...defaultLabel}}>Trabajos</Text>
+            <StatusIncidence onChangeFilter={setState} state={state} />
+          </View>
+          <View style={[Layout.fill]}>
+            {jobsList?.length !== 0 ? (
+              <FlatList
+                data={jobsList}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                showsVerticalScrollIndicator={false}
+              />
             ) : (
-              <View style={styles.infoMessageWrapper}>
-                <Text style={styles.infoMessageStyle}>
-                  No tienes ninguna tarea creada para este día.
+              <View
+                style={[
+                  Layout.fill,
+                  Layout.rowCenter,
+                  Layout.justifyContentCenter,
+                  Layout.alignItemsCenter,
+                ]}>
+                <Text style={[Fonts.textSmall, {textAlign: 'center'}]}>
+                  No hay trabajos para la búsqueda seleccionada
                 </Text>
               </View>
             )}
@@ -207,9 +148,6 @@ const styles = StyleSheet.create({
     flexBasis: 'auto',
     backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
-  },
-  housesWrapper: {
-    height: 200,
   },
   jobsTitleWrapper: {
     flexDirection: 'row',

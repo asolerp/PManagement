@@ -117,7 +117,7 @@ const NewCheckListJobScreen = ({route, navigation}) => {
         subPage: true,
       }}>
       <View style={styles.jobScreen}>
-        <KeyboardAwareScrollView>
+        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
           <CheckListForm />
         </KeyboardAwareScrollView>
       </View>

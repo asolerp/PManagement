@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
 });
 
 const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
-  const {Layout} = useTheme();
+  const {Layout, Gutters} = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   return (
     <React.Fragment>
@@ -77,18 +77,13 @@ const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
           <Text style={styles.name}>{check.title}</Text>
           {check?.date && (
             <Text style={styles.dateStyle}>
-              {moment(check?.date).format('LL')}
+              {moment(check?.date?.toDate()).format('LL')}
             </Text>
           )}
           <View
-            style={[
-              Layout.fill,
-              Layout.rowCenter,
-              Layout.justifyContentStart,
-              {...marginTop(10)},
-            ]}>
+            style={[Layout.fill, Layout.column, Layout.justifyContentStart]}>
             {check?.worker && (
-              <View>
+              <View style={[Gutters.tinyVMargin]}>
                 <Avatar
                   key={check?.worker?.uid}
                   uri={check?.worker?.profileImage}

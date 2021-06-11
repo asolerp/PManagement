@@ -1,29 +1,26 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector, shallowEqual} from 'react-redux';
-import {View, Text, Button, StyleSheet, TouchableOpacity} from 'react-native';
-
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {useTranslation} from 'react-i18next';
 import TitlePage from '../../components/TitlePage';
 import ProfileBar from '../../components/ProfileBar';
-import StatusTaskFilter from '../../components/Filters/StatusTaskFilter';
 import AddButton from '../../components/Elements/AddButton';
-
-import {useGetFirebase} from '../../hooks/useGetFirebase';
 
 // UI
 import LinearGradient from 'react-native-linear-gradient';
-import JobItem from '../../components/JobItem';
 
 // Styles
 import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
 
 // Utils
 import moment from 'moment';
-import subDays from 'date-fns/subDays';
+
 import {ScrollView} from 'react-native';
-import CheckItem from '../../components/CheckItem';
-import {DARK_BLUE, GREY, LOW_GREY} from '../../styles/colors';
+
+import {DARK_BLUE, LOW_GREY} from '../../styles/colors';
 import {userSelector} from '../../Store/User/userSlice';
+import ChecklistList from '../../components/Lists/ChecklistList';
 
 const styles = StyleSheet.create({
   container: {
@@ -61,37 +58,7 @@ const styles = StyleSheet.create({
 const HomeWorker = () => {
   const navigation = useNavigation();
   const user = useSelector(userSelector, shallowEqual);
-
-  const {statusTaskFilter} = useSelector(
-    ({filters: {statusTaskFilter}}) => ({statusTaskFilter}),
-    shallowEqual,
-  );
-
-  const {list} = useGetFirebase('jobs', null, [
-    {
-      label: 'workersId',
-      operator: 'array-contains',
-      condition: user.uid,
-    },
-    {
-      label: 'date',
-      operator: '>',
-      condition: subDays(new Date(), 1),
-    },
-  ]);
-
-  const {list: checklist} = useGetFirebase('checklists', null, [
-    {
-      label: 'workersId',
-      operator: 'array-contains',
-      condition: user.uid,
-    },
-    {
-      label: 'send',
-      operator: '==',
-      condition: false,
-    },
-  ]);
+  const {t} = useTranslation();
 
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
@@ -120,52 +87,12 @@ const HomeWorker = () => {
                   ...marginBottom(10),
                   ...marginTop(20),
                 }}>
-                Hoy es {date.join(' ')} ☀️
+                {t('welcome', {date: date.join(' ')})}
               </Text>
               <Text style={{...styles.label, ...marginBottom(20)}}>
-                Estos son tus trabajos asignados para hoy 💪🏡
+                {t('homeMessage')}
               </Text>
-              {checklist?.length > 0 && (
-                <Text style={{...defaultLabel, ...marginBottom(10)}}>
-                  Check list
-                </Text>
-              )}
-              <View style={styles.checksWrapper}>
-                {checklist?.map((check) => (
-                  <CheckItem
-                    key={check.id}
-                    check={check}
-                    onPress={() =>
-                      navigation.navigate('Check', {
-                        checkId: check.id,
-                      })
-                    }
-                  />
-                ))}
-              </View>
-              <StatusTaskFilter />
-              <View style={{marginTop: 20}}>
-                {list.length > 0 ? (
-                  <React.Fragment>
-                    {list
-                      ?.filter((job) => job.done === statusTaskFilter)
-                      .sort((a, b) => a.date - b.date)
-                      .map((item) => (
-                        <JobItem
-                          job={item}
-                          key={item.id}
-                          onPress={() =>
-                            navigation.navigate('JobScreen', {
-                              jobId: item.id,
-                            })
-                          }
-                        />
-                      ))}
-                  </React.Fragment>
-                ) : (
-                  <Text>No tienes tareas asignadas para hoy</Text>
-                )}
-              </View>
+              <ChecklistList uid={user.uid} />
             </View>
           </View>
         </LinearGradient>

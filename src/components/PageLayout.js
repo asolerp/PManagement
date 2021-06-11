@@ -1,12 +1,12 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/core';
-import {View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 // UI
 import TitlePage from './TitlePage';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {SafeAreaView} from 'react-native';
 
 import {LOW_GREY} from '../styles/colors';
 
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: '100%',
     paddingHorizontal: 20,
-    height: '7%',
+    paddingTop: 10,
   },
   iconWrapper: {
     width: 30,
@@ -62,7 +62,7 @@ const PagetLayout = ({
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <TitlePage
         {...titleProps}
         leftSide={
@@ -92,7 +92,7 @@ const PagetLayout = ({
         </View>
       </LinearGradient>
       {footer && <View style={styles.bottomScreen}>{footer}</View>}
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -1,22 +1,22 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
-  job: {
-    mode: 'new',
-    task: undefined,
-  },
+  task: undefined,
+  house: undefined,
+  workers: undefined,
+  observations: undefined,
+  date: undefined,
 };
 
 const jobFormSlice = createSlice({
   name: 'jobForm',
   initialState,
   reducers: {
-    setInputForm: (state, {payload}) => {},
+    setForm: (state, {payload}) => {
+      state[payload.label] = payload.value;
+    },
     setTask: (state, {payload}) => {
-      state.job = {
-        ...state.job,
-        task: payload.task,
-      };
+      state.task = payload.task;
     },
     editForm: (state, {payload}) => {
       state.job = {
@@ -30,9 +30,16 @@ const jobFormSlice = createSlice({
   },
 });
 
+// Selectors
+export const jobSelector = (state) => state.jobForm;
+export const houseSelector = (state) => state.jobForm.house;
+export const workersSelector = (state) => state.jobForm.workers;
+export const observationsSelector = (state) => state.jobForm.observations;
+export const dateSelector = (state) => state.jobForm?.date;
+
 // Actions
 export const {
-  setInputForm,
+  setForm,
   setTask,
   editForm,
   resetTask,

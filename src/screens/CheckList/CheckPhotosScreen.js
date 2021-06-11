@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   View,
   Modal,
@@ -20,7 +20,7 @@ import {parseDeleteTextButton} from '../../utils/parsers';
 import firestore from '@react-native-firebase/firestore';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useDeleteFirebase} from '../../hooks/useDeleteFirebase';
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+
 import {firebase} from '@react-native-firebase/firestore';
 import {useDeleteFirebaseImage} from '../../hooks/useDeleteFirebaseImage';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 });
 
 const CheckPhotosScreen = ({route, navigation}) => {
-  const {title, checkId, checkItemId} = route.params;
+  const {title, docId, checkItemId} = route.params;
   const [modal, setModal] = useState([]);
   const [photosSelected, setPhotosSelected] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -79,17 +79,20 @@ const CheckPhotosScreen = ({route, navigation}) => {
   const {deleteFirebase} = useDeleteFirebase();
   const {updateFirebase} = useUpdateFirebase('checklists');
 
-  const [values, loading] = useCollectionData(
-    firestore()
+  const query = useMemo(() => {
+    return firestore()
       .collection('checklists')
-      .doc(checkId)
+      .doc(docId)
       .collection('checks')
       .doc(checkItemId)
-      .collection('photos'),
-    {
-      idField: 'id',
-    },
-  );
+      .collection('photos');
+  }, [docId, checkItemId]);
+
+  const [values, loading] = useCollectionData(query, {
+    idField: 'id',
+  });
+
+  console.log(values);
 
   const handlePressPhoto = (i) => {
     setModal(true);
@@ -109,10 +112,10 @@ const CheckPhotosScreen = ({route, navigation}) => {
     setPhotosSelected(photosSelected.filter((p) => p.id != photo.id));
     await deleteImage(photo.ref);
     await deleteFirebase(
-      `checklists/${checkId}/checks/${checkItemId}/photos`,
+      `checklists/${docId}/checks/${checkItemId}/photos`,
       photo.id,
     );
-    await updateFirebase(`${checkId}/checks/${checkItemId}`, {
+    await updateFirebase(`${docId}/checks/${checkItemId}`, {
       numberOfPhotos: firebase.firestore.FieldValue.increment(-1),
     });
   };

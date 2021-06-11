@@ -53,7 +53,8 @@ const Avatar = ({uri, name, overlap, position, size = 'small'}) => {
           style={[
             styles.ownerImage,
             {width: parseSize(size), height: parseSize(size)},
-            {marginRight: overlap ? -10 : 20},
+            {marginLeft: overlap ? -10 : 0},
+            {marginRight: name ? 15 : 0},
           ]}
           source={{
             uri: uri,

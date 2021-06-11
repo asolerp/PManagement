@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect, useMemo} from 'react';
 import {useRoute} from '@react-navigation/native';
 import {
   GiftedChat,
@@ -22,7 +22,7 @@ import {useAddFirebase} from '../../hooks/useAddFirebase';
 import firestore from '@react-native-firebase/firestore';
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+
 import {setMessagesAsRead} from '../../firebase/setMessagesAsRead';
 
 // Utils
@@ -31,22 +31,29 @@ import {cloudinaryUpload} from '../../cloudinary/index';
 import {messageIdGenerator} from '../../utils/uuid';
 import {Platform} from 'react-native';
 import {userSelector} from '../../Store/User/userSlice';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 const Messages = () => {
   const route = useRoute();
   const {checkId} = route.params;
 
   const [messageImage, setMessageImage] = useState(null);
-  const [imageLoading, setImageLoading] = useState(null);
+
   const [local, setLocal] = useState([]);
 
-  const {list: messages, loading: loadingMessages} = useGetFirebase(
-    `checklists/${checkId}/messages`,
-    {
-      field: 'createdAt',
-      type: 'desc',
-    },
+  const query = useMemo(
+    () =>
+      firestore()
+        .collection('checklists')
+        .doc(checkId)
+        .collection('messages')
+        .orderBy('createdAt', 'desc'),
+    [checkId],
   );
+
+  const [messages] = useCollectionData(query, {
+    idField: 'id',
+  });
 
   const user = useSelector(userSelector, shallowEqual);
   const {document: userLoggedIn} = useGetDocFirebase('users', user.uid);
@@ -73,7 +80,7 @@ const Messages = () => {
   );
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages?.length > 0) {
       setMessagesAsRead(checkId, user.uid, 'checklists');
     }
   }, [messages, checkId, user.uid]);

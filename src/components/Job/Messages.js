@@ -5,68 +5,58 @@ import {
   Actions,
   Bubble,
   InputToolbar,
-  CustomView,
   Send,
 } from 'react-native-gifted-chat';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  ScrollView,
-} from 'react-native';
+import {View, Text, ActivityIndicator, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 //Chat
 import RenderDay from '../Chat/RenderDay';
 
 // Redux
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
+import {useSelector, shallowEqual} from 'react-redux';
 import {useAddFirebase} from '../../hooks/useAddFirebase';
 
 // Firebase
 import firestore from '@react-native-firebase/firestore';
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+
 import {setMessagesAsRead} from '../../firebase/setMessagesAsRead';
 
 // Utils
 import {launchImage} from '../../utils/imageFunctions';
-import {cloudinaryUpload} from '../../cloudinary/index';
-import {messageIdGenerator} from '../../utils/uuid';
 import {Platform} from 'react-native';
 import {userSelector} from '../../Store/User/userSlice';
+import uploadMessagePhoto from '../../Services/uploadMessagePhoto';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 const Messages = () => {
   const route = useRoute();
   const {jobId} = route.params;
 
-  const [messageImage, setMessageImage] = useState(null);
-  const [imageLoading, setImageLoading] = useState(null);
   const [local, setLocal] = useState([]);
 
-  const {list: messages, loading: loadingMessages} = useGetFirebase(
-    `jobs/${jobId}/messages`,
+  const [messages] = useCollectionData(
+    firestore()
+      .collection('jobs')
+      .doc(jobId)
+      .collection('messages')
+      .orderBy('createdAt', 'desc'),
     {
-      field: 'createdAt',
-      type: 'desc',
+      idField: 'id',
     },
   );
 
   const user = useSelector(userSelector, shallowEqual);
   const {document: userLoggedIn} = useGetDocFirebase('users', user.uid);
+  console.log(user);
   const {addFirebase: addMessage} = useAddFirebase();
 
-  const {updateFirebase} = useUpdateFirebase('jobs');
-
-  const {addFirebase: addPhoto, loading: loadingAddPhoto} = useAddFirebase();
-
   const onSendImage = () => {
-    launchImage(setMessageImage);
+    launchImage((messageImage) =>
+      uploadMessagePhoto('jobs', jobId, messageImage, user),
+    );
   };
-
   const onSend = useCallback(
     (messages = []) => {
       addMessage(`jobs/${jobId}/messages`, {
@@ -80,66 +70,10 @@ const Messages = () => {
   );
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages?.length > 0) {
       setMessagesAsRead(jobId, user.uid, 'jobs');
     }
   }, [messages, jobId, user.uid]);
-
-  useEffect(() => {
-    const uploadImage = async () => {
-      const messageID = messageIdGenerator();
-
-      const waitingSendImageMessage = {
-        _id: messageID,
-        image:
-          'https://res.cloudinary.com/enalbis/image/upload/v1614849090/PortManagement/loader_ro9a3e.gif',
-        messageType: 'image',
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        user: {
-          _id: userLoggedIn?.id,
-          name: userLoggedIn?.firstName,
-          avatar: userLoggedIn?.profileImage,
-          token: userLoggedIn?.token,
-          role: userLoggedIn?.role,
-        },
-      };
-
-      const result = await addMessage(
-        `jobs/${jobId}/messages`,
-        waitingSendImageMessage,
-      );
-
-      const image = await cloudinaryUpload(
-        messageImage,
-        `/PortManagement/Jobs/${jobId}/Photos`,
-      );
-
-      updateFirebase(`${jobId}/messages/${result.id}`, {
-        ...waitingSendImageMessage,
-        image: image,
-      });
-
-      addPhoto(`jobs/${jobId}/photos`, {
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        image: image,
-      });
-    };
-    if (messageImage !== null) {
-      uploadImage();
-    }
-  }, [messageImage]);
-
-  // if (loadingMessages) {
-  //   return (
-  //     <View>
-  //       <Text>Cargando mensajes</Text>
-  //     </View>
-  //   );
-  // }
-
-  const renderCustomView = (props) => {
-    return <CustomView {...props} />;
-  };
 
   return (
     <ScrollView
@@ -150,7 +84,6 @@ const Messages = () => {
       }}>
       <GiftedChat
         bottomOffset={-3}
-        isLoadingEarlier={loadingAddPhoto}
         renderBubble={(props) => (
           <Bubble
             {...props}

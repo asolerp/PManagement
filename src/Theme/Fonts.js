@@ -15,6 +15,11 @@ export default function ({FontSize, Colors}) {
       fontWeight: 'bold',
       color: Colors.white,
     },
+    textTiny: {
+      fontSize: FontSize.tiny,
+      color: Colors.darkBlue,
+      fontWeight: 'bold',
+    },
     textSmall: {
       fontSize: FontSize.small,
       color: Colors.darkBlue,

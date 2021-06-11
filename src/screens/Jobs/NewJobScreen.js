@@ -1,12 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {
-  View,
-  Keyboard,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import {View, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
 
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
@@ -23,14 +16,14 @@ import PagetLayout from '../../components/PageLayout';
 // Firebase
 import {newJob} from '../../firebase/newJob';
 import {LOW_GREY} from '../../styles/colors';
-import {resetForm} from '../../Store/JobForm/jobFormSlice';
+import {jobSelector, resetForm} from '../../Store/JobForm/jobFormSlice';
 
 const NewJobScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
   const {taskName} = route.params;
   const [loading, setLoading] = useState();
 
-  const {job} = useSelector(({jobForm: {job}}) => ({job}), shallowEqual);
+  const job = useSelector(jobSelector);
 
   const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
 
@@ -43,14 +36,13 @@ const NewJobScreen = ({route, navigation}) => {
       setLoading(true);
       const newJobForm = {
         observations: job?.observations,
-        date: job?.date?._d,
-        time: job?.time,
+        date: job?.dateTime?.date,
+        time: job?.dateTime?.time,
         workers: job?.workers?.value,
         workersId: job?.workers?.value.map((worker) => worker.id),
         houseId: job?.house?.value[0].id,
         house: job?.house?.value,
         task: job?.task,
-        priority: job?.priority?.value,
         done: false,
       };
       await newJob(newJobForm);
@@ -77,6 +69,7 @@ const NewJobScreen = ({route, navigation}) => {
       }
       footer={
         <CustomButton
+          styled="rounded"
           loading={loading}
           title="Crear trabajo"
           onPress={() => handleSubmit()}
@@ -86,11 +79,11 @@ const NewJobScreen = ({route, navigation}) => {
         title: `Nuevo trabajo de ${taskName.toLowerCase()}`,
         subPage: true,
       }}>
-      <View style={styles.jobScreen}>
+      <SafeAreaView style={styles.jobScreen}>
         <KeyboardAwareScrollView>
           <JobForm />
         </KeyboardAwareScrollView>
-      </View>
+      </SafeAreaView>
     </PagetLayout>
   );
 };

@@ -66,10 +66,6 @@ const useFilter = (storage) => {
 
   useEffect(() => {
     if (houses.length > 0) {
-      console.log(
-        filteredList?.filter((item) => houses.includes(item.houseId)),
-        'casas',
-      );
       setFilteredList([
         ...list?.filter((item) => houses.includes(item.houseId)),
       ]);

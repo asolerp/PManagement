@@ -127,7 +127,7 @@ const TabNavigation = () => {
           ),
         })}
       />
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="Trabajos"
         component={JobsStack}
         options={({route}) => ({
@@ -141,7 +141,7 @@ const TabNavigation = () => {
             />
           ),
         })}
-      /> */}
+      />
       <Tabs.Screen
         name="Incidencias"
         component={IncidencesStack}

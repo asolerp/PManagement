@@ -7,6 +7,7 @@ import {useGetFirebase} from '../hooks/useGetFirebase';
 
 import {SearchBar} from 'react-native-elements';
 import ItemList from './ItemList';
+import CustomButton from './Elements/CustomButton';
 
 const DynamicSelectorList = ({
   collection,
@@ -17,10 +18,12 @@ const DynamicSelectorList = ({
   set,
   get,
   multiple = false,
+  closeModal,
 }) => {
   const [search, setSearch] = useState();
   const [filteredList, setFilteredList] = useState();
   const {list, loading, error} = useGetFirebase(collection, order, where);
+  const [selected, setSelected] = useState(get);
 
   const handleSearch = (text) => {
     setSearch(text);
@@ -28,6 +31,11 @@ const DynamicSelectorList = ({
       item[searchBy].toLowerCase().includes(search?.toLowerCase()),
     );
     setFilteredList(fList);
+  };
+
+  const onSubmit = () => {
+    set(selected);
+    closeModal();
   };
 
   useEffect(() => {
@@ -40,19 +48,19 @@ const DynamicSelectorList = ({
     const handleChange = (newValue) => {
       if (!multiple) {
         if (!newValue) {
-          set([]);
-        } else {
-          set([item]);
+          return setSelected([]);
         }
+        return setSelected([item]);
       } else {
         if (!newValue) {
-          const updatedItemList = get?.filter((i) => i?.id !== item?.id);
-          set(updatedItemList);
-        } else {
-          set([...(get || []), item]);
+          const updatedItemList = selected?.filter((i) => i?.id !== item?.id);
+          return setSelected(updatedItemList);
         }
+        return setSelected([...(selected || []), item]);
       }
     };
+
+    console.log(selected);
 
     return (
       <React.Fragment>
@@ -61,7 +69,7 @@ const DynamicSelectorList = ({
           schema={schema}
           setter={set}
           handleChange={handleChange}
-          active={get?.some((i) => i?.id === item?.id)}
+          active={selected?.some((i) => i?.id === item?.id)}
           multiple={multiple}
         />
         <View style={styles.separator} />
@@ -92,6 +100,7 @@ const DynamicSelectorList = ({
             keyExtractor={(item) => item.id}
           />
         </View>
+        <CustomButton styled="rounded" title="Guardar" onPress={onSubmit} />
       </View>
     </View>
   );

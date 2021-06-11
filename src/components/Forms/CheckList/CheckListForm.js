@@ -163,6 +163,7 @@ const CheckListForm = () => {
         setInputFormAction('house', {...house, value: house});
         setModalVisible(false);
       }}
+      closeModal={() => setModalVisible(false)}
     />
   );
 
@@ -185,6 +186,7 @@ const CheckListForm = () => {
         setModalVisible(false);
       }}
       multiple={true}
+      closeModal={() => setModalVisible(false)}
     />
   );
 

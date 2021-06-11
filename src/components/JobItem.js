@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {useSelector, shallowEqual} from 'react-redux';
+import {useSelector} from 'react-redux';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -14,15 +14,17 @@ import {
 
 //UI
 import Avatar from './Avatar';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import InfoIcon from './InfoIcon';
 
 // Utils
 import moment from 'moment';
-import {parsePriorityColor} from '../utils/parsers';
+import {minimizetext} from '../utils/parsers';
 import {DARK_BLUE, GREY, GREY_1} from '../styles/colors';
-import {marginBottom, marginRight} from '../styles/common';
+import {marginRight} from '../styles/common';
 import {userSelector} from '../Store/User/userSlice';
+import {useTheme} from '../Theme';
+import {Colors} from '../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,26 +32,30 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     flexDirection: 'row',
-    width: 220,
     borderWidth: 1,
     borderColor: GREY_1,
   },
   firstSection: {
-    flex: 1,
     flexDirection: 'row',
-    height: '100%',
+    backgroundColor: 'white',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderLeftWidth: 10,
+    borderColor: GREY_1,
   },
   titleSubtitle: {
     flex: 1,
-    justifyContent: 'space-between',
   },
   firstLine: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   date: {
-    marginRight: 10,
-    color: '#3DB6BA',
+    fontSize: 10,
   },
   priority: {
     justifyContent: 'flex-start',
@@ -85,10 +91,6 @@ const styles = StyleSheet.create({
   },
   iconsWrapper: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  avatarWrapper: {
-    flexDirection: 'row',
   },
   workers: {
     flexDirection: 'row',
@@ -96,6 +98,7 @@ const styles = StyleSheet.create({
 });
 
 const JobItem = ({job, onPress}) => {
+  const {Layout, Gutters, Fonts} = useTheme();
   const [noReadCounter, setNoReadCounter] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
@@ -130,40 +133,38 @@ const JobItem = ({job, onPress}) => {
   }, []);
 
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={{...styles.container, ...marginRight(20)}}>
-        <View style={styles.firstSection}>
-          {job.priority && (
-            <View
-              style={[
-                styles.priority,
-                {backgroundColor: parsePriorityColor(job.priority)},
-              ]}
-            />
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        Layout.fill,
+        styles.firstSection,
+        {
+          borderLeftColor: Colors.pm,
+        },
+      ]}>
+      <View style={[Layout.fill]}>
+        <View>
+          <View style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
+            <Text>🏡 {job?.house?.[0]?.houseName}</Text>
+            <Text style={styles.date}>
+              ⏱ {moment(job?.date?.toDate()).format('LL')}
+            </Text>
+          </View>
+          {job?.task?.desc && (
+            <Text style={[Fonts.textTitle, Gutters.tinyTMargin]}>
+              {job?.task?.desc}
+            </Text>
           )}
-          <View style={styles.titleSubtitle}>
-            <Text style={{...styles.date, ...marginBottom(10)}}>
-              {moment(job.date.toDate()).format('LL')}
-            </Text>
-            <Text style={{...styles.title, ...marginBottom(10)}}>
-              {`Trabajos en ${job.house[0].houseName}`}
-            </Text>
-            {job?.task?.desc && (
-              <Text style={{...styles.subtitle, ...marginBottom(10)}}>
-                {job?.task?.desc}
-              </Text>
-            )}
-            <View style={{...styles.avatarWrapper, ...marginBottom(10)}}>
-              {job?.workers?.map((worker, i) => (
-                <Avatar
-                  key={worker.id || i}
-                  uri={worker.profileImage}
-                  overlap
-                  size="medium"
-                />
-              ))}
-            </View>
-            <View style={styles.iconsWrapper}>
+          <Text style={[Gutters.tinyTMargin]}>
+            {minimizetext(job?.observations, 30)}
+          </Text>
+          <View
+            style={[
+              Layout.fill,
+              Layout.rowCenter,
+              Layout.justifyContentSpaceBetween,
+            ]}>
+            <View style={[Layout.rowCenter]}>
               <InfoIcon
                 style={marginRight(10)}
                 info={noReadCounter}
@@ -175,6 +176,21 @@ const JobItem = ({job, onPress}) => {
                 info={job.done ? 'Termianda' : 'Sin terminar'}
                 color={job.done ? '#7dd891' : '#ED7A7A'}
               />
+            </View>
+            <View
+              style={[
+                Layout.rowCenter,
+                Layout.alignItemsEnd,
+                Gutters.smallRMargin,
+              ]}>
+              {job?.workers?.map((worker, i) => (
+                <Avatar
+                  key={worker.id || i}
+                  uri={worker.profileImage}
+                  overlap={job?.workers?.length > 1}
+                  size="medium"
+                />
+              ))}
             </View>
           </View>
         </View>

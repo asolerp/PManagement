@@ -1,12 +1,15 @@
-import React, {useState} from 'react';
+import React, {useMemo} from 'react';
 import {View, Text, FlatList, StyleSheet} from 'react-native';
 
 // Redux
 import {useSelector, shallowEqual} from 'react-redux';
 
 //Firebase
-import {useGetFirebase} from '../../hooks/useGetFirebase';
-import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
+import firestore from '@react-native-firebase/firestore';
+import {
+  useCollectionData,
+  useDocumentData,
+} from 'react-firebase-hooks/firestore';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 
 // styles
@@ -24,6 +27,8 @@ import {userSelector} from '../../Store/User/userSlice';
 import useUploadImageCheck from '../../hooks/useUploadImage';
 import {useNavigation, useRoute} from '@react-navigation/core';
 import updateChecklistInput from '../../Services/updateChecklistInput';
+import {ActivityIndicator} from 'react-native';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -91,13 +96,31 @@ const styles = StyleSheet.create({
 const Info = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {checkId} = route.params;
-  const {document: checklist} = useGetDocFirebase('checklists', checkId);
-  const {list: checks} = useGetFirebase(`checklists/${checkId}/checks`);
+  const {docId} = route.params;
+
+  const query = useMemo(() => {
+    return firestore().collection('checklists').doc(docId).collection('checks');
+  }, [docId]);
+
+  const queryChecklist = useMemo(() => {
+    return firestore().collection('checklists').doc(docId);
+  }, [docId]);
+
+  const [checklist] = useDocumentData(queryChecklist, {
+    idField: 'id',
+  });
+
+  const [values, loading] = useCollectionData(query, {
+    idField: 'id',
+  });
 
   const {updateFirebase} = useUpdateFirebase('checklists');
 
-  const {loading, idCheckLoading, uploadImages} = useUploadImageCheck(checkId);
+  const {
+    loading: loadingUploadImage,
+    idCheckLoading,
+    uploadImages,
+  } = useUploadImageCheck(docId);
 
   const user = useSelector(userSelector, shallowEqual);
 
@@ -107,7 +130,7 @@ const Info = () => {
         item.numberOfPhotos > 0
           ? () =>
               navigation.navigate('CheckPhotos', {
-                checkId: checkId,
+                docId: docId,
                 checkItemId: item.id,
                 title: item.title,
                 date: item.date,
@@ -117,20 +140,20 @@ const Info = () => {
       <ItemCheck
         key={item.id}
         check={item}
-        handleCheck={() => handleCheck(checklist, item, !item.done)}
+        handleCheck={() => handleCheck(checklist, item, !item?.done)}
         imageHandler={(imgs) => uploadImages(imgs, item)}
-        loading={loading && item.id === idCheckLoading}
+        loading={loadingUploadImage && item.id === idCheckLoading}
       />
     </TouchableOpacity>
   );
 
   const handleCheck = async (checklist, check, state) => {
     try {
-      await updateFirebase(`${checklist.id}`, {
+      await updateFirebase(`${checklist?.id}`, {
         ...checklist,
-        done: state ? checklist.done + 1 : checklist.done - 1,
+        done: state ? checklist?.done + 1 : checklist?.done - 1,
       });
-      await updateFirebase(`${checklist.id}/checks/${check.id}`, {
+      await updateFirebase(`${checklist?.id}/checks/${check?.id}`, {
         ...check,
         date: !state ? null : new Date(),
         done: state,
@@ -154,7 +177,7 @@ const Info = () => {
           <EditableInput
             value={checklist?.observations}
             onPressAccept={(change) =>
-              updateChecklistInput(checkId, {observations: change})
+              updateChecklistInput(docId, {observations: change})
             }
           />
         </View>
@@ -164,15 +187,19 @@ const Info = () => {
           Listado de checks
         </Text>
         <Text style={styles.counter}>
-          {checklist.done}/{checklist.total}
+          {checklist?.done}/{checklist?.total}
         </Text>
       </View>
-      <FlatList
-        data={checks}
-        showsVerticalScrollIndicator={false}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      {loading ? (
+        <ActivityIndicator color={Colors.pm} size={20} />
+      ) : (
+        <FlatList
+          data={values}
+          showsVerticalScrollIndicator={false}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </View>
   );
 };

@@ -1,5 +1,6 @@
 import React, {useState, useCallback} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
+import {useTranslation} from 'react-i18next';
 
 import {useNavigation} from '@react-navigation/native';
 import {Alert, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
 const NewIncidence = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
+  const {t} = useTranslation();
   const [lo, setLo] = useState(false);
 
   const user = useSelector(userSelector, shallowEqual);
@@ -153,22 +154,22 @@ const NewIncidence = () => {
       footer={
         <CustomButton
           loading={lo}
-          title="Crear incidencia"
+          title={t('newIncidence.form.create')}
           onPress={() => createIncidence()}
         />
       }
       titleProps={{
-        title: 'Nueva Incidencia',
+        title: t('newIncidence.title'),
         subPage: true,
       }}>
       <View style={styles.container}>
         <View>
           <Text
             style={{...defaultLabel, ...marginBottom(20), ...marginTop(20)}}>
-            Información incidencia
+            {t('newIncidence.subtitle')}
           </Text>
           <NewIncidenceForm />
-          <Text style={styles.label}>📷 Fotos</Text>
+          <Text style={styles.label}>📷 {t('newIncidence.form.photos')}</Text>
           <MultipleImageSelector
             images={incidenceImages}
             setImages={setImagesAction}
