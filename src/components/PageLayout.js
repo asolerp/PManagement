@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PagetLayout = ({
+const PageLayout = ({
   backButton,
   titleChildren,
   titleProps,
@@ -96,4 +96,4 @@ const PagetLayout = ({
   );
 };
 
-export default PagetLayout;
+export default PageLayout;

@@ -7,7 +7,7 @@ import {Alert, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 // UI
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 import NewIncidenceForm from '../../components/Forms/Incidence/NewIncidenceForm';
 import MultipleImageSelector from '../../components/MultipleImageSelector';
 import CustomButton from '../../components/Elements/CustomButton';
@@ -140,7 +140,7 @@ const NewIncidence = () => {
   };
 
   return (
-    <PagetLayout
+    <PageLayout
       titleLefSide={
         <TouchableOpacity
           onPress={() => {
@@ -176,7 +176,7 @@ const NewIncidence = () => {
           />
         </View>
       </View>
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

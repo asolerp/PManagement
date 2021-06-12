@@ -1,11 +1,10 @@
 import React, {useCallback, useState} from 'react';
-import {Button, View, Text, TextInput, StyleSheet} from 'react-native';
+import {View, Text, TextInput, StyleSheet} from 'react-native';
 
 // UI
-import PageLayout from '../components/PageLayout';
-import Avatar from '../components/Avatar';
-import InputGroup from '../components/Elements/InputGroup';
-import CustomButton from '../components/Elements/CustomButton';
+import PageLayout from '../../components/PageLayout';
+import InputGroup from '../../components/Elements/InputGroup';
+import CustomButton from '../../components/Elements/CustomButton';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ImageBlurLoading from 'react-native-image-blur-loading';
 
@@ -13,15 +12,15 @@ import ImageBlurLoading from 'react-native-image-blur-loading';
 import {useSelector, shallowEqual, useDispatch} from 'react-redux';
 
 //Firebase
-import {useGetDocFirebase} from '../hooks/useGetDocFIrebase';
-import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
-import {useUploadCloudinaryImage} from '../hooks/useUploadCloudinaryImage';
+import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
+import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 import auth from '@react-native-firebase/auth';
 
 //Utils
-import {launchImage} from '../utils/imageFunctions';
+import {launchImage} from '../../utils/imageFunctions';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {logout, userSelector} from '../Store/User/userSlice';
+import {logout, userSelector} from '../../Store/User/userSlice';
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -72,6 +71,8 @@ const styles = StyleSheet.create({
     color: '#284748',
   },
 });
+
+export const PROFILE_SCREEN_KEY = 'PROFILE_SCREEN_KEY';
 
 const ProfileScreen = () => {
   const [newImage, setNewImage] = useState();

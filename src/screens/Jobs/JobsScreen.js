@@ -22,13 +22,15 @@ import {LOW_GREY, PM_COLOR} from '../../styles/colors';
 
 // Utils
 
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 import {FlatList} from 'react-native';
 
 import {useTheme} from '../../Theme';
 import sortByDate from '../../utils/sorts';
 import WorkersFilter from '../../components/Filters/WorkeresFilter';
 import StatusIncidence from '../../components/Filters/StatusIncidence';
+
+export const JOBS_SCREEN_KEY = 'jobsScreen';
 
 const JobsScreen = () => {
   const {Gutters, Layout, Fonts} = useTheme();
@@ -81,7 +83,7 @@ const JobsScreen = () => {
           <AddButton iconName="add" />
         </TouchableOpacity>
       </View>
-      <PagetLayout
+      <PageLayout
         titleLefSide={true}
         titleProps={{
           title: 'Trabajos',
@@ -127,7 +129,7 @@ const JobsScreen = () => {
             )}
           </View>
         </View>
-      </PagetLayout>
+      </PageLayout>
     </React.Fragment>
   );
 };

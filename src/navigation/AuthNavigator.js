@@ -5,7 +5,6 @@ import {useDispatch, useSelector, shallowEqual} from 'react-redux';
 
 import {View, StyleSheet, StatusBar, Dimensions} from 'react-native';
 
-import SignInStack from './SignInStack';
 import SignOutStack from './SignOutStack';
 import Modal from '../components/Modal';
 
@@ -19,6 +18,7 @@ import {logUser, userSelector} from '../Store/User/userSlice';
 import Loading from '../components/Loading';
 import {loadingSelector} from '../Store/App/appSlice';
 import SignInOwnerStack from './Owner/SignInOwnerStack';
+import AdminRouter from '../Router/adminRouter';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 
 const getUserSignInStack = (role) => {
   if (role === 'admin') {
-    return <SignInStack />;
+    return <AdminRouter />;
   }
   if (role === 'worker') {
     return <SignInWorkerStack />;

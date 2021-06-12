@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 // Firebase
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import TaskItem from '../../components/Elements/TaskItem';
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 import {LOW_GREY} from '../../styles/colors';
 import {setTask} from '../../Store/JobForm/jobFormSlice';
 
@@ -54,9 +54,10 @@ const NewJobTaskSelectorScreen = ({navigation}) => {
 
   const {list: tasks, loading: loadingTasks} = useGetFirebase('tasks');
 
-  const setTaskAction = useCallback((task) => dispatch(setTask({task})), [
-    dispatch,
-  ]);
+  const setTaskAction = useCallback(
+    (task) => dispatch(setTask({task})),
+    [dispatch],
+  );
 
   const handlerTaskClick = (task) => {
     setTaskAction(task);
@@ -66,7 +67,7 @@ const NewJobTaskSelectorScreen = ({navigation}) => {
   };
 
   return (
-    <PagetLayout
+    <PageLayout
       titleLefSide={
         <TouchableOpacity
           onPress={() => {
@@ -108,7 +109,7 @@ const NewJobTaskSelectorScreen = ({navigation}) => {
             ))}
         </View>
       )}
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

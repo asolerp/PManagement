@@ -11,7 +11,7 @@ import JobForm from '../../components/Forms/Jobs/JobForm';
 
 // UI
 import CustomButton from '../../components/Elements/CustomButton';
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 
 // Firebase
 import {newJob} from '../../firebase/newJob';
@@ -56,7 +56,7 @@ const NewJobScreen = ({route, navigation}) => {
   };
 
   return (
-    <PagetLayout
+    <PageLayout
       titleLefSide={
         <TouchableOpacity
           onPress={() => {
@@ -84,7 +84,7 @@ const NewJobScreen = ({route, navigation}) => {
           <JobForm />
         </KeyboardAwareScrollView>
       </SafeAreaView>
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

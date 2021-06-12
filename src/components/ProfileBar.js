@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 
 import {useSelector} from 'react-redux';
 
@@ -7,7 +7,7 @@ import {useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import {userSelector} from '../Store/User/userSlice';
 
-const ProfileBar = () => {
+const ProfileBar = ({onPress}) => {
   const user = useSelector(userSelector);
   const [userProfile, setUserProfile] = useState();
 
@@ -31,12 +31,14 @@ const ProfileBar = () => {
           <Text style={styles.userName}>{userProfile?.firstName}</Text>
         </View>
         <View>
-          <Image
-            style={styles.avatar}
-            source={{
-              uri: userProfile?.profileImage,
-            }}
-          />
+          <TouchableOpacity onPress={onPress}>
+            <Image
+              style={styles.avatar}
+              source={{
+                uri: userProfile?.profileImage,
+              }}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </View>

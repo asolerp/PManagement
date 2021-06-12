@@ -17,7 +17,7 @@ import CheckListForm from '../../components/Forms/CheckList/CheckListForm';
 
 // UI
 import CustomButton from '../../components/Elements/CustomButton';
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 
 // Firebase
 import {useAddFirebase} from '../../hooks/useAddFirebase';
@@ -93,7 +93,7 @@ const NewCheckListJobScreen = ({route, navigation}) => {
   };
 
   return (
-    <PagetLayout
+    <PageLayout
       titleLefSide={
         <TouchableOpacity
           onPress={() => {
@@ -121,7 +121,7 @@ const NewCheckListJobScreen = ({route, navigation}) => {
           <CheckListForm />
         </KeyboardAwareScrollView>
       </View>
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

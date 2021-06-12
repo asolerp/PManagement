@@ -16,7 +16,9 @@ import PageLayout from '../../components/PageLayout';
 
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 
-const HomesScreen = ({navigation}) => {
+export const HOUSES_SCREEN_KEY = 'housesScreen';
+
+const HousesScreen = ({navigation}) => {
   const {
     list: houses,
     loading: loadingHouses,
@@ -101,4 +103,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomesScreen;
+export default HousesScreen;

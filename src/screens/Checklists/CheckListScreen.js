@@ -36,6 +36,8 @@ const styles = StyleSheet.create({
   },
 });
 
+export const CHECKLIST_SCREEN_KEY = 'checklistScreen';
+
 const CheckListScreen = ({navigation}) => {
   const {Gutters, Layout, Fonts} = useTheme();
   const [filterHouses, setFilterHouses] = useState([]);

@@ -7,7 +7,7 @@ import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {Text, StyleSheet, Dimensions} from 'react-native';
 import {Info, Messages, Photos} from '../../components/Job';
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 import CustomButton from '../../components/Elements/CustomButton';
 import updateJobStatus from '../../Services/updateJobStatus';
 
@@ -84,7 +84,7 @@ const JobScreen = ({route, navigation}) => {
     />
   );
   return (
-    <PagetLayout
+    <PageLayout
       backButton
       titleProps={{
         subPage: true,
@@ -108,7 +108,7 @@ const JobScreen = ({route, navigation}) => {
         initialLayout={initialLayout}
         style={{height: Dimensions.get('window').height - 100}}
       />
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

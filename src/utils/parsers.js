@@ -8,6 +8,11 @@ import {
   CHECKLIST_DONE,
 } from '../constants/colors';
 import {Colors} from '../Theme/Variables';
+import {DASHBOARD_SCREEN_KEY} from '../Screens/Dashboard/DashboardScreen';
+import {CHECKLIST_SCREEN_KEY} from '../Screens/Checklists';
+import {JOBS_SCREEN_KEY} from '../Screens/Jobs';
+import {HOUSES_SCREEN, HOUSES_SCREEN_KEY} from '../Screens/Houses';
+import {INCIDENCES_SCREEN_KEY} from '../Screens/Incidences';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
   return text?.length > numberOfCharts
@@ -15,21 +20,30 @@ export const minimizetext = (text, numberOfCharts = 40) => {
     : text;
 };
 
+export const tabNameByScreen = {
+  [DASHBOARD_SCREEN_KEY]: 'Dashboard',
+  [CHECKLIST_SCREEN_KEY]: 'Checklists',
+  [INCIDENCES_SCREEN_KEY]: 'Incidencias',
+  [JOBS_SCREEN_KEY]: 'Trabajos',
+  [HOUSES_SCREEN_KEY]: 'Casas',
+};
+
 export const getHightByRoute = (route) => {
+  console.log(route);
   switch (route) {
-    case 'Dashboard':
+    case DASHBOARD_SCREEN_KEY:
       return 180;
     case 'Home':
       return 180;
     case 'NewHome':
       return 100;
-    case 'Incidencias':
+    case INCIDENCES_SCREEN_KEY:
       return 100;
-    case 'CheckList':
+    case CHECKLIST_SCREEN_KEY:
       return 100;
-    case 'Jobs':
+    case JOBS_SCREEN_KEY:
       return 100;
-    case 'Homes':
+    case HOUSES_SCREEN_KEY:
       return 100;
     case 'Perfil':
       return 100;

@@ -19,7 +19,9 @@ const TitlePage = ({
   color = 'white',
   background,
 }) => {
-  const route = useRoute();
+  const {
+    params: {screenKey = ''},
+  } = useRoute();
   const {Layout} = useTheme();
 
   const TitleWrapper = () => (
@@ -145,7 +147,7 @@ const TitlePage = ({
       style={{
         ...styles.container,
         ...{
-          height: subPage ? 90 : getHightByRoute(route.name),
+          height: subPage ? 90 : getHightByRoute(screenKey),
           paddingTop: children ? (Platform.OS === 'ios' ? 50 : 0) : 0,
         },
       }}>

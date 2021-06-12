@@ -6,6 +6,8 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
 import LoginForm from '../../components/Forms/Auth/LoginForm';
 
+export const LOGIN_SCREEN_KEY = 'loginScreen';
+
 const LoginScreen = () => {
   return (
     <React.Fragment>

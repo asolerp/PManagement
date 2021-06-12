@@ -1,24 +1,24 @@
 import {useNavigation} from '@react-navigation/core';
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
-import StatusIncidence from '../components/Filters/StatusIncidence';
-import IncidenceItem from '../components/Items/IncidenceItem';
-import PageLayout from '../components/PageLayout';
-import {defaultLabel, marginBottom} from '../styles/common';
-import ItemListSkeleton from '../components/Skeleton/ItemListSkeleton';
-import HouseFilter from '../components/Filters/HouseFilter';
-import {useTheme} from '../Theme';
+import StatusIncidence from '../../components/Filters/StatusIncidence';
+import IncidenceItem from '../../components/Items/IncidenceItem';
+import PageLayout from '../../components/PageLayout';
+import {defaultLabel, marginBottom} from '../../styles/common';
+import ItemListSkeleton from '../../components/Skeleton/ItemListSkeleton';
+import HouseFilter from '../../components/Filters/HouseFilter';
+import {useTheme} from '../../Theme';
 
-import sortByDate from '../utils/sorts';
+import sortByDate from '../../utils/sorts';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {useSelector} from 'react-redux';
-import {userSelector} from '../Store/User/userSlice';
+import {userSelector} from '../../Store/User/userSlice';
 import {TouchableOpacity} from 'react-native';
-import AddButton from '../components/Elements/AddButton';
-import {Colors} from '../Theme/Variables';
+import AddButton from '../../components/Elements/AddButton';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -39,7 +39,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const IncidencesListScreen = () => {
+export const INCIDENCES_SCREEN_KEY = 'incidencesScreen';
+
+const IncidencesScreen = () => {
   const [state, setState] = useState(false);
   const [filterHouses, setFilterHouses] = useState([]);
   const {Gutters, Layout} = useTheme();
@@ -89,7 +91,7 @@ const IncidencesListScreen = () => {
       <PageLayout
         titleLefSide={true}
         titleProps={{
-          title: 'Listado Incidencias',
+          title: 'Incidencias',
           subPage: false,
         }}>
         <View style={[Layout.fill, Gutters.mediumTMargin]}>
@@ -125,4 +127,4 @@ const IncidencesListScreen = () => {
   );
 };
 
-export default IncidencesListScreen;
+export default IncidencesScreen;

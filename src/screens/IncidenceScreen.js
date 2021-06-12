@@ -15,7 +15,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useDocument, useDocumentOnce} from 'react-firebase-hooks/firestore';
 
 // Utils
-import PagetLayout from '../components/PageLayout';
+import PageLayout from '../components/PageLayout';
 
 import {finishIncidence, openIncidence} from '../components/Alerts/incidences';
 
@@ -67,6 +67,8 @@ const FirstRoute = () => <Info />;
 const SecondRoute = () => <Messages />;
 const ThirdRoute = () => <Photos />;
 const FourthRoute = () => <Options />;
+
+export const INCIDENCE_SCREEN_KEY = 'incidenceScreen';
 
 const IncidenceScreen = () => {
   const {Layout, Gutters} = useTheme();
@@ -145,7 +147,7 @@ const IncidenceScreen = () => {
   );
 
   return (
-    <PagetLayout
+    <PageLayout
       titleLefSide={
         <TouchableOpacity
           onPress={() => {
@@ -184,7 +186,7 @@ const IncidenceScreen = () => {
         initialLayout={initialLayout}
         style={{height: Dimensions.get('window').height - 100}}
       />
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

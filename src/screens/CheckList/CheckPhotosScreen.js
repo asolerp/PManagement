@@ -11,7 +11,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AddButton from '../../components/Elements/AddButton';
 import DeleteModal from '../../components/Modals/DeleteModal';
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 
 import {PM_COLOR} from '../../styles/colors';
 import {parseDeleteTextButton} from '../../utils/parsers';
@@ -146,7 +146,7 @@ const CheckPhotosScreen = ({route, navigation}) => {
   };
 
   return (
-    <PagetLayout
+    <PageLayout
       backButton
       titleProps={{
         subPage: true,
@@ -193,7 +193,7 @@ const CheckPhotosScreen = ({route, navigation}) => {
           </View>
         </View>
       </React.Fragment>
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

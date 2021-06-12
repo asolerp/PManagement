@@ -5,13 +5,13 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NewFormHome from '../../components/Forms/Homes/NewHomeForm';
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 
 import TitlePage from '../../components/TitlePage';
 
 const NewHomeScreen = ({navigation}) => {
   return (
-    <PagetLayout
+    <PageLayout
       backButton
       titleLefSide={true}
       titleProps={{
@@ -22,7 +22,7 @@ const NewHomeScreen = ({navigation}) => {
       <View style={styles.newHomeScreen}>
         <NewFormHome />
       </View>
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

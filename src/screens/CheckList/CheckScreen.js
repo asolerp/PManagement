@@ -8,7 +8,7 @@ import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
 import {useTheme} from '../../Theme';
 
 // UI
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 import CustomButton from '../../components/Elements/CustomButton';
 import {shallowEqual, useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
@@ -120,7 +120,7 @@ const CheckScreen = ({route}) => {
     />
   );
   return (
-    <PagetLayout
+    <PageLayout
       backButton
       titleProps={{
         subPage: true,
@@ -148,7 +148,7 @@ const CheckScreen = ({route}) => {
         initialLayout={initialLayout}
         style={{height: Dimensions.get('window').height - 100}}
       />
-    </PagetLayout>
+    </PageLayout>
   );
 };
 

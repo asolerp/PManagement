@@ -12,7 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CustomInput from '../../components/Elements/CustomInput';
 import InputGroup from '../../components/Elements/InputGroup';
-import PagetLayout from '../../components/PageLayout';
+import PageLayout from '../../components/PageLayout';
 import {BottomModal, ModalContent} from 'react-native-modals';
 import DynamicSelectorList from '../../components/DynamicSelectorList';
 import CustomButton from '../../components/Elements/CustomButton';
@@ -75,10 +75,11 @@ const HomeScreen = ({route, navigation}) => {
   const [newImage, setNewImage] = useState();
   const [loadingEdit, setLoadingEdit] = useState(false);
   const {houseId} = route.params;
-  const {document: house, loading, error} = useGetDocFirebase(
-    'houses',
-    houseId,
-  );
+  const {
+    document: house,
+    loading,
+    error,
+  } = useGetDocFirebase('houses', houseId);
   const {updateFirebase} = useUpdateFirebase('houses');
   const {upload} = useUploadCloudinaryImage();
   // Modal State
@@ -139,7 +140,7 @@ const HomeScreen = ({route, navigation}) => {
           />
         </ModalContent>
       </BottomModal>
-      <PagetLayout
+      <PageLayout
         backButton
         titleProps={{
           subPage: true,
@@ -245,7 +246,7 @@ const HomeScreen = ({route, navigation}) => {
         ) : (
           <View />
         )}
-      </PagetLayout>
+      </PageLayout>
     </React.Fragment>
   );
 };
