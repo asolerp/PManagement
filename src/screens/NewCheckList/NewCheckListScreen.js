@@ -1,29 +1,54 @@
 import React, {useState, useCallback} from 'react';
-import {View, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Keyboard,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import JobForm from '../../components/Forms/Jobs/JobForm';
+import CheckListForm from '../../components/Forms/CheckList/CheckListForm';
 
 // UI
 import CustomButton from '../../components/Elements/CustomButton';
 import PageLayout from '../../components/PageLayout';
 
 // Firebase
-import {newJob} from '../../firebase/newJob';
+import {useAddFirebase} from '../../hooks/useAddFirebase';
+import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {LOW_GREY} from '../../styles/colors';
-import {jobSelector, resetForm} from '../../Store/JobForm/jobFormSlice';
+import {
+  checksSelector,
+  houseSelector,
+  observationsSelector,
+  resetForm,
+  workersSelector,
+} from '../../Store/CheckList/checkListSlice';
 
-const NewJobScreen = ({route, navigation}) => {
+const HideKeyboard = ({children}) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
+
+export const NEW_CHECKLIST_SCREEN = 'newCheckListScreen';
+
+const NewCheckListScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
-  const {taskName} = route.params;
   const [loading, setLoading] = useState();
 
-  const job = useSelector(jobSelector);
+  const checks = useSelector(checksSelector);
+  const house = useSelector(houseSelector);
+  const workers = useSelector(workersSelector);
+  const observations = useSelector(observationsSelector);
+
+  const {addFirebase} = useAddFirebase();
 
   const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
 
@@ -34,24 +59,38 @@ const NewJobScreen = ({route, navigation}) => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const newJobForm = {
-        observations: job?.observations,
-        date: job?.dateTime?.date,
-        time: job?.dateTime?.time,
-        workers: job?.workers?.value,
-        workersId: job?.workers?.value.map((worker) => worker.id),
-        houseId: job?.house?.value[0].id,
-        house: job?.house?.value,
-        task: job?.task,
-        done: false,
+      const newCheckListForm = {
+        observations: observations,
+        date: new Date(),
+        workers: workers?.value,
+        workersId: workers?.value?.map((worker) => worker.id),
+        houseId: house?.value[0].id,
+        house: house?.value,
+        total: Object.entries(checks).filter(([key, value]) => value.check)
+          .length,
+        finished: false,
+        done: 0,
       };
-      await newJob(newJobForm);
+      const newCheckList = await addFirebase('checklists', newCheckListForm);
+      await Promise.all(
+        Object.entries(checks)
+          .filter(([key, value]) => value.check)
+          .map(([key, value]) =>
+            addFirebase(`checklists/${newCheckList.id}/checks`, {
+              title: value.title,
+              numberOfPhotos: 0,
+              done: false,
+              worker: null,
+              date: null,
+            }),
+          ),
+      );
     } catch (err) {
       console.log(err);
     } finally {
       setLoading(false);
       cleanForm();
-      navigation.navigate('Jobs');
+      navigation.navigate('CheckList');
     }
   };
 
@@ -69,21 +108,21 @@ const NewJobScreen = ({route, navigation}) => {
       }
       footer={
         <CustomButton
-          styled="rounded"
           loading={loading}
-          title="Crear trabajo"
+          styled="rounded"
+          title="Crear checklist"
           onPress={() => handleSubmit()}
         />
       }
       titleProps={{
-        title: `Nuevo trabajo de ${taskName.toLowerCase()}`,
+        title: 'Nuevo checklist',
         subPage: true,
       }}>
-      <SafeAreaView style={styles.jobScreen}>
-        <KeyboardAwareScrollView>
-          <JobForm />
+      <View style={styles.jobScreen}>
+        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+          <CheckListForm />
         </KeyboardAwareScrollView>
-      </SafeAreaView>
+      </View>
     </PageLayout>
   );
 };
@@ -142,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NewJobScreen;
+export default NewCheckListScreen;

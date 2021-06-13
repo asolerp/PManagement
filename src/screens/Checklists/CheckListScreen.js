@@ -15,6 +15,10 @@ import ItemListSkeleton from '../../components/Skeleton/ItemListSkeleton';
 
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {NEW_CHECKLIST_SCREEN} from '../NewCheckList';
+import {CHECK_SCREEN_KEY} from '../Check/CheckScreen';
+import {CHECK_STACK_KEY} from '../../Stacks/Check';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -49,12 +53,17 @@ const CheckListScreen = ({navigation}) => {
     },
   );
 
+  const checklist = values?.filter((check) =>
+    filterHouses.length > 0 ? filterHouses.includes(check.houseId) : true,
+  );
+
   const renderItem = ({item}) => (
     <CheckItem
       key={item.id}
       check={item}
       onPress={() =>
-        navigation.navigate('Check', {
+        openScreenWithPush(CHECK_STACK_KEY, {
+          screen: CHECK_SCREEN_KEY,
           docId: item.id,
         })
       }
@@ -62,7 +71,7 @@ const CheckListScreen = ({navigation}) => {
   );
 
   const handleNewCheckList = () => {
-    navigation.navigate('NewCheckList');
+    openScreenWithPush(NEW_CHECKLIST_SCREEN);
   };
 
   const noFoundMessage = (checklist) =>
@@ -113,11 +122,7 @@ const CheckListScreen = ({navigation}) => {
                 <View style={[Layout.fill]}>
                   <FlatList
                     showsVerticalScrollIndicator={false}
-                    data={values.filter((check) =>
-                      filterHouses.length > 0
-                        ? filterHouses.includes(check.houseId)
-                        : true,
-                    )}
+                    data={checklist}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
                   />

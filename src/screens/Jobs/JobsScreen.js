@@ -1,12 +1,7 @@
 import React, {useState, useMemo} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-import {useNavigation} from '@react-navigation/native';
-
-// Redux
-
 // UI
-
 import AddButton from '../../components/Elements/AddButton';
 import HouseFilter from '../../components/Filters/HouseFilter';
 
@@ -17,7 +12,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Styles
-import {defaultLabel, marginBottom} from '../../styles/common';
+import {defaultLabel} from '../../styles/common';
 import {LOW_GREY, PM_COLOR} from '../../styles/colors';
 
 // Utils
@@ -29,6 +24,9 @@ import {useTheme} from '../../Theme';
 import sortByDate from '../../utils/sorts';
 import WorkersFilter from '../../components/Filters/WorkeresFilter';
 import StatusIncidence from '../../components/Filters/StatusIncidence';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {JOB_SCREEN_KEY} from '../Job/JobScreen';
+import {NEW_JOB_STACK_KEY} from '../../Stacks/NewJob';
 
 export const JOBS_SCREEN_KEY = 'jobsScreen';
 
@@ -46,10 +44,8 @@ const JobsScreen = () => {
     idField: 'id',
   });
 
-  const navigation = useNavigation();
-
   const handleNewJob = () => {
-    navigation.navigate('NewJobTaskSelector');
+    openScreenWithPush(NEW_JOB_STACK_KEY);
   };
 
   const jobsList = jobs
@@ -68,7 +64,7 @@ const JobsScreen = () => {
       <JobItem
         job={item}
         onPress={() =>
-          navigation.navigate('JobScreen', {
+          openScreenWithPush(JOB_SCREEN_KEY, {
             jobId: item.id,
           })
         }

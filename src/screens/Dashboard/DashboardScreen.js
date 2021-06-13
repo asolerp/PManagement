@@ -3,17 +3,15 @@ import {View, StyleSheet, Text} from 'react-native';
 
 // Components
 import ProfileBar from '../../components/ProfileBar';
-import TitlePage from '../../components/TitlePage';
+
 import IncidencesList from '../../components/Lists/IncidencesList';
 
 // UI
 import PageLayout from '../../components/PageLayout';
-import LinearGradient from 'react-native-linear-gradient';
 
 // Utils
 import moment from 'moment';
 import {ScrollView} from 'react-native';
-import {TouchableOpacity} from 'react-native';
 import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 import ChecklistList from '../../components/Lists/ChecklistList';

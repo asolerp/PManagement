@@ -11,6 +11,8 @@ import TaskItem from '../../components/Elements/TaskItem';
 import PageLayout from '../../components/PageLayout';
 import {LOW_GREY} from '../../styles/colors';
 import {setTask} from '../../Store/JobForm/jobFormSlice';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {NEW_JOB_SCREEN_KEY} from '../NewJob/NewJobScreen';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,6 +49,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,
   },
 });
+export const NEW_JOB_TASK_SELECTOR_SCREEN_KEY = 'newJobTaskSelectorScreen';
 
 const NewJobTaskSelectorScreen = ({navigation}) => {
   const dispatch = useDispatch();
@@ -61,7 +64,7 @@ const NewJobTaskSelectorScreen = ({navigation}) => {
 
   const handlerTaskClick = (task) => {
     setTaskAction(task);
-    navigation.navigate('NewJob', {
+    openScreenWithPush(NEW_JOB_SCREEN_KEY, {
       taskName: task?.name,
     });
   };

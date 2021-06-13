@@ -19,6 +19,10 @@ import {userSelector} from '../../Store/User/userSlice';
 import {TouchableOpacity} from 'react-native';
 import AddButton from '../../components/Elements/AddButton';
 import {Colors} from '../../Theme/Variables';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {CHECK_SCREEN_KEY} from '../Check';
+import {INCIDENCE_SCREEN_KEY} from '../Incidence/IncidenceScreen';
+import {NEW_INCIDENCE_SCREEN_KEY} from '../NewIncidence';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -74,7 +78,7 @@ const IncidencesScreen = () => {
 
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {
-      navigation.navigate('Incidence', {
+      openScreenWithPush(INCIDENCE_SCREEN_KEY, {
         incidenceId: item.id,
       });
     };
@@ -84,7 +88,8 @@ const IncidencesScreen = () => {
   return (
     <React.Fragment>
       <View style={styles.addButton}>
-        <TouchableOpacity onPress={() => navigation.navigate('NewIncidence')}>
+        <TouchableOpacity
+          onPress={() => openScreenWithPush(NEW_INCIDENCE_SCREEN_KEY)}>
           <AddButton iconName="warning" backColor={Colors.pm} />
         </TouchableOpacity>
       </View>

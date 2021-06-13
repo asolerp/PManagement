@@ -18,6 +18,9 @@ import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
 import Avatar from '../Avatar';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {CHECK_SCREEN_KEY} from '../../Screens/Check';
+import {CHECK_STACK_KEY} from '../../Stacks/Check';
 
 const styles = StyleSheet.create({
   checkWrapper: {
@@ -109,11 +112,10 @@ const ChecklistList = ({uid, house}) => {
     idField: 'id',
   });
 
-  const navigation = useNavigation();
-
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {
-      navigation.navigate('Check', {
+      openScreenWithPush(CHECK_STACK_KEY, {
+        screen: CHECK_SCREEN_KEY,
         docId: item.id,
       });
     };

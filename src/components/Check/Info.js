@@ -29,6 +29,8 @@ import {useNavigation, useRoute} from '@react-navigation/core';
 import updateChecklistInput from '../../Services/updateChecklistInput';
 import {ActivityIndicator} from 'react-native';
 import {Colors} from '../../Theme/Variables';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {CHECK_PHOTO_SCREEN_KEY} from '../../Screens/CheckPhotos/CheckPhotosScreen';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -129,7 +131,7 @@ const Info = () => {
       onPress={
         item.numberOfPhotos > 0
           ? () =>
-              navigation.navigate('CheckPhotos', {
+              openScreenWithPush(CHECK_PHOTO_SCREEN_KEY, {
                 docId: docId,
                 checkItemId: item.id,
                 title: item.title,

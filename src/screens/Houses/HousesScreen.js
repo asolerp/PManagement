@@ -15,6 +15,9 @@ import HouseItemList from '../../components/HouseItemList';
 import PageLayout from '../../components/PageLayout';
 
 import {useGetFirebase} from '../../hooks/useGetFirebase';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {HOUSE_SCREEN_KEY} from '../House/HouseScreen';
+import {NEW_HOUSE_SCREEN_KEY} from '../NewHouse';
 
 export const HOUSES_SCREEN_KEY = 'housesScreen';
 
@@ -26,7 +29,7 @@ const HousesScreen = ({navigation}) => {
   } = useGetFirebase('houses');
 
   const handleNewHome = () => {
-    navigation.navigate('NewHome');
+    openScreenWithPush(NEW_HOUSE_SCREEN_KEY);
   };
 
   const renderItem = ({item}) => {
@@ -34,7 +37,7 @@ const HousesScreen = ({navigation}) => {
       <TouchableOpacity
         style={{width: '100%'}}
         onPress={() =>
-          navigation.navigate('HomeScreen', {
+          openScreenWithPush(HOUSE_SCREEN_KEY, {
             houseId: item.id,
           })
         }>

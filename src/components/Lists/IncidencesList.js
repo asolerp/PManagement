@@ -17,6 +17,8 @@ import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
+import {openScreen, openScreenWithPush} from '../../Router/utils/actions';
+import {INCIDENCE_SCREEN_KEY} from '../../Screens/Incidence';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -105,7 +107,7 @@ const IncidencesList = () => {
 
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {
-      navigation.navigate('Incidence', {
+      openScreenWithPush(INCIDENCE_SCREEN_KEY, {
         incidenceId: item.id,
       });
     };

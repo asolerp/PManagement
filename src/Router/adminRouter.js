@@ -9,6 +9,17 @@ import {
 
 import {Main, MAIN_STACK_KEY} from '../Stacks/Main';
 
+import {
+  NewCheckListScreen,
+  NEW_CHECKLIST_SCREEN,
+} from '../Screens/NewCheckList';
+import NewJob, {NEW_JOB_STACK_KEY} from '../Stacks/NewJob';
+import {
+  NewIncidenceScreen,
+  NEW_INCIDENCE_SCREEN_KEY,
+} from '../Screens/NewIncidence';
+import {NewHouseScreen, NEW_HOUSE_SCREEN_KEY} from '../Screens/NewHouse';
+
 const {Navigator, Screen} = createStackNavigator();
 
 const AdminRouter = () => {
@@ -22,6 +33,26 @@ const AdminRouter = () => {
         <Screen
           name={MAIN_STACK_KEY}
           component={Main}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={NEW_CHECKLIST_SCREEN}
+          component={NewCheckListScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={NEW_JOB_STACK_KEY}
+          component={NewJob}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={NEW_INCIDENCE_SCREEN_KEY}
+          component={NewIncidenceScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={NEW_HOUSE_SCREEN_KEY}
+          component={NewHouseScreen}
           options={{headerShown: false}}
         />
       </Navigator>

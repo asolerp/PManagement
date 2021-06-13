@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {createStackNavigator} from '@react-navigation/stack';
-import JobScreen from '../../Screens/Jobs/JobScreen';
+// import JobScreen from '../../Screens/Jobs/JobScreen';
 import NewIncidence from '../../Screens/Worker/NewIncidence';
 import CheckScreen from '../../Screens/CheckList/CheckScreen';
 import CheckPhotosScreen from '../../Screens/CheckList/CheckPhotosScreen';
@@ -14,7 +14,7 @@ const HomeWorkerStack = () => {
       <Stack.Screen name="Home" component={HomeOwner} />
       <Stack.Screen name="Check" component={CheckScreen} />
       <Stack.Screen name="CheckPhotos" component={CheckPhotosScreen} />
-      <Stack.Screen name="JobScreen" component={JobScreen} />
+      {/* <Stack.Screen name="JobScreen" component={JobScreen} /> */}
       <Stack.Screen name="NewIncidence" component={NewIncidence} />
     </Stack.Navigator>
   );
