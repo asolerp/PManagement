@@ -7,13 +7,16 @@ import {
   PRIORITY_HEIGHT,
 } from '../constants/colors';
 import {Colors} from '../Theme/Variables';
-import {DASHBOARD_SCREEN_KEY} from '../Screens/Dashboard/DashboardScreen';
-import {CHECKLIST_SCREEN_KEY} from '../Screens/Checklists';
-import {JOBS_SCREEN_KEY} from '../Screens/Jobs';
-import {HOUSES_SCREEN_KEY} from '../Screens/Houses';
-import {INCIDENCES_SCREEN_KEY} from '../Screens/Incidences';
-import {HOUSE_SCREEN_KEY} from '../Screens/House';
-import {PROFILE_SCREEN_KEY} from '../Screens/Profile';
+
+import {
+  CHECKLIST_SCREEN_KEY,
+  DASHBOARD_SCREEN_KEY,
+  HOUSES_SCREEN_KEY,
+  HOUSE_SCREEN_KEY,
+  INCIDENCES_SCREEN_KEY,
+  JOBS_SCREEN_KEY,
+  PROFILE_SCREEN_KEY,
+} from '../Router/utils/routerKeys';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
   return text?.length > numberOfCharts

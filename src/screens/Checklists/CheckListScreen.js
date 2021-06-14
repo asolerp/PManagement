@@ -16,9 +16,11 @@ import ItemListSkeleton from '../../components/Skeleton/ItemListSkeleton';
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {NEW_CHECKLIST_SCREEN} from '../NewCheckList';
-import {CHECK_SCREEN_KEY} from '../Check/CheckScreen';
-import {CHECK_STACK_KEY} from '../../Stacks/Check';
+import {
+  CHECK_SCREEN_KEY,
+  CHECK_STACK_KEY,
+  NEW_CHECKLIST_SCREEN,
+} from '../../Router/utils/routerKeys';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -39,8 +41,6 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
 });
-
-export const CHECKLIST_SCREEN_KEY = 'checklistScreen';
 
 const CheckListScreen = ({navigation}) => {
   const {Gutters, Layout, Fonts} = useTheme();

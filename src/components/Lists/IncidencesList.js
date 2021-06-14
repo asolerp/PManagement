@@ -18,7 +18,7 @@ import {useTheme} from '../../Theme';
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
 import {openScreen, openScreenWithPush} from '../../Router/utils/actions';
-import {INCIDENCE_SCREEN_KEY} from '../../Screens/Incidence';
+import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {

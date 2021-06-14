@@ -68,8 +68,6 @@ const screensByRole = (role) => {
   ];
 };
 
-export const CHECK_SCREEN_KEY = 'checkScreen';
-
 const CheckScreen = ({route}) => {
   const {docId} = route.params;
 

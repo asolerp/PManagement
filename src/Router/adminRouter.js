@@ -7,18 +7,19 @@ import {
   onNavigatorStateChange,
 } from './utils/actions';
 
-import {Main, MAIN_STACK_KEY} from '../Stacks/Main';
+import {Main} from '../Stacks/Main';
 
+import {NewCheckListScreen} from '../Screens/NewCheckList';
+import NewJob from '../Stacks/NewJob';
+import {NewIncidenceScreen} from '../Screens/NewIncidence';
+import {NewHouseScreen} from '../Screens/NewHouse';
 import {
-  NewCheckListScreen,
+  MAIN_STACK_KEY,
   NEW_CHECKLIST_SCREEN,
-} from '../Screens/NewCheckList';
-import NewJob, {NEW_JOB_STACK_KEY} from '../Stacks/NewJob';
-import {
-  NewIncidenceScreen,
+  NEW_HOUSE_SCREEN_KEY,
   NEW_INCIDENCE_SCREEN_KEY,
-} from '../Screens/NewIncidence';
-import {NewHouseScreen, NEW_HOUSE_SCREEN_KEY} from '../Screens/NewHouse';
+  NEW_JOB_STACK_KEY,
+} from './utils/routerKeys';
 
 const {Navigator, Screen} = createStackNavigator();
 

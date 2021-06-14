@@ -16,10 +16,10 @@ import PageLayout from '../../components/PageLayout';
 
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {HOUSE_SCREEN_KEY} from '../House/HouseScreen';
-import {NEW_HOUSE_SCREEN_KEY} from '../NewHouse';
-
-export const HOUSES_SCREEN_KEY = 'housesScreen';
+import {
+  HOUSE_SCREEN_KEY,
+  NEW_HOUSE_SCREEN_KEY,
+} from '../../Router/utils/routerKeys';
 
 const HousesScreen = ({navigation}) => {
   const {

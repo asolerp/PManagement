@@ -8,8 +8,6 @@ import NewFormHome from '../../components/Forms/Homes/NewHomeForm';
 import PageLayout from '../../components/PageLayout';
 import {popScreen} from '../../Router/utils/actions';
 
-export const NEW_HOUSE_SCREEN_KEY = 'newHouseScreen';
-
 const NewHouseScreen = ({navigation}) => {
   return (
     <PageLayout

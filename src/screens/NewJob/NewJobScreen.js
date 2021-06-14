@@ -18,8 +18,6 @@ import {newJob} from '../../firebase/newJob';
 import {LOW_GREY} from '../../styles/colors';
 import {jobSelector, resetForm} from '../../Store/JobForm/jobFormSlice';
 
-export const NEW_JOB_SCREEN_KEY = 'newJobScreen';
-
 const NewJobScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
   const {taskName} = route.params;

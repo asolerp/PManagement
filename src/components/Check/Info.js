@@ -30,7 +30,7 @@ import updateChecklistInput from '../../Services/updateChecklistInput';
 import {ActivityIndicator} from 'react-native';
 import {Colors} from '../../Theme/Variables';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {CHECK_PHOTO_SCREEN_KEY} from '../../Screens/CheckPhotos/CheckPhotosScreen';
+import {CHECK_PHOTO_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 const styles = StyleSheet.create({
   checklistContainer: {

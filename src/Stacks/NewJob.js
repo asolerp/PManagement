@@ -1,15 +1,14 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
+import {NewJobTaskSelectorScreen} from '../Screens/NewJobTaskSelector';
+import {NewJobScreen} from '../Screens/NewJob';
 import {
-  NewJobTaskSelectorScreen,
+  NEW_JOB_SCREEN_KEY,
   NEW_JOB_TASK_SELECTOR_SCREEN_KEY,
-} from '../Screens/NewJobTaskSelector';
-import {NewJobScreen, NEW_JOB_SCREEN_KEY} from '../Screens/NewJob';
+} from '../Router/utils/routerKeys';
 
 const {Navigator, Screen} = createStackNavigator();
-
-export const NEW_JOB_STACK_KEY = 'newJobStack';
 
 const NewJob = ({route}) => {
   const {docId} = route.params;

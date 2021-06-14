@@ -1,13 +1,10 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import IncidenceScreen, {
-  INCIDENCE_SCREEN_KEY,
-} from '../Screens/IncidenceScreen';
+import IncidenceScreen,  from '../Screens/IncidenceScreen';
+import { INCIDENCE_SCREEN_KEY } from '../Router/utils/routerKeys';
 
 const {Navigator, Screen} = createStackNavigator();
-
-export const INCIDENCE_STAK_KEY = 'incidenceStack';
 
 const Incidence = () => {
   return (

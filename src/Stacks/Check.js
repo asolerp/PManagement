@@ -1,14 +1,14 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import {CheckScreen, CHECK_SCREEN_KEY} from '../Screens/Check';
-import CheckPhotosScreen, {
+import CheckPhotosScreen from '../Screens/CheckPhotos/CheckPhotosScreen';
+import {
   CHECK_PHOTO_SCREEN_KEY,
-} from '../Screens/CheckPhotos/CheckPhotosScreen';
+  CHECK_SCREEN_KEY,
+} from '../Router/utils/routerKeys';
+import {CheckScreen} from '../Screens/Check';
 
 const {Navigator, Screen} = createStackNavigator();
-
-export const CHECK_STACK_KEY = 'checkStack';
 
 const Check = ({route}) => {
   const {docId} = route.params;

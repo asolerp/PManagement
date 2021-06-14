@@ -72,8 +72,6 @@ const SecondRoute = () => <Messages />;
 const ThirdRoute = () => <Photos />;
 const FourthRoute = () => <Options />;
 
-export const INCIDENCE_SCREEN_KEY = 'incidenceScreen';
-
 const IncidenceScreen = () => {
   const {Layout, Gutters} = useTheme();
   const navigation = useNavigation();

@@ -20,9 +20,10 @@ import {TouchableOpacity} from 'react-native';
 import AddButton from '../../components/Elements/AddButton';
 import {Colors} from '../../Theme/Variables';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {CHECK_SCREEN_KEY} from '../Check';
-import {INCIDENCE_SCREEN_KEY} from '../Incidence/IncidenceScreen';
-import {NEW_INCIDENCE_SCREEN_KEY} from '../NewIncidence';
+import {
+  INCIDENCE_SCREEN_KEY,
+  NEW_INCIDENCE_SCREEN_KEY,
+} from '../../Router/utils/routerKeys';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -42,8 +43,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export const INCIDENCES_SCREEN_KEY = 'incidencesScreen';
 
 const IncidencesScreen = () => {
   const [state, setState] = useState(false);

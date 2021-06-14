@@ -37,8 +37,6 @@ const HideKeyboard = ({children}) => (
   </TouchableWithoutFeedback>
 );
 
-export const NEW_CHECKLIST_SCREEN = 'newCheckListScreen';
-
 const NewCheckListScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState();

@@ -38,8 +38,6 @@ const FirstRoute = () => <Info />;
 const SecondRoute = () => <Messages />;
 const ThirdRoute = () => <Photos />;
 
-export const JOB_SCREEN_KEY = 'jobScreen';
-
 const JobScreen = ({route, navigation}) => {
   const {jobId} = route.params;
 

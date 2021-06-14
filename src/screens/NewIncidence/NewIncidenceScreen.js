@@ -59,8 +59,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export const NEW_INCIDENCE_SCREEN_KEY = 'newIncidenceScreen';
-
 const NewIncidenceScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();

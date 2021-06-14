@@ -68,8 +68,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CHECK_PHOTO_SCREEN_KEY = 'checkPhotoScreen';
-
 const CheckPhotosScreen = ({route, navigation}) => {
   const {title, docId, checkItemId} = route.params;
   const [modal, setModal] = useState([]);

@@ -16,9 +16,7 @@ import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 import ChecklistList from '../../components/Lists/ChecklistList';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {PROFILE_SCREEN_KEY} from '../Profile';
-
-export const DASHBOARD_SCREEN_KEY = 'dashboardScreen';
+import {PROFILE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 const DashboardScreen = () => {
   const {Layout, Gutters, Fonts} = useTheme();

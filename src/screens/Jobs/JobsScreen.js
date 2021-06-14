@@ -25,10 +25,10 @@ import sortByDate from '../../utils/sorts';
 import WorkersFilter from '../../components/Filters/WorkeresFilter';
 import StatusIncidence from '../../components/Filters/StatusIncidence';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {JOB_SCREEN_KEY} from '../Job/JobScreen';
-import {NEW_JOB_STACK_KEY} from '../../Stacks/NewJob';
-
-export const JOBS_SCREEN_KEY = 'jobsScreen';
+import {
+  JOB_SCREEN_KEY,
+  NEW_JOB_SCREEN_KEY,
+} from '../../Router/utils/routerKeys';
 
 const JobsScreen = () => {
   const {Gutters, Layout, Fonts} = useTheme();
@@ -45,7 +45,7 @@ const JobsScreen = () => {
   });
 
   const handleNewJob = () => {
-    openScreenWithPush(NEW_JOB_STACK_KEY);
+    openScreenWithPush(NEW_JOB_SCREEN_KEY);
   };
 
   const jobsList = jobs

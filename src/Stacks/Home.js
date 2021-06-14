@@ -4,11 +4,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {View, Text, StyleSheet} from 'react-native';
 
 // Screens
-import {DashboardScreen, DASHBOARD_SCREEN_KEY} from '../Screens/Dashboard';
-import {CheckListScreen, CHECKLIST_SCREEN_KEY} from '../Screens/Checklists';
-import {JobsScreen, JOBS_SCREEN_KEY} from '../Screens/Jobs';
-import {IncidencesScreen, INCIDENCES_SCREEN_KEY} from '../Screens/Incidences';
-import {HousesScreen, HOUSES_SCREEN_KEY} from '../Screens/Houses';
+import {DashboardScreen} from '../Screens/Dashboard';
+import {CheckListScreen} from '../Screens/Checklists';
+import {JobsScreen} from '../Screens/Jobs';
+import {IncidencesScreen} from '../Screens/Incidences';
+import {HousesScreen} from '../Screens/Houses';
 
 import {AnimatedTabBarNavigator} from 'react-native-animated-nav-tab-bar';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
@@ -19,6 +19,13 @@ import {PM_COLOR, PRIORITY_HEIGHT} from '../styles/colors';
 import firestore from '@react-native-firebase/firestore';
 import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {tabNameByScreen} from '../utils/parsers';
+import {
+  CHECKLIST_SCREEN_KEY,
+  DASHBOARD_SCREEN_KEY,
+  HOUSES_SCREEN_KEY,
+  INCIDENCES_SCREEN_KEY,
+  JOBS_SCREEN_KEY,
+} from '../Router/utils/routerKeys';
 
 const {Navigator, Screen} = AnimatedTabBarNavigator();
 
@@ -57,8 +64,6 @@ const IconWithBadge = ({badgeCount, children}) => {
     </View>
   );
 };
-
-export const HOME_STACK_KEY = 'homeStack';
 
 const Home = () => {
   const [incidencesCounter] = useDocumentData(
@@ -104,7 +109,7 @@ const Home = () => {
         shadow: true,
         tabBarBackground: 'white',
       }}>
-      {/* <Screen
+      <Screen
         name={tabNameByScreen[DASHBOARD_SCREEN_KEY]}
         initialParams={{screenKey: DASHBOARD_SCREEN_KEY}}
         component={DashboardScreen}
@@ -120,7 +125,7 @@ const Home = () => {
             />
           ),
         })}
-      /> */}
+      />
       <Screen
         name={tabNameByScreen[CHECKLIST_SCREEN_KEY]}
         initialParams={{screenKey: CHECKLIST_SCREEN_KEY}}

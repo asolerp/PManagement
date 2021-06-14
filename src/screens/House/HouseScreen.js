@@ -70,8 +70,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export const HOUSE_SCREEN_KEY = 'houseScreen';
-
 const HouseScreen = ({route, navigation}) => {
   const [infoHouse, setInfoHouse] = useState();
   const [newImage, setNewImage] = useState();

@@ -72,8 +72,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export const PROFILE_SCREEN_KEY = 'PROFILE_SCREEN_KEY';
-
 const ProfileScreen = () => {
   const [newImage, setNewImage] = useState();
   const [infoProfile, setInfoProfile] = useState();

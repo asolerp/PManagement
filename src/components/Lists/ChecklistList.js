@@ -19,8 +19,7 @@ import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
 import Avatar from '../Avatar';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {CHECK_SCREEN_KEY} from '../../Screens/Check';
-import {CHECK_STACK_KEY} from '../../Stacks/Check';
+import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 
 const styles = StyleSheet.create({
   checkWrapper: {

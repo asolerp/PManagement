@@ -1,15 +1,22 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import Home, {HOME_STACK_KEY} from './Home';
-import {ProfileScreen, PROFILE_SCREEN_KEY} from '../Screens/Profile';
-import {JobScreen, JOB_SCREEN_KEY} from '../Screens/Job';
-import {IncidenceScreen, INCIDENCE_SCREEN_KEY} from '../Screens/Incidence';
+import Home from './Home';
+import {ProfileScreen} from '../Screens/Profile';
+import {JobScreen} from '../Screens/Job';
+import {IncidenceScreen} from '../Screens/Incidence';
 
-import Check, {CHECK_STACK_KEY} from './Check';
-import {HouseScreen, HOUSE_SCREEN_KEY} from '../Screens/House';
+import Check from './Check';
+import {HouseScreen} from '../Screens/House';
+import {
+  CHECK_STACK_KEY,
+  HOME_STACK_KEY,
+  HOUSE_SCREEN_KEY,
+  INCIDENCE_SCREEN_KEY,
+  JOB_SCREEN_KEY,
+  PROFILE_SCREEN_KEY,
+} from '../Router/utils/routerKeys';
 
 const {Navigator, Screen} = createStackNavigator();
-export const MAIN_STACK_KEY = 'main';
 
 export const Main = () => (
   <Navigator
