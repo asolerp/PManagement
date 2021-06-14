@@ -104,7 +104,7 @@ const Home = () => {
         shadow: true,
         tabBarBackground: 'white',
       }}>
-      <Screen
+      {/* <Screen
         name={tabNameByScreen[DASHBOARD_SCREEN_KEY]}
         initialParams={{screenKey: DASHBOARD_SCREEN_KEY}}
         component={DashboardScreen}
@@ -120,7 +120,7 @@ const Home = () => {
             />
           ),
         })}
-      />
+      /> */}
       <Screen
         name={tabNameByScreen[CHECKLIST_SCREEN_KEY]}
         initialParams={{screenKey: CHECKLIST_SCREEN_KEY}}

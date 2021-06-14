@@ -23,6 +23,7 @@ import {
   resetForm,
   setImages,
 } from '../../Store/IncidenceForm/incidenceFormSlice';
+import {popScreen} from '../../Router/utils/actions';
 
 const styles = StyleSheet.create({
   container: {
@@ -132,7 +133,7 @@ const NewIncidenceScreen = () => {
       }
 
       resetFormAction();
-      navigation.goBack();
+      popScreen();
     } catch (err) {
       console.log(err);
       showAlert();
@@ -143,16 +144,7 @@ const NewIncidenceScreen = () => {
 
   return (
     <PageLayout
-      titleLefSide={
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <View style={styles.iconWrapper}>
-            <Icon name="arrow-back" size={25} color="#5090A5" />
-          </View>
-        </TouchableOpacity>
-      }
+      backButton
       footer={
         <CustomButton
           loading={lo}

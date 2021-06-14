@@ -13,11 +13,9 @@ import auth from '@react-native-firebase/auth';
 import messaging from '@react-native-firebase/messaging';
 import {getUser} from '../firebase/getUser';
 import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
-import SignInWorkerStack from './Worker/SignInWorkerStack';
 import {logUser, userSelector} from '../Store/User/userSlice';
 import Loading from '../components/Loading';
 import {loadingSelector} from '../Store/App/appSlice';
-import SignInOwnerStack from './Owner/SignInOwnerStack';
 import AdminRouter from '../Router/adminRouter';
 
 const styles = StyleSheet.create({
@@ -56,12 +54,12 @@ const getUserSignInStack = (role) => {
   if (role === 'admin') {
     return <AdminRouter />;
   }
-  if (role === 'worker') {
-    return <SignInWorkerStack />;
-  }
-  if (role === 'owner') {
-    return <SignInOwnerStack />;
-  }
+  // if (role === 'worker') {
+  //   return <SignInWorkerStack />;
+  // }
+  // if (role === 'owner') {
+  //   return <SignInOwnerStack />;
+  // }
 };
 
 const AuthNavigator = () => {

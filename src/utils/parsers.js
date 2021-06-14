@@ -5,14 +5,15 @@ import {
   PRIORITY_LOW,
   PRIORITY_MEDIUM,
   PRIORITY_HEIGHT,
-  CHECKLIST_DONE,
 } from '../constants/colors';
 import {Colors} from '../Theme/Variables';
 import {DASHBOARD_SCREEN_KEY} from '../Screens/Dashboard/DashboardScreen';
 import {CHECKLIST_SCREEN_KEY} from '../Screens/Checklists';
 import {JOBS_SCREEN_KEY} from '../Screens/Jobs';
-import {HOUSES_SCREEN, HOUSES_SCREEN_KEY} from '../Screens/Houses';
+import {HOUSES_SCREEN_KEY} from '../Screens/Houses';
 import {INCIDENCES_SCREEN_KEY} from '../Screens/Incidences';
+import {HOUSE_SCREEN_KEY} from '../Screens/House';
+import {PROFILE_SCREEN_KEY} from '../Screens/Profile';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
   return text?.length > numberOfCharts
@@ -33,10 +34,8 @@ export const getHightByRoute = (route) => {
   switch (route) {
     case DASHBOARD_SCREEN_KEY:
       return 180;
-    case 'Home':
+    case HOUSE_SCREEN_KEY:
       return 180;
-    case 'NewHome':
-      return 100;
     case INCIDENCES_SCREEN_KEY:
       return 100;
     case CHECKLIST_SCREEN_KEY:
@@ -45,10 +44,10 @@ export const getHightByRoute = (route) => {
       return 100;
     case HOUSES_SCREEN_KEY:
       return 100;
-    case 'Perfil':
+    case PROFILE_SCREEN_KEY:
       return 100;
     default:
-      return 250;
+      return 100;
   }
 };
 

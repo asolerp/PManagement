@@ -6,8 +6,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NewFormHome from '../../components/Forms/Homes/NewHomeForm';
 import PageLayout from '../../components/PageLayout';
-
-import TitlePage from '../../components/TitlePage';
+import {popScreen} from '../../Router/utils/actions';
 
 export const NEW_HOUSE_SCREEN_KEY = 'newHouseScreen';
 
@@ -15,9 +14,7 @@ const NewHouseScreen = ({navigation}) => {
   return (
     <PageLayout
       backButton
-      titleLefSide={true}
       titleProps={{
-        leftSide: true,
         title: 'Nueva casa',
         subPage: false,
       }}>
@@ -29,14 +26,8 @@ const NewHouseScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 40,
-  },
   newHomeScreen: {
-    flex: 7,
     paddingTop: 20,
-    justifyContent: 'flex-start',
   },
 });
 

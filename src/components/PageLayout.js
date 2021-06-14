@@ -9,6 +9,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {LOW_GREY} from '../styles/colors';
+import {popScreen} from '../Router/utils/actions';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,8 +60,6 @@ const PageLayout = ({
   footer,
   titleLefSide,
 }) => {
-  const navigation = useNavigation();
-
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <TitlePage
@@ -69,7 +68,7 @@ const PageLayout = ({
           backButton ? (
             <TouchableOpacity
               onPress={() => {
-                navigation.goBack();
+                popScreen();
               }}>
               <View style={styles.iconWrapper}>
                 <Icon name="arrow-back" size={25} color="#5090A5" />
