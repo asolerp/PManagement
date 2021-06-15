@@ -1,6 +1,7 @@
 import {StackActions} from '@react-navigation/native';
 import {createRef} from 'react';
-import {HOME_STACK_KEY} from '../../Stacks/Home';
+
+import {HOME_ADMIN_STACK_KEY} from './routerKeys';
 
 // import {setCurrentScreen} from '~/lib/tracking';
 
@@ -35,7 +36,7 @@ export const openStackWithReplace = (stackId, screenId, options = {}) => {
 };
 
 export const resetNavigator = (screenId) => {
-  navigation.current?.navigate(screenId || HOME_STACK_KEY);
+  navigation.current?.navigate(screenId || HOME_ADMIN_STACK_KEY);
 };
 
 export const onNavigatorReady = () =>

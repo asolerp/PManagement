@@ -7,6 +7,9 @@ import TitlePage from '../../components/TitlePage';
 import ProfileBar from '../../components/ProfileBar';
 import AddButton from '../../components/Elements/AddButton';
 
+// UI
+import LinearGradient from 'react-native-linear-gradient';
+
 // Styles
 import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
 
@@ -15,17 +18,15 @@ import moment from 'moment';
 
 import {ScrollView} from 'react-native';
 
+import {DARK_BLUE, LOW_GREY} from '../../styles/colors';
 import {userSelector} from '../../Store/User/userSlice';
 import ChecklistList from '../../components/Lists/ChecklistList';
-
-// Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {Colors} from '../../Theme/Variables';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {NEW_INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.lowGrey,
+    backgroundColor: LOW_GREY,
     flex: 1,
   },
   addButton: {
@@ -38,7 +39,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   home: {
-    backgroundColor: Colors.lowGrey,
+    backgroundColor: LOW_GREY,
+    borderTopRightRadius: 50,
     flex: 5,
   },
   content: {
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 20,
     width: '90%',
-    color: Colors.darkBlue,
+    color: DARK_BLUE,
     fontWeight: '500',
   },
   checksWrapper: {
@@ -55,17 +57,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const HomeOwner = () => {
-  const {t} = useTranslation();
-  const navigation = useNavigation();
+const DashboardWorkerScreen = () => {
   const user = useSelector(userSelector, shallowEqual);
-
-  const [houseOwner] = useCollectionData(
-    firestore().collection('houses').where('owner.id', '==', user.uid),
-    {
-      idField: 'id',
-    },
-  );
+  const {t} = useTranslation();
 
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
@@ -73,36 +67,40 @@ const HomeOwner = () => {
   return (
     <View style={styles.container}>
       <View style={styles.addButton}>
-        <TouchableOpacity onPress={() => navigation.navigate('NewIncidence')}>
-          <AddButton iconName="warning" backColor={Colors.pm} />
+        <TouchableOpacity
+          onPress={() => openScreenWithPush(NEW_INCIDENCE_SCREEN_KEY)}>
+          <AddButton iconName="add-alert" backColor="#F5C66D" />
         </TouchableOpacity>
       </View>
-      <ScrollView contentContainerStyle={{backgroundColor: Colors.lowGrey}}>
-        <TitlePage
-          background={{
-            uri: houseOwner?.[0]?.houseImage,
-          }}>
+      <ScrollView contentContainerStyle={{backgroundColor: LOW_GREY}}>
+        <TitlePage>
           <ProfileBar />
         </TitlePage>
-        <View style={styles.home}>
-          <View style={styles.content}>
-            <Text
-              style={{
-                ...defaultLabel,
-                ...marginBottom(10),
-                ...marginTop(20),
-              }}>
-              {t('welcome', {date: date.join(' ')})}
-            </Text>
-            <Text style={{...styles.label, ...marginBottom(20)}}>
-              {t('homeMessage')}
-            </Text>
-            <ChecklistList house={houseOwner?.[0]} />
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          colors={['#126D9B', '#67B26F']}
+          style={styles.homeBackScreen}>
+          <View style={styles.home}>
+            <View style={styles.content}>
+              <Text
+                style={{
+                  ...defaultLabel,
+                  ...marginBottom(10),
+                  ...marginTop(20),
+                }}>
+                {t('welcome', {date: date.join(' ')})}
+              </Text>
+              <Text style={{...styles.label, ...marginBottom(20)}}>
+                {t('homeMessage')}
+              </Text>
+              <ChecklistList uid={user.uid} />
+            </View>
           </View>
-        </View>
+        </LinearGradient>
       </ScrollView>
     </View>
   );
 };
 
-export default HomeOwner;
+export default DashboardWorkerScreen;

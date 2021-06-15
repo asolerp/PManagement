@@ -5,7 +5,7 @@ import {useDispatch, useSelector, shallowEqual} from 'react-redux';
 
 import {View, StyleSheet, StatusBar, Dimensions} from 'react-native';
 
-import SignOutStack from './SignOutStack';
+import SignOutRouter from '../Router/signOutRouter';
 import Modal from '../components/Modal';
 
 //Firebase
@@ -17,6 +17,8 @@ import {logUser, userSelector} from '../Store/User/userSlice';
 import Loading from '../components/Loading';
 import {loadingSelector} from '../Store/App/appSlice';
 import AdminRouter from '../Router/adminRouter';
+import WorkerRouter from '../Router/workerRouter';
+import OwnerRouter from '../Router/ownerRouter';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -54,15 +56,16 @@ const getUserSignInStack = (role) => {
   if (role === 'admin') {
     return <AdminRouter />;
   }
-  // if (role === 'worker') {
-  //   return <SignInWorkerStack />;
-  // }
-  // if (role === 'owner') {
-  //   return <SignInOwnerStack />;
-  // }
+  if (role === 'worker') {
+    return <WorkerRouter />;
+  }
+  if (role === 'owner') {
+    return <OwnerRouter />;
+  }
+  return;
 };
 
-const AuthNavigator = () => {
+const AuthRouter = () => {
   const [initializing, setInitializing] = useState(true);
   const dispatch = useDispatch();
 
@@ -112,8 +115,8 @@ const AuthNavigator = () => {
       </View>
     </React.Fragment>
   ) : (
-    <SignOutStack />
+    <SignOutRouter />
   );
 };
 
-export default React.memo(AuthNavigator);
+export default React.memo(AuthRouter);

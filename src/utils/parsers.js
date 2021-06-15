@@ -10,7 +10,9 @@ import {Colors} from '../Theme/Variables';
 
 import {
   CHECKLIST_SCREEN_KEY,
+  DASHBOARD_OWNER_SCREEN_KEY,
   DASHBOARD_SCREEN_KEY,
+  DASHBOARD_WORKER_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
   HOUSE_SCREEN_KEY,
   INCIDENCES_SCREEN_KEY,
@@ -26,16 +28,21 @@ export const minimizetext = (text, numberOfCharts = 40) => {
 
 export const tabNameByScreen = {
   [DASHBOARD_SCREEN_KEY]: 'Dashboard',
+  [DASHBOARD_WORKER_SCREEN_KEY]: 'Dashboard',
+  [DASHBOARD_OWNER_SCREEN_KEY]: 'Dashboard',
   [CHECKLIST_SCREEN_KEY]: 'Checklists',
   [INCIDENCES_SCREEN_KEY]: 'Incidencias',
   [JOBS_SCREEN_KEY]: 'Trabajos',
   [HOUSES_SCREEN_KEY]: 'Casas',
+  [PROFILE_SCREEN_KEY]: 'Perfil',
 };
 
 export const getHightByRoute = (route) => {
   console.log(route);
   switch (route) {
     case DASHBOARD_SCREEN_KEY:
+      return 180;
+    case DASHBOARD_WORKER_SCREEN_KEY:
       return 180;
     case HOUSE_SCREEN_KEY:
       return 180;

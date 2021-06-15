@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {View, Text, Button} from 'react-native';
-import AuthNavigator from './Navigation/AuthNavigator';
+import AuthRouter from './Router/authRouter';
 import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
 
@@ -51,7 +51,7 @@ const App = () => {
   return (
     <ErrorBoundary FallbackComponent={CustomFallback}>
       <Provider store={store}>
-        <AuthNavigator />
+        <AuthRouter />
         <ModalPortal />
       </Provider>
     </ErrorBoundary>

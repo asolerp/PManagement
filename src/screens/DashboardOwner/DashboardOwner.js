@@ -7,9 +7,6 @@ import TitlePage from '../../components/TitlePage';
 import ProfileBar from '../../components/ProfileBar';
 import AddButton from '../../components/Elements/AddButton';
 
-// UI
-import LinearGradient from 'react-native-linear-gradient';
-
 // Styles
 import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
 
@@ -18,13 +15,17 @@ import moment from 'moment';
 
 import {ScrollView} from 'react-native';
 
-import {DARK_BLUE, LOW_GREY} from '../../styles/colors';
 import {userSelector} from '../../Store/User/userSlice';
 import ChecklistList from '../../components/Lists/ChecklistList';
 
+// Firebase
+import firestore from '@react-native-firebase/firestore';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {Colors} from '../../Theme/Variables';
+
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: LOW_GREY,
+    backgroundColor: Colors.lowGrey,
     flex: 1,
   },
   addButton: {
@@ -37,8 +38,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   home: {
-    backgroundColor: LOW_GREY,
-    borderTopRightRadius: 50,
+    backgroundColor: Colors.lowGrey,
     flex: 5,
   },
   content: {
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 20,
     width: '90%',
-    color: DARK_BLUE,
+    color: Colors.darkBlue,
     fontWeight: '500',
   },
   checksWrapper: {
@@ -55,10 +55,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const HomeWorker = () => {
+const DashboardOwner = () => {
+  const {t} = useTranslation();
   const navigation = useNavigation();
   const user = useSelector(userSelector, shallowEqual);
-  const {t} = useTranslation();
+
+  const [houseOwner] = useCollectionData(
+    firestore().collection('houses').where('owner.id', '==', user.uid),
+    {
+      idField: 'id',
+    },
+  );
 
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
@@ -67,38 +74,35 @@ const HomeWorker = () => {
     <View style={styles.container}>
       <View style={styles.addButton}>
         <TouchableOpacity onPress={() => navigation.navigate('NewIncidence')}>
-          <AddButton iconName="add-alert" backColor="#F5C66D" />
+          <AddButton iconName="warning" backColor={Colors.pm} />
         </TouchableOpacity>
       </View>
-      <ScrollView contentContainerStyle={{backgroundColor: LOW_GREY}}>
-        <TitlePage>
+      <ScrollView contentContainerStyle={{backgroundColor: Colors.lowGrey}}>
+        <TitlePage
+          background={{
+            uri: houseOwner?.[0]?.houseImage,
+          }}>
           <ProfileBar />
         </TitlePage>
-        <LinearGradient
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
-          colors={['#126D9B', '#67B26F']}
-          style={styles.homeBackScreen}>
-          <View style={styles.home}>
-            <View style={styles.content}>
-              <Text
-                style={{
-                  ...defaultLabel,
-                  ...marginBottom(10),
-                  ...marginTop(20),
-                }}>
-                {t('welcome', {date: date.join(' ')})}
-              </Text>
-              <Text style={{...styles.label, ...marginBottom(20)}}>
-                {t('homeMessage')}
-              </Text>
-              <ChecklistList uid={user.uid} />
-            </View>
+        <View style={styles.home}>
+          <View style={styles.content}>
+            <Text
+              style={{
+                ...defaultLabel,
+                ...marginBottom(10),
+                ...marginTop(20),
+              }}>
+              {t('welcome', {date: date.join(' ')})}
+            </Text>
+            <Text style={{...styles.label, ...marginBottom(20)}}>
+              {t('homeMessage')}
+            </Text>
+            <ChecklistList house={houseOwner?.[0]} />
           </View>
-        </LinearGradient>
+        </View>
       </ScrollView>
     </View>
   );
 };
 
-export default HomeWorker;
+export default DashboardOwner;

@@ -65,7 +65,7 @@ const IconWithBadge = ({badgeCount, children}) => {
   );
 };
 
-const Home = () => {
+const HomeAdmin = () => {
   const [incidencesCounter] = useDocumentData(
     firestore().collection('incidences').doc('stats'),
   );
@@ -197,4 +197,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeAdmin;

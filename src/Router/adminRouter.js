@@ -7,14 +7,14 @@ import {
   onNavigatorStateChange,
 } from './utils/actions';
 
-import {Main} from '../Stacks/Main';
+import {Main, MainAdmin} from '../Stacks/MainAdmin';
 
 import {NewCheckListScreen} from '../Screens/NewCheckList';
 import NewJob from '../Stacks/NewJob';
 import {NewIncidenceScreen} from '../Screens/NewIncidence';
 import {NewHouseScreen} from '../Screens/NewHouse';
 import {
-  MAIN_STACK_KEY,
+  MAIN_ADMIN_STACK_KEY,
   NEW_CHECKLIST_SCREEN,
   NEW_HOUSE_SCREEN_KEY,
   NEW_INCIDENCE_SCREEN_KEY,
@@ -32,8 +32,8 @@ const AdminRouter = () => {
       options={{headerShown: false}}>
       <Navigator mode="modal" options={{headerShown: false}}>
         <Screen
-          name={MAIN_STACK_KEY}
-          component={Main}
+          name={MAIN_ADMIN_STACK_KEY}
+          component={MainAdmin}
           options={{headerShown: false}}
         />
         <Screen
