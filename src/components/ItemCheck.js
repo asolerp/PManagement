@@ -8,7 +8,7 @@ import Avatar from '../components/Avatar';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {handleCamera, handleImagePicker} from '../utils/imageFunctions';
 import {GREY_1, PM_COLOR} from '../styles/colors';
-import {marginBottom, marginTop} from '../styles/common';
+
 import moment from 'moment';
 import InfoIcon from './InfoIcon';
 import {Colors} from '../Theme/Variables';
@@ -22,9 +22,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     padding: 10,
-    borderWidth: 1,
-    borderColor: GREY_1,
-    borderRadius: 10,
+    borderBottomColor: GREY_1,
+    borderBottomWidth: 1,
   },
   checkboxWrapper: {
     flexDirection: 'row',
@@ -72,7 +71,18 @@ const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
           })
         }
       />
-      <View style={{...styles.container, ...marginBottom(10)}}>
+      <View style={{...styles.container}}>
+        <View style={[Gutters.smallRMargin]}>
+          {check?.worker && (
+            <View style={[Gutters.tinyVMargin]}>
+              <Avatar
+                key={check?.worker?.uid}
+                uri={check?.worker?.profileImage}
+                size="medium"
+              />
+            </View>
+          )}
+        </View>
         <View style={styles.infoWrapper}>
           <Text style={styles.name}>{check.title}</Text>
           {check?.date && (
@@ -80,26 +90,24 @@ const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
               {moment(check?.date?.toDate()).format('LL')}
             </Text>
           )}
-          <View
-            style={[Layout.fill, Layout.column, Layout.justifyContentStart]}>
-            {check?.worker && (
-              <View style={[Gutters.tinyVMargin]}>
-                <Avatar
-                  key={check?.worker?.uid}
-                  uri={check?.worker?.profileImage}
-                  size="medium"
-                />
-              </View>
-            )}
-            {check?.numberOfPhotos > 0 && (
-              <View style={[Layout.rowCenter, Layout.justifyContentStart]}>
-                <InfoIcon
-                  info={`Fotos: ${check?.numberOfPhotos}`}
-                  color={PM_COLOR}
-                />
-              </View>
-            )}
-          </View>
+          {check?.numberOfPhotos > 0 && (
+            <View
+              style={[Layout.fill, Layout.column, Layout.justifyContentStart]}>
+              {check?.numberOfPhotos > 0 && (
+                <View
+                  style={[
+                    Layout.rowCenter,
+                    Layout.justifyContentStart,
+                    Gutters.tinyVMargin,
+                  ]}>
+                  <InfoIcon
+                    info={`Fotos: ${check?.numberOfPhotos}`}
+                    color={PM_COLOR}
+                  />
+                </View>
+              )}
+            </View>
+          )}
         </View>
         <View style={styles.checkboxWrapper}>
           <TouchableOpacity onPress={() => setPhotoCameraModal(true)}>

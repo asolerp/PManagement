@@ -2,7 +2,7 @@
 export const Colors = {
   white: '#FFFFFF',
   grey: '#EAEAEA',
-  lowGrey: '#F8F8F8',
+  lowGrey: '#f2f2f2',
   darkBlue: '#284748',
   success: '#58BFC0',
   warning: '#F5C66D',

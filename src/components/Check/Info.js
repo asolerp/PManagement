@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, Text, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 
 // Redux
 import {useSelector, shallowEqual} from 'react-redux';
@@ -18,11 +18,10 @@ import {DARK_BLUE, GREY_1, LOW_GREY, PM_COLOR} from '../../styles/colors';
 
 // utils
 import moment from 'moment';
-import TextWrapper from '../../components/TextWrapper';
 
 import EditableInput from '../Elements/EditableInput';
 import ItemCheck from '../../components/ItemCheck';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+
 import {userSelector} from '../../Store/User/userSlice';
 import useUploadImageCheck from '../../hooks/useUploadImage';
 import {useNavigation, useRoute} from '@react-navigation/core';
@@ -35,10 +34,8 @@ import {CHECK_PHOTO_SCREEN_KEY} from '../../Router/utils/routerKeys';
 const styles = StyleSheet.create({
   checklistContainer: {
     flex: 1,
-    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     marginTop: 10,
-    // height: '100%',
   },
   container: {
     flex: 1,

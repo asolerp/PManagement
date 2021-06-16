@@ -85,6 +85,7 @@ const JobScreen = ({route, navigation}) => {
   );
   return (
     <PageLayout
+      safe
       backButton
       titleProps={{
         subPage: true,

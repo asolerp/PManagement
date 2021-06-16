@@ -121,6 +121,7 @@ const CheckScreen = ({route}) => {
   );
   return (
     <PageLayout
+      safe
       backButton
       titleProps={{
         subPage: true,

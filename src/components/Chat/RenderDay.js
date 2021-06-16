@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
@@ -15,13 +16,7 @@ const RenderDay = ({message}) => {
   return (
     <View style={message.containerStyle}>
       <Text style={styles.textStyle}>
-        {`${message?.currentMessage?.createdAt
-          ?.toDate()
-          .toLocaleString('es-ES', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}`}
+        {`${moment(message?.currentMessage?.createdAt.toDate()).format('LL')}`}
       </Text>
     </View>
   );

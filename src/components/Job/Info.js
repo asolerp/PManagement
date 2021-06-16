@@ -102,6 +102,7 @@ const Info = () => {
           <View style={styles.workers}>
             {job?.workers?.map((worker) => (
               <Avatar
+                id={worker.id}
                 name={worker.firstName}
                 key={worker.id}
                 uri={worker.profileImage}

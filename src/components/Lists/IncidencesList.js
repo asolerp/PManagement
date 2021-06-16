@@ -118,6 +118,10 @@ const IncidencesList = () => {
           styles.incidenceWrapper,
           Gutters.mediumRMargin,
           {
+            borderWidth: 1,
+            borderTopColor: Colors.lowGrey,
+            borderRightColor: Colors.lowGrey,
+            borderBottomColor: Colors.lowGrey,
             borderLeftColor: parseStateIncidecne(item?.data().state),
           },
         ]}

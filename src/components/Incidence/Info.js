@@ -106,7 +106,11 @@ const Info = () => {
           <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
             Informador
           </Text>
-          <Avatar uri={value?.data()?.user?.profileImage} size="big" />
+          <Avatar
+            id={value?.data().user?.uid}
+            uri={value?.data()?.user?.profileImage}
+            size="big"
+          />
         </View>
         <Text style={{...defaultLabel, ...marginBottom(10)}}>Incidencia</Text>
         <EditableInput

@@ -10,15 +10,16 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {LOW_GREY} from '../styles/colors';
 import {popScreen} from '../Router/utils/actions';
+import {Colors} from '../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LOW_GREY,
+    backgroundColor: Colors.white,
   },
   pageWrapper: {
     flex: 1,
-    backgroundColor: LOW_GREY,
+    backgroundColor: Colors.white,
     borderTopRightRadius: 50,
     paddingHorizontal: 20,
   },
@@ -59,9 +60,10 @@ const PageLayout = ({
   children,
   footer,
   titleLefSide,
+  safe = false,
 }) => {
-  return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+  const Container = () => (
+    <React.Fragment>
       <TitlePage
         {...titleProps}
         leftSide={
@@ -91,7 +93,21 @@ const PageLayout = ({
         </View>
       </LinearGradient>
       {footer && <View style={styles.bottomScreen}>{footer}</View>}
-    </SafeAreaView>
+    </React.Fragment>
+  );
+
+  if (safe) {
+    return (
+      <SafeAreaView style={styles.container} edges={'bottom'}>
+        <Container />
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Container />
+    </View>
   );
 };
 

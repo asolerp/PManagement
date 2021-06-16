@@ -1,5 +1,8 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {openScreenWithPush} from '../Router/utils/actions';
+import {PROFILE_SCREEN_KEY} from '../Router/utils/routerKeys';
 
 const styles = StyleSheet.create({
   ownerWrapper: {
@@ -22,7 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Avatar = ({uri, name, overlap, position, size = 'small'}) => {
+const Avatar = ({id, uri, name, overlap, position, size = 'small'}) => {
   const parseSize = (sizeImage) => {
     switch (sizeImage) {
       case 'xxl': {
@@ -43,7 +46,12 @@ const Avatar = ({uri, name, overlap, position, size = 'small'}) => {
     }
   };
   return (
-    <View
+    <TouchableWithoutFeedback
+      onPress={() =>
+        openScreenWithPush(PROFILE_SCREEN_KEY, {
+          userId: id,
+        })
+      }
       style={[
         styles.ownerWrapper,
         {flexDirection: name ? 'column' : 'row', zIndex: position},
@@ -62,7 +70,7 @@ const Avatar = ({uri, name, overlap, position, size = 'small'}) => {
         />
         {name && <Text>{name}</Text>}
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 

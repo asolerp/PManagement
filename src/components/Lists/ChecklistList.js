@@ -1,7 +1,10 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/core';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native-gesture-handler';
 
 import {defaultLabel, width} from '../../styles/common';
 
@@ -120,13 +123,16 @@ const ChecklistList = ({uid, house}) => {
     };
 
     return (
-      <TouchableOpacity
+      <TouchableWithoutFeedback
         style={[
           styles.checkWrapper,
           Gutters.mediumRMargin,
           {
             backgroundColor: Colors.white,
-            borderColor: Colors.lowGrey,
+            // borderColor: Colors.lowGrey,
+            borderTopColor: Colors.lowGrey,
+            borderRightColor: Colors.lowGrey,
+            borderBottomColor: Colors.lowGrey,
             borderLeftColor: parsePercentageDone(item?.done / item?.total),
           },
         ]}
@@ -174,7 +180,7 @@ const ChecklistList = ({uid, house}) => {
             </Text>
           </View>
         </View>
-      </TouchableOpacity>
+      </TouchableWithoutFeedback>
     );
   };
 

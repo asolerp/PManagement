@@ -12,7 +12,6 @@ import PageLayout from '../../components/PageLayout';
 // Utils
 import moment from 'moment';
 import {ScrollView} from 'react-native';
-import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 import ChecklistList from '../../components/Lists/ChecklistList';
 import {openScreenWithPush} from '../../Router/utils/actions';
@@ -49,12 +48,8 @@ const DashboardScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.lowGrey,
-    borderTopRightRadius: 50,
-  },
+  container: {},
   home: {
-    backgroundColor: Colors.lowGrey,
     flex: 5,
   },
 });

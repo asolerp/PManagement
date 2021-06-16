@@ -5,6 +5,7 @@ import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
 
 import ErrorBoundary from 'react-native-error-boundary';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import {Provider} from 'react-redux';
 import store from './Store';
@@ -51,8 +52,10 @@ const App = () => {
   return (
     <ErrorBoundary FallbackComponent={CustomFallback}>
       <Provider store={store}>
-        <AuthRouter />
-        <ModalPortal />
+        <SafeAreaProvider>
+          <AuthRouter />
+          <ModalPortal />
+        </SafeAreaProvider>
       </Provider>
     </ErrorBoundary>
   );

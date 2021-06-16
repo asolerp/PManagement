@@ -150,6 +150,7 @@ const IncidenceScreen = () => {
 
   return (
     <PageLayout
+      safe
       titleLefSide={
         <TouchableOpacity
           onPress={() => {

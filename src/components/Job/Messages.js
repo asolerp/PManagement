@@ -29,6 +29,8 @@ import {Platform} from 'react-native';
 import {userSelector} from '../../Store/User/userSlice';
 import uploadMessagePhoto from '../../Services/uploadMessagePhoto';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {format} from 'date-fns/esm';
+import moment from 'moment';
 
 const Messages = () => {
   const route = useRoute();
@@ -78,7 +80,7 @@ const Messages = () => {
   return (
     <ScrollView
       contentContainerStyle={{
-        height: Platform.OS === 'ios' ? '98%' : '96%',
+        height: Platform.OS === 'ios' ? '97%' : '96%',
         marginTop: 20,
         marginBottom: 20,
       }}>
@@ -132,14 +134,11 @@ const Messages = () => {
                 marginHorizontal: 10,
                 marginBottom: 5,
                 color: props.position === 'left' ? 'black' : 'white',
+                fontSize: 10,
               }}>
-              {`${props.currentMessage.createdAt
-                .toDate()
-                .toLocaleString('es-ES', {
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: false,
-                })}`}
+              {`${moment(props.currentMessage.createdAt.toDate()).format(
+                'LT',
+              )}`}
             </Text>
           </View>
         )}

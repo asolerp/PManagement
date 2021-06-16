@@ -24,6 +24,7 @@ import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 
 import {setMessagesAsRead} from '../../firebase/setMessagesAsRead';
+import Chat from '../Chat/Chat';
 
 // Utils
 import {launchImage} from '../../utils/imageFunctions';
@@ -35,20 +36,18 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 const Messages = () => {
   const route = useRoute();
-  const {checkId} = route.params;
+  const {docId} = route.params;
 
   const [messageImage, setMessageImage] = useState(null);
-
-  const [local, setLocal] = useState([]);
 
   const query = useMemo(
     () =>
       firestore()
         .collection('checklists')
-        .doc(checkId)
+        .doc(docId)
         .collection('messages')
         .orderBy('createdAt', 'desc'),
-    [checkId],
+    [docId],
   );
 
   const [messages] = useCollectionData(query, {
@@ -69,21 +68,22 @@ const Messages = () => {
 
   const onSend = useCallback(
     (messages = []) => {
-      addMessage(`checklists/${checkId}/messages`, {
+      console.log(docId);
+      addMessage(`checklists/${docId}/messages`, {
         ...messages[0],
         createdAt: firestore.FieldValue.serverTimestamp(),
         sent: true,
         received: false,
       });
     },
-    [addMessage, checkId],
+    [addMessage, docId],
   );
 
   useEffect(() => {
     if (messages?.length > 0) {
-      setMessagesAsRead(checkId, user.uid, 'checklists');
+      setMessagesAsRead(docId, user.uid, 'checklists');
     }
-  }, [messages, checkId, user.uid]);
+  }, [messages, docId, user.uid]);
 
   useEffect(() => {
     const uploadImage = async () => {
@@ -105,21 +105,21 @@ const Messages = () => {
       };
 
       const result = await addMessage(
-        `checklists/${checkId}/messages`,
+        `checklists/${docId}/messages`,
         waitingSendImageMessage,
       );
 
       const image = await cloudinaryUpload(
         messageImage,
-        `/PortManagement/Checks/${checkId}/Photos`,
+        `/PortManagement/Checks/${docId}/Photos`,
       );
 
-      updateFirebase(`${checkId}/messages/${result.id}`, {
+      updateFirebase(`${docId}/messages/${result.id}`, {
         ...waitingSendImageMessage,
         image: image,
       });
 
-      addPhoto(`checklists/${checkId}/photos`, {
+      addPhoto(`checklists/${docId}/photos`, {
         createdAt: firestore.FieldValue.serverTimestamp(),
         image: image,
       });
@@ -127,111 +127,19 @@ const Messages = () => {
     if (messageImage !== null) {
       uploadImage();
     }
-  }, [
-    messageImage,
-    addMessage,
-    addPhoto,
-    checkId,
-    updateFirebase,
-    userLoggedIn,
-  ]);
-
-  const renderCustomView = (props) => {
-    return <CustomView {...props} />;
-  };
+  }, [messageImage, addMessage, addPhoto, docId, updateFirebase, userLoggedIn]);
 
   return (
     <View
       style={{
-        height: Platform.OS === 'ios' ? '98%' : '96%',
+        height: Platform.OS === 'ios' ? '96%' : '96%',
         marginTop: 20,
         marginBottom: 20,
       }}>
-      <GiftedChat
-        bottomOffset={-3}
-        isLoadingEarlier={loadingAddPhoto}
-        renderBubble={(props) => (
-          <Bubble
-            {...props}
-            textStyle={{
-              right: {
-                color: 'white',
-              },
-            }}
-            wrapperStyle={{
-              right: {
-                backgroundColor: '#5BAB9C',
-              },
-            }}
-          />
-        )}
-        renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
-        renderInputToolbar={(props) => (
-          <InputToolbar
-            {...props}
-            onPressActionButton={() => onSendImage()}
-            containerStyle={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: '#cccccc',
-              marginBottom: 15,
-            }}
-          />
-        )}
-        messages={GiftedChat.append(messages, local)}
-        messagesContainerStyle={{paddingBottom: 20}}
-        renderActions={(props) => (
-          <Actions
-            {...props}
-            icon={() => (
-              <Icon name="camera-alt" size={25} color={'#4F8AA3'} style={{}} />
-            )}
-          />
-        )}
-        renderDay={(props) => <RenderDay message={props} />}
-        renderTime={(props) => (
-          <View style={props.containerStyle}>
-            <Text
-              style={{
-                marginHorizontal: 10,
-                marginBottom: 5,
-                color: props.position === 'left' ? 'black' : 'white',
-              }}>
-              {`${props.currentMessage.createdAt
-                .toDate()
-                .toLocaleString('es-ES', {
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: false,
-                })}`}
-            </Text>
-          </View>
-        )}
-        renderSend={(props) => {
-          return (
-            <Send
-              {...props}
-              containerStyle={{
-                borderWidth: 0,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                marginRight: 20,
-              }}>
-              <Icon name="send" color={'#4F8AA3'} style={{borderWidth: 0}} />
-            </Send>
-          );
-        }}
-        showUserAvatar
-        onSend={(messages) => onSend(messages)}
-        user={{
-          _id: userLoggedIn?.id,
-          name: userLoggedIn?.firstName,
-          avatar: userLoggedIn?.profileImage,
-          token: userLoggedIn?.token,
-          role: userLoggedIn?.role,
-        }}
+      <Chat
+        onSendMessage={(msgs) => onSend(msgs)}
+        onSendImage={onSendImage}
+        messages={messages}
       />
     </View>
   );

@@ -94,6 +94,7 @@ const NewCheckListScreen = ({route, navigation}) => {
 
   return (
     <PageLayout
+      safe
       titleLefSide={
         <TouchableOpacity
           onPress={() => {
@@ -128,7 +129,6 @@ const NewCheckListScreen = ({route, navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LOW_GREY,
   },
   newJobScreen: {
     flex: 1,
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
   },
   jobScreen: {
     flex: 1,
-    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     paddingTop: 20,
 

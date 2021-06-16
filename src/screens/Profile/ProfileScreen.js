@@ -72,7 +72,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const ProfileScreen = () => {
+const ProfileScreen = ({route}) => {
+  console.log(route);
+  const {userId} = route.params;
   const [newImage, setNewImage] = useState();
   const [infoProfile, setInfoProfile] = useState();
   const [editLoading, setEditLoading] = useState(false);
@@ -83,10 +85,12 @@ const ProfileScreen = () => {
   const user = useSelector(userSelector, shallowEqual);
 
   const {updateFirebase} = useUpdateFirebase('users');
-
   const {upload} = useUploadCloudinaryImage();
 
-  const {document: userLoggedIn} = useGetDocFirebase('users', user.uid);
+  const {document: userLoggedIn} = useGetDocFirebase(
+    'users',
+    userId || user.uid,
+  );
 
   const handleEdit = async () => {
     try {
@@ -124,11 +128,13 @@ const ProfileScreen = () => {
   return (
     <PageLayout
       footer={
-        <CustomButton
-          styled="rounded"
-          title="Desconectarse"
-          onPress={() => logOut()}
-        />
+        (userId === user.uid || !userId) && (
+          <CustomButton
+            styled="rounded"
+            title="Desconectarse"
+            onPress={() => logOut()}
+          />
+        )
       }
       titleLefSide={true}
       backButton={user?.role === 'admin'}
@@ -168,6 +174,7 @@ const ProfileScreen = () => {
           <Text style={styles.inputLabel}>Teléfono de contacto:</Text>
           <InputGroup>
             <TextInput
+              editable={userId ? userId === user.uid : true}
               style={{height: 40}}
               placeholder="Teléfono"
               onChangeText={(text) =>
@@ -179,6 +186,7 @@ const ProfileScreen = () => {
           <Text style={styles.inputLabel}>Email:</Text>
           <InputGroup>
             <TextInput
+              editable={userId ? userId === user.uid : true}
               style={{height: 40}}
               placeholder="Email"
               onChangeText={(text) =>
