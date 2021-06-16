@@ -60,6 +60,7 @@ const PageLayout = ({
   children,
   footer,
   titleLefSide,
+  titleRightSide,
   safe = false,
 }) => {
   const Container = () => (
@@ -72,14 +73,15 @@ const PageLayout = ({
               onPress={() => {
                 popScreen();
               }}>
-              <View style={styles.iconWrapper}>
-                <Icon name="arrow-back" size={25} color="#5090A5" />
+              <View>
+                <Icon name="arrow-back" size={25} color={Colors.white} />
               </View>
             </TouchableOpacity>
           ) : (
             titleLefSide
           )
         }
+        rightSide={titleRightSide}
         align="center">
         {titleChildren}
       </TitlePage>

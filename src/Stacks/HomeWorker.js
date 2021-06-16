@@ -11,12 +11,14 @@ import {
   DASHBOARD_WORKER_SCREEN_KEY,
   INCIDENCES_SCREEN_KEY,
   INCIDENCE_SCREEN_KEY,
+  JOBS_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import DashboardWorkerScreen from '../Screens/DashboardWorker/DashboardWorker';
 import {IncidencesScreen} from '../Screens/Incidences';
 import {ProfileScreen} from '../Screens/Profile';
 import {tabNameByScreen} from '../utils/parsers';
+import JobsScreen from '../Screens/Jobs/JobsScreen';
 
 const Tabs = AnimatedTabBarNavigator();
 
@@ -74,6 +76,22 @@ const HomeWorker = () => {
         name={tabNameByScreen[INCIDENCES_SCREEN_KEY]}
         initialParams={{screenKey: INCIDENCES_SCREEN_KEY}}
         component={IncidencesScreen}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisible(route),
+          tabBarIcon: ({focused, color, size}) => (
+            <Icon
+              name="priority-high"
+              size={size ? size : 24}
+              color={focused ? color : '#3E93A8'}
+              focused={focused}
+            />
+          ),
+        })}
+      />
+      <Tabs.Screen
+        name={tabNameByScreen[JOBS_SCREEN_KEY]}
+        initialParams={{screenKey: JOBS_SCREEN_KEY}}
+        component={JobsScreen}
         options={({route}) => ({
           tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({focused, color, size}) => (

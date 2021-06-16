@@ -1,11 +1,8 @@
-import React, {useState, useMemo} from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import React, {useMemo} from 'react';
+import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 
-import {Info, Messages, Options} from '../../components/Check';
-
-import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
-
-import {useTheme} from '../../Theme';
+import {Info} from '../../components/Check';
+import AddButton from '../../components/Elements/AddButton';
 
 // UI
 import PageLayout from '../../components/PageLayout';
@@ -19,54 +16,12 @@ import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
 
 import firestore from '@react-native-firebase/firestore';
 import {useDocumentData} from 'react-firebase-hooks/firestore';
-
-const styles = StyleSheet.create({
-  tabBarStyle: {
-    backgroundColor: 'transparent',
-    color: 'black',
-    justifyContent: 'space-evenly',
-  },
-  tabBarLabelStyle: {
-    color: '#284748',
-    fontWeight: 'bold',
-    fontSize: 14,
-    width: 80,
-    textAlign: 'center',
-  },
-  tabIndicator: {
-    backgroundColor: Colors.pm,
-    width: 10,
-    height: 10,
-    borderRadius: 100,
-  },
-  jobBackScreen: {
-    flex: 1,
-  },
-  jobScreen: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderTopRightRadius: 50,
-    // height: '100%',
-  },
-});
-
-const FirstRoute = () => <Info />;
-const SecondRoute = () => <Messages />;
-const ThirdRoute = () => <Options />;
-
-const screensByRole = (role) => {
-  if (role === 'owner') {
-    return [
-      {key: 'info', title: 'Info', icon: 'info'},
-      {key: 'messages', title: 'Mensajes', icon: 'message'},
-    ];
-  }
-  return [
-    {key: 'info', title: 'Info', icon: 'info'},
-    {key: 'messages', title: 'Mensajes', icon: 'message'},
-    {key: 'options', title: 'Opciones', icon: 'settings'},
-  ];
-};
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {
+  CHAT_SCREEN_KEY,
+  PAGE_OPTIONS_SCREEN_KEY,
+} from '../../Router/utils/routerKeys';
+import {CHECKLISTS} from '../../utils/firebaseKeys';
 
 const CheckScreen = ({route}) => {
   const {docId} = route.params;
@@ -75,81 +30,65 @@ const CheckScreen = ({route}) => {
     return firestore().collection('checklists').doc(docId);
   }, [docId]);
 
-  const [checklist] = useDocumentData(query, {
+  const [checklist, loadingChecklist] = useDocumentData(query, {
     idField: 'id',
   });
 
   const user = useSelector(userSelector, shallowEqual);
-  const {Layout, Gutters} = useTheme();
-
-  const [index, setIndex] = React.useState(0);
-  const [routes] = useState(screensByRole(user.role));
-
-  const initialLayout = {
-    width: Dimensions.get('window').width,
-  };
-
-  const renderScene = SceneMap({
-    info: FirstRoute,
-    messages: SecondRoute,
-    options: ThirdRoute,
-  });
 
   const handleFinishAndSend = () => {
     finishAndSendChecklist(docId);
   };
 
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      renderLabel={({route}) => (
-        <View style={[Layout.fill, Layout.colCenter]}>
-          <Icon
-            name={route.icon}
-            size={45}
-            color={Colors.pm}
-            style={[styles.icon, Gutters.tinyBMargin]}
-          />
-        </View>
-      )}
-      indicatorStyle={[
-        styles.tabIndicator,
-        {left: Dimensions.get('window').width / (routes.length * 2) - 15},
-      ]}
-      style={styles.tabBarStyle}
-    />
-  );
   return (
-    <PageLayout
-      safe
-      backButton
-      titleProps={{
-        subPage: true,
-        title: `Checklist en ${
-          checklist?.house && checklist?.house[0]?.houseName
-        }`,
-        color: 'white',
-      }}
-      footer={
-        checklist?.done === checklist?.total &&
-        user.role === 'admin' && (
-          <CustomButton
-            styled="rounded"
-            loading={false}
-            title="Finalizar y enviar al propietario"
-            onPress={() => sendOwnerChecklist(() => handleFinishAndSend())}
-          />
-        )
-      }>
-      <TabView
-        navigationState={{index, routes}}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={setIndex}
-        initialLayout={initialLayout}
-        style={{height: Dimensions.get('window').height - 100}}
+    <React.Fragment>
+      <AddButton
+        iconName="chat"
+        bottom={100}
+        onPress={() =>
+          openScreenWithPush(CHAT_SCREEN_KEY, {
+            collection: CHECKLISTS,
+            docId: docId,
+          })
+        }
       />
-    </PageLayout>
+      <PageLayout
+        safe
+        backButton
+        titleRightSide={
+          <TouchableWithoutFeedback
+            onPress={() => {
+              openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
+                collection: CHECKLISTS,
+                docId: docId,
+              });
+            }}>
+            <View>
+              <Icon name="settings" size={25} color={Colors.white} />
+            </View>
+          </TouchableWithoutFeedback>
+        }
+        titleProps={{
+          subPage: true,
+          title: `Checklist en ${
+            checklist?.house && checklist?.house[0]?.houseName
+          }`,
+          color: 'white',
+        }}
+        footer={
+          checklist?.done === checklist?.total &&
+          user.role === 'admin' && (
+            <CustomButton
+              styled="rounded"
+              loading={false}
+              title="Finalizar y enviar al propietario"
+              onPress={() => sendOwnerChecklist(() => handleFinishAndSend())}
+            />
+          )
+        }>
+        {!loadingChecklist && <Info />}
+      </PageLayout>
+    </React.Fragment>
   );
 };
 

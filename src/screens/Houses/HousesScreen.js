@@ -48,11 +48,7 @@ const HousesScreen = ({navigation}) => {
 
   return (
     <React.Fragment>
-      <View style={styles.addButton}>
-        <TouchableOpacity onPress={() => handleNewHome()}>
-          <AddButton iconName="add" />
-        </TouchableOpacity>
-      </View>
+      <AddButton iconName="add" onPress={() => handleNewHome()} />
       <PageLayout
         titleLefSide={true}
         titleProps={{

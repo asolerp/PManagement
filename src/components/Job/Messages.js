@@ -31,12 +31,11 @@ import uploadMessagePhoto from '../../Services/uploadMessagePhoto';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {format} from 'date-fns/esm';
 import moment from 'moment';
+import Chat from '../Chat/Chat';
 
 const Messages = () => {
   const route = useRoute();
   const {jobId} = route.params;
-
-  const [local, setLocal] = useState([]);
 
   const [messages] = useCollectionData(
     firestore()
@@ -50,8 +49,7 @@ const Messages = () => {
   );
 
   const user = useSelector(userSelector, shallowEqual);
-  const {document: userLoggedIn} = useGetDocFirebase('users', user.uid);
-  console.log(user);
+
   const {addFirebase: addMessage} = useAddFirebase();
 
   const onSendImage = () => {
@@ -78,95 +76,18 @@ const Messages = () => {
   }, [messages, jobId, user.uid]);
 
   return (
-    <ScrollView
-      contentContainerStyle={{
-        height: Platform.OS === 'ios' ? '97%' : '96%',
-        marginTop: 20,
-        marginBottom: 20,
-      }}>
-      <GiftedChat
-        bottomOffset={-3}
-        renderBubble={(props) => (
-          <Bubble
-            {...props}
-            textStyle={{
-              right: {
-                color: 'white',
-              },
-            }}
-            wrapperStyle={{
-              right: {
-                backgroundColor: '#5BAB9C',
-              },
-            }}
-          />
-        )}
-        renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
-        renderInputToolbar={(props) => (
-          <InputToolbar
-            {...props}
-            onPressActionButton={() => onSendImage()}
-            containerStyle={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: '#cccccc',
-              marginBottom: 5,
-            }}
-          />
-        )}
-        messages={GiftedChat.append(messages, local)}
-        messagesContainerStyle={{paddingBottom: 20}}
-        renderActions={(props) => (
-          <Actions
-            {...props}
-            icon={() => (
-              <Icon name="camera-alt" size={25} color={'#4F8AA3'} style={{}} />
-            )}
-          />
-        )}
-        renderDay={(props) => <RenderDay message={props} />}
-        renderTime={(props) => (
-          <View style={props.containerStyle}>
-            <Text
-              style={{
-                marginHorizontal: 10,
-                marginBottom: 5,
-                color: props.position === 'left' ? 'black' : 'white',
-                fontSize: 10,
-              }}>
-              {`${moment(props.currentMessage.createdAt.toDate()).format(
-                'LT',
-              )}`}
-            </Text>
-          </View>
-        )}
-        renderSend={(props) => {
-          return (
-            <Send
-              {...props}
-              containerStyle={{
-                borderWidth: 0,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                marginRight: 20,
-              }}>
-              <Icon name="send" color={'#4F8AA3'} style={{borderWidth: 0}} />
-            </Send>
-          );
-        }}
-        showUserAvatar
-        onSend={(messages) => onSend(messages)}
-        user={{
-          _id: userLoggedIn?.id,
-          name: userLoggedIn?.firstName,
-          avatar: userLoggedIn?.profileImage,
-          token: userLoggedIn?.token,
-          role: userLoggedIn?.role,
-        }}
-      />
-    </ScrollView>
+    <Chat
+      onSendMessage={(msgs) => onSend(msgs)}
+      onSendImage={onSendImage}
+      messages={messages}
+    />
+    // <ScrollView
+    //   contentContainerStyle={{
+    //     height: Platform.OS === 'ios' ? '97%' : '96%',
+    //     marginTop: 20,
+    //     marginBottom: 20,
+    //   }}>
+    // </ScrollView>
   );
 };
 

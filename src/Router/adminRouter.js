@@ -14,12 +14,16 @@ import NewJob from '../Stacks/NewJob';
 import {NewIncidenceScreen} from '../Screens/NewIncidence';
 import {NewHouseScreen} from '../Screens/NewHouse';
 import {
+  CHAT_SCREEN_KEY,
   MAIN_ADMIN_STACK_KEY,
   NEW_CHECKLIST_SCREEN,
   NEW_HOUSE_SCREEN_KEY,
   NEW_INCIDENCE_SCREEN_KEY,
   NEW_JOB_STACK_KEY,
+  PAGE_OPTIONS_SCREEN_KEY,
 } from './utils/routerKeys';
+import {PageOptionsScreen} from '../Screens/PageOptions';
+import {ChatScreen} from '../Screens/Chat';
 
 const {Navigator, Screen} = createStackNavigator();
 
@@ -54,6 +58,16 @@ const AdminRouter = () => {
         <Screen
           name={NEW_HOUSE_SCREEN_KEY}
           component={NewHouseScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={PAGE_OPTIONS_SCREEN_KEY}
+          component={PageOptionsScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={CHAT_SCREEN_KEY}
+          component={ChatScreen}
           options={{headerShown: false}}
         />
       </Navigator>

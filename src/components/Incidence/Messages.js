@@ -30,8 +30,6 @@ const Messages = () => {
   const route = useRoute();
   const {incidenceId} = route.params;
 
-  const [local, setLocal] = useState([]);
-
   const [messages] = useCollectionData(
     firestore()
       .collection('incidences')

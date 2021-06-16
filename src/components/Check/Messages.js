@@ -24,7 +24,6 @@ import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 
 import {setMessagesAsRead} from '../../firebase/setMessagesAsRead';
-import Chat from '../Chat/Chat';
 
 // Utils
 import {launchImage} from '../../utils/imageFunctions';
@@ -39,6 +38,8 @@ const Messages = () => {
   const {docId} = route.params;
 
   const [messageImage, setMessageImage] = useState(null);
+
+  const [local, setLocal] = useState([]);
 
   const query = useMemo(
     () =>
@@ -68,7 +69,6 @@ const Messages = () => {
 
   const onSend = useCallback(
     (messages = []) => {
-      console.log(docId);
       addMessage(`checklists/${docId}/messages`, {
         ...messages[0],
         createdAt: firestore.FieldValue.serverTimestamp(),
@@ -129,17 +129,97 @@ const Messages = () => {
     }
   }, [messageImage, addMessage, addPhoto, docId, updateFirebase, userLoggedIn]);
 
+  const renderCustomView = (props) => {
+    return <CustomView {...props} />;
+  };
+
   return (
-    <View
-      style={{
-        height: Platform.OS === 'ios' ? '96%' : '96%',
-        marginTop: 20,
-        marginBottom: 20,
-      }}>
-      <Chat
-        onSendMessage={(msgs) => onSend(msgs)}
-        onSendImage={onSendImage}
-        messages={messages}
+    <View>
+      <GiftedChat
+        bottomOffset={-3}
+        isLoadingEarlier={loadingAddPhoto}
+        renderBubble={(props) => (
+          <Bubble
+            {...props}
+            textStyle={{
+              right: {
+                color: 'white',
+              },
+            }}
+            wrapperStyle={{
+              right: {
+                backgroundColor: '#5BAB9C',
+              },
+            }}
+          />
+        )}
+        renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
+        renderInputToolbar={(props) => (
+          <InputToolbar
+            {...props}
+            onPressActionButton={() => onSendImage()}
+            containerStyle={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: '#cccccc',
+              marginBottom: 15,
+            }}
+          />
+        )}
+        messages={GiftedChat.append(messages, local)}
+        messagesContainerStyle={{paddingBottom: 20}}
+        renderActions={(props) => (
+          <Actions
+            {...props}
+            icon={() => (
+              <Icon name="camera-alt" size={25} color={'#4F8AA3'} style={{}} />
+            )}
+          />
+        )}
+        renderDay={(props) => <RenderDay message={props} />}
+        renderTime={(props) => (
+          <View style={props.containerStyle}>
+            <Text
+              style={{
+                marginHorizontal: 10,
+                marginBottom: 5,
+                color: props.position === 'left' ? 'black' : 'white',
+              }}>
+              {`${props.currentMessage.createdAt
+                .toDate()
+                .toLocaleString('es-ES', {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  hour12: false,
+                })}`}
+            </Text>
+          </View>
+        )}
+        renderSend={(props) => {
+          return (
+            <Send
+              {...props}
+              containerStyle={{
+                borderWidth: 0,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                marginRight: 20,
+              }}>
+              <Icon name="send" color={'#4F8AA3'} style={{borderWidth: 0}} />
+            </Send>
+          );
+        }}
+        showUserAvatar
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: userLoggedIn?.id,
+          name: userLoggedIn?.firstName,
+          avatar: userLoggedIn?.profileImage,
+          token: userLoggedIn?.token,
+          role: userLoggedIn?.role,
+        }}
       />
     </View>
   );

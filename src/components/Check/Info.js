@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 
 const Info = () => {
   const route = useRoute();
-  const navigation = useNavigation();
+
   const {docId} = route.params;
 
   const query = useMemo(() => {
@@ -105,11 +105,11 @@ const Info = () => {
     return firestore().collection('checklists').doc(docId);
   }, [docId]);
 
-  const [checklist] = useDocumentData(queryChecklist, {
+  const [checklist, loadingChecklist] = useDocumentData(queryChecklist, {
     idField: 'id',
   });
 
-  const [values, loading] = useCollectionData(query, {
+  const [checks, loadingChecklistChecks] = useCollectionData(query, {
     idField: 'id',
   });
 
@@ -189,11 +189,9 @@ const Info = () => {
           {checklist?.done}/{checklist?.total}
         </Text>
       </View>
-      {loading ? (
-        <ActivityIndicator color={Colors.pm} size={20} />
-      ) : (
+      {!loadingChecklistChecks && !loadingChecklist && (
         <FlatList
-          data={values}
+          data={checks}
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}

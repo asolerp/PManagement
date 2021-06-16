@@ -17,6 +17,8 @@ export const NEW_JOB_TASK_SELECTOR_SCREEN_KEY = 'newJobTaskSelectorScreen';
 export const PROFILE_SCREEN_KEY = 'profileScreen';
 export const DASHBOARD_WORKER_SCREEN_KEY = 'dashboardWorkerScreen';
 export const DASHBOARD_OWNER_SCREEN_KEY = 'dashboardOwnerScreen';
+export const PAGE_OPTIONS_SCREEN_KEY = 'pageOptionsScreen';
+export const CHAT_SCREEN_KEY = 'chatScreen';
 
 // STACKS
 export const CHECK_STACK_KEY = 'checkStack';

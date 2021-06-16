@@ -2,17 +2,16 @@ import React, {useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 
-import {Info, Messages, Options, Photos} from '../../components/Incidence';
-import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
-
 // UI
 import CustomButton from '../../components/Elements/CustomButton';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AddButton from '../../components/Elements/AddButton';
+import {Info} from '../../components/Incidence';
 
 // Firebase
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import firestore from '@react-native-firebase/firestore';
-import {useDocument, useDocumentOnce} from 'react-firebase-hooks/firestore';
+import {useDocumentDataOnce} from 'react-firebase-hooks/firestore';
 
 // Utils
 import PageLayout from '../../components/PageLayout';
@@ -24,73 +23,22 @@ import {
 
 import {firebase} from '@react-native-firebase/firestore';
 
-import {Dimensions} from 'react-native';
-import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
-import {popScreen} from '../../Router/utils/actions';
-
-const styles = StyleSheet.create({
-  tabBarStyle: {
-    backgroundColor: 'transparent',
-    color: 'black',
-    justifyContent: 'space-evenly',
-  },
-  tabBarLabelStyle: {
-    color: '#284748',
-    fontWeight: 'bold',
-    fontSize: 14,
-    width: 80,
-    textAlign: 'center',
-  },
-  tabIndicator: {
-    backgroundColor: Colors.pm,
-    width: 10,
-    height: 10,
-    borderRadius: 100,
-  },
-  jobBackScreen: {
-    flex: 1,
-  },
-  jobScreen: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderTopRightRadius: 50,
-    // height: '100%',
-  },
-  iconWrapper: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-
-const FirstRoute = () => <Info />;
-const SecondRoute = () => <Messages />;
-const ThirdRoute = () => <Photos />;
-const FourthRoute = () => <Options />;
+import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
+import {
+  CHAT_SCREEN_KEY,
+  PAGE_OPTIONS_SCREEN_KEY,
+} from '../../Router/utils/routerKeys';
+import {INCIDENCES} from '../../utils/firebaseKeys';
+import {useTheme} from '../../Theme';
 
 const IncidenceScreen = () => {
-  const {Layout, Gutters} = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
-
-  const [index, setIndex] = React.useState(0);
-  const [routes] = useState([
-    {key: 'info', title: 'Info', icon: 'info'},
-    {key: 'messages', title: 'Mensajes', icon: 'message'},
-    {key: 'photos', title: 'Fotos', icon: 'photo'},
-    {key: 'options', title: 'Opciones', icon: 'settings'},
-  ]);
-
-  const initialLayout = {
-    width: Dimensions.get('window').width,
-  };
+  const {Layout} = useTheme();
 
   const {incidenceId} = route.params;
-  const [value, loading, error] = useDocumentOnce(
+  const [incidence] = useDocumentDataOnce(
     firestore().doc(`incidences/${incidenceId}`),
     {
       snapshotListenOptions: {includeMetadataChanges: true},
@@ -120,76 +68,66 @@ const IncidenceScreen = () => {
     }
   };
 
-  const renderScene = SceneMap({
-    info: FirstRoute,
-    messages: SecondRoute,
-    photos: ThirdRoute,
-    options: FourthRoute,
-  });
-
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      renderLabel={({route}) => (
-        <View style={[Layout.fill, Layout.colCenter]}>
-          <Icon
-            name={route.icon}
-            size={45}
-            color={Colors.pm}
-            style={[styles.icon, Gutters.tinyBMargin]}
-          />
-        </View>
-      )}
-      indicatorStyle={[
-        styles.tabIndicator,
-        {left: Dimensions.get('window').width / (routes.length * 2) - 10},
-      ]}
-      style={styles.tabBarStyle}
-    />
-  );
-
   return (
-    <PageLayout
-      safe
-      titleLefSide={
-        <TouchableOpacity
-          onPress={() => {
-            popScreen();
-          }}>
-          <View style={styles.iconWrapper}>
-            <Icon name="arrow-back" size={25} color="#5090A5" />
-          </View>
-        </TouchableOpacity>
-      }
-      footer={
-        <CustomButton
-          loading={false}
-          styled="rounded"
-          title={
-            value?.data().done ? 'Incidencia resuelta' : 'Resolver incidencia'
-          }
-          onPress={() => {
-            if (value?.data().done) {
-              openIncidence(() => handleFinishTask(false));
-            } else {
-              finishIncidence(() => handleFinishTask(true));
-            }
-          }}
-        />
-      }
-      titleProps={{
-        title: 'Incidencia',
-        subPage: true,
-      }}>
-      <TabView
-        navigationState={{index, routes}}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={setIndex}
-        initialLayout={initialLayout}
-        style={{height: Dimensions.get('window').height - 100}}
+    <React.Fragment>
+      <AddButton
+        iconName="chat"
+        bottom={100}
+        onPress={() =>
+          openScreenWithPush(CHAT_SCREEN_KEY, {
+            collection: INCIDENCES,
+            docId: incidenceId,
+          })
+        }
       />
-    </PageLayout>
+      <PageLayout
+        safe
+        titleLefSide={
+          <TouchableOpacity
+            onPress={() => {
+              popScreen();
+            }}>
+            <View>
+              <Icon name="arrow-back" size={25} color={Colors.white} />
+            </View>
+          </TouchableOpacity>
+        }
+        titleRightSide={
+          <TouchableOpacity
+            onPress={() => {
+              openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
+                collection: INCIDENCES,
+                docId: incidenceId,
+              });
+            }}>
+            <View>
+              <Icon name="settings" size={25} color={Colors.white} />
+            </View>
+          </TouchableOpacity>
+        }
+        footer={
+          <CustomButton
+            loading={false}
+            styled="rounded"
+            title={
+              incidence?.done ? 'Incidencia resuelta' : 'Resolver incidencia'
+            }
+            onPress={() => {
+              if (incidence?.done) {
+                openIncidence(() => handleFinishTask(false));
+              } else {
+                finishIncidence(() => handleFinishTask(true));
+              }
+            }}
+          />
+        }
+        titleProps={{
+          title: 'Incidencia',
+          subPage: true,
+        }}>
+        <Info />
+      </PageLayout>
+    </React.Fragment>
   );
 };
 

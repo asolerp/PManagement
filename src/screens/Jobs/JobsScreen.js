@@ -74,11 +74,7 @@ const JobsScreen = () => {
 
   return (
     <React.Fragment>
-      <View style={styles.addButton}>
-        <TouchableOpacity onPress={() => handleNewJob()}>
-          <AddButton iconName="add" />
-        </TouchableOpacity>
-      </View>
+      <AddButton iconName="add" onPress={() => handleNewJob()} />
       <PageLayout
         titleLefSide={true}
         titleProps={{
@@ -154,12 +150,6 @@ const styles = StyleSheet.create({
   },
   jobsListWrapper: {
     flex: 1,
-  },
-  addButton: {
-    position: 'absolute',
-    right: 30,
-    bottom: 30,
-    zIndex: 10,
   },
   calendarContainer: {
     height: '100%',

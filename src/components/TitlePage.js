@@ -14,6 +14,7 @@ const TitlePage = ({
   title,
   subtitle,
   leftSide,
+  rightSide,
   children,
   subPage = false,
   color = 'white',
@@ -38,21 +39,19 @@ const TitlePage = ({
           <React.Fragment>
             <View>
               <View style={[Layout.rowCenter]}>
-                {leftSide && (
-                  <View
-                    style={{
-                      ...{
-                        width: 30,
-                        marginTop: Platform.OS === 'ios' ? 40 : 0,
-                      },
-                    }}>
-                    {leftSide}
-                  </View>
-                )}
+                <View
+                  style={{
+                    ...{
+                      width: 30,
+                      marginTop: Platform.OS === 'ios' ? 30 : 0,
+                    },
+                  }}>
+                  {leftSide}
+                </View>
                 <View
                   style={{
                     ...styles.box,
-                    ...{marginHorizontal: leftSide ? 20 : 0},
+                    ...{marginHorizontal: 20},
                   }}>
                   <Text
                     adjustsFontSizeToFit
@@ -62,19 +61,23 @@ const TitlePage = ({
                       ...{
                         color: color,
                         marginBottom: 10,
-                        marginTop: leftSide
-                          ? Platform.OS === 'ios'
-                            ? 40
-                            : 0
-                          : 0,
+                        marginTop: Platform.OS === 'ios' ? 40 : 0,
                         // fontSize: leftSide ? 20 : 35,
-                        textAlign: leftSide ? 'center' : 'left',
+                        textAlign: 'center',
                       },
                     }}>
                     {title}
                   </Text>
                 </View>
-                <View style={{...{width: 30}}} />
+                <View
+                  style={{
+                    ...{
+                      width: 30,
+                      marginTop: Platform.OS === 'ios' ? 30 : 0,
+                    },
+                  }}>
+                  {rightSide}
+                </View>
               </View>
               <View>
                 {subtitle && !subPage && (

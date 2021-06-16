@@ -86,12 +86,11 @@ const IncidencesScreen = () => {
 
   return (
     <React.Fragment>
-      <View style={styles.addButton}>
-        <TouchableOpacity
-          onPress={() => openScreenWithPush(NEW_INCIDENCE_SCREEN_KEY)}>
-          <AddButton iconName="warning" backColor={Colors.pm} />
-        </TouchableOpacity>
-      </View>
+      <AddButton
+        iconName="warning"
+        onPress={() => openScreenWithPush(NEW_INCIDENCE_SCREEN_KEY)}
+      />
+
       <PageLayout
         titleLefSide={true}
         titleProps={{

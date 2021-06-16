@@ -81,11 +81,7 @@ const CheckListScreen = ({navigation}) => {
 
   return (
     <React.Fragment>
-      <View style={styles.addButton}>
-        <TouchableOpacity onPress={() => handleNewCheckList()}>
-          <AddButton iconName="add" />
-        </TouchableOpacity>
-      </View>
+      <AddButton iconName="add" onPress={() => handleNewCheckList()} />
       <PageLayout
         titleLefSide={true}
         titleProps={{
