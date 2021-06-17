@@ -24,7 +24,6 @@ export const MainWorker = () => (
     <Screen name={HOME_WORKER_STACK_KEY} component={HomeWorker} />
     <Screen name={INCIDENCE_SCREEN_KEY} component={IncidenceScreen} />
     <Screen name={JOB_SCREEN_KEY} component={JobScreen} />
-
     <Screen name={CHECK_STACK_KEY} component={Check} />
   </Navigator>
 );

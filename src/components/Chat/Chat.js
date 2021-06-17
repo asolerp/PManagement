@@ -21,6 +21,7 @@ import {userSelector} from '../../Store/User/userSlice';
 import {useTheme} from '../../Theme';
 import moment from 'moment';
 import {Colors} from '../../Theme/Variables';
+import useChat from '../../Screens/Chat/utils/useChat';
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -47,74 +48,82 @@ const styles = StyleSheet.create({
   },
 });
 
-const Chat = ({messages, onSendMessage, onSendImage}) => {
+const Chat = ({collection, docId}) => {
   const user = useSelector(userSelector);
-  const {Gutters} = useTheme();
+  const {messages, onSendMessage, onSendImage} = useChat({collection, docId});
+
+  const {Gutters, Layout} = useTheme();
   return (
-    <GiftedChat
-      bottomOffset={-3}
-      renderBubble={(props) => (
-        <Bubble
-          {...props}
-          textStyle={{
-            right: {
-              color: 'white',
-            },
-          }}
-          wrapperStyle={{
-            right: {
-              backgroundColor: '#5BAB9C',
-            },
-          }}
-        />
-      )}
-      renderLoading={() => <ActivityIndicator size="small" color={Colors.pm} />}
-      renderInputToolbar={(props) => (
-        <InputToolbar
-          {...props}
-          onPressActionButton={() => onSendImage()}
-          containerStyle={styles.inputContainer}
-        />
-      )}
-      messages={messages}
-      messagesContainerStyle={[Gutters.mediumBPadding]}
-      renderActions={(props) => (
-        <Actions
-          {...props}
-          icon={() => (
-            <Icon name="camera-alt" size={25} color={'#4F8AA3'} style={{}} />
-          )}
-        />
-      )}
-      renderDay={(props) => <RenderDay message={props} />}
-      renderTime={(props) => (
-        <View style={props.containerStyle}>
-          <Text
-            style={[
-              styles.timeStyle,
-              {color: props.position === 'left' ? 'black' : 'white'},
-            ]}>
-            {`${moment(props.currentMessage.createdAt.toDate()).format('LT')}`}
-          </Text>
-        </View>
-      )}
-      renderSend={(props) => {
-        return (
-          <Send {...props} containerStyle={styles.sendButtonContainer}>
-            <Icon name="send" color={'#4F8AA3'} style={styles.icon} />
-          </Send>
-        );
-      }}
-      showUserAvatar
-      onSend={(messages) => onSendMessage(messages)}
-      user={{
-        _id: user?.uid,
-        name: user?.firstName,
-        avatar: user?.profileImage,
-        token: user?.token,
-        role: user?.role,
-      }}
-    />
+    <View style={[Layout.fill, Gutters.smallTMargin]}>
+      <GiftedChat
+        bottomOffset={-3}
+        renderBubble={(props) => (
+          <Bubble
+            {...props}
+            textStyle={{
+              right: {
+                color: 'white',
+              },
+            }}
+            wrapperStyle={{
+              right: {
+                backgroundColor: '#5BAB9C',
+              },
+            }}
+          />
+        )}
+        renderLoading={() => (
+          <ActivityIndicator size="small" color={Colors.pm} />
+        )}
+        renderInputToolbar={(props) => (
+          <InputToolbar
+            {...props}
+            onPressActionButton={() => onSendImage()}
+            containerStyle={styles.inputContainer}
+          />
+        )}
+        messages={messages}
+        messagesContainerStyle={[Gutters.mediumBPadding]}
+        renderActions={(props) => (
+          <Actions
+            {...props}
+            icon={() => (
+              <Icon name="camera-alt" size={25} color={'#4F8AA3'} style={{}} />
+            )}
+          />
+        )}
+        renderDay={(props) => <RenderDay message={props} />}
+        renderTime={(props) => (
+          <View style={props.containerStyle}>
+            <Text
+              style={[
+                styles.timeStyle,
+                {color: props.position === 'left' ? 'black' : 'white'},
+              ]}>
+              {`${moment(props.currentMessage.createdAt.toDate()).format(
+                'LT',
+              )}`}
+            </Text>
+          </View>
+        )}
+        renderSend={(props) => {
+          return (
+            <Send {...props} containerStyle={styles.sendButtonContainer}>
+              <Icon name="send" color={'#4F8AA3'} style={styles.icon} />
+            </Send>
+          );
+        }}
+        showUserAvatar
+        onSend={(messages) => onSendMessage(messages)}
+        user={{
+          _id: user?.uid,
+          name: user?.firstName,
+          avatar: user?.profileImage,
+          token: user?.token,
+          role: user?.role,
+        }}
+      />
+    </View>
   );
 };
 

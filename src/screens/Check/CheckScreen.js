@@ -1,11 +1,12 @@
 import React, {useMemo} from 'react';
-import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import {View, TouchableWithoutFeedback} from 'react-native';
 
 import {Info} from '../../components/Check';
-import AddButton from '../../components/Elements/AddButton';
+import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessagesCounter';
 
 // UI
 import PageLayout from '../../components/PageLayout';
+
 import CustomButton from '../../components/Elements/CustomButton';
 import {shallowEqual, useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
@@ -17,17 +18,14 @@ import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
 import firestore from '@react-native-firebase/firestore';
 import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {
-  CHAT_SCREEN_KEY,
-  PAGE_OPTIONS_SCREEN_KEY,
-} from '../../Router/utils/routerKeys';
+import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 
 const CheckScreen = ({route}) => {
   const {docId} = route.params;
 
   const query = useMemo(() => {
-    return firestore().collection('checklists').doc(docId);
+    return firestore().collection(CHECKLISTS).doc(docId);
   }, [docId]);
 
   const [checklist, loadingChecklist] = useDocumentData(query, {
@@ -42,16 +40,7 @@ const CheckScreen = ({route}) => {
 
   return (
     <React.Fragment>
-      <AddButton
-        iconName="chat"
-        bottom={100}
-        onPress={() =>
-          openScreenWithPush(CHAT_SCREEN_KEY, {
-            collection: CHECKLISTS,
-            docId: docId,
-          })
-        }
-      />
+      <ChatButtonWithMessagesCounter collection={CHECKLISTS} docId={docId} />
       <PageLayout
         safe
         backButton

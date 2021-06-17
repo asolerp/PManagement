@@ -61,6 +61,7 @@ const PageLayout = ({
   footer,
   titleLefSide,
   titleRightSide,
+  edges = ['bottom'],
   safe = false,
 }) => {
   const Container = () => (
@@ -100,7 +101,7 @@ const PageLayout = ({
 
   if (safe) {
     return (
-      <SafeAreaView style={styles.container} edges={'bottom'}>
+      <SafeAreaView style={styles.container} edges={edges}>
         <Container />
       </SafeAreaView>
     );

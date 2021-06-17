@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const IconWithBadge = ({badgeCount, children}) => {
+export const IconWithBadge = ({badgeCount, children}) => {
   return (
     <View style={styles.container}>
       {badgeCount > 0 && (

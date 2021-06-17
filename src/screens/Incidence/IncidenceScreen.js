@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 
 // UI
 import CustomButton from '../../components/Elements/CustomButton';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import AddButton from '../../components/Elements/AddButton';
+import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessagesCounter';
 import {Info} from '../../components/Incidence';
 
 // Firebase
@@ -25,17 +25,13 @@ import {firebase} from '@react-native-firebase/firestore';
 
 import {Colors} from '../../Theme/Variables';
 import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
-import {
-  CHAT_SCREEN_KEY,
-  PAGE_OPTIONS_SCREEN_KEY,
-} from '../../Router/utils/routerKeys';
+import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {INCIDENCES} from '../../utils/firebaseKeys';
 import {useTheme} from '../../Theme';
 
 const IncidenceScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {Layout} = useTheme();
 
   const {incidenceId} = route.params;
   const [incidence] = useDocumentDataOnce(
@@ -70,15 +66,9 @@ const IncidenceScreen = () => {
 
   return (
     <React.Fragment>
-      <AddButton
-        iconName="chat"
-        bottom={100}
-        onPress={() =>
-          openScreenWithPush(CHAT_SCREEN_KEY, {
-            collection: INCIDENCES,
-            docId: incidenceId,
-          })
-        }
+      <ChatButtonWithMessagesCounter
+        collection={INCIDENCES}
+        docId={incidenceId}
       />
       <PageLayout
         safe

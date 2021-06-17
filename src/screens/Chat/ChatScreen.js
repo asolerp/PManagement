@@ -5,11 +5,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Chat from '../../components/Chat/Chat';
 import {Colors} from '../../Theme/Variables';
 import {popScreen} from '../../Router/utils/actions';
-import useChat from './utils/useChat';
 
 const ChatScreen = ({route}) => {
   const {collection, docId} = route.params;
-  const {messages, onSendMessage, onSendImage} = useChat({collection, docId});
 
   return (
     <PageLayout
@@ -28,11 +26,7 @@ const ChatScreen = ({route}) => {
         title: 'Chat',
         subPage: true,
       }}>
-      <Chat
-        onSendMessage={(msgs) => onSendMessage(msgs)}
-        onSendImage={onSendImage}
-        messages={messages}
-      />
+      <Chat collection={collection} docId={docId} />
     </PageLayout>
   );
 };
