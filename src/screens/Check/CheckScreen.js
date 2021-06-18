@@ -16,7 +16,7 @@ import {sendOwnerChecklist} from '../../components/Alerts/checklist';
 import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
 
 import firestore from '@react-native-firebase/firestore';
-import {useDocumentData} from 'react-firebase-hooks/firestore';
+import {useDocumentDataOnce} from 'react-firebase-hooks/firestore';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
@@ -28,7 +28,7 @@ const CheckScreen = ({route}) => {
     return firestore().collection(CHECKLISTS).doc(docId);
   }, [docId]);
 
-  const [checklist, loadingChecklist] = useDocumentData(query, {
+  const [checklist, loadingChecklist] = useDocumentDataOnce(query, {
     idField: 'id',
   });
 

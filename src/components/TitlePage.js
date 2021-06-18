@@ -60,7 +60,7 @@ const TitlePage = ({
                       ...styles.title,
                       ...{
                         color: color,
-                        marginBottom: 10,
+
                         marginTop: Platform.OS === 'ios' ? 40 : 0,
                         // fontSize: leftSide ? 20 : 35,
                         textAlign: 'center',
@@ -84,7 +84,7 @@ const TitlePage = ({
                   <Text
                     style={{
                       ...styles.subtitle,
-                      ...{color: color, marginLeft: leftSide ? 0 : 0},
+                      ...{color: color, marginLeft: 0},
                     }}>
                     {subtitle}
                   </Text>
@@ -198,7 +198,6 @@ const styles = StyleSheet.create({
   logoContent: {
     alignItems: 'center',
     marginTop: Platform.OS === 'ios' ? 0 : 20,
-    // paddingTop: 40,®
   },
   image: {
     width: '100%',

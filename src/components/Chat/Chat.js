@@ -1,12 +1,6 @@
 import React from 'react';
 
-import {
-  View,
-  ActivityIndicator,
-  Text,
-  Platform,
-  StyleSheet,
-} from 'react-native';
+import {View, ActivityIndicator, Text, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   Bubble,
@@ -30,7 +24,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#cccccc',
-    marginBottom: 15,
   },
   timeStyle: {
     fontSize: 10,

@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: 220,
-    height: 160,
+    height: 170,
     borderLeftWidth: 10,
     borderWidth: 1,
   },
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   infoStyle: {
     color: Colors.darkBlue,
-    marginBottom: 10,
+    height: 40,
   },
   titleWrapper: {
     flexDirection: 'row',
@@ -129,7 +129,6 @@ const ChecklistList = ({uid, house}) => {
           Gutters.mediumRMargin,
           {
             backgroundColor: Colors.white,
-            // borderColor: Colors.lowGrey,
             borderTopColor: Colors.lowGrey,
             borderRightColor: Colors.lowGrey,
             borderBottomColor: Colors.lowGrey,

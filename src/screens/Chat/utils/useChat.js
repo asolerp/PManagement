@@ -43,6 +43,7 @@ const useChat = ({collection, docId}) => {
 
   useEffect(() => {
     if (messages?.length > 0) {
+      console.log(docId, user.uid, collection);
       setMessagesAsRead(docId, user.uid, collection);
     }
   }, [messages, docId, collection, user.uid]);

@@ -1,35 +1,26 @@
 import React, {useMemo} from 'react';
-import {View, Text, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 
 // Redux
-import {useSelector, shallowEqual} from 'react-redux';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {
-  useCollectionData,
-  useDocumentData,
-} from 'react-firebase-hooks/firestore';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import {useDocumentData} from 'react-firebase-hooks/firestore';
 
 // styles
 import {defaultLabel, marginBottom} from '../../styles/common';
-import {DARK_BLUE, GREY_1, LOW_GREY, PM_COLOR} from '../../styles/colors';
+import {GREY_1, PM_COLOR} from '../../styles/colors';
 
 // utils
 import moment from 'moment';
 
 import EditableInput from '../Elements/EditableInput';
-import ItemCheck from '../../components/ItemCheck';
 
-import {userSelector} from '../../Store/User/userSlice';
-import useUploadImageCheck from '../../hooks/useUploadImage';
-import {useNavigation, useRoute} from '@react-navigation/core';
+import {useRoute} from '@react-navigation/core';
 import updateChecklistInput from '../../Services/updateChecklistInput';
-import {ActivityIndicator} from 'react-native';
-import {Colors} from '../../Theme/Variables';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {CHECK_PHOTO_SCREEN_KEY} from '../../Router/utils/routerKeys';
+
+import ListOfChecks from './ListOfChecks';
+import {CHECKLISTS} from '../../utils/firebaseKeys';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -53,12 +44,6 @@ const styles = StyleSheet.create({
   checkboxWrapper: {
     flexDirection: 'row',
   },
-  labelWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
   infoWrapper: {
     flex: 6,
     marginLeft: 0,
@@ -71,15 +56,8 @@ const styles = StyleSheet.create({
     color: '#2A7BA5',
   },
   date: {
-    fontSize: 18,
-    marginBottom: 20,
+    marginBottom: 10,
     marginVertical: 10,
-    color: '#3DB6BA',
-  },
-  counter: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: DARK_BLUE,
   },
   buttonStyle: {
     width: 32,
@@ -97,77 +75,19 @@ const Info = () => {
 
   const {docId} = route.params;
 
-  const query = useMemo(() => {
-    return firestore().collection('checklists').doc(docId).collection('checks');
-  }, [docId]);
-
   const queryChecklist = useMemo(() => {
-    return firestore().collection('checklists').doc(docId);
+    return firestore().collection(CHECKLISTS).doc(docId);
   }, [docId]);
 
   const [checklist, loadingChecklist] = useDocumentData(queryChecklist, {
     idField: 'id',
   });
 
-  const [checks, loadingChecklistChecks] = useCollectionData(query, {
-    idField: 'id',
-  });
-
-  const {updateFirebase} = useUpdateFirebase('checklists');
-
-  const {
-    loading: loadingUploadImage,
-    idCheckLoading,
-    uploadImages,
-  } = useUploadImageCheck(docId);
-
-  const user = useSelector(userSelector, shallowEqual);
-
-  const renderItem = ({item}) => (
-    <TouchableOpacity
-      onPress={
-        item.numberOfPhotos > 0
-          ? () =>
-              openScreenWithPush(CHECK_PHOTO_SCREEN_KEY, {
-                docId: docId,
-                checkItemId: item.id,
-                title: item.title,
-                date: item.date,
-              })
-          : null
-      }>
-      <ItemCheck
-        key={item.id}
-        check={item}
-        handleCheck={() => handleCheck(checklist, item, !item?.done)}
-        imageHandler={(imgs) => uploadImages(imgs, item)}
-        loading={loadingUploadImage && item.id === idCheckLoading}
-      />
-    </TouchableOpacity>
-  );
-
-  const handleCheck = async (checklist, check, state) => {
-    try {
-      await updateFirebase(`${checklist?.id}`, {
-        ...checklist,
-        done: state ? checklist?.done + 1 : checklist?.done - 1,
-      });
-      await updateFirebase(`${checklist?.id}/checks/${check?.id}`, {
-        ...check,
-        date: !state ? null : new Date(),
-        done: state,
-        worker: state ? user : null,
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   return (
     <View style={styles.checklistContainer}>
       <View style={{marginBottom: 20}}>
         <Text style={styles.date}>
-          {moment(checklist?.date?.toDate()).format('LL')}
+          🕜 {moment(checklist?.date?.toDate()).format('LL')}
         </Text>
         <View>
           <Text style={{...defaultLabel, ...marginBottom(10)}}>
@@ -181,22 +101,7 @@ const Info = () => {
           />
         </View>
       </View>
-      <View style={styles.labelWrapper}>
-        <Text style={{...defaultLabel, ...marginBottom(10)}}>
-          Listado de checks
-        </Text>
-        <Text style={styles.counter}>
-          {checklist?.done}/{checklist?.total}
-        </Text>
-      </View>
-      {!loadingChecklistChecks && !loadingChecklist && (
-        <FlatList
-          data={checks}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      )}
+      {!loadingChecklist && <ListOfChecks checkId={docId} />}
     </View>
   );
 };

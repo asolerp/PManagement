@@ -127,6 +127,7 @@ const ProfileScreen = ({route}) => {
 
   return (
     <PageLayout
+      safe
       footer={
         (userId === user.uid || !userId) && (
           <CustomButton

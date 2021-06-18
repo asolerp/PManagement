@@ -1,28 +1,25 @@
 import React from 'react';
-import {useRoute, useNavigation} from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import {View, Text, StyleSheet, Image} from 'react-native';
 
 // UI
 import Avatar from '../Avatar';
 import InfoIcon from '../InfoIcon';
-import CustomButton from '../Elements/CustomButton';
 
 // Firebase
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
 
 // Utils
 import moment from 'moment';
-import {finishTaskAlert, openTaskStatus} from '../Alerts/deleteJobAlert';
 import {ScrollView} from 'react-native';
-import TextWrapper from '../TextWrapper';
+
 import {defaultLabel, marginBottom} from '../../styles/common';
 import EditableInput from '../Elements/EditableInput';
 import updateDocument from '../../Services/updateDocument';
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
+    marginTop: 10,
     flex: 1,
   },
   infoWrapper: {
