@@ -2,28 +2,32 @@ import React, {useCallback} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
 // UI
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Firebase
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import TaskItem from '../../components/Elements/TaskItem';
 import PageLayout from '../../components/PageLayout';
-import {LOW_GREY} from '../../styles/colors';
 import {setTask} from '../../Store/JobForm/jobFormSlice';
-import {openScreenWithPush} from '../../Router/utils/actions';
+import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import {NEW_JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LOW_GREY,
   },
   iconWrapper: {
     width: 30,
     height: 30,
     borderRadius: 100,
-    backgroundColor: LOW_GREY,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: {
@@ -43,7 +47,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     height: '100%',
     paddingTop: 30,
@@ -70,15 +73,15 @@ const NewJobTaskSelectorScreen = ({navigation}) => {
 
   return (
     <PageLayout
-      titleLefSide={
-        <TouchableOpacity
+      titleRightSide={
+        <TouchableWithoutFeedback
           onPress={() => {
-            navigation.goBack();
+            popScreen();
           }}>
-          <View style={styles.iconWrapper}>
-            <Icon name="arrow-back" size={25} color="#5090A5" />
+          <View>
+            <Icon name="close" size={25} color={Colors.white} />
           </View>
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
       }
       titleProps={{
         title: 'Nuevo trabajo',

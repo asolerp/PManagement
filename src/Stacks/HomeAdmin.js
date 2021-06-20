@@ -25,7 +25,9 @@ import {
   HOUSES_SCREEN_KEY,
   INCIDENCES_SCREEN_KEY,
   JOBS_SCREEN_KEY,
+  USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
+import {UsersScreen} from '../Screens/Users';
 
 const {Navigator, Screen} = AnimatedTabBarNavigator();
 
@@ -174,6 +176,22 @@ const HomeAdmin = () => {
                 focused={focused}
               />
             </IconWithBadge>
+          ),
+        })}
+      />
+      <Screen
+        name={tabNameByScreen[USERS_SCREEN_KEY]}
+        initialParams={{screenKey: USERS_SCREEN_KEY}}
+        component={UsersScreen}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisible(route),
+          tabBarIcon: ({focused, color, size}) => (
+            <Icon
+              name="person"
+              size={size ? size : 24}
+              color={focused ? color : '#3E93A8'}
+              focused={focused}
+            />
           ),
         })}
       />

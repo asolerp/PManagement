@@ -48,7 +48,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  infoContainer: {},
+  infoContainer: {
+    width: 200,
+  },
   separator: {
     borderBottomColor: '#EAEAEA',
     borderBottomWidth: 1,

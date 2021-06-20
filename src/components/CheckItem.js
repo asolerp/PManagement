@@ -1,12 +1,15 @@
 import moment from 'moment';
 import React from 'react';
 import {TouchableOpacity, StyleSheet, View, Text} from 'react-native';
+import useNoReadMessages from '../hooks/useNoReadMessages';
 import {DARK_BLUE, GREY_1} from '../styles/colors';
 import {useTheme} from '../Theme';
+import {CHECKLISTS} from '../utils/firebaseKeys';
 
 // Utils
 import {minimizetext} from '../utils/parsers';
 import {parsePercentageDone} from '../utils/parsers';
+import Counter from './Counter';
 
 const styles = StyleSheet.create({
   bold: {
@@ -47,41 +50,63 @@ const styles = StyleSheet.create({
 });
 
 const CheckItem = ({check, onPress}) => {
-  const {Layout} = useTheme();
+  const {Layout, Gutters, Fonts} = useTheme();
+
+  const {noReadCounter} = useNoReadMessages({
+    collection: CHECKLISTS,
+    docId: check.id,
+  });
+
   return (
-    <TouchableOpacity onPress={onPress} style={[Layout.fill]}>
-      <View
-        style={[
-          Layout.fill,
-          styles.checkItemWrapper,
-          {borderLeftColor: parsePercentageDone(check.done / check.total)},
-        ]}>
-        <View style={[Layout.fill]}>
-          <View>
-            <View
-              style={[
-                Layout.fill,
-                Layout.rowCenter,
-                Layout.justifyContentSpaceBetween,
-              ]}>
-              <Text>🏡 {check?.house?.[0].houseName}</Text>
-              <Text style={styles.date}>
-                ⏱ {moment(check?.date?.toDate()).format('LL')}
+    <React.Fragment>
+      {noReadCounter > 0 && (
+        <Counter
+          size="big"
+          count={noReadCounter}
+          customStyles={{
+            position: 'absolute',
+            zIndex: 1000,
+            right: 5,
+            top: 2,
+          }}
+        />
+      )}
+      <TouchableOpacity
+        onPress={onPress}
+        style={[Layout.fill, Gutters.smallTMargin]}>
+        <View
+          style={[
+            Layout.fill,
+            styles.checkItemWrapper,
+            {borderLeftColor: parsePercentageDone(check.done / check.total)},
+          ]}>
+          <View style={[Layout.fill]}>
+            <View>
+              <View
+                style={[
+                  Layout.fill,
+                  Layout.rowCenter,
+                  Layout.justifyContentSpaceBetween,
+                ]}>
+                <Text>🏡 {check?.house?.[0].houseName}</Text>
+                <Text style={styles.date}>
+                  ⏱ {moment(check?.date?.toDate()).format('LL')}
+                </Text>
+              </View>
+              <Text style={[Fonts.textTitle, Gutters.smallTMargin]}>
+                {minimizetext(check.observations, 30)}
               </Text>
             </View>
-            <Text style={styles.checkText}>
-              {minimizetext(check.observations, 30)}
-            </Text>
-          </View>
-          <View
-            style={[Layout.fill, Layout.rowCenter, Layout.justifyContentEnd]}>
-            <Text style={styles.countStyle}>
-              {check.done}/{check.total}
-            </Text>
+            <View
+              style={[Layout.fill, Layout.rowCenter, Layout.justifyContentEnd]}>
+              <Text style={styles.countStyle}>
+                {check.done}/{check.total}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </React.Fragment>
   );
 };
 

@@ -27,6 +27,9 @@ export default function ({}) {
       alignItems: 'center',
       justifyContent: 'center',
     },
+    wrap: {
+      flexWrap: 'wrap',
+    },
     justifyContentEvenly: {
       justifyContent: 'space-evenly',
     },

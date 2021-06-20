@@ -30,6 +30,8 @@ import {
   resetForm,
   workersSelector,
 } from '../../Store/CheckList/checkListSlice';
+import {popScreen} from '../../Router/utils/actions';
+import {Colors} from '../../Theme/Variables';
 
 const HideKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -95,15 +97,15 @@ const NewCheckListScreen = ({route, navigation}) => {
   return (
     <PageLayout
       safe
-      titleLefSide={
-        <TouchableOpacity
+      titleRightSide={
+        <TouchableWithoutFeedback
           onPress={() => {
-            navigation.goBack();
+            popScreen();
           }}>
-          <View style={styles.iconWrapper}>
-            <Icon name="arrow-back" size={25} color="#5090A5" />
+          <View>
+            <Icon name="close" size={25} color={Colors.white} />
           </View>
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
       }
       footer={
         <CustomButton

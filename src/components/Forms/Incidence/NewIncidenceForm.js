@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState} from 'react';
 import {View, Text, TextInput, StyleSheet} from 'react-native';
 import {useTranslation} from 'react-i18next';
 
@@ -8,8 +8,8 @@ import CustomInput from '../../Elements/CustomInput';
 import {BottomModal, ModalTitle, ModalContent} from 'react-native-modals';
 
 // Redux
-import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-import {setInputForm} from '../../../Store/IncidenceForm/incidenceFormSlice';
+import {useSelector} from 'react-redux';
+
 import {userSelector} from '../../../Store/User/userSlice';
 
 const styles = StyleSheet.create({
@@ -17,22 +17,15 @@ const styles = StyleSheet.create({
 });
 
 const NewIncidenceForm = () => {
-  const dispatch = useDispatch();
   const {t} = useTranslation();
   const [modalContent, setModalContent] = useState();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const {incidence} = useSelector(
-    ({incidenceForm: {incidence}}) => ({incidence}),
-    shallowEqual,
-  );
+  const [title, setTitle] = useState();
+  const [incidence, setIncidence] = useState();
+  const [house, setHouse] = useState();
 
   const user = useSelector(userSelector);
-
-  const setInputFormAction = useCallback(
-    (label, value) => dispatch(setInputForm({label, value})),
-    [dispatch],
-  );
 
   return (
     <View>
@@ -57,10 +50,8 @@ const NewIncidenceForm = () => {
         <TextInput
           style={{height: 40}}
           placeholder={t('newIncidence.form.title')}
-          onEndEditing={(event) =>
-            setInputFormAction('title', event.nativeEvent.text)
-          }
-          value={incidence?.title}
+          onChangeText={setTitle}
+          value={title}
         />
       </InputGroup>
       <InputGroup>
@@ -70,10 +61,8 @@ const NewIncidenceForm = () => {
           textAlignVertical="top"
           style={{height: 120}}
           placeholder={t('newIncidence.form.incidence')}
-          onEndEditing={(event) =>
-            setInputFormAction('incidence', event.nativeEvent.text)
-          }
-          value={incidence?.incidence}
+          onChangeText={setIncidence}
+          value={incidence}
         />
       </InputGroup>
       {user.role !== 'owner' && (
@@ -94,22 +83,15 @@ const NewIncidenceForm = () => {
             }
             iconProps={{name: 'house', color: '#55A5AD'}}
             onPress={() => {
-              setModalContent(
-                <DynamicSelectorList
-                  collection="houses"
-                  store="incidence"
-                  searchBy="houseName"
-                  schema={{img: 'houseImage', name: 'houseName'}}
-                  get={incidence?.house?.value}
-                  set={(house) => {
-                    setInputFormAction('house', {
-                      ...incidence.house,
-                      value: house,
-                    });
-                    setModalVisible(false);
-                  }}
-                />,
-              );
+              <DynamicSelectorList
+                collection="houses"
+                store="jobForm"
+                searchBy="houseName"
+                schema={{img: 'houseImage', name: 'houseName'}}
+                get={house || []}
+                set={(house) => setHouse(house)}
+                closeModal={() => setModalVisible(false)}
+              />;
               setModalVisible(true);
             }}
           />

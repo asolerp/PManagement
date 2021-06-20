@@ -68,8 +68,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const CheckPhotosScreen = ({route, navigation}) => {
-  const {title, docId, checkItemId} = route.params;
+const CheckPhotosScreen = ({route}) => {
+  console.log(route, 'route');
+  const {title, checkId, checkItemId} = route.params;
   const [modal, setModal] = useState([]);
   const [photosSelected, setPhotosSelected] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -82,17 +83,17 @@ const CheckPhotosScreen = ({route, navigation}) => {
   const query = useMemo(() => {
     return firestore()
       .collection('checklists')
-      .doc(docId)
+      .doc(checkId)
       .collection('checks')
       .doc(checkItemId)
       .collection('photos');
-  }, [docId, checkItemId]);
+  }, [checkId, checkItemId]);
 
   const [values, loading] = useCollectionData(query, {
     idField: 'id',
   });
 
-  console.log(values);
+  console.log(values, 'values');
 
   const handlePressPhoto = (i) => {
     setModal(true);
@@ -112,10 +113,10 @@ const CheckPhotosScreen = ({route, navigation}) => {
     setPhotosSelected(photosSelected.filter((p) => p.id != photo.id));
     await deleteImage(photo.ref);
     await deleteFirebase(
-      `checklists/${docId}/checks/${checkItemId}/photos`,
+      `checklists/${checkId}/checks/${checkItemId}/photos`,
       photo.id,
     );
-    await updateFirebase(`${docId}/checks/${checkItemId}`, {
+    await updateFirebase(`${checkId}/checks/${checkItemId}`, {
       numberOfPhotos: firebase.firestore.FieldValue.increment(-1),
     });
   };

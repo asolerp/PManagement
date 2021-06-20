@@ -4,7 +4,7 @@ import PageLayout from '../../components/PageLayout';
 import {popScreen} from '../../Router/utils/actions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Colors} from '../../Theme/Variables';
-import {Options} from '../../components/Incidence';
+import Container from './Container';
 
 const PageOptionsScreen = () => {
   return (
@@ -24,7 +24,7 @@ const PageOptionsScreen = () => {
         title: 'Opciones',
         subPage: true,
       }}>
-      <Options />
+      <Container />
     </PageLayout>
   );
 };

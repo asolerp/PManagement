@@ -9,7 +9,7 @@ import {defaultLabel, marginRight, width} from '../../styles/common';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useCollection} from 'react-firebase-hooks/firestore';
+import {useCollection, useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Utils
 import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
@@ -19,6 +19,7 @@ import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
 import {openScreen, openScreenWithPush} from '../../Router/utils/actions';
 import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import IncidenceItem from './IncidenceItem';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -98,9 +99,11 @@ const BubleIncidence = ({status}) => {
 };
 
 const IncidencesList = () => {
-  const {Gutters, Layout} = useTheme();
-  const [values, loading] = useCollection(
+  const [values, loading] = useCollectionData(
     firestore().collection('incidences').where('done', '!=', true),
+    {
+      idField: 'id',
+    },
   );
 
   const navigation = useNavigation();
@@ -113,53 +116,8 @@ const IncidencesList = () => {
     };
 
     return (
-      <TouchableOpacity
-        style={[
-          styles.incidenceWrapper,
-          Gutters.mediumRMargin,
-          {
-            borderWidth: 1,
-            borderTopColor: Colors.lowGrey,
-            borderRightColor: Colors.lowGrey,
-            borderBottomColor: Colors.lowGrey,
-            borderLeftColor: parseStateIncidecne(item?.data().state),
-          },
-        ]}
-        onPress={() => handlePressIncidence()}>
-        <View style={[Layout.fill]}>
-          <View
-            style={[
-              Layout.rowCenter,
-              Layout.justifyContentSpaceBetween,
-              Gutters.smallBMargin,
-            ]}>
-            <Text style={styles.date}>
-              🕜 {parseDateWithText(item?.data().date)}
-            </Text>
-            <BubleIncidence />
-          </View>
-          <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
-            {item?.data().title}{' '}
-          </Text>
-          <View style={styles.infoWrapper}>
-            <Text
-              style={styles.infoStyle}
-              ellipsizeMode="tail"
-              numberOfLines={2}>
-              {item?.data().incidence}
-            </Text>
-            <Text style={[styles.bold, Gutters.regularBMargin]}>
-              {item?.data().house?.houseName}
-            </Text>
-            <View style={styles.avatarWrapper}>
-              <Avatar
-                key={item?.data().user?.id}
-                uri={item?.data().user?.profileImage}
-                size="medium"
-              />
-            </View>
-          </View>
-        </View>
+      <TouchableOpacity onPress={() => handlePressIncidence()}>
+        <IncidenceItem item={item} />
       </TouchableOpacity>
     );
   };
@@ -178,16 +136,14 @@ const IncidencesList = () => {
         <Text style={{...defaultLabel, ...marginRight(10)}}>Incidencias</Text>
         <View style={styles.badget}>
           <Text style={{...defaultLabel, ...{color: 'white'}}}>
-            {values?.docs.filter((item) => item.id !== 'stats').length}
+            {values?.filter((item) => item.id !== 'stats').length}
           </Text>
         </View>
       </View>
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={values?.docs
-          .filter((item) => item.id !== 'stats')
-          .sort(sortByDate)}
+        data={values?.filter((item) => item.id !== 'stats').sort(sortByDate)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

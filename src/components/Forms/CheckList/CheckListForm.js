@@ -36,6 +36,7 @@ import {
 import {Colors} from '../../../Theme/Variables';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Label from '../../Elements/Label';
+import {set} from 'date-fns';
 
 moment.locale('es');
 
@@ -91,26 +92,23 @@ const styles = StyleSheet.create({
 });
 
 const CheckListForm = () => {
-  const dispatch = useDispatch();
   const {Layout} = useTheme();
   const {list} = useGetFirebase('checks');
 
-  const house = useSelector(houseSelector);
-  const workers = useSelector(workersSelector);
-  const observations = useSelector(observationsSelector);
-  const checks = useSelector(checksSelector);
+  const [house, setHouse] = useState();
+  const [workers, setWorkers] = useState();
+  const [observations, setObservations] = useState();
+  const [checks, setChecks] = useState();
 
-  const setInputFormAction = useCallback(
-    (label, value) => dispatch(setForm({label, value})),
-    [dispatch],
-  );
-
-  const setToggleCheckBox = useCallback(
-    (item, newValue) => {
-      dispatch(setCheck({check: item, checkState: newValue}));
-    },
-    [dispatch],
-  );
+  const setToggleCheckBox = (item, newValue) => {
+    setChecks({
+      ...checks,
+      [item.id]: {
+        ...item,
+        check: newValue,
+      },
+    });
+  };
 
   const allChecks = list.reduce(
     (acc, check) => ({
@@ -119,13 +117,13 @@ const CheckListForm = () => {
     }),
     {},
   );
-  const setAllChecksActions = useCallback(() => {
-    dispatch(setAllChecks({checks: allChecks}));
-  }, [dispatch, allChecks]);
+  const setAllChecksActions = () => {
+    setChecks(allChecks);
+  };
 
-  const removeAllChecksActions = useCallback(() => {
-    dispatch(setAllChecks({checks: {}}));
-  }, [dispatch]);
+  const removeAllChecksActions = () => {
+    setChecks({});
+  };
 
   // Form State
   const [modalContent, setModalContent] = useState();
@@ -158,11 +156,8 @@ const CheckListForm = () => {
       store="jobForm"
       searchBy="houseName"
       schema={{img: 'houseImage', name: 'houseName'}}
-      get={house?.value || []}
-      set={(house) => {
-        setInputFormAction('house', {...house, value: house});
-        setModalVisible(false);
-      }}
+      get={house || []}
+      set={setHouse}
       closeModal={() => setModalVisible(false)}
     />
   );
@@ -180,11 +175,8 @@ const CheckListForm = () => {
       ]}
       searchBy="firstName"
       schema={{img: 'profileImage', name: 'firstName'}}
-      get={workers?.value}
-      set={(ws) => {
-        setInputFormAction('workers', {...workers, value: ws});
-        setModalVisible(false);
-      }}
+      get={workers}
+      set={setWorkers}
       multiple={true}
       closeModal={() => setModalVisible(false)}
     />
@@ -227,10 +219,10 @@ const CheckListForm = () => {
           title="Casa"
           subtitle={
             <View style={{flexDirection: 'row'}}>
-              {house?.value?.map((house, i) => (
+              {house?.map((house, i) => (
                 <View key={house.id}>
                   <Text style={styles.subtitle}>{house.houseName}</Text>
-                  {house?.value?.length > 1 && (
+                  {house?.length > 1 && (
                     <Text style={styles.subtitle}> & </Text>
                   )}
                 </View>
@@ -248,11 +240,11 @@ const CheckListForm = () => {
         <CustomInput
           title="Trabajador"
           subtitle={
-            <View style={{flexDirection: 'row'}}>
-              {workers?.value?.map((worker, i) => (
-                <View key={worker.id}>
+            <View style={[Layout.row]}>
+              {workers?.map((worker, i) => (
+                <View style={[Layout.rowCenter]} key={worker.id}>
                   <Text style={styles.subtitle}>{worker.firstName}</Text>
-                  {workers?.value?.length - 1 !== i && (
+                  {workers?.length - 1 !== i && (
                     <Text style={styles.subtitle}> & </Text>
                   )}
                 </View>
@@ -272,7 +264,7 @@ const CheckListForm = () => {
           numberOfLines={10}
           style={{height: 120}}
           placeholder="Observaciones"
-          onChangeText={(text) => setInputFormAction('observations', text)}
+          onChangeText={setObservations}
           value={observations}
         />
       </InputGroup>

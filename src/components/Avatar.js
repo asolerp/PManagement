@@ -48,6 +48,7 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small'}) => {
   return (
     <TouchableWithoutFeedback
       onPress={() =>
+        id &&
         openScreenWithPush(PROFILE_SCREEN_KEY, {
           userId: id,
         })

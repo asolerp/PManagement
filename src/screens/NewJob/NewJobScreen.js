@@ -1,5 +1,11 @@
 import React, {useState, useCallback} from 'react';
-import {View, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
@@ -17,6 +23,8 @@ import PageLayout from '../../components/PageLayout';
 import {newJob} from '../../firebase/newJob';
 import {LOW_GREY} from '../../styles/colors';
 import {jobSelector, resetForm} from '../../Store/JobForm/jobFormSlice';
+import {popScreen} from '../../Router/utils/actions';
+import {Colors} from '../../Theme/Variables';
 
 const NewJobScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
@@ -57,15 +65,17 @@ const NewJobScreen = ({route, navigation}) => {
 
   return (
     <PageLayout
-      titleLefSide={
-        <TouchableOpacity
+      safe
+      backButton
+      titleRightSide={
+        <TouchableWithoutFeedback
           onPress={() => {
-            navigation.goBack();
+            popScreen();
           }}>
-          <View style={styles.iconWrapper}>
-            <Icon name="arrow-back" size={25} color="#5090A5" />
+          <View>
+            <Icon name="close" size={25} color={Colors.white} />
           </View>
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
       }
       footer={
         <CustomButton
@@ -91,7 +101,6 @@ const NewJobScreen = ({route, navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LOW_GREY,
   },
   newJobScreen: {
     flex: 1,
@@ -103,7 +112,7 @@ const styles = StyleSheet.create({
   },
   jobScreen: {
     flex: 1,
-    backgroundColor: LOW_GREY,
+
     borderTopRightRadius: 50,
     paddingTop: 20,
 

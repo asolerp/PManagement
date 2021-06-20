@@ -32,18 +32,13 @@ const jobFormSlice = createSlice({
 
 // Selectors
 export const jobSelector = (state) => state.jobForm;
-export const houseSelector = (state) => state.jobForm.house;
-export const workersSelector = (state) => state.jobForm.workers;
-export const observationsSelector = (state) => state.jobForm.observations;
+export const houseSelector = (state) => state.jobForm?.house;
+export const workersSelector = (state) => state.jobForm?.workers;
+export const observationsSelector = (state) => state.jobForm?.observations;
 export const dateSelector = (state) => state.jobForm?.date;
 
 // Actions
-export const {
-  setForm,
-  setTask,
-  editForm,
-  resetTask,
-  resetForm,
-} = jobFormSlice.actions;
+export const {setForm, setTask, editForm, resetTask, resetForm} =
+  jobFormSlice.actions;
 
 export default jobFormSlice.reducer;

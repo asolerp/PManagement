@@ -6,12 +6,12 @@ import PageLayout from '../../components/PageLayout';
 
 // Utils
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {NEW_JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import {NEW_JOB_STACK_KEY} from '../../Router/utils/routerKeys';
 import Container from './Container';
 
 const JobsScreen = () => {
   const handleNewJob = () => {
-    openScreenWithPush(NEW_JOB_SCREEN_KEY);
+    openScreenWithPush(NEW_JOB_STACK_KEY);
   };
 
   return (

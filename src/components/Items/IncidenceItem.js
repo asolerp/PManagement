@@ -7,6 +7,9 @@ import {PRIORITY_HEIGHT, CHECKLIST_DONE} from '../../constants/colors';
 import {GREY_1} from '../../styles/colors';
 import {useTheme} from '../../Theme';
 import moment from 'moment';
+import Counter from '../Counter';
+import useNoReadMessages from '../../hooks/useNoReadMessages';
+import {CHECKLISTS, INCIDENCES} from '../../utils/firebaseKeys';
 
 const styles = StyleSheet.create({
   container: {},
@@ -44,34 +47,57 @@ const styles = StyleSheet.create({
 
 const IncidenceItem = ({incidence, onPress}) => {
   const {Fonts, Gutters, Layout} = useTheme();
+
+  const {noReadCounter} = useNoReadMessages({
+    collection: INCIDENCES,
+    docId: incidence.id,
+  });
+
   return (
-    <TouchableOpacity onPress={onPress} style={[Layout.fill]}>
-      <View
-        style={[
-          Layout.fill,
-          styles.checkItemWrapper,
-          {
-            borderLeftColor: parseStateIncidecne(incidence?.state),
-          },
-        ]}>
-        <View style={[Layout.fill]}>
-          <View>
-            <View style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
-              <Text>🏡 {incidence?.house?.houseName}</Text>
-              <Text style={styles.date}>
-                ⏱ {moment(incidence?.date?.toDate()).format('LL')}
+    <React.Fragment>
+      {noReadCounter > 0 && (
+        <Counter
+          size="big"
+          count={noReadCounter}
+          customStyles={{
+            position: 'absolute',
+            zIndex: 1000,
+            right: 5,
+            top: 2,
+          }}
+        />
+      )}
+      <TouchableOpacity
+        onPress={onPress}
+        style={[Layout.fill, Gutters.smallTMargin]}>
+        <View
+          style={[
+            Layout.fill,
+            styles.checkItemWrapper,
+            {
+              borderLeftColor: parseStateIncidecne(incidence?.state),
+            },
+          ]}>
+          <View style={[Layout.fill]}>
+            <View>
+              <View
+                style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
+                <Text>🏡 {incidence?.house?.houseName}</Text>
+                <Text style={styles.date}>
+                  ⏱ {moment(incidence?.date?.toDate()).format('LL')}
+                </Text>
+              </View>
+              <Text style={[Fonts.textTitle, Gutters.tinyTMargin]}>
+                {incidence?.title}
+              </Text>
+              <Text style={styles.checkText}>
+                {minimizetext(incidence?.incidence, 30)}
               </Text>
             </View>
-            <Text style={[Fonts.textTitle, Gutters.tinyTMargin]}>
-              {incidence?.title}
-            </Text>
-            <Text style={styles.checkText}>
-              {minimizetext(incidence?.incidence, 30)}
-            </Text>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </React.Fragment>
   );
 };
 

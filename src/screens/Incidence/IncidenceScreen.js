@@ -72,16 +72,7 @@ const IncidenceScreen = () => {
       />
       <PageLayout
         safe
-        titleLefSide={
-          <TouchableOpacity
-            onPress={() => {
-              popScreen();
-            }}>
-            <View>
-              <Icon name="arrow-back" size={25} color={Colors.white} />
-            </View>
-          </TouchableOpacity>
-        }
+        backButton
         titleRightSide={
           <TouchableOpacity
             onPress={() => {

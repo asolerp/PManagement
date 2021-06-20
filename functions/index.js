@@ -4,6 +4,7 @@ const cloudinary = require('cloudinary').v2;
 
 // Notifications
 const sendPushNotificationUpdateCheckList = require('./notifications/sendPushNotificationUpdateStatusJob');
+const sendPushNotificationNewChecklistMessage = require('./notifications/sendPushNotificationNewChecklistMessage');
 
 cloudinary.config({
   cloud_name: 'enalbis',
@@ -105,7 +106,11 @@ exports.setCheckListAsFinished = functions.firestore
     }
   });
 
-exports.sendPushNotificationUpdateCheckList = sendPushNotificationUpdateCheckList;
+exports.sendPushNotificationUpdateCheckList =
+  sendPushNotificationUpdateCheckList;
+
+exports.sendPushNotificationNewChecklistMessage =
+  sendPushNotificationNewChecklistMessage;
 
 exports.sendPushNotificationUpdateStatusJob = functions.firestore
   .document('jobs/{jobId}')

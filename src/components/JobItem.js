@@ -25,6 +25,9 @@ import {marginRight} from '../styles/common';
 import {userSelector} from '../Store/User/userSlice';
 import {useTheme} from '../Theme';
 import {Colors} from '../Theme/Variables';
+import useNoReadMessages from '../hooks/useNoReadMessages';
+import {JOBS} from '../utils/firebaseKeys';
+import Counter from './Counter';
 
 const styles = StyleSheet.create({
   container: {
@@ -99,103 +102,82 @@ const styles = StyleSheet.create({
 
 const JobItem = ({job, onPress}) => {
   const {Layout, Gutters, Fonts} = useTheme();
-  const [noReadCounter, setNoReadCounter] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
 
-  const user = useSelector(userSelector);
-
-  const onResult = (QuerySnapshot) => {
-    setLoading(false);
-    setNoReadCounter(
-      QuerySnapshot.docs
-        .map((doc) => ({...doc.data(), id: doc.id}))
-        .filter((message) => !message.received)
-        .filter((message) => message.user._id !== user.uid).length,
-    );
-  };
-
-  const onError = (err) => {
-    setLoading(false);
-    setError(err);
-  };
-
-  if (Platform.OS === 'android') {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-
-  useEffect(() => {
-    const collectionJobs = firestore().collection('jobs');
-    const jobDocument = collectionJobs.doc(job.id);
-    const messagesQuery = jobDocument.collection('messages');
-    const subscriber = messagesQuery.onSnapshot(onResult, onError);
-    return () => subscriber();
-  }, []);
+  const {noReadCounter} = useNoReadMessages({
+    collection: JOBS,
+    docId: job.id,
+  });
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        Layout.fill,
-        styles.firstSection,
-        {
-          borderLeftColor: Colors.pm,
-        },
-      ]}>
-      <View style={[Layout.fill]}>
-        <View>
-          <View style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
-            <Text>🏡 {job?.house?.[0]?.houseName}</Text>
-            <Text style={styles.date}>
-              ⏱ {moment(job?.date?.toDate()).format('LL')}
-            </Text>
-          </View>
-          {job?.task?.desc && (
-            <Text style={[Fonts.textTitle, Gutters.tinyTMargin]}>
-              {job?.task?.desc}
-            </Text>
-          )}
-          <Text style={[Gutters.tinyTMargin]}>
-            {minimizetext(job?.observations, 30)}
-          </Text>
-          <View
-            style={[
-              Layout.fill,
-              Layout.rowCenter,
-              Layout.justifyContentSpaceBetween,
-            ]}>
-            <View style={[Layout.rowCenter]}>
-              <InfoIcon
-                style={marginRight(10)}
-                info={noReadCounter}
-                icon={'chat'}
-                color="#ac76cc"
-                active={noReadCounter > 0}
-              />
-              <InfoIcon
-                info={job.done ? 'Termianda' : 'Sin terminar'}
-                color={job.done ? '#7dd891' : '#ED7A7A'}
-              />
+    <React.Fragment>
+      <Counter
+        size="big"
+        count={1}
+        customStyles={{
+          position: 'absolute',
+          zIndex: 1000,
+          right: 5,
+          top: 0,
+        }}
+      />
+      <TouchableOpacity
+        onPress={onPress}
+        style={[
+          Layout.fill,
+          Gutters.smallTMargin,
+          styles.firstSection,
+          {
+            borderLeftColor: Colors.pm,
+          },
+        ]}>
+        <View style={[Layout.fill]}>
+          <View>
+            <View style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
+              <Text>🏡 {job?.house?.[0]?.houseName}</Text>
+              <Text style={styles.date}>
+                ⏱ {moment(job?.date?.toDate()).format('LL')}
+              </Text>
             </View>
+            {job?.task?.desc && (
+              <Text style={[Fonts.textTitle, Gutters.tinyTMargin]}>
+                {job?.task?.desc}
+              </Text>
+            )}
+            <Text style={[Gutters.tinyTMargin]}>
+              {minimizetext(job?.observations, 30)}
+            </Text>
             <View
               style={[
+                Layout.fill,
                 Layout.rowCenter,
-                Layout.alignItemsEnd,
-                Gutters.smallRMargin,
+                Layout.justifyContentSpaceBetween,
               ]}>
-              {job?.workers?.map((worker, i) => (
-                <Avatar
-                  key={worker.id || i}
-                  uri={worker.profileImage}
-                  overlap={job?.workers?.length > 1}
-                  size="medium"
+              <View style={[Layout.rowCenter]}>
+                <InfoIcon
+                  info={job.done ? 'Termianda' : 'Sin terminar'}
+                  color={job.done ? '#7dd891' : '#ED7A7A'}
                 />
-              ))}
+              </View>
+              <View
+                style={[
+                  Layout.rowCenter,
+                  Layout.alignItemsEnd,
+                  Gutters.smallRMargin,
+                ]}>
+                {job?.workers?.map((worker, i) => (
+                  <Avatar
+                    key={worker.id || i}
+                    uri={worker.profileImage}
+                    overlap={job?.workers?.length > 1}
+                    size="medium"
+                  />
+                ))}
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </React.Fragment>
   );
 };
 

@@ -30,7 +30,7 @@ const DashboardScreen = () => {
       }
       titleLefSide={true}>
       <ScrollView
-        style={[Layout.fill, styles.container]}
+        style={[Layout.fill, styles.container, Gutters.smallTMargin]}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}>
         <View style={styles.home}>

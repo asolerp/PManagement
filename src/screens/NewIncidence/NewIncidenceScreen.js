@@ -3,7 +3,14 @@ import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
 import {useNavigation} from '@react-navigation/native';
-import {Alert, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  Alert,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 // UI
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -24,9 +31,11 @@ import {
   setImages,
 } from '../../Store/IncidenceForm/incidenceFormSlice';
 import {popScreen} from '../../Router/utils/actions';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 20,
     paddingHorizontal: 0,
   },
   iconWrapper: {
@@ -142,9 +151,20 @@ const NewIncidenceScreen = () => {
 
   return (
     <PageLayout
-      backButton
+      safe
+      titleRightSide={
+        <TouchableWithoutFeedback
+          onPress={() => {
+            popScreen();
+          }}>
+          <View>
+            <Icon name="close" size={25} color={Colors.white} />
+          </View>
+        </TouchableWithoutFeedback>
+      }
       footer={
         <CustomButton
+          styled="rounded"
           loading={lo}
           title={t('newIncidence.form.create')}
           onPress={() => createIncidence()}
@@ -156,10 +176,6 @@ const NewIncidenceScreen = () => {
       }}>
       <View style={styles.container}>
         <View>
-          <Text
-            style={{...defaultLabel, ...marginBottom(20), ...marginTop(20)}}>
-            {t('newIncidence.subtitle')}
-          </Text>
           <NewIncidenceForm />
           <Text style={styles.label}>📷 {t('newIncidence.form.photos')}</Text>
           <MultipleImageSelector

@@ -18,6 +18,7 @@ import {
   INCIDENCES_SCREEN_KEY,
   JOBS_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
+  USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
@@ -27,10 +28,11 @@ export const minimizetext = (text, numberOfCharts = 40) => {
 };
 
 export const tabNameByScreen = {
-  [DASHBOARD_SCREEN_KEY]: 'Dashboard',
+  [DASHBOARD_SCREEN_KEY]: 'Home',
+  [USERS_SCREEN_KEY]: 'Usuarios',
   [DASHBOARD_WORKER_SCREEN_KEY]: 'Dashboard',
   [DASHBOARD_OWNER_SCREEN_KEY]: 'Dashboard',
-  [CHECKLIST_SCREEN_KEY]: 'Checklists',
+  [CHECKLIST_SCREEN_KEY]: 'Checks',
   [INCIDENCES_SCREEN_KEY]: 'Incidencias',
   [JOBS_SCREEN_KEY]: 'Trabajos',
   [HOUSES_SCREEN_KEY]: 'Casas',

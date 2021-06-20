@@ -25,13 +25,11 @@ const DynamicSelectorList = ({
   const {list, loading, error} = useGetFirebase(collection, order, where);
   const [selected, setSelected] = useState(get);
 
-  const handleSearch = (text) => {
-    setSearch(text);
-    const fList = list.filter((item) =>
-      item[searchBy].toLowerCase().includes(search?.toLowerCase()),
-    );
-    setFilteredList(fList);
-  };
+  const fList = search
+    ? list.filter((item) =>
+        item[searchBy].toLowerCase().includes(search?.toLowerCase()),
+      )
+    : list;
 
   const onSubmit = () => {
     set(selected);
@@ -85,8 +83,8 @@ const DynamicSelectorList = ({
     <View style={styles.container}>
       <View style={styles.userListSelectorScreen}>
         <SearchBar
-          placeholder="Type Here..."
-          onChangeText={handleSearch}
+          placeholder="Escribe aquí..."
+          onChangeText={setSearch}
           value={search}
           platform="ios"
           round
@@ -95,7 +93,7 @@ const DynamicSelectorList = ({
         />
         <View style={{flex: 1, alignSelf: 'stretch'}}>
           <FlatList
-            data={list}
+            data={fList}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
           />

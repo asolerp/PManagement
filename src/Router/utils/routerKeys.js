@@ -19,6 +19,7 @@ export const DASHBOARD_WORKER_SCREEN_KEY = 'dashboardWorkerScreen';
 export const DASHBOARD_OWNER_SCREEN_KEY = 'dashboardOwnerScreen';
 export const PAGE_OPTIONS_SCREEN_KEY = 'pageOptionsScreen';
 export const CHAT_SCREEN_KEY = 'chatScreen';
+export const USERS_SCREEN_KEY = 'usersScreen';
 
 // STACKS
 export const CHECK_STACK_KEY = 'checkStack';

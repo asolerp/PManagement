@@ -1,10 +1,6 @@
 import React from 'react';
-import {useNavigation} from '@react-navigation/core';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {defaultLabel, width} from '../../styles/common';
 
@@ -13,14 +9,12 @@ import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Utils
-
+import CheckItem from './CheckItem';
 import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
-import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
 
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
-import Avatar from '../Avatar';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 
@@ -90,7 +84,7 @@ const styles = StyleSheet.create({
 });
 
 const ChecklistList = ({uid, house}) => {
-  const {Gutters, Layout, Fonts} = useTheme();
+  const {Gutters, Fonts} = useTheme();
   let firestoreQuery;
   if (house) {
     firestoreQuery = firestore()
@@ -123,63 +117,9 @@ const ChecklistList = ({uid, house}) => {
     };
 
     return (
-      <TouchableWithoutFeedback
-        style={[
-          styles.checkWrapper,
-          Gutters.mediumRMargin,
-          {
-            backgroundColor: Colors.white,
-            borderTopColor: Colors.lowGrey,
-            borderRightColor: Colors.lowGrey,
-            borderBottomColor: Colors.lowGrey,
-            borderLeftColor: parsePercentageDone(item?.done / item?.total),
-          },
-        ]}
-        onPress={() => handlePressIncidence()}>
-        <View style={[Layout.fill]}>
-          <View
-            style={[
-              Layout.rowCenter,
-              Layout.justifyContentStart,
-              Gutters.smallBMargin,
-            ]}>
-            <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
-          </View>
-          <View style={styles.infoWrapper}>
-            <Text style={[styles.bold, Gutters.smallBMargin]}>
-              {item?.house?.[0].houseName}
-            </Text>
-            <Text
-              style={styles.infoStyle}
-              ellipsizeMode="tail"
-              numberOfLines={2}>
-              {item?.observations}
-            </Text>
-          </View>
-          <View
-            style={[
-              Layout.grow,
-              Layout.rowCenter,
-              Layout.justifyContentSpaceBetween,
-              Layout.alignItemsCenter,
-              Gutters.smallVMargin,
-            ]}>
-            <View style={[Layout.rowCenter, Gutters.smallLMargin]}>
-              {item?.workers?.map((worker) => (
-                <Avatar
-                  key={worker.id}
-                  uri={worker.profileImage}
-                  size="medium"
-                  overlap={item?.workers?.length > 0}
-                />
-              ))}
-            </View>
-            <Text style={[Fonts.textSmall]}>
-              {item?.done}/{item?.total}
-            </Text>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
+      <TouchableOpacity onPress={() => handlePressIncidence()}>
+        <CheckItem item={item} />
+      </TouchableOpacity>
     );
   };
 
