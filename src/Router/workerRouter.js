@@ -8,11 +8,13 @@ import {
 } from './utils/actions';
 
 import {
+  CHAT_SCREEN_KEY,
   MAIN_WORKER_STACK_KEY,
   NEW_INCIDENCE_SCREEN_KEY,
 } from './utils/routerKeys';
 import {MainWorker} from '../Stacks/MainWorker';
 import {NewIncidenceScreen} from '../Screens/NewIncidence';
+import {ChatScreen} from '../Screens/Chat';
 
 const {Navigator, Screen} = createStackNavigator();
 
@@ -32,6 +34,11 @@ const WorkerRouter = () => {
         <Screen
           name={NEW_INCIDENCE_SCREEN_KEY}
           component={NewIncidenceScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={CHAT_SCREEN_KEY}
+          component={ChatScreen}
           options={{headerShown: false}}
         />
       </Navigator>

@@ -1,21 +1,21 @@
-import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
+import React from 'react';
 import useNoReadMessages from '../../hooks/useNoReadMessages';
 
 import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
-import {INCIDENCES} from '../../utils/firebaseKeys';
+import {JOBS} from '../../utils/firebaseKeys';
 import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
 import Avatar from '../Avatar';
 import Counter from '../Counter';
 
-const IncidenceItem = ({item}) => {
+const JobItem = ({item}) => {
   const {Layout, Gutters} = useTheme();
 
   const {noReadCounter} = useNoReadMessages({
-    collection: INCIDENCES,
-    docId: item.id,
+    collection: JOBS,
+    docId: item?._id,
   });
 
   return (
@@ -28,7 +28,7 @@ const IncidenceItem = ({item}) => {
           borderTopColor: Colors.lowGrey,
           borderRightColor: Colors.lowGrey,
           borderBottomColor: Colors.lowGrey,
-          borderLeftColor: parseStateIncidecne(item?.state),
+          borderLeftColor: Colors.pm,
         },
       ]}>
       <View style={[Layout.fill]}>
@@ -39,24 +39,34 @@ const IncidenceItem = ({item}) => {
             Gutters.smallBMargin,
           ]}>
           <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
-          {noReadCounter > 0 && <Counter count={noReadCounter} />}
+          <Counter count={noReadCounter} />
         </View>
         <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
-          {item?.title}
+          {item?.task?.desc}
         </Text>
         <View style={styles.infoWrapper}>
           <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={2}>
-            {item?.incidence}
+            {item?.observations}
           </Text>
-          <Text style={[styles.bold, Gutters.regularBMargin]}>
-            {item?.house?.houseName}
-          </Text>
-          <View style={styles.avatarWrapper}>
-            <Avatar
-              key={item?.user?.id}
-              uri={item?.user?.profileImage}
-              size="medium"
-            />
+          <Text style={[styles.bold]}>{item?.house?.[0].houseName}</Text>
+        </View>
+        <View
+          style={[
+            Layout.grow,
+            Layout.rowCenter,
+            Layout.justifyContentSpaceBetween,
+            Layout.alignItemsCenter,
+            Gutters.smallVMargin,
+          ]}>
+          <View style={[Layout.rowCenter, Gutters.smallLMargin]}>
+            {item?.workers?.map((worker) => (
+              <Avatar
+                key={worker.id}
+                uri={worker.profileImage}
+                size="medium"
+                overlap={item?.workers?.length > 0}
+              />
+            ))}
           </View>
         </View>
       </View>
@@ -84,7 +94,7 @@ const styles = StyleSheet.create({
   },
   infoStyle: {
     color: Colors.darkBlue,
-    height: 50,
+    height: 30,
   },
   titleWrapper: {
     flexDirection: 'row',
@@ -130,4 +140,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default IncidenceItem;
+export default JobItem;

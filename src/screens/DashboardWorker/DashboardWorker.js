@@ -22,11 +22,16 @@ import {DARK_BLUE, LOW_GREY} from '../../styles/colors';
 import {userSelector} from '../../Store/User/userSlice';
 import ChecklistList from '../../components/Lists/ChecklistList';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {NEW_INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import {
+  NEW_INCIDENCE_SCREEN_KEY,
+  PROFILE_SCREEN_KEY,
+} from '../../Router/utils/routerKeys';
+import JobsList from '../../components/Lists/JobsList';
+import PageLayout from '../../components/PageLayout';
+import {useTheme} from '../../Theme';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: LOW_GREY,
     flex: 1,
   },
   addButton: {
@@ -39,13 +44,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   home: {
-    backgroundColor: LOW_GREY,
     borderTopRightRadius: 50,
     flex: 5,
   },
-  content: {
-    paddingHorizontal: 20,
-  },
+
   label: {
     fontSize: 20,
     width: '90%',
@@ -58,29 +60,29 @@ const styles = StyleSheet.create({
 });
 
 const DashboardWorkerScreen = () => {
+  const {Layout, Gutters} = useTheme();
   const user = useSelector(userSelector, shallowEqual);
   const {t} = useTranslation();
 
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
 
+  const handleNewCheckList = () => {
+    openScreenWithPush(NEW_INCIDENCE_SCREEN_KEY);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.addButton}>
-        <TouchableOpacity
-          onPress={() => openScreenWithPush(NEW_INCIDENCE_SCREEN_KEY)}>
-          <AddButton iconName="add-alert" backColor="#F5C66D" />
-        </TouchableOpacity>
-      </View>
-      <ScrollView contentContainerStyle={{backgroundColor: LOW_GREY}}>
-        <TitlePage>
-          <ProfileBar />
-        </TitlePage>
-        <LinearGradient
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
-          colors={['#126D9B', '#67B26F']}
-          style={styles.homeBackScreen}>
+    <React.Fragment>
+      <AddButton iconName="add-alert" onPress={() => handleNewCheckList()} />
+      <PageLayout
+        titleChildren={
+          <ProfileBar onPress={() => openScreenWithPush(PROFILE_SCREEN_KEY)} />
+        }
+        titleLefSide={true}>
+        <ScrollView
+          style={[Layout.fill, styles.container, Gutters.smallTMargin]}
+          nestedScrollEnabled
+          showsVerticalScrollIndicator={false}>
           <View style={styles.home}>
             <View style={styles.content}>
               <Text
@@ -95,11 +97,12 @@ const DashboardWorkerScreen = () => {
                 {t('homeMessage')}
               </Text>
               <ChecklistList uid={user.uid} />
+              <JobsList uid={user.uid} />
             </View>
           </View>
-        </LinearGradient>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </PageLayout>
+    </React.Fragment>
   );
 };
 

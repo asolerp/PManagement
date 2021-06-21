@@ -89,22 +89,6 @@ const HomeWorker = () => {
         })}
       />
       <Tabs.Screen
-        name={tabNameByScreen[JOBS_SCREEN_KEY]}
-        initialParams={{screenKey: JOBS_SCREEN_KEY}}
-        component={JobsScreen}
-        options={({route}) => ({
-          tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="priority-high"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
-          ),
-        })}
-      />
-      <Tabs.Screen
         name={tabNameByScreen[PROFILE_SCREEN_KEY]}
         initialParams={{screenKey: PROFILE_SCREEN_KEY}}
         component={ProfileScreen}

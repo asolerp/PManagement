@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 
 const sendPushNotificationNewChecklistMessage = functions.firestore
   .document('checklists/{checklistId}/messages/{messageId}')
-  .onUpdate(async (change, context) => {
+  .onCreate(async (snap, context) => {
     try {
       const checklistSnapshot = await admin
         .firestore()
@@ -35,7 +35,8 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
       };
 
       let data = {
-        screen: 'Check',
+        type: 'chat',
+        collection: 'checklists',
         docId: context.params.checklistId,
       };
 

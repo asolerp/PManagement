@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
-import {View, Text, Button} from 'react-native';
+import {View, Text, Button, Alert} from 'react-native';
 import AuthRouter from './Router/authRouter';
 import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
+import Toast from 'react-native-toast-message';
 
 import ErrorBoundary from 'react-native-error-boundary';
 
@@ -13,6 +14,8 @@ import messaging from '@react-native-firebase/messaging';
 import * as RNLocalize from 'react-native-localize';
 
 import './Translations';
+import {openScreenWithPush} from './Router/utils/actions';
+import {CHAT_SCREEN_KEY} from './Router/utils/routerKeys';
 
 const CustomFallback = (props) => (
   <View>
@@ -23,6 +26,32 @@ const CustomFallback = (props) => (
 );
 
 const App = () => {
+  useEffect(() => {
+    messaging().onNotificationOpenedApp(async (remoteMessage) => {
+      if (remoteMessage) {
+        const {
+          data: {type, collection, docId},
+        } = remoteMessage;
+
+        if (type === 'chat') {
+          openScreenWithPush(CHAT_SCREEN_KEY, {
+            collection,
+            docId,
+          });
+        }
+      }
+    });
+
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      Toast.show({
+        position: 'bottom',
+        text1: 'Hello',
+        text2: 'This is some something 👋',
+      });
+    });
+    return unsubscribe;
+  }, []);
+
   useEffect(() => {
     const languages = {
       US: 'en',
@@ -53,6 +82,7 @@ const App = () => {
       <Provider store={store}>
         <AuthRouter />
         <ModalPortal />
+        <Toast ref={(ref) => Toast.setRef(ref)} />
       </Provider>
     </ErrorBoundary>
   );

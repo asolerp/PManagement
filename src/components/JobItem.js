@@ -105,21 +105,23 @@ const JobItem = ({job, onPress}) => {
 
   const {noReadCounter} = useNoReadMessages({
     collection: JOBS,
-    docId: job.id,
+    docId: job?.id,
   });
 
   return (
     <React.Fragment>
-      <Counter
-        size="big"
-        count={1}
-        customStyles={{
-          position: 'absolute',
-          zIndex: 1000,
-          right: 5,
-          top: 0,
-        }}
-      />
+      {noReadCounter > 0 && (
+        <Counter
+          size="big"
+          count={noReadCounter}
+          customStyles={{
+            position: 'absolute',
+            zIndex: 1000,
+            right: 5,
+            top: 0,
+          }}
+        />
+      )}
       <TouchableOpacity
         onPress={onPress}
         style={[
