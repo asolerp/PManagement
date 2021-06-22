@@ -24,7 +24,7 @@ import {useAddFirebase} from '../../hooks/useAddFirebase';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 import {firebase} from '@react-native-firebase/firestore';
-import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
+
 import {userSelector} from '../../Store/User/userSlice';
 import {
   resetForm,

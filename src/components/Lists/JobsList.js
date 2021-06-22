@@ -20,6 +20,7 @@ import {JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 import {JOBS} from '../../utils/firebaseKeys';
 import JobItem from './JobItem';
+import {useMemo} from 'react';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -79,21 +80,26 @@ const styles = StyleSheet.create({
   badget: {
     color: Colors.white,
     backgroundColor: Colors.danger,
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
 
-const JobsList = () => {
-  const [values, loading] = useCollectionData(
-    firestore().collection(JOBS).where('done', '!=', true),
-    {
-      idField: 'id',
-    },
-  );
+const JobsList = ({uid}) => {
+  console.log(uid);
+  const query = useMemo(() => {
+    return firestore()
+      .collection(JOBS)
+      .where('done', '==', false)
+      .where('workersId', 'array-contains', uid);
+  }, [uid]);
+
+  const [values, loading] = useCollectionData(query, {
+    idField: 'id',
+  });
 
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {
@@ -122,7 +128,7 @@ const JobsList = () => {
       <View style={{...styles.filterWrapper, ...width(80)}}>
         <Text style={{...defaultLabel, ...marginRight(10)}}>Trabajos</Text>
         <View style={styles.badget}>
-          <Text style={{...defaultLabel, ...{color: 'white'}}}>
+          <Text style={{color: Colors.white, fontWeight: 'bold'}}>
             {values?.filter((item) => item.id !== 'stats').length}
           </Text>
         </View>

@@ -15,7 +15,7 @@ const JobItem = ({item}) => {
 
   const {noReadCounter} = useNoReadMessages({
     collection: JOBS,
-    docId: item?._id,
+    docId: item?.id,
   });
 
   return (
@@ -39,7 +39,7 @@ const JobItem = ({item}) => {
             Gutters.smallBMargin,
           ]}>
           <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
-          <Counter count={noReadCounter} />
+          {noReadCounter > 0 && <Counter count={noReadCounter} />}
         </View>
         <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
           {item?.task?.desc}

@@ -21,8 +21,10 @@ import {defaultLabel, marginBottom} from '../../styles/common';
 import {DARK_BLUE} from '../../styles/colors';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {useTheme} from '../../Theme';
 
 const ListOfChecks = ({checkId}) => {
+  const {Layout} = useTheme();
   const queryChecklist = useMemo(() => {
     return firestore().collection(CHECKLISTS).doc(checkId);
   }, [checkId]);
@@ -41,6 +43,8 @@ const ListOfChecks = ({checkId}) => {
   const [checks, loadingChecklistChecks] = useCollectionData(query, {
     idField: 'id',
   });
+
+  const doneCounter = checks?.filter((check) => check.done).length;
 
   const {updateFirebase} = useUpdateFirebase('checklists');
 
@@ -94,13 +98,13 @@ const ListOfChecks = ({checkId}) => {
   };
 
   return (
-    <View>
+    <View style={[Layout.fill]}>
       <View style={styles.labelWrapper}>
         <Text style={{...defaultLabel, ...marginBottom(10)}}>
           Listado de checks
         </Text>
         <Text style={styles.counter}>
-          {checklist?.done}/{checklist?.total}
+          {doneCounter}/{checklist?.total}
         </Text>
       </View>
       {!loadingChecklistChecks && (

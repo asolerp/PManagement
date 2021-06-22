@@ -23,8 +23,12 @@ import PageLayout from '../../components/PageLayout';
 import {newJob} from '../../firebase/newJob';
 import {LOW_GREY} from '../../styles/colors';
 import {jobSelector, resetForm} from '../../Store/JobForm/jobFormSlice';
-import {popScreen} from '../../Router/utils/actions';
+import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import {Colors} from '../../Theme/Variables';
+import {
+  HOME_ADMIN_STACK_KEY,
+  JOBS_SCREEN_KEY,
+} from '../../Router/utils/routerKeys';
 
 const NewJobScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
@@ -44,8 +48,7 @@ const NewJobScreen = ({route, navigation}) => {
       setLoading(true);
       const newJobForm = {
         observations: job?.observations,
-        date: job?.dateTime?.date,
-        time: job?.dateTime?.time,
+        date: job?.date?._i,
         workers: job?.workers?.value,
         workersId: job?.workers?.value.map((worker) => worker.id),
         houseId: job?.house?.value[0].id,
@@ -59,7 +62,9 @@ const NewJobScreen = ({route, navigation}) => {
     } finally {
       setLoading(false);
       cleanForm();
-      navigation.navigate('Jobs');
+      openScreenWithPush(HOME_ADMIN_STACK_KEY, {
+        screen: JOBS_SCREEN_KEY,
+      });
     }
   };
 

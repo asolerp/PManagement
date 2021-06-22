@@ -3,26 +3,15 @@ import {Button, View} from 'react-native';
 import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
 
-const Container = () => {
-  const {Layout, Gutters} = useTheme();
-  const options = {
-    duplicate: {
-      title: 'Duplicar',
-      mode: 'normal',
-      action: () => console.log('duplicar'),
-    },
-    delete: {
-      title: 'Eliminar',
-      mode: 'danger',
-      action: () => console.log('eliminar'),
-    },
-  };
+const Container = ({options}) => {
+  const {Gutters} = useTheme();
 
   return (
     <View style={[Gutters.regularTMargin]}>
       {Object.entries(options)?.map(([key, value]) => {
         return (
           <View
+            key={key}
             style={{
               height: 40,
               borderBottomWidth: 1,

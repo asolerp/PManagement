@@ -18,15 +18,13 @@ const jobFormSlice = createSlice({
     setTask: (state, {payload}) => {
       state.task = payload.task;
     },
-    editForm: (state, {payload}) => {
-      state.job = {
-        ...state.job,
-        ...payload.job,
-        ...payload.form,
-      };
+    resetForm: (state) => {
+      state.task = undefined;
+      state.house = undefined;
+      state.workers = undefined;
+      state.observations = undefined;
+      state.date = undefined;
     },
-    resetTask: (state, {payload}) => {},
-    resetForm: (state, {payload}) => {},
   },
 });
 
@@ -38,7 +36,6 @@ export const observationsSelector = (state) => state.jobForm?.observations;
 export const dateSelector = (state) => state.jobForm?.date;
 
 // Actions
-export const {setForm, setTask, editForm, resetTask, resetForm} =
-  jobFormSlice.actions;
+export const {setForm, setTask, editForm, resetForm} = jobFormSlice.actions;
 
 export default jobFormSlice.reducer;

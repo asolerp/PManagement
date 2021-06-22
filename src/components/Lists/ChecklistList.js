@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
   },
   badget: {
     backgroundColor: Colors.success,
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
@@ -137,7 +137,7 @@ const ChecklistList = ({uid, house}) => {
         <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>Checklists</Text>
         {!house && (
           <View style={styles.badget}>
-            <Text style={{...defaultLabel, ...{color: Colors.white}}}>
+            <Text style={{color: Colors.white, fontWeight: 'bold'}}>
               {value?.length || 0}
             </Text>
           </View>

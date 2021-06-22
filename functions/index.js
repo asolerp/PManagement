@@ -1,9 +1,11 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const firebase_tools = require('firebase-tools');
+
 const cloudinary = require('cloudinary').v2;
 
 // Notifications
-const sendPushNotificationUpdateCheckList = require('./notifications/sendPushNotificationUpdateStatusJob');
+const sendPushNotificationUpdateCheckList = require('./notifications/sendPushNotificationUpdateCheckList');
 const sendPushNotificationNewChecklistMessage = require('./notifications/sendPushNotificationNewChecklistMessage');
 
 cloudinary.config({
@@ -354,9 +356,9 @@ exports.recursiveDelete = functions
   .https.onCall(async (data, context) => {
     // Only allow admin users to execute this function.
 
-    const path = data.path;
+    const {path, collection} = data;
     console.log(
-      `User ${context.auth.uid} has requested to delete path ${path}`,
+      `User ${context.auth.uid} has requested to delete path ${path} with collection ${collection}`,
     );
 
     // Run a recursive delete on the given document or collection path.
@@ -368,6 +370,14 @@ exports.recursiveDelete = functions
       yes: true,
       token: functions.config().fb.token,
     });
+
+    await admin
+      .firestore()
+      .collection(collection)
+      .doc('stats')
+      .update({
+        count: FieldValue.increment(-1),
+      });
 
     return {
       path: path,

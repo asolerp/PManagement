@@ -1,11 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {
-  View,
-  Keyboard,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 
 import {useSelector, useDispatch} from 'react-redux';
 
@@ -21,8 +15,7 @@ import PageLayout from '../../components/PageLayout';
 
 // Firebase
 import {useAddFirebase} from '../../hooks/useAddFirebase';
-import {useGetFirebase} from '../../hooks/useGetFirebase';
-import {LOW_GREY} from '../../styles/colors';
+
 import {
   checksSelector,
   houseSelector,
@@ -32,12 +25,6 @@ import {
 } from '../../Store/CheckList/checkListSlice';
 import {popScreen} from '../../Router/utils/actions';
 import {Colors} from '../../Theme/Variables';
-
-const HideKeyboard = ({children}) => (
-  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-    {children}
-  </TouchableWithoutFeedback>
-);
 
 const NewCheckListScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
@@ -90,7 +77,7 @@ const NewCheckListScreen = ({route, navigation}) => {
     } finally {
       setLoading(false);
       cleanForm();
-      navigation.navigate('CheckList');
+      popScreen();
     }
   };
 

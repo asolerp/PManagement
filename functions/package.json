@@ -15,8 +15,10 @@
   "main": "index.js",
   "dependencies": {
     "cloudinary": "^1.25.1",
+    "firebase": "^8.6.8",
     "firebase-admin": "^9.2.0",
     "firebase-functions": "^3.11.0",
+    "firebase-tools": "^9.14.0",
     "react-native-animated-nav-tab-bar": "^3.0.5"
   },
   "devDependencies": {

@@ -1,14 +1,11 @@
 import React from 'react';
-import {useNavigation} from '@react-navigation/native';
+
 import {useSelector, shallowEqual} from 'react-redux';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {useTranslation} from 'react-i18next';
-import TitlePage from '../../components/TitlePage';
+
 import ProfileBar from '../../components/ProfileBar';
 import AddButton from '../../components/Elements/AddButton';
-
-// UI
-import LinearGradient from 'react-native-linear-gradient';
 
 // Styles
 import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
@@ -18,7 +15,7 @@ import moment from 'moment';
 
 import {ScrollView} from 'react-native';
 
-import {DARK_BLUE, LOW_GREY} from '../../styles/colors';
+import {DARK_BLUE} from '../../styles/colors';
 import {userSelector} from '../../Store/User/userSlice';
 import ChecklistList from '../../components/Lists/ChecklistList';
 import {openScreenWithPush} from '../../Router/utils/actions';
@@ -73,7 +70,7 @@ const DashboardWorkerScreen = () => {
 
   return (
     <React.Fragment>
-      <AddButton iconName="add-alert" onPress={() => handleNewCheckList()} />
+      <AddButton iconName="warning" onPress={() => handleNewCheckList()} />
       <PageLayout
         titleChildren={
           <ProfileBar onPress={() => openScreenWithPush(PROFILE_SCREEN_KEY)} />

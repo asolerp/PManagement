@@ -65,10 +65,17 @@ const styles = StyleSheet.create({
 });
 
 const JobForm = () => {
-  const [observations, setObservations] = useState();
-  const [date, setDate] = useState();
-  const [house, setHouse] = useState();
-  const [workers, setWorkers] = useState();
+  const dispatch = useDispatch();
+
+  const house = useSelector(houseSelector);
+  const workers = useSelector(workersSelector);
+  const date = useSelector(dateSelector);
+  const observations = useSelector(observationsSelector);
+
+  const setInputFormAction = useCallback(
+    (label, value) => dispatch(setForm({label, value})),
+    [dispatch],
+  );
 
   // Form State
   const [modalContent, setModalContent] = useState();
@@ -94,7 +101,7 @@ const JobForm = () => {
   const DateTimeSelector = () => (
     <DateSelector
       get={date || null}
-      set={(date) => setDate(date)}
+      set={(date) => setInputFormAction('date', date)}
       closeModal={() => setModalVisible(false)}
     />
   );
@@ -105,8 +112,8 @@ const JobForm = () => {
       store="jobForm"
       searchBy="houseName"
       schema={{img: 'houseImage', name: 'houseName'}}
-      get={house || []}
-      set={(house) => setHouse(house)}
+      get={house?.value || []}
+      set={(house) => setInputFormAction('house', {...house, value: house})}
       closeModal={() => setModalVisible(false)}
     />
   );
@@ -124,8 +131,10 @@ const JobForm = () => {
       ]}
       searchBy="firstName"
       schema={{img: 'profileImage', name: 'firstName'}}
-      get={workers}
-      set={(workers) => setWorkers(workers)}
+      get={workers?.value}
+      set={(workers) =>
+        setInputFormAction('workers', {...workers, value: workers})
+      }
       multiple={true}
       closeModal={() => setModalVisible(false)}
     />
@@ -167,10 +176,10 @@ const JobForm = () => {
           title="Asignar a.."
           subtitle={
             <View style={{flexDirection: 'row'}}>
-              {workers?.map((worker, i) => (
+              {workers?.value?.map((worker, i) => (
                 <View key={worker.id} style={{flexDirection: 'row'}}>
                   <Text style={styles.subtitle}>{worker.firstName}</Text>
-                  {workers?.length - 1 !== i && (
+                  {workers?.value?.length - 1 !== i && (
                     <Text style={styles.subtitle}> & </Text>
                   )}
                 </View>
@@ -187,7 +196,7 @@ const JobForm = () => {
           title="Casa"
           subtitle={
             <View style={{flexDirection: 'row'}}>
-              {house?.map((house, i) => (
+              {house?.value?.map((house, i) => (
                 <View key={house.id}>
                   <Text style={styles.subtitle}>{house.houseName}</Text>
                 </View>
@@ -207,7 +216,7 @@ const JobForm = () => {
           numberOfLines={10}
           style={{height: 120}}
           placeholder="Observaciones"
-          onChangeText={setObservations}
+          onChangeText={(text) => setInputFormAction('observations', text)}
           value={observations}
         />
       </InputGroup>

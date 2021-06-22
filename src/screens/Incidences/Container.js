@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
 const Container = () => {
   const [state, setState] = useState(false);
   const [filterHouses, setFilterHouses] = useState([]);
-  const {Gutters, Layout} = useTheme();
+  const {Gutters, Layout, Fonts} = useTheme();
 
   const user = useSelector(userSelector);
 
@@ -96,12 +96,26 @@ const Container = () => {
         <ItemListSkeleton />
       ) : (
         <View style={[Layout.fill]}>
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={incidencesList}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
+          {incidencesList.length > 0 ? (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={incidencesList}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          ) : (
+            <View
+              style={[
+                Layout.fill,
+                Layout.rowCenter,
+                Layout.justifyContentCenter,
+                Layout.alignItemsCenter,
+              ]}>
+              <Text style={[Fonts.textSmall, {textAlign: 'center'}]}>
+                No hay incidencias
+              </Text>
+            </View>
+          )}
         </View>
       )}
     </View>

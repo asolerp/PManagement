@@ -16,7 +16,10 @@ import {sendOwnerChecklist} from '../../components/Alerts/checklist';
 import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
 
 import firestore from '@react-native-firebase/firestore';
-import {useDocumentDataOnce} from 'react-firebase-hooks/firestore';
+import {
+  useCollectionData,
+  useDocumentData,
+} from 'react-firebase-hooks/firestore';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
@@ -28,11 +31,20 @@ const CheckScreen = ({route}) => {
     return firestore().collection(CHECKLISTS).doc(docId);
   }, [docId]);
 
-  const [checklist, loadingChecklist] = useDocumentDataOnce(query, {
+  const [checklist, loadingChecklist] = useDocumentData(query, {
     idField: 'id',
   });
 
+  const [checks] = useCollectionData(
+    firestore().collection(CHECKLISTS).doc(docId).collection('checks'),
+    {
+      idField: 'id',
+    },
+  );
+
   const user = useSelector(userSelector, shallowEqual);
+  const areAllChecksDone =
+    checks?.length === checks?.filter((check) => check.done).length;
 
   const handleFinishAndSend = () => {
     finishAndSendChecklist(docId);
@@ -65,7 +77,7 @@ const CheckScreen = ({route}) => {
           color: 'white',
         }}
         footer={
-          checklist?.done === checklist?.total &&
+          areAllChecksDone &&
           user.role === 'admin' && (
             <CustomButton
               styled="rounded"
@@ -75,7 +87,7 @@ const CheckScreen = ({route}) => {
             />
           )
         }>
-        {!loadingChecklist && <Info />}
+        <Info />
       </PageLayout>
     </React.Fragment>
   );

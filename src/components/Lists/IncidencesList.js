@@ -79,24 +79,13 @@ const styles = StyleSheet.create({
   badget: {
     color: Colors.white,
     backgroundColor: Colors.danger,
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
-
-const BubleIncidence = ({status}) => {
-  return (
-    <View
-      style={{
-        ...styles.buble,
-        backgroundColor: Colors.danger,
-      }}
-    />
-  );
-};
 
 const IncidencesList = () => {
   const [values, loading] = useCollectionData(
@@ -105,8 +94,6 @@ const IncidencesList = () => {
       idField: 'id',
     },
   );
-
-  const navigation = useNavigation();
 
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {
@@ -135,7 +122,7 @@ const IncidencesList = () => {
       <View style={{...styles.filterWrapper, ...width(80)}}>
         <Text style={{...defaultLabel, ...marginRight(10)}}>Incidencias</Text>
         <View style={styles.badget}>
-          <Text style={{...defaultLabel, ...{color: 'white'}}}>
+          <Text style={{color: Colors.white, fontWeight: 'bold'}}>
             {values?.filter((item) => item.id !== 'stats').length}
           </Text>
         </View>

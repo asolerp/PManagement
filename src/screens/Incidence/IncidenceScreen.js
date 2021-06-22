@@ -7,6 +7,7 @@ import CustomButton from '../../components/Elements/CustomButton';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessagesCounter';
 import {Info} from '../../components/Incidence';
+import Toast from 'react-native-toast-message';
 
 // Firebase
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
@@ -25,9 +26,12 @@ import {firebase} from '@react-native-firebase/firestore';
 
 import {Colors} from '../../Theme/Variables';
 import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
-import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import {
+  HOME_ADMIN_STACK_KEY,
+  INCIDENCES_SCREEN_KEY,
+  PAGE_OPTIONS_SCREEN_KEY,
+} from '../../Router/utils/routerKeys';
 import {INCIDENCES} from '../../utils/firebaseKeys';
-import {useTheme} from '../../Theme';
 
 const IncidenceScreen = () => {
   const navigation = useNavigation();
@@ -79,6 +83,38 @@ const IncidenceScreen = () => {
               openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
                 collection: INCIDENCES,
                 docId: incidenceId,
+                options: {
+                  duplicate: {
+                    title: 'Duplicar',
+                    mode: 'normal',
+                    action: () => console.log('duplicar'),
+                  },
+                  delete: {
+                    title: 'Eliminar',
+                    mode: 'danger',
+                    action: async () => {
+                      const deleteFn = firebase
+                        .functions()
+                        .httpsCallable('recursiveDelete');
+                      try {
+                        await deleteFn({
+                          path: `${INCIDENCES}/${incidenceId}`,
+                          collection: INCIDENCES,
+                        });
+                        openScreenWithPush(HOME_ADMIN_STACK_KEY, {
+                          screen: INCIDENCES_SCREEN_KEY,
+                        });
+                      } catch (error) {
+                        Toast.show({
+                          position: 'bottom',
+                          type: 'error',
+                          text1: 'Error',
+                          text2: 'Inténtalo más tarde! 🙏',
+                        });
+                      }
+                    },
+                  },
+                },
               });
             }}>
             <View>

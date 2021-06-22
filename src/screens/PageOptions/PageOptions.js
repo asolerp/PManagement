@@ -6,7 +6,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Colors} from '../../Theme/Variables';
 import Container from './Container';
 
-const PageOptionsScreen = () => {
+const PageOptionsScreen = ({route}) => {
+  const {options} = route.params;
   return (
     <PageLayout
       safe
@@ -24,7 +25,7 @@ const PageOptionsScreen = () => {
         title: 'Opciones',
         subPage: true,
       }}>
-      <Container />
+      <Container options={options} />
     </PageLayout>
   );
 };

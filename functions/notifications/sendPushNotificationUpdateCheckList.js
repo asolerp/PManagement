@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const {removeUserActionToken} = require('../utils');
 
 const sendPushNotificationUpdateCheckList = functions.firestore
   .document('checklists/{checklistId}/checks/{checkId}')
@@ -20,6 +21,7 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         .get();
 
       const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
+      const listTokens = removeUserActionToken(adminTokens, check.worker.token);
 
       let notification = {
         title: 'Nuevo trabajo completado! 🚀',
@@ -34,7 +36,7 @@ const sendPushNotificationUpdateCheckList = functions.firestore
       };
 
       await admin.messaging().sendMulticast({
-        tokens: adminTokens,
+        tokens: listTokens,
         notification,
         apns: {
           payload: {
