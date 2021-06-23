@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 const Photos = () => {
   const route = useRoute();
   const {incidenceId} = route.params;
-  const {Fonts} = useTheme();
+  const {Fonts, Gutters} = useTheme();
   const [modal, setModal] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
 
@@ -92,7 +92,7 @@ const Photos = () => {
         images={photos}
         onRequestClose={() => setModal(false)}
       />
-      <Text style={[Fonts.textTitle]}>📷 Fotos</Text>
+      <Text style={[Fonts.textTitle, Gutters.smallTMargin]}>📷 Fotos</Text>
       <View style={styles.container}>
         {photos?.map((photo, i) => (
           <View key={i}>
