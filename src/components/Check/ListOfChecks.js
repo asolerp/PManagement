@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, FlatList, StyleSheet} from 'react-native';
 
 // Redux
 import {useSelector, shallowEqual} from 'react-redux';
@@ -17,14 +17,14 @@ import useUploadImageCheck from '../../hooks/useUploadImage';
 import ItemCheck from '../../components/ItemCheck';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_PHOTO_SCREEN_KEY} from '../../Router/utils/routerKeys';
-import {defaultLabel, marginBottom} from '../../styles/common';
+
 import {DARK_BLUE} from '../../styles/colors';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {useTheme} from '../../Theme';
 
 const ListOfChecks = ({checkId}) => {
-  const {Layout} = useTheme();
+  const {Layout, Fonts, Gutters} = useTheme();
   const queryChecklist = useMemo(() => {
     return firestore().collection(CHECKLISTS).doc(checkId);
   }, [checkId]);
@@ -52,7 +52,7 @@ const ListOfChecks = ({checkId}) => {
     loading: loadingUploadImage,
     idCheckLoading,
     uploadImages,
-  } = useUploadImageCheck(checkId);
+  } = useUploadImageCheck(CHECKLISTS, checkId);
 
   const user = useSelector(userSelector, shallowEqual);
 
@@ -100,9 +100,7 @@ const ListOfChecks = ({checkId}) => {
   return (
     <View style={[Layout.fill]}>
       <View style={styles.labelWrapper}>
-        <Text style={{...defaultLabel, ...marginBottom(10)}}>
-          Listado de checks
-        </Text>
+        <Text style={[Fonts.textTitle]}>✅ Listado de checks</Text>
         <Text style={styles.counter}>
           {doneCounter}/{checklist?.total}
         </Text>

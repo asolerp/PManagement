@@ -87,13 +87,23 @@ const styles = StyleSheet.create({
   },
 });
 
-const IncidencesList = () => {
-  const [values, loading] = useCollectionData(
-    firestore().collection('incidences').where('done', '!=', true),
-    {
-      idField: 'id',
-    },
-  );
+const IncidencesList = ({uid}) => {
+  let firestoreQuery;
+  if (uid) {
+    firestoreQuery = firestore()
+      .collection('incidences')
+      .where('done', '==', false)
+      .where('user.uid', '==', uid);
+  }
+  if (!uid) {
+    firestoreQuery = firestore()
+      .collection('incidences')
+      .where('done', '==', false);
+  }
+
+  const [values, loading] = useCollectionData(firestoreQuery, {
+    idField: 'id',
+  });
 
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {

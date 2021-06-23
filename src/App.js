@@ -15,7 +15,7 @@ import * as RNLocalize from 'react-native-localize';
 
 import './Translations';
 import {openScreenWithPush} from './Router/utils/actions';
-import {CHAT_SCREEN_KEY} from './Router/utils/routerKeys';
+import {CHAT_SCREEN_KEY, CHECK_SCREEN_KEY} from './Router/utils/routerKeys';
 
 const CustomFallback = (props) => (
   <View>
@@ -32,6 +32,12 @@ const App = () => {
         const {
           data: {type, collection, docId},
         } = remoteMessage;
+
+        if (type === 'entity') {
+          openScreenWithPush(CHECK_SCREEN_KEY, {
+            docId,
+          });
+        }
 
         if (type === 'chat') {
           openScreenWithPush(CHAT_SCREEN_KEY, {

@@ -26,6 +26,7 @@ import {
 import JobsList from '../../components/Lists/JobsList';
 import PageLayout from '../../components/PageLayout';
 import {useTheme} from '../../Theme';
+import IncidencesList from '../../components/Lists/IncidencesList';
 
 const styles = StyleSheet.create({
   container: {
@@ -71,11 +72,7 @@ const DashboardWorkerScreen = () => {
   return (
     <React.Fragment>
       <AddButton iconName="warning" onPress={() => handleNewCheckList()} />
-      <PageLayout
-        titleChildren={
-          <ProfileBar onPress={() => openScreenWithPush(PROFILE_SCREEN_KEY)} />
-        }
-        titleLefSide={true}>
+      <PageLayout titleChildren={<ProfileBar />} titleLefSide={true}>
         <ScrollView
           style={[Layout.fill, styles.container, Gutters.smallTMargin]}
           nestedScrollEnabled
@@ -94,6 +91,7 @@ const DashboardWorkerScreen = () => {
                 {t('homeMessage')}
               </Text>
               <ChecklistList uid={user.uid} />
+              <IncidencesList uid={user.uid} />
               <JobsList uid={user.uid} />
             </View>
           </View>

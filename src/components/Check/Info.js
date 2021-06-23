@@ -21,6 +21,8 @@ import updateChecklistInput from '../../Services/updateChecklistInput';
 
 import ListOfChecks from './ListOfChecks';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
+import {useTheme} from '../../Theme';
+import Avatar from '../Avatar';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -72,7 +74,7 @@ const styles = StyleSheet.create({
 
 const Info = () => {
   const route = useRoute();
-
+  const {Layout, Gutters, Fonts} = useTheme();
   const {docId} = route.params;
 
   const queryChecklist = useMemo(() => {
@@ -90,8 +92,8 @@ const Info = () => {
           🕜 {moment(checklist?.date?.toDate()).format('LL')}
         </Text>
         <View>
-          <Text style={{...defaultLabel, ...marginBottom(10)}}>
-            Observaciones
+          <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
+            🕵️‍♂️ Observaciones
           </Text>
           <EditableInput
             value={checklist?.observations}
@@ -99,6 +101,25 @@ const Info = () => {
               updateChecklistInput(docId, {observations: change})
             }
           />
+        </View>
+        <View
+          style={[
+            Layout.colCenter,
+            Layout.justifyContentStart,
+            Layout.alignItemsStart,
+            Gutters.smallVMargin,
+          ]}>
+          <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
+            👷‍♀️ Trabajadores asignados
+          </Text>
+          {checklist?.workers?.map((worker) => (
+            <Avatar
+              id={worker.id}
+              key={worker.id}
+              uri={worker.profileImage}
+              size="big"
+            />
+          ))}
         </View>
       </View>
       {!loadingChecklist && <ListOfChecks checkId={docId} />}

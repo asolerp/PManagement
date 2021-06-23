@@ -57,17 +57,21 @@ const CheckScreen = ({route}) => {
         safe
         backButton
         titleRightSide={
-          <TouchableWithoutFeedback
-            onPress={() => {
-              openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                collection: CHECKLISTS,
-                docId: docId,
-              });
-            }}>
-            <View>
-              <Icon name="settings" size={25} color={Colors.white} />
-            </View>
-          </TouchableWithoutFeedback>
+          user.roler === 'admin' && (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
+                  collection: CHECKLISTS,
+                  docId: docId,
+                  showDelete: true,
+                  duplicate: true,
+                });
+              }}>
+              <View>
+                <Icon name="settings" size={25} color={Colors.white} />
+              </View>
+            </TouchableWithoutFeedback>
+          )
         }
         titleProps={{
           subPage: true,

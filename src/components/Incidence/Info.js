@@ -40,8 +40,6 @@ const styles = StyleSheet.create({
 
 const Info = () => {
   const {Layout, Gutters, Fonts} = useTheme();
-  const [modal, setModal] = useState([]);
-  const [imageIndex, setImageIndex] = useState(0);
 
   const route = useRoute();
 
@@ -59,64 +57,46 @@ const Info = () => {
   }
 
   return (
-    <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-      <ScrollView
-        style={[styles.container, Gutters.mediumTMargin]}
-        showsVerticalScrollIndicator={false}>
-        <Modal
-          visible={modal}
-          transparent={true}
-          onRequestClose={() => setModal(false)}>
-          <ImageViewer
-            index={imageIndex}
-            imageUrls={value?.data()?.photos?.map((url) => ({url: url}))}
-            onSwipeDown={() => {
-              setModal(false);
-            }}
-            enableSwipeDown={true}
-          />
-        </Modal>
-        <View
-          style={[
-            Layout.fill,
-            Layout.rowCenter,
-            Layout.alignItemsCenter,
-            Layout.justifyContentSpaceBetween,
-          ]}>
-          <Text style={styles.date}>
-            🕜 {moment(value?.data()?.date?.toDate()).format('LL')}
-          </Text>
-          <InfoIcon
-            info={value?.data()?.done ? 'Resuelta' : 'Sin resolver'}
-            color={value?.data()?.done ? '#7dd891' : '#ED7A7A'}
-          />
-        </View>
-        <SituationIncidence incidence={{...value?.data(), id: value?.id}} />
-        <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-          🏡 {value?.data()?.house?.houseName}
+    <React.Fragment>
+      <View
+        style={[
+          Layout.rowCenter,
+          Layout.alignItemsCenter,
+          Layout.justifyContentSpaceBetween,
+        ]}>
+        <Text style={styles.date}>
+          🕜 {moment(value?.data()?.date?.toDate()).format('LL')}
         </Text>
-        <Text style={[Fonts.smallBMargin]}>{value?.data()?.title}</Text>
-        <View
-          style={[
-            Layout.colCenter,
-            Layout.justifyContentStart,
-            Layout.alignItemsStart,
-            Gutters.smallVMargin,
-          ]}>
-          <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-            Informador
-          </Text>
-          <Avatar uri={value?.data()?.user?.profileImage} size="big" />
-        </View>
-        <Text style={{...defaultLabel, ...marginBottom(10)}}>Incidencia</Text>
-        <EditableInput
-          value={value?.data()?.incidence}
-          onPressAccept={(change) =>
-            updateIncidenceInput(incidenceId, {incidence: change})
-          }
+        <InfoIcon
+          info={value?.data()?.done ? 'Resuelta' : 'Sin resolver'}
+          color={value?.data()?.done ? '#7dd891' : '#ED7A7A'}
         />
-      </ScrollView>
-    </KeyboardAwareScrollView>
+      </View>
+      <SituationIncidence incidence={{...value?.data(), id: value?.id}} />
+      <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
+        {value?.data()?.title}
+      </Text>
+      <Text style={[Gutters.smallBMargin]}>
+        🏡 {value?.data()?.house?.houseName}
+      </Text>
+      <View
+        style={[
+          Layout.colCenter,
+          Layout.justifyContentStart,
+          Layout.alignItemsStart,
+          Gutters.smallVMargin,
+        ]}>
+        <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>Informador</Text>
+        <Avatar uri={value?.data()?.user?.profileImage} size="big" />
+      </View>
+      <Text style={{...defaultLabel, ...marginBottom(10)}}>Incidencia</Text>
+      <EditableInput
+        value={value?.data()?.incidence}
+        onPressAccept={(change) =>
+          updateIncidenceInput(incidenceId, {incidence: change})
+        }
+      />
+    </React.Fragment>
   );
 };
 

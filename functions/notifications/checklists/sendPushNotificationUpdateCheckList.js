@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken} = require('../utils');
+const {removeUserActionToken} = require('../../utils');
 
 const sendPushNotificationUpdateCheckList = functions.firestore
   .document('checklists/{checklistId}/checks/{checkId}')

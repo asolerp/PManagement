@@ -154,17 +154,11 @@ const JobItem = ({job, onPress}) => {
                 Layout.rowCenter,
                 Layout.justifyContentSpaceBetween,
               ]}>
-              <View style={[Layout.rowCenter]}>
-                <InfoIcon
-                  info={job.done ? 'Termianda' : 'Sin terminar'}
-                  color={job.done ? '#7dd891' : '#ED7A7A'}
-                />
-              </View>
               <View
                 style={[
                   Layout.rowCenter,
                   Layout.alignItemsEnd,
-                  Gutters.smallRMargin,
+                  Gutters.smallTMargin,
                 ]}>
                 {job?.workers?.map((worker, i) => (
                   <Avatar

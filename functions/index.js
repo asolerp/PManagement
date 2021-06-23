@@ -5,8 +5,17 @@ const firebase_tools = require('firebase-tools');
 const cloudinary = require('cloudinary').v2;
 
 // Notifications
-const sendPushNotificationUpdateCheckList = require('./notifications/sendPushNotificationUpdateCheckList');
-const sendPushNotificationNewChecklistMessage = require('./notifications/sendPushNotificationNewChecklistMessage');
+const {
+  sendPushNotificationNewAsignedChecklist,
+  sendPushNotificationNewChecklistMessage,
+  sendPushNotificationUpdateCheckList,
+} = require('./notifications/checklists');
+
+const {
+  sendPushNotificationUpdateIncidence,
+  sendPushNotificationNewIncidence,
+  sendPushNotificationNewIncidenceMessage,
+} = require('./notifications/incidences');
 
 cloudinary.config({
   cloud_name: 'enalbis',
@@ -22,45 +31,6 @@ admin.initializeApp(functions.config().firebase);
 exports.newUser = functions.auth.user().onCreate((user) => {
   admin.firestore().collection('users').doc(user.uid).set({email: user.email});
 });
-
-exports.onDeleteTask = functions.firestore
-  .document('jobs/{jobId}/tasks/{taskId}')
-  .onDelete((snap, context) => {
-    const decrement = FieldValue.increment(-1);
-    const taskDeleted = snap.data();
-
-    let promises = [];
-
-    const deleteTaskStat = () => {
-      admin
-        .firestore()
-        .collection('stats')
-        .where('taskId', '==', context.params.taskId)
-        .limit(1)
-        .get()
-        .then((query) => {
-          const stat = query.docs[0];
-          return stat.ref.delete();
-        })
-        .catch((err) => console.log(err));
-    };
-
-    const decrementStats = () => {
-      admin
-        .firestore()
-        .collection('jobs')
-        .doc(taskDeleted.jobId)
-        .update({
-          'stats.total': decrement,
-          'stats.done': taskDeleted.done ? decrement : FieldValue.increment(0),
-        });
-    };
-
-    promises.push(deleteTaskStat());
-    promises.push(decrementStats());
-
-    return Promise.all(promises);
-  });
 
 exports.onCreateJob = functions.firestore
   .document('jobs/{jobId}')
@@ -108,81 +78,26 @@ exports.setCheckListAsFinished = functions.firestore
     }
   });
 
+// CHECKLISTS
+
 exports.sendPushNotificationUpdateCheckList =
   sendPushNotificationUpdateCheckList;
 
 exports.sendPushNotificationNewChecklistMessage =
   sendPushNotificationNewChecklistMessage;
 
-exports.sendPushNotificationUpdateStatusJob = functions.firestore
-  .document('jobs/{jobId}')
-  .onUpdate(async (change, context) => {
-    try {
-      const taskAfter = change.after.data();
-      let status;
-      if (taskAfter.done) {
-        status = 'finished';
-      }
+exports.sendPushNotificationNewAsignedChecklist =
+  sendPushNotificationNewAsignedChecklist;
 
-      const jobSnapshot = await admin
-        .firestore()
-        .collection('jobs')
-        .doc(context.params.jobId)
-        .get();
+// INCIDENCES
 
-      let notificationFinish = {
-        title: 'Actualización de trabajo 🚨',
-        body: `Se ha finalizado la tarea en ${taskAfter.house[0].houseName}. ${taskAfter.task.desc}`,
-      };
+exports.sendPushNotificationUpdateIncidence =
+  sendPushNotificationUpdateIncidence;
 
-      let notificationUnfinish = {
-        title: 'Actualización de trabajo',
-        body: `Se ha vuelto a abrir la tarea en ${
-          taskAfter.house[0].houseName
-        }. ${taskAfter.task.desc ? taskAfter.task.desc : ''}`,
-      };
+exports.sendPushNotificationNewIncidence = sendPushNotificationNewIncidence;
 
-      let data = {
-        screen: 'JobScreen',
-        jobId: change.after.id,
-      };
-
-      const workersId = jobSnapshot.data().workersId;
-
-      const users = await Promise.all(
-        workersId.map(
-          async (workerId) =>
-            await admin.firestore().collection('users').doc(workerId).get(),
-        ),
-      );
-
-      const workersTokens = users.map((user) => user.data().token);
-
-      const adminsSnapshot = await admin.firestore();
-      updatedChecklistSnapshot
-        .collection('users')
-        .where('role', '==', 'admin')
-        .get();
-
-      const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-
-      await admin.messaging().sendMulticast({
-        tokens: adminTokens.concat(workersTokens),
-        apns: {
-          payload: {
-            aps: {
-              sound: 'default',
-            },
-          },
-        },
-        notification:
-          status === 'finished' ? notificationFinish : notificationUnfinish,
-        data,
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  });
+exports.sendPushNotificationNewIncidenceMessage =
+  sendPushNotificationNewIncidenceMessage;
 
 exports.sendPushNotificationNewMessage = functions.firestore
   .document('jobs/{jobId}/messages/{messageId}')
@@ -237,42 +152,6 @@ exports.sendPushNotificationNewMessage = functions.firestore
             },
           },
         },
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
-exports.sendPushNotificationNewIncidence = functions.firestore
-  .document('incidences/{incidenceId}')
-  .onCreate(async (snap, context) => {
-    try {
-      const incidence = snap.data();
-
-      const adminsSnapshot = await admin
-        .firestore()
-        .collection('users')
-        .where('role', '==', 'admin')
-        .get();
-
-      const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-
-      let notification = {
-        title: 'Se ha creado una incidencia! 🚨',
-        body: `${incidence.user.firstName} ha creado una nueva incidencia...`,
-      };
-
-      await admin.messaging().sendMulticast({
-        tokens: adminTokens,
-        notification,
-        apns: {
-          payload: {
-            aps: {
-              sound: 'default',
-            },
-          },
-        },
-        // data,
       });
     } catch (err) {
       console.log(err);
@@ -371,13 +250,15 @@ exports.recursiveDelete = functions
       token: functions.config().fb.token,
     });
 
-    await admin
-      .firestore()
-      .collection(collection)
-      .doc('stats')
-      .update({
-        count: FieldValue.increment(-1),
-      });
+    if (collection === 'incidences') {
+      await admin
+        .firestore()
+        .collection(collection)
+        .doc('stats')
+        .update({
+          count: FieldValue.increment(-1),
+        });
+    }
 
     return {
       path: path,

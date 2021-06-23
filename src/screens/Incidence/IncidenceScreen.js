@@ -1,13 +1,12 @@
 import React from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {View, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity, ScrollView} from 'react-native';
 
 // UI
 import CustomButton from '../../components/Elements/CustomButton';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessagesCounter';
-import {Info} from '../../components/Incidence';
-import Toast from 'react-native-toast-message';
+import {Info, Photos} from '../../components/Incidence';
 
 // Firebase
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
@@ -25,27 +24,30 @@ import {
 import {firebase} from '@react-native-firebase/firestore';
 
 import {Colors} from '../../Theme/Variables';
-import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
+import {openScreenWithPush} from '../../Router/utils/actions';
 import {
-  HOME_ADMIN_STACK_KEY,
   INCIDENCES_SCREEN_KEY,
   PAGE_OPTIONS_SCREEN_KEY,
 } from '../../Router/utils/routerKeys';
 import {INCIDENCES} from '../../utils/firebaseKeys';
 
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
+
 const IncidenceScreen = () => {
   const navigation = useNavigation();
-  const route = useRoute();
 
+  const route = useRoute();
   const {incidenceId} = route.params;
+  const user = useSelector(userSelector);
   const [incidence] = useDocumentDataOnce(
-    firestore().doc(`incidences/${incidenceId}`),
+    firestore().doc(`${INCIDENCES}/${incidenceId}`),
     {
       snapshotListenOptions: {includeMetadataChanges: true},
     },
   );
 
-  const {updateFirebase} = useUpdateFirebase('incidences');
+  const {updateFirebase} = useUpdateFirebase(INCIDENCES);
 
   const handleFinishTask = async (status) => {
     try {
@@ -78,49 +80,22 @@ const IncidenceScreen = () => {
         safe
         backButton
         titleRightSide={
-          <TouchableOpacity
-            onPress={() => {
-              openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                collection: INCIDENCES,
-                docId: incidenceId,
-                options: {
-                  duplicate: {
-                    title: 'Duplicar',
-                    mode: 'normal',
-                    action: () => console.log('duplicar'),
-                  },
-                  delete: {
-                    title: 'Eliminar',
-                    mode: 'danger',
-                    action: async () => {
-                      const deleteFn = firebase
-                        .functions()
-                        .httpsCallable('recursiveDelete');
-                      try {
-                        await deleteFn({
-                          path: `${INCIDENCES}/${incidenceId}`,
-                          collection: INCIDENCES,
-                        });
-                        openScreenWithPush(HOME_ADMIN_STACK_KEY, {
-                          screen: INCIDENCES_SCREEN_KEY,
-                        });
-                      } catch (error) {
-                        Toast.show({
-                          position: 'bottom',
-                          type: 'error',
-                          text1: 'Error',
-                          text2: 'Inténtalo más tarde! 🙏',
-                        });
-                      }
-                    },
-                  },
-                },
-              });
-            }}>
-            <View>
-              <Icon name="settings" size={25} color={Colors.white} />
-            </View>
-          </TouchableOpacity>
+          user.role === 'admin' && (
+            <TouchableOpacity
+              onPress={() => {
+                openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
+                  backScreen: INCIDENCES_SCREEN_KEY,
+                  collection: INCIDENCES,
+                  docId: incidenceId,
+                  showDelete: true,
+                  duplicate: true,
+                });
+              }}>
+              <View>
+                <Icon name="settings" size={25} color={Colors.white} />
+              </View>
+            </TouchableOpacity>
+          )
         }
         footer={
           <CustomButton
@@ -142,7 +117,12 @@ const IncidenceScreen = () => {
           title: 'Incidencia',
           subPage: true,
         }}>
-        <Info />
+        <View style={{flex: 1, marginTop: 15}}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <Info />
+            <Photos />
+          </ScrollView>
+        </View>
       </PageLayout>
     </React.Fragment>
   );

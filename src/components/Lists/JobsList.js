@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   badget: {
     color: Colors.white,
-    backgroundColor: Colors.danger,
+    backgroundColor: Colors.pm,
     width: 20,
     height: 20,
     borderRadius: 100,
@@ -89,15 +89,18 @@ const styles = StyleSheet.create({
 });
 
 const JobsList = ({uid}) => {
-  console.log(uid);
-  const query = useMemo(() => {
-    return firestore()
+  let firestoreQuery;
+  if (uid) {
+    firestoreQuery = firestore()
       .collection(JOBS)
       .where('done', '==', false)
       .where('workersId', 'array-contains', uid);
-  }, [uid]);
+  }
+  if (!uid) {
+    firestoreQuery = firestore().collection(JOBS).where('done', '==', false);
+  }
 
-  const [values, loading] = useCollectionData(query, {
+  const [values, loading] = useCollectionData(firestoreQuery, {
     idField: 'id',
   });
 

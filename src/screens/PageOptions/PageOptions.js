@@ -1,13 +1,38 @@
 import React from 'react';
-import {TouchableWithoutFeedback, View} from 'react-native';
+import {
+  ActivityIndicator,
+  TouchableWithoutFeedback,
+  View,
+  Text,
+} from 'react-native';
 import PageLayout from '../../components/PageLayout';
-import {popScreen} from '../../Router/utils/actions';
+import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Colors} from '../../Theme/Variables';
 import Container from './Container';
+import useRecursiveDelete from '../../utils/useRecursiveDelete';
+import duplicateCheckList from '../../Services/duplicateCheckList';
+import {CHECKLISTS} from '../../utils/firebaseKeys';
+import duplicateJob from '../../Services/duplicateJob';
+import {HOME_ADMIN_STACK_KEY} from '../../Router/utils/routerKeys';
+import {useTheme} from '../../Theme';
 
 const PageOptionsScreen = ({route}) => {
-  const {options} = route.params;
+  const {Layout, Fonts} = useTheme();
+  const {showDelete, duplicate, collection, docId, backScreen} = route.params;
+  const {loading, recursiveDelete} = useRecursiveDelete({
+    collection,
+    docId,
+    backScreen,
+  });
+
+  const handleDuplicate = async () => {
+    if (collection === CHECKLISTS) {
+      return await duplicateCheckList(docId);
+    }
+    return await duplicateJob(docId);
+  };
+
   return (
     <PageLayout
       safe
@@ -25,7 +50,26 @@ const PageOptionsScreen = ({route}) => {
         title: 'Opciones',
         subPage: true,
       }}>
-      <Container options={options} />
+      {loading ? (
+        <View style={[Layout.fill, Layout.colCenter]}>
+          <Text>Eliminando..</Text>
+          <ActivityIndicator color={Colors.pm} size={40} />
+        </View>
+      ) : (
+        <Container
+          collection={collection}
+          docId={docId}
+          showDelete={showDelete}
+          onDelete={recursiveDelete}
+          duplicate={duplicate}
+          onDuplicate={async () => {
+            await handleDuplicate();
+            openScreenWithPush(HOME_ADMIN_STACK_KEY, {
+              screen: backScreen,
+            });
+          }}
+        />
+      )}
     </PageLayout>
   );
 };

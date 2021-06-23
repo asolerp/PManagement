@@ -56,9 +56,7 @@ const NewIncidenceForm = () => {
         <TextInput
           style={{height: 40}}
           placeholder={t('newIncidence.form.title')}
-          onEndEditing={(event) =>
-            setInputFormAction('title', event.nativeEvent.text)
-          }
+          onChangeText={(text) => setInputFormAction('title', text)}
           value={incidence?.title}
         />
       </InputGroup>
@@ -69,9 +67,7 @@ const NewIncidenceForm = () => {
           textAlignVertical="top"
           style={{height: 120}}
           placeholder={t('newIncidence.form.incidence')}
-          onEndEditing={(event) =>
-            setInputFormAction('incidence', event.nativeEvent.text)
-          }
+          onChangeText={(text) => setInputFormAction('incidence', text)}
           value={incidence?.incidence}
         />
       </InputGroup>

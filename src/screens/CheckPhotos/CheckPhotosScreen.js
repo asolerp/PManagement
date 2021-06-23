@@ -1,13 +1,13 @@
 import React, {useMemo, useState} from 'react';
 import {
   View,
-  Modal,
   StyleSheet,
   ImageBackground,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
+import ImageView from 'react-native-image-viewing';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AddButton from '../../components/Elements/AddButton';
 import DeleteModal from '../../components/Modals/DeleteModal';
@@ -155,19 +155,12 @@ const CheckPhotosScreen = ({route}) => {
         color: 'white',
       }}>
       <React.Fragment>
-        <Modal
+        <ImageView
           visible={modal}
-          transparent={true}
-          onRequestClose={() => setModal(false)}>
-          <ImageViewer
-            index={imageIndex}
-            imageUrls={values?.map((photo) => ({url: photo.url}))}
-            onSwipeDown={() => {
-              setModal(false);
-            }}
-            enableSwipeDown={true}
-          />
-        </Modal>
+          imageIndex={imageIndex}
+          images={values?.map((photo) => ({uri: photo.url}))}
+          onRequestClose={() => setModal(false)}
+        />
         <View style={{flex: 1}}>
           {photosSelected.length > 0 && (
             <View style={styles.deletePhotos}>

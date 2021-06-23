@@ -1,19 +1,18 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, ScrollView} from 'react-native';
 
 // Components
 import ProfileBar from '../../components/ProfileBar';
-
+import JobsList from '../../components/Lists/JobsList';
 import IncidencesList from '../../components/Lists/IncidencesList';
+import ChecklistList from '../../components/Lists/ChecklistList';
 
 // UI
 import PageLayout from '../../components/PageLayout';
 
 // Utils
 import moment from 'moment';
-import {ScrollView} from 'react-native';
 import {useTheme} from '../../Theme';
-import ChecklistList from '../../components/Lists/ChecklistList';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {PROFILE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
@@ -40,6 +39,7 @@ const DashboardScreen = () => {
             </Text>
             <ChecklistList />
             <IncidencesList />
+            <JobsList />
           </View>
         </View>
       </ScrollView>

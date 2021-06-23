@@ -3,28 +3,28 @@ import {Button, View} from 'react-native';
 import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
 
-const Container = ({options}) => {
+const Container = ({showDelete, onDelete, duplicate, onDuplicate}) => {
   const {Gutters} = useTheme();
 
   return (
     <View style={[Gutters.regularTMargin]}>
-      {Object.entries(options)?.map(([key, value]) => {
-        return (
-          <View
-            key={key}
-            style={{
-              height: 40,
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.lowGrey,
-            }}>
-            <Button
-              title={value.title}
-              onPress={value.action}
-              color={value.mode === 'normal' ? Colors.pm : Colors.danger}
-            />
-          </View>
-        );
-      })}
+      <View
+        style={{
+          height: 40,
+          borderBottomWidth: 1,
+          borderBottomColor: Colors.lowGrey,
+        }}>
+        {duplicate && (
+          <Button title={'Duplicar'} onPress={onDuplicate} color={Colors.pm} />
+        )}
+        {showDelete && (
+          <Button
+            title={'Eliminar'}
+            onPress={async () => await onDelete()}
+            color={Colors.danger}
+          />
+        )}
+      </View>
     </View>
   );
 };

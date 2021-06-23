@@ -4,25 +4,24 @@ import {useRoute} from '@react-navigation/native';
 import {
   View,
   Text,
-  Modal,
   TouchableOpacity,
   ImageBackground,
   Dimensions,
   StyleSheet,
 } from 'react-native';
 
-import ImageViewer from 'react-native-image-zoom-viewer';
-import AddButton from '../Elements/AddButton';
+import ImageView from 'react-native-image-viewing';
+
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useCollectionData, useDocument} from 'react-firebase-hooks/firestore';
-import PhotoCameraModal from '../Modals/PhotoCameraModal';
+import {useDocumentData} from 'react-firebase-hooks/firestore';
+import {useTheme} from '../../Theme';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     flexWrap: 'wrap',
     marginTop: 20,
   },
@@ -33,8 +32,8 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   photo: {
-    width: (Dimensions.get('window').width - 65 - 10) / 3,
-    height: 100,
+    width: (Dimensions.get('window').width - 65 - 10) / 5,
+    height: 60,
     resizeMode: 'cover',
     borderRadius: 10,
     marginRight: 10,
@@ -45,20 +44,20 @@ const styles = StyleSheet.create({
 const Photos = () => {
   const route = useRoute();
   const {incidenceId} = route.params;
-  const [photoCameraModal, setPhotoCameraModal] = useState(false);
+  const {Fonts} = useTheme();
   const [modal, setModal] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
 
   const handlePressPhoto = (i) => {
-    setModal(true);
     setImageIndex(i);
+    setModal(true);
   };
 
   const Photo = ({photo, index}) => {
     return (
       <TouchableOpacity onPress={() => handlePressPhoto(index)} key={index}>
         <ImageBackground
-          source={{uri: photo}}
+          source={{uri: photo.uri}}
           style={styles.photo}
           imageStyle={{borderRadius: 5}}
         />
@@ -66,18 +65,16 @@ const Photos = () => {
     );
   };
 
-  const [values] = useCollectionData(
-    firestore().collection('incidences').doc(incidenceId).collection('photos'),
+  const [incidence, loading] = useDocumentData(
+    firestore().doc(`incidences/${incidenceId}`),
     {
       idField: 'id',
     },
   );
-  const [value, loading] = useDocument(
-    firestore().doc(`incidences/${incidenceId}`),
-    {
-      snapshotListenOptions: {includeMetadataChanges: true},
-    },
-  );
+
+  const photos = incidence?.photos?.map((photo) => ({uri: photo}));
+
+  console.log(photos, '[[photos]]');
 
   if (loading) {
     return (
@@ -89,52 +86,19 @@ const Photos = () => {
 
   return (
     <React.Fragment>
-      <View style={styles.addPhoto}>
-        <TouchableOpacity onPress={() => {}}>
-          <AddButton iconName="camera" />
-        </TouchableOpacity>
-      </View>
-      <PhotoCameraModal
-        visible={photoCameraModal}
-        handleVisibility={setPhotoCameraModal}
-        handleClickCamera={() =>
-          handleCamera((imgs) => {
-            imageHandler(imgs);
-            setPhotoCameraModal(false);
-          })
-        }
-        handleClickLibrary={() =>
-          handleImagePicker((imgs) => {
-            imageHandler(imgs);
-            setPhotoCameraModal(false);
-          })
-        }
-      />
-      <Modal
+      <ImageView
         visible={modal}
-        transparent={true}
-        onRequestClose={() => setModal(false)}>
-        <ImageViewer
-          index={imageIndex}
-          imageUrls={value
-            ?.data()
-            ?.photos?.concat(values?.map((p) => p.image))
-            .map((url) => ({url: url}))}
-          onSwipeDown={() => {
-            setModal(false);
-          }}
-          enableSwipeDown={true}
-        />
-      </Modal>
+        imageIndex={imageIndex}
+        images={photos}
+        onRequestClose={() => setModal(false)}
+      />
+      <Text style={[Fonts.textTitle]}>📷 Fotos</Text>
       <View style={styles.container}>
-        {value
-          ?.data()
-          ?.photos?.concat(values?.map((p) => p.image))
-          .map((photo, i) => (
-            <View key={i}>
-              <Photo photo={photo} index={photo} />
-            </View>
-          ))}
+        {photos?.map((photo, i) => (
+          <View key={i}>
+            <Photo photo={photo} index={i} />
+          </View>
+        ))}
       </View>
     </React.Fragment>
   );

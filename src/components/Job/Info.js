@@ -16,6 +16,7 @@ import {ScrollView} from 'react-native';
 import {defaultLabel, marginBottom} from '../../styles/common';
 import EditableInput from '../Elements/EditableInput';
 import updateDocument from '../../Services/updateDocument';
+import {useTheme} from '../../Theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,11 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingBottom: 20,
   },
-  date: {
-    fontSize: 18,
-    marginVertical: 10,
-    color: '#3DB6BA',
-  },
+  date: {},
   label: {
     fontSize: 20,
     width: '90%',
@@ -67,23 +64,29 @@ const styles = StyleSheet.create({
 
 const Info = () => {
   const route = useRoute();
+  const {Layout, Gutters} = useTheme();
   const {jobId} = route.params;
 
   const {document: job} = useGetDocFirebase('jobs', jobId);
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.container}>
-        <View style={{flex: 1}}>
-          <View style={styles.infoWrapper}>
+      <View style={[styles.container]}>
+        <View>
+          <View
+            style={[
+              Layout.fill,
+              Layout.row,
+              Layout.justifyContentSpaceBetween,
+            ]}>
+            <Text style={styles.date}>
+              🕐 {moment(job?.date?.toDate()).format('LL')}
+            </Text>
             <InfoIcon
               info={job.done ? 'Termianda' : 'Sin terminar'}
               color={job.done ? '#7dd891' : '#ED7A7A'}
             />
           </View>
-          <Text style={styles.date}>
-            {moment(job?.date?.toDate()).format('LL')}
-          </Text>
           <Text style={{...defaultLabel, ...marginBottom(10)}}>
             Observaciones
           </Text>
