@@ -9,7 +9,6 @@ import {firebase} from '@react-native-firebase/firestore';
 const useRecursiveDelete = ({collection, docId, backScreen}) => {
   const [loading, setLoading] = useState(false);
   const recursiveDelete = async () => {
-    console.log(collection, docId, backScreen);
     const deleteFn = firebase.functions().httpsCallable('recursiveDelete');
     try {
       setLoading(true);

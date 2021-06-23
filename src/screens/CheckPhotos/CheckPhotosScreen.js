@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
 });
 
 const CheckPhotosScreen = ({route}) => {
-  console.log(route, 'route');
   const {title, checkId, checkItemId} = route.params;
   const [modal, setModal] = useState([]);
   const [photosSelected, setPhotosSelected] = useState([]);
@@ -92,8 +91,6 @@ const CheckPhotosScreen = ({route}) => {
   const [values, loading] = useCollectionData(query, {
     idField: 'id',
   });
-
-  console.log(values, 'values');
 
   const handlePressPhoto = (i) => {
     setModal(true);

@@ -15,7 +15,6 @@ export const openScreen = (screenId, options = {}) => {
 };
 
 export const openScreenWithPush = (screenId, options = {}, forcePushScreen) => {
-  console.log('hola', navigation);
   if (forcePushScreen) {
     const pushAction = StackActions.push(screenId, options);
     navigation.current?.dispatch(pushAction);

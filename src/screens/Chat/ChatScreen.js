@@ -20,8 +20,6 @@ const ChatScreen = ({route}) => {
     },
   );
 
-  console.log('VALUES', values);
-
   return (
     <PageLayout
       safe

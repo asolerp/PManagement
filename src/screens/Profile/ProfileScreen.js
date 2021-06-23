@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
 });
 
 const ProfileScreen = ({route}) => {
-  console.log(route);
   const {userId} = route.params;
   const [newImage, setNewImage] = useState();
   const [infoProfile, setInfoProfile] = useState();

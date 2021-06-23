@@ -40,7 +40,6 @@ export const tabNameByScreen = {
 };
 
 export const getHightByRoute = (route) => {
-  console.log(route);
   switch (route) {
     case DASHBOARD_SCREEN_KEY:
       return 180;

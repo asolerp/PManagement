@@ -5,7 +5,6 @@ import firestore from '@react-native-firebase/firestore';
 export const setMessagesAsRead = async (docId, userId, collection) => {
   // Create a new batch instance
   const batch = firestore().batch();
-  console.log('hola desde dentro', docId, collection, userId);
   try {
     const querySnapshot = await firestore()
       .collection(collection)
