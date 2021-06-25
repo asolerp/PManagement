@@ -131,16 +131,25 @@ export const parseDateWithText = (date) => {
     moment(date?.toDate()).format('MM/DD/YYYY') ===
     moment(new Date()).format('MM/DD/YYYY')
   ) {
-    return 'Hoy';
+    return {
+      text: 'Hoy',
+      variant: 'pm',
+    };
   } else if (
     moment(date.toDate()).format('MM/DD/YYYY') <
       moment(new Date()).format('MM/DD/YYYY') &&
     moment(date.toDate()).format('MM/DD/YYYY') >
       moment(new Date()).subtract(7, 'days').format('MM/DD/YYYY')
   ) {
-    return 'Esta semana';
+    return {
+      text: 'Esta semana',
+      variant: 'warning',
+    };
   } else {
-    return 'Más de una semana';
+    return {
+      text: 'Más de una semana',
+      variant: 'danger',
+    };
   }
 };
 

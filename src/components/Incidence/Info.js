@@ -18,6 +18,7 @@ import {useDocument} from 'react-firebase-hooks/firestore';
 import {Colors} from '../../Theme/Variables';
 import EditableInput from '../Elements/EditableInput';
 import updateIncidenceInput from '../../Services/updateIncidenceInput';
+import Badge from '../Elements/Badge';
 
 const styles = StyleSheet.create({
   incidenceImage: {
@@ -64,21 +65,30 @@ const Info = () => {
           Layout.alignItemsCenter,
           Layout.justifyContentSpaceBetween,
         ]}>
-        <Text style={styles.date}>
-          🕜 {moment(value?.data()?.date?.toDate()).format('LL')}
+        <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
+          {value?.data()?.title}
         </Text>
-        <InfoIcon
-          info={value?.data()?.done ? 'Resuelta' : 'Sin resolver'}
-          color={value?.data()?.done ? '#7dd891' : '#ED7A7A'}
+        <Badge
+          text={value?.data()?.done ? 'Resuelta' : 'Sin resolver'}
+          variant={value?.data()?.done ? 'success' : 'danger'}
         />
       </View>
+      <EditableInput
+        value={value?.data()?.incidence}
+        onPressAccept={(change) =>
+          updateIncidenceInput(incidenceId, {incidence: change})
+        }
+      />
+      <Badge
+        text={value?.data()?.house?.houseName}
+        variant="purple"
+        containerStyle={Gutters.smallVMargin}
+      />
+      <Badge
+        label="Fecha: "
+        text={moment(value?.data()?.date?.toDate()).format('LL')}
+      />
       <SituationIncidence incidence={{...value?.data(), id: value?.id}} />
-      <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-        {value?.data()?.title}
-      </Text>
-      <Text style={[Gutters.smallBMargin]}>
-        🏡 {value?.data()?.house?.houseName}
-      </Text>
       <View
         style={[
           Layout.colCenter,
@@ -89,13 +99,6 @@ const Info = () => {
         <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>Informador</Text>
         <Avatar uri={value?.data()?.user?.profileImage} size="big" />
       </View>
-      <Text style={{...defaultLabel, ...marginBottom(10)}}>Incidencia</Text>
-      <EditableInput
-        value={value?.data()?.incidence}
-        onPressAccept={(change) =>
-          updateIncidenceInput(incidenceId, {incidence: change})
-        }
-      />
     </React.Fragment>
   );
 };

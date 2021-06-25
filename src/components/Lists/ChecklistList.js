@@ -146,7 +146,7 @@ const ChecklistList = ({uid, house}) => {
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={value.sort((a, b) => sortByDate(a, b, 'des'))}
+        data={value.sort(sortByDate)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

@@ -9,9 +9,10 @@ import {INCIDENCES} from '../../utils/firebaseKeys';
 import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
 import Avatar from '../Avatar';
 import Counter from '../Counter';
+import Badge from '../Elements/Badge';
 
 const IncidenceItem = ({item}) => {
-  const {Layout, Gutters} = useTheme();
+  const {Layout, Gutters, Fonts} = useTheme();
 
   const {noReadCounter} = useNoReadMessages({
     collection: INCIDENCES,
@@ -38,24 +39,29 @@ const IncidenceItem = ({item}) => {
             Layout.justifyContentSpaceBetween,
             Gutters.smallBMargin,
           ]}>
-          <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
+          <Badge
+            text={parseDateWithText(item?.date).text}
+            variant={parseDateWithText(item?.date).variant}
+          />
           {noReadCounter > 0 && <Counter count={noReadCounter} />}
         </View>
-        <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
+        <Text style={[Fonts.titleCard]} numberOfLines={2} ellipsizeMode="tail">
           {item?.title}
         </Text>
         <View style={styles.infoWrapper}>
           <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={2}>
             {item?.incidence}
           </Text>
-          <Text style={[styles.bold, Gutters.regularBMargin]}>
-            {item?.house?.houseName}
-          </Text>
+          <Badge
+            text={item?.house?.houseName}
+            variant="purple"
+            containerStyle={Gutters.regularBMargin}
+          />
           <View style={styles.avatarWrapper}>
             <Avatar
               key={item?.user?.id}
               uri={item?.user?.profileImage}
-              size="medium"
+              size="small"
             />
           </View>
         </View>
@@ -72,7 +78,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: 220,
-    height: 230,
+    height: 200,
     borderLeftWidth: 10,
   },
   avatarWrapper: {
@@ -83,8 +89,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   infoStyle: {
-    color: Colors.darkBlue,
-    height: 50,
+    color: Colors.darkGrey,
+    height: 40,
   },
   titleWrapper: {
     flexDirection: 'row',

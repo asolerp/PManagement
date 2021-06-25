@@ -5,14 +5,18 @@ import {View, Text, StyleSheet} from 'react-native';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useDocumentData} from 'react-firebase-hooks/firestore';
+import {
+  useCollectionData,
+  useDocumentData,
+} from 'react-firebase-hooks/firestore';
 
 // styles
-import {defaultLabel, marginBottom} from '../../styles/common';
+
 import {GREY_1, PM_COLOR} from '../../styles/colors';
 
 // utils
 import moment from 'moment';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import EditableInput from '../Elements/EditableInput';
 
@@ -23,6 +27,11 @@ import ListOfChecks from './ListOfChecks';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {useTheme} from '../../Theme';
 import Avatar from '../Avatar';
+import {Divider} from 'react-native-elements';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+
+import Badge from '../Elements/Badge';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -57,10 +66,6 @@ const styles = StyleSheet.create({
   dateStyle: {
     color: '#2A7BA5',
   },
-  date: {
-    marginBottom: 10,
-    marginVertical: 10,
-  },
   buttonStyle: {
     width: 32,
     height: 32,
@@ -76,6 +81,9 @@ const Info = () => {
   const route = useRoute();
   const {Layout, Gutters, Fonts} = useTheme();
   const {docId} = route.params;
+  const query = useMemo(() => {
+    return firestore().collection('checklists').doc(docId).collection('checks');
+  }, [docId]);
 
   const queryChecklist = useMemo(() => {
     return firestore().collection(CHECKLISTS).doc(docId);
@@ -85,15 +93,18 @@ const Info = () => {
     idField: 'id',
   });
 
+  const [checks, loadingChecks] = useCollectionData(query, {
+    idField: 'id',
+  });
+
+  const doneCounter = checks?.filter((check) => check.done).length;
+
   return (
     <View style={styles.checklistContainer}>
       <View style={{marginBottom: 20}}>
-        <Text style={styles.date}>
-          🕜 {moment(checklist?.date?.toDate()).format('LL')}
-        </Text>
-        <View>
-          <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-            🕵️‍♂️ Observaciones
+        <View style={[Gutters.smallBMargin]}>
+          <Text style={[Fonts.textTitle, Gutters.smallVMargin, {width: '90%'}]}>
+            {`Checklist en ${checklist?.house?.[0].houseName}`}
           </Text>
           <EditableInput
             value={checklist?.observations}
@@ -101,17 +112,51 @@ const Info = () => {
               updateChecklistInput(docId, {observations: change})
             }
           />
+          <View
+            style={[
+              Layout.row,
+              Layout.justifyContentSpaceBetween,
+              Layout.alignItemsCenter,
+              Gutters.smallVMargin,
+            ]}>
+            <View>
+              <Badge
+                text={checklist?.house?.[0].houseName}
+                variant="purple"
+                containerStyle={Gutters.smallBMargin}
+              />
+              <Badge
+                label={'Fecha: '}
+                text={moment(checklist?.date?.toDate()).format('LL')}
+                variant={'pm'}
+              />
+            </View>
+            {!loadingChecks && (
+              <AnimatedCircularProgress
+                size={40}
+                width={3}
+                fill={(doneCounter / checklist?.total) * 100}
+                tintColor={Colors.pm}
+                backgroundColor={Colors.lowGrey}
+                backgroundWidth={2}
+                onAnimationComplete={() => console.log('onAnimationComplete')}>
+                {() => (
+                  <Text style={{fontSize: 10}}>
+                    {(doneCounter / checklist?.total) * 100}%
+                  </Text>
+                )}
+              </AnimatedCircularProgress>
+            )}
+          </View>
         </View>
-        <View
-          style={[
-            Layout.colCenter,
-            Layout.justifyContentStart,
-            Layout.alignItemsStart,
-            Gutters.smallVMargin,
-          ]}>
-          <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-            👷‍♀️ Trabajadores asignados
-          </Text>
+        <Divider />
+        <View style={[Layout.col, Gutters.smallVMargin]}>
+          <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
+            <Text style={[Gutters.smallBMargin, Fonts.textTitle]}>
+              Asignado a
+            </Text>
+            <Icon name="keyboard-control" size={25} color={Colors.darkBlue} />
+          </View>
           {checklist?.workers?.map((worker) => (
             <Avatar
               id={worker.id}
@@ -121,8 +166,9 @@ const Info = () => {
             />
           ))}
         </View>
+        <Divider />
       </View>
-      {!loadingChecklist && <ListOfChecks checkId={docId} />}
+      {!loadingChecklist && <ListOfChecks checks={checks} checkId={docId} />}
     </View>
   );
 };

@@ -10,6 +10,17 @@ export default function ({FontSize, Colors}) {
       fontWeight: 'bold',
       color: Colors.darkBlue,
     },
+    titleCard: {
+      fontSize: FontSize.small,
+      fontWeight: 'bold',
+      color: Colors.darkBlue,
+      marginBottom: 10,
+    },
+    textInfo: {
+      fontSize: FontSize.small,
+      color: Colors.darkGrey,
+      fontWeight: '400',
+    },
     textWhite: {
       fontSize: FontSize.small,
       fontWeight: 'bold',

@@ -5,13 +5,11 @@ import {Filter} from '../components/Filters/StatusTaskFilter';
 import {userSelector} from '../Store/User/userSlice';
 import {useTheme} from '../Theme';
 
-import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
 import firestore from '@react-native-firebase/firestore';
 
 const SituationIncidence = ({incidence}) => {
   const {Layout, Gutters, Colors, Fonts} = useTheme();
   const user = useSelector(userSelector);
-  const {updateFirebase} = useUpdateFirebase('incidences');
 
   const handleStateIncidence = async (stateIncidence) => {
     try {
@@ -26,7 +24,7 @@ const SituationIncidence = ({incidence}) => {
   };
 
   return (
-    <View style={[Gutters.tinyVMargin]}>
+    <View style={[Gutters.regularTMargin]}>
       <Text style={[Fonts.textTitle]}>Estado de la incidencia</Text>
       <View
         style={[

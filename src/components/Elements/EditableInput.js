@@ -14,11 +14,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const styles = StyleSheet.create({
   input: {
-    padding: 10,
+    padding: 0,
     backgroundColor: 'white',
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: Colors.grey,
+    borderWidth: 0,
   },
   acceptButton: {
     backgroundColor: Colors.pm,
@@ -33,7 +32,7 @@ const styles = StyleSheet.create({
 });
 
 const EditableInput = ({value, onPressAccept}) => {
-  const {Layout, Gutters} = useTheme();
+  const {Layout, Gutters, Fonts} = useTheme();
   const [text, onChangeText] = useState();
   const [showOptions, setShowOptions] = useState(false);
   useEffect(() => {
@@ -51,7 +50,7 @@ const EditableInput = ({value, onPressAccept}) => {
     <View>
       <TextInput
         textAlignVertical="center"
-        style={[styles.input, Gutters.tinyBMargin]}
+        style={[styles.input, Gutters.tinyBMargin, Fonts.textInfo]}
         value={text}
         multiline
         onChangeText={(t) => onChangeText(t)}

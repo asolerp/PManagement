@@ -3,21 +3,19 @@ import {useNavigation} from '@react-navigation/core';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-import Avatar from '../Avatar';
-
 import {defaultLabel, marginRight, width} from '../../styles/common';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useCollection, useCollectionData} from 'react-firebase-hooks/firestore';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Utils
-import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
+
 import {Colors} from '../../Theme/Variables';
-import {useTheme} from '../../Theme';
+
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
-import {openScreen, openScreenWithPush} from '../../Router/utils/actions';
+import {openScreenWithPush} from '../../Router/utils/actions';
 import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import IncidenceItem from './IncidenceItem';
 

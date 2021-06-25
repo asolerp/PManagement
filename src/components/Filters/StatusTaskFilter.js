@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 
 // Redux
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {
   setStatusTaskFilter,
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   filterWrapper: {
     paddingHorizontal: 5,
     paddingVertical: 5,
-    borderRadius: 50,
+    borderRadius: 5,
     marginRight: 10,
   },
   filterText: {

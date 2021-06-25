@@ -9,9 +9,10 @@ import {JOBS} from '../../utils/firebaseKeys';
 import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
 import Avatar from '../Avatar';
 import Counter from '../Counter';
+import Badge from '../Elements/Badge';
 
 const JobItem = ({item}) => {
-  const {Layout, Gutters} = useTheme();
+  const {Layout, Gutters, Fonts} = useTheme();
 
   const {noReadCounter} = useNoReadMessages({
     collection: JOBS,
@@ -38,32 +39,37 @@ const JobItem = ({item}) => {
             Layout.justifyContentSpaceBetween,
             Gutters.smallBMargin,
           ]}>
-          <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
+          <Badge
+            text={parseDateWithText(item?.date).text}
+            variant={parseDateWithText(item?.date).variant}
+          />
           {noReadCounter > 0 && <Counter count={noReadCounter} />}
         </View>
-        <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
+        <Text style={[Fonts.titleCard]} numberOfLines={2} ellipsizeMode="tail">
           {item?.task?.desc}
         </Text>
         <View style={styles.infoWrapper}>
           <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={2}>
             {item?.observations}
           </Text>
-          <Text style={[styles.bold]}>{item?.house?.[0].houseName}</Text>
+          <Badge
+            text={item?.house?.[0].houseName}
+            variant="purple"
+            containerStyle={Gutters.smallBMargin}
+          />
         </View>
         <View
           style={[
-            Layout.grow,
-            Layout.rowCenter,
+            Layout.row,
             Layout.justifyContentSpaceBetween,
             Layout.alignItemsCenter,
-            Gutters.smallVMargin,
           ]}>
           <View style={[Layout.rowCenter, Gutters.smallLMargin]}>
             {item?.workers?.map((worker) => (
               <Avatar
                 key={worker.id}
                 uri={worker.profileImage}
-                size="medium"
+                size="small"
                 overlap={item?.workers?.length > 0}
               />
             ))}
@@ -82,7 +88,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: 220,
-    height: 230,
+    height: 180,
     borderLeftWidth: 10,
   },
   avatarWrapper: {
@@ -93,7 +99,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   infoStyle: {
-    color: Colors.darkBlue,
+    color: Colors.darkGrey,
     height: 30,
   },
   titleWrapper: {
@@ -107,7 +113,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontWeight: '500',
     color: Colors.darkBlue,
-    height: 60,
+    height: 40,
   },
   bold: {
     fontWeight: '600',

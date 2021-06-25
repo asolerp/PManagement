@@ -10,14 +10,18 @@ import {handleCamera, handleImagePicker} from '../utils/imageFunctions';
 import {GREY_1, PM_COLOR} from '../styles/colors';
 
 import moment from 'moment';
-import InfoIcon from './InfoIcon';
-import {Colors} from '../Theme/Variables';
+import {firebase} from '@react-native-firebase/firestore';
+
+import {Colors, FontSize} from '../Theme/Variables';
 import {useTheme} from '../Theme';
 import PhotoCameraModal from './Modals/PhotoCameraModal';
+import Badge from './Elements/Badge';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../Store/User/userSlice';
+import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
     backgroundColor: 'white',
     alignItems: 'center',
@@ -29,15 +33,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   infoWrapper: {
-    flex: 6,
     marginLeft: 0,
     paddingRight: 20,
   },
   name: {
-    fontSize: 15,
+    fontSize: FontSize.small,
+    width: '80%',
   },
   dateStyle: {
-    color: '#2A7BA5',
+    color: Colors.darkBlue,
+    fontSize: FontSize.tiny,
   },
   buttonStyle: {
     width: 32,
@@ -50,9 +55,31 @@ const styles = StyleSheet.create({
   },
 });
 
-const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
+const ItemCheck = ({check, checklistId, imageHandler, loading}) => {
+  console.log(check, checklistId);
   const {Layout, Gutters} = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
+  const {updateFirebase} = useUpdateFirebase('checklists');
+  const user = useSelector(userSelector);
+
+  const handleCheck = async (status) => {
+    try {
+      await updateFirebase(`${checklistId}/checks/${check?.id}`, {
+        ...check,
+        date: !check.done ? null : new Date(),
+        done: status,
+        worker: status ? user : null,
+      });
+      await updateFirebase(`${checklistId}`, {
+        done: status
+          ? firebase.firestore.FieldValue.increment(1)
+          : firebase.firestore.FieldValue.increment(-1),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <React.Fragment>
       <PhotoCameraModal
@@ -72,42 +99,54 @@ const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
         }
       />
       <View style={{...styles.container}}>
-        <View style={[Gutters.smallRMargin]}>
-          {check?.worker && (
-            <View style={[Gutters.tinyVMargin]}>
-              <Avatar
-                key={check?.worker?.uid}
-                uri={check?.worker?.profileImage}
-                size="medium"
-              />
-            </View>
-          )}
-        </View>
-        <View style={styles.infoWrapper}>
-          <Text style={styles.name}>{check.title}</Text>
+        <CheckBox
+          disabled={false}
+          value={check.done}
+          onTintColor={Colors.leftBlue}
+          onCheckColor={Colors.leftBlue}
+          onValueChange={(e) => handleCheck(e)}
+        />
+        <View style={[Gutters.smallLMargin, Layout.fill]}>
+          <Text
+            style={[
+              styles.name,
+              check.done && {textDecorationLine: 'line-through'},
+            ]}>
+            {check.title}
+          </Text>
           {check?.date && (
             <Text style={styles.dateStyle}>
               {moment(check?.date?.toDate()).format('LL')}
             </Text>
           )}
-          {check?.numberOfPhotos > 0 && (
-            <View
-              style={[Layout.fill, Layout.column, Layout.justifyContentStart]}>
-              {check?.numberOfPhotos > 0 && (
-                <View
-                  style={[
-                    Layout.rowCenter,
-                    Layout.justifyContentStart,
-                    Gutters.tinyVMargin,
-                  ]}>
-                  <InfoIcon
-                    info={`Fotos: ${check?.numberOfPhotos}`}
-                    color={PM_COLOR}
+          <View
+            style={[Layout.row, Layout.alignItemsCenter, Gutters.tinyTMargin]}>
+            {check?.worker && (
+              <View style={[Gutters.tinyRMargin]}>
+                <Avatar
+                  key={check?.worker?.uid}
+                  uri={check?.worker?.profileImage}
+                  size="small"
+                />
+              </View>
+            )}
+            {check?.numberOfPhotos > 0 && (
+              <View
+                style={[
+                  Layout.fill,
+                  Layout.column,
+                  Layout.justifyContentStart,
+                ]}>
+                {check?.numberOfPhotos > 0 && (
+                  <Badge
+                    label={'Fotos: '}
+                    text={check?.numberOfPhotos}
+                    variant="warning"
                   />
-                </View>
-              )}
-            </View>
-          )}
+                )}
+              </View>
+            )}
+          </View>
         </View>
         <View style={styles.checkboxWrapper}>
           <TouchableOpacity onPress={() => setPhotoCameraModal(true)}>
@@ -119,13 +158,6 @@ const ItemCheck = ({check, handleCheck, imageHandler, loading}) => {
               )}
             </View>
           </TouchableOpacity>
-          <CheckBox
-            disabled={false}
-            value={check.done}
-            onTintColor={Colors.leftBlue}
-            onCheckColor={Colors.leftBlue}
-            onValueChange={() => handleCheck()}
-          />
         </View>
       </View>
     </React.Fragment>

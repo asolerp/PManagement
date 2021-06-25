@@ -3,11 +3,14 @@ import {View, Text, StyleSheet} from 'react-native';
 import useNoReadMessages from '../../hooks/useNoReadMessages';
 
 import {useTheme} from '../../Theme';
-import {Colors} from '../../Theme/Variables';
+import {Colors, FontSize} from '../../Theme/Variables';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+
 import Avatar from '../Avatar';
 import Counter from '../Counter';
+import Badge from '../Elements/Badge';
 
 const CheckItem = ({item}) => {
   const {Layout, Gutters, Fonts} = useTheme();
@@ -33,19 +36,25 @@ const CheckItem = ({item}) => {
         <View
           style={[
             Layout.rowCenter,
-            Layout.justifyContentSpaceBetween,
+            Layout.justifyContentStart,
             Gutters.smallBMargin,
           ]}>
-          <Text style={styles.date}>🕜 {parseDateWithText(item?.date)}</Text>
+          <Badge
+            text={parseDateWithText(item?.date).text}
+            variant={parseDateWithText(item?.date).variant}
+          />
+
           {noReadCounter > 0 && <Counter count={noReadCounter} />}
         </View>
         <View style={styles.infoWrapper}>
-          <Text style={[styles.bold, Gutters.smallBMargin]}>
-            {item?.house?.[0].houseName}
-          </Text>
           <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={2}>
             {item?.observations}
           </Text>
+          <Badge
+            text={item?.house?.[0].houseName}
+            variant="purple"
+            containerStyle={Gutters.smallBMargin}
+          />
         </View>
         <View
           style={[
@@ -60,14 +69,25 @@ const CheckItem = ({item}) => {
               <Avatar
                 key={worker.id}
                 uri={worker.profileImage}
-                size="medium"
+                size="small"
                 overlap={item?.workers?.length > 0}
               />
             ))}
           </View>
-          <Text style={[Fonts.textSmall]}>
-            {item?.done}/{item?.total}
-          </Text>
+          <AnimatedCircularProgress
+            size={30}
+            width={3}
+            fill={(item?.done / item?.total) * 100}
+            tintColor={Colors.pm}
+            backgroundColor={Colors.lowGrey}
+            backgroundWidth={2}
+            onAnimationComplete={() => console.log('onAnimationComplete')}>
+            {() => (
+              <Text style={{fontSize: 7}}>
+                {(item?.done / item?.total) * 100}%
+              </Text>
+            )}
+          </AnimatedCircularProgress>
         </View>
       </View>
     </View>
@@ -89,11 +109,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
   },
-  infoWrapper: {
-    marginTop: 10,
-  },
+
   infoStyle: {
-    color: Colors.darkBlue,
+    color: Colors.darkGrey,
     height: 40,
   },
   titleWrapper: {
@@ -110,7 +128,8 @@ const styles = StyleSheet.create({
     height: 60,
   },
   bold: {
-    fontWeight: '600',
+    fontSize: FontSize.small,
+    fontWeight: 'bold',
     color: Colors.darkBlue,
     marginBottom: 10,
   },
