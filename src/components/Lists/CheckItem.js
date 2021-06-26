@@ -77,14 +77,14 @@ const CheckItem = ({item}) => {
           <AnimatedCircularProgress
             size={30}
             width={3}
-            fill={(item?.done / item?.total) * 100}
+            fill={Math.round((item?.done / item?.total) * 100)}
             tintColor={Colors.pm}
             backgroundColor={Colors.lowGrey}
             backgroundWidth={2}
             onAnimationComplete={() => console.log('onAnimationComplete')}>
             {() => (
               <Text style={{fontSize: 7}}>
-                {(item?.done / item?.total) * 100}%
+                {Math.round((item?.done / item?.total) * 100)}%
               </Text>
             )}
           </AnimatedCircularProgress>

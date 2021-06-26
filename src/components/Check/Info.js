@@ -142,7 +142,7 @@ const Info = () => {
                 onAnimationComplete={() => console.log('onAnimationComplete')}>
                 {() => (
                   <Text style={{fontSize: 10}}>
-                    {(doneCounter / checklist?.total) * 100}%
+                    {Math.round((doneCounter / checklist?.total) * 100)}%
                   </Text>
                 )}
               </AnimatedCircularProgress>

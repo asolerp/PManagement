@@ -42,13 +42,15 @@ const CheckScreen = ({route}) => {
     },
   );
 
-  const user = useSelector(userSelector, shallowEqual);
+  const user = useSelector(userSelector);
   const areAllChecksDone =
     checks?.length === checks?.filter((check) => check.done).length;
 
   const handleFinishAndSend = () => {
     finishAndSendChecklist(docId);
   };
+
+  console.log(user, '[[USER]]');
 
   return (
     <React.Fragment>
@@ -57,7 +59,7 @@ const CheckScreen = ({route}) => {
         safe
         backButton
         titleRightSide={
-          user.roler === 'admin' && (
+          user.role === 'admin' && (
             <TouchableWithoutFeedback
               onPress={() => {
                 openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {

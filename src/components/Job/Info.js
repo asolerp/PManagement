@@ -13,6 +13,7 @@ import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
 import moment from 'moment';
 import {ScrollView} from 'react-native';
 
+import Badge from '../../components/Elements/Badge';
 import {defaultLabel, marginBottom} from '../../styles/common';
 import EditableInput from '../Elements/EditableInput';
 import updateDocument from '../../Services/updateDocument';
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
 
 const Info = () => {
   const route = useRoute();
-  const {Layout, Gutters} = useTheme();
+  const {Layout, Fonts, Gutters} = useTheme();
   const {jobId} = route.params;
 
   const {document: job} = useGetDocFirebase('jobs', jobId);
@@ -79,53 +80,59 @@ const Info = () => {
               Layout.row,
               Layout.justifyContentSpaceBetween,
             ]}>
-            <Text style={styles.date}>
-              🕐 {moment(job?.date?.toDate()).format('LL')}
+            <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
+              {job?.task?.desc}
             </Text>
-            <InfoIcon
-              info={job.done ? 'Termianda' : 'Sin terminar'}
-              color={job.done ? '#7dd891' : '#ED7A7A'}
+            <Badge
+              text={job?.done ? 'Termianda' : 'Sin terminar'}
+              variant={job?.done ? 'success' : 'danger'}
             />
           </View>
-          <Text style={{...defaultLabel, ...marginBottom(10)}}>
-            Observaciones
-          </Text>
           <EditableInput
             value={job?.observations}
             onPressAccept={(change) =>
               updateDocument('jobs', jobId, {observations: change})
             }
           />
-          <Text style={{...defaultLabel, ...marginBottom(10)}}>
-            Trabajadores asignados
-          </Text>
-          <View style={styles.workers}>
-            {job?.workers?.map((worker) => (
-              <Avatar
-                id={worker.id}
-                name={worker.firstName}
-                key={worker.id}
-                uri={worker.profileImage}
-                size="big"
-              />
-            ))}
+          <Badge
+            text={job?.house?.[0].houseName}
+            variant="purple"
+            containerStyle={Gutters.smallVMargin}
+          />
+          <Badge
+            label="Fecha: "
+            text={moment(job?.date?.toDate()).format('LL')}
+          />
+          <View style={[Gutters.mediumTMargin]}>
+            <Text style={{...defaultLabel, ...marginBottom(10)}}>
+              Asignado a
+            </Text>
+            <View style={styles.workers}>
+              {job?.workers?.map((worker) => (
+                <Avatar
+                  id={worker.id}
+                  key={worker.id}
+                  uri={worker.profileImage}
+                  size="big"
+                />
+              ))}
+            </View>
           </View>
-          <Text style={styles.label}>
-            {job?.house && job?.house[0].houseName}
-          </Text>
-          <Text style={styles.houseItems}>
-            <Text style={{fontWeight: 'bold'}}>Calle: </Text>
-            <Text>{job?.house && job?.house[0]?.street}</Text>{' '}
-          </Text>
-          <Text style={styles.houseItems}>
-            <Text style={{fontWeight: 'bold'}}>Municipio: </Text>
-            <Text>{job?.house && job?.house[0]?.municipio}</Text>{' '}
-          </Text>
           <Image
             style={styles.houseImage}
             source={{
               uri: job?.house && job?.house[0]?.houseImage,
             }}
+          />
+          <Badge
+            label="Municipio: "
+            text={job?.house?.[0]?.municipio}
+            containerStyle={Gutters.smallBMargin}
+          />
+          <Badge
+            label="Calle: "
+            text={job?.house?.[0]?.street}
+            variant="warning"
           />
         </View>
       </View>

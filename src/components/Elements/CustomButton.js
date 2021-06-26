@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {useTheme} from '../../Theme';
 
-import {Colors} from '../../Theme/Variables';
+import {Colors, Variants} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
@@ -40,8 +40,6 @@ const CustomButton = ({
 
   const parseStyled = () => {
     switch (styled) {
-      case 'rounded':
-        return 15;
       default:
         return 5;
     }
@@ -64,7 +62,10 @@ const CustomButton = ({
       <View
         style={[
           Layout.rowCenter,
-          {backgroundColor: color, borderRadius: parseStyled()},
+          {
+            backgroundColor: Variants.pm.color,
+            borderRadius: parseStyled(),
+          },
           disabled
             ? {...styles[parseTypeStyle(type)], ...{opacity: 0.5}}
             : {...styles[parseTypeStyle(type)]},

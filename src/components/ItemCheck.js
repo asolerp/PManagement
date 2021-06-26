@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
 });
 
 const ItemCheck = ({check, checklistId, imageHandler, loading}) => {
-  console.log(check, checklistId);
   const {Layout, Gutters} = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {updateFirebase} = useUpdateFirebase('checklists');
@@ -66,7 +65,7 @@ const ItemCheck = ({check, checklistId, imageHandler, loading}) => {
     try {
       await updateFirebase(`${checklistId}/checks/${check?.id}`, {
         ...check,
-        date: !check.done ? null : new Date(),
+        date: !status ? null : new Date(),
         done: status,
         worker: status ? user : null,
       });
