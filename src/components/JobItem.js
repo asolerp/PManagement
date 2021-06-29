@@ -28,6 +28,7 @@ import {Colors} from '../Theme/Variables';
 import useNoReadMessages from '../hooks/useNoReadMessages';
 import {JOBS} from '../utils/firebaseKeys';
 import Counter from './Counter';
+import Badge from './Elements/Badge';
 
 const styles = StyleSheet.create({
   container: {
@@ -134,20 +135,19 @@ const JobItem = ({job, onPress}) => {
         ]}>
         <View style={[Layout.fill]}>
           <View>
-            <View style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
-              <Text>🏡 {job?.house?.[0]?.houseName}</Text>
-              <Text style={styles.date}>
-                ⏱ {moment(job?.date?.toDate()).format('LL')}
-              </Text>
+            <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
+              {job?.task?.desc && (
+                <Text style={[Fonts.titleCard]}>{job?.task?.desc}</Text>
+              )}
+              <Badge text={job?.house?.[0]?.houseName} variant="purple" />
             </View>
-            {job?.task?.desc && (
-              <Text style={[Fonts.textTitle, Gutters.tinyTMargin]}>
-                {job?.task?.desc}
-              </Text>
-            )}
-            <Text style={[Gutters.tinyTMargin]}>
+            <Text style={[Fonts.textInfo, Gutters.smallBMargin]}>
               {minimizetext(job?.observations, 30)}
             </Text>
+            <Badge
+              text={moment(job?.date?.toDate()).format('LL')}
+              label="Fecha: "
+            />
             <View
               style={[
                 Layout.fill,

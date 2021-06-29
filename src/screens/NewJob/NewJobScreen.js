@@ -29,13 +29,16 @@ import {
   HOME_ADMIN_STACK_KEY,
   JOBS_SCREEN_KEY,
 } from '../../Router/utils/routerKeys';
+import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import {JOBS} from '../../utils/firebaseKeys';
 
-const NewJobScreen = ({route, navigation}) => {
+const NewJobScreen = ({route}) => {
   const dispatch = useDispatch();
-  const {taskName} = route.params;
+  const {taskName, docId, edit} = route.params;
   const [loading, setLoading] = useState();
 
   const job = useSelector(jobSelector);
+  const {updateFirebase} = useUpdateFirebase(JOBS);
 
   const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
 
@@ -68,6 +71,31 @@ const NewJobScreen = ({route, navigation}) => {
     }
   };
 
+  const handleEdit = async () => {
+    try {
+      setLoading(true);
+      const editedForm = {
+        observations: job?.observations,
+        date: job?.date?._i,
+        workers: job?.workers?.value,
+        workersId: job?.workers?.value.map((worker) => worker.id),
+        houseId: job?.house?.value[0].id,
+        house: job?.house?.value,
+        task: job?.task,
+        done: false,
+      };
+      await updateFirebase(docId, editedForm);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+      cleanForm();
+      openScreenWithPush(HOME_ADMIN_STACK_KEY, {
+        screen: JOBS_SCREEN_KEY,
+      });
+    }
+  };
+
   return (
     <PageLayout
       safe
@@ -86,8 +114,8 @@ const NewJobScreen = ({route, navigation}) => {
         <CustomButton
           styled="rounded"
           loading={loading}
-          title="Crear trabajo"
-          onPress={() => handleSubmit()}
+          title={edit ? 'Editar' : 'Crear'}
+          onPress={() => (edit ? handleEdit() : handleSubmit())}
         />
       }
       titleProps={{
@@ -96,7 +124,7 @@ const NewJobScreen = ({route, navigation}) => {
       }}>
       <SafeAreaView style={styles.jobScreen}>
         <KeyboardAwareScrollView>
-          <JobForm />
+          <JobForm docId={docId} edit={edit} />
         </KeyboardAwareScrollView>
       </SafeAreaView>
     </PageLayout>

@@ -14,6 +14,7 @@ import CustomButton from '../../components/Elements/CustomButton';
 import PageLayout from '../../components/PageLayout';
 
 // Firebase
+import firestore from '@react-native-firebase/firestore';
 import {useAddFirebase} from '../../hooks/useAddFirebase';
 
 import {
@@ -25,8 +26,13 @@ import {
 } from '../../Store/CheckList/checkListSlice';
 import {popScreen} from '../../Router/utils/actions';
 import {Colors} from '../../Theme/Variables';
+import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import {CHECKLISTS} from '../../utils/firebaseKeys';
+import useRecursiveDelete from '../../utils/useRecursiveDelete';
 
 const NewCheckListScreen = ({route, navigation}) => {
+  const {docId, edit} = route.params;
+
   const dispatch = useDispatch();
   const [loading, setLoading] = useState();
 
@@ -36,11 +42,55 @@ const NewCheckListScreen = ({route, navigation}) => {
   const observations = useSelector(observationsSelector);
 
   const {addFirebase} = useAddFirebase();
+  const {updateFirebase} = useUpdateFirebase(CHECKLISTS);
+  const {recursiveDelete} = useRecursiveDelete({
+    path: `${CHECKLISTS}/${docId}/checks`,
+    collection: CHECKLISTS,
+  });
 
   const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
 
   const cleanForm = () => {
     resetFormAction();
+  };
+
+  const handleEdit = async () => {
+    try {
+      setLoading(true);
+      const editCheckListForm = {
+        observations: observations,
+        workers: workers?.value,
+        workersId: workers?.value?.map((worker) => worker.id),
+        houseId: house?.value[0].id,
+        house: house?.value,
+        total: Object.entries(checks).filter(([key, value]) => value.check)
+          .length,
+        finished: false,
+        done: 0,
+      };
+      await updateFirebase(docId, editCheckListForm);
+      await recursiveDelete();
+      await Promise.all(
+        Object.entries(checks)
+          .filter(([key, value]) => value.check)
+          .map(([key, value]) =>
+            addFirebase(`checklists/${docId}/checks`, {
+              title: value.title,
+              originalId: value.originalId,
+              numberOfPhotos: 0,
+              done: value.done,
+              worker: null,
+              date: null,
+            }),
+          ),
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      cleanForm();
+      popScreen();
+    }
   };
 
   const handleSubmit = async () => {
@@ -56,6 +106,7 @@ const NewCheckListScreen = ({route, navigation}) => {
         total: Object.entries(checks).filter(([key, value]) => value.check)
           .length,
         finished: false,
+        send: false,
         done: 0,
       };
       const newCheckList = await addFirebase('checklists', newCheckListForm);
@@ -65,6 +116,7 @@ const NewCheckListScreen = ({route, navigation}) => {
           .map(([key, value]) =>
             addFirebase(`checklists/${newCheckList.id}/checks`, {
               title: value.title,
+              originalId: value.id,
               numberOfPhotos: 0,
               done: false,
               worker: null,
@@ -98,8 +150,8 @@ const NewCheckListScreen = ({route, navigation}) => {
         <CustomButton
           loading={loading}
           styled="rounded"
-          title="Crear checklist"
-          onPress={() => handleSubmit()}
+          title={edit ? 'Editar' : 'Crear'}
+          onPress={() => (edit ? handleEdit() : handleSubmit())}
         />
       }
       titleProps={{
@@ -108,7 +160,7 @@ const NewCheckListScreen = ({route, navigation}) => {
       }}>
       <View style={styles.jobScreen}>
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-          <CheckListForm />
+          <CheckListForm edit={edit} docId={docId} />
         </KeyboardAwareScrollView>
       </View>
     </PageLayout>

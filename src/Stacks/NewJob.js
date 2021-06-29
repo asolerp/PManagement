@@ -11,7 +11,7 @@ import {
 const {Navigator, Screen} = createStackNavigator();
 
 const NewJob = ({route}) => {
-  const {docId} = route.params;
+  const {docId, edit} = route.params;
   return (
     <Navigator
       options={{headerShown: false}}
@@ -23,7 +23,11 @@ const NewJob = ({route}) => {
         component={NewJobTaskSelectorScreen}
         initialParams={{docId}}
       />
-      <Screen name={NEW_JOB_SCREEN_KEY} component={NewJobScreen} />
+      <Screen
+        name={NEW_JOB_SCREEN_KEY}
+        component={NewJobScreen}
+        initialParams={{docId, edit}}
+      />
     </Navigator>
   );
 };

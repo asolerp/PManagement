@@ -13,7 +13,6 @@ const useUploadImageCheck = (collection, docId) => {
   const {addFirebase: addPhoto} = useAddFirebase();
 
   const uploadImages = async (imgs, item) => {
-    setLoading(true);
     setIdCheckLoading(item.id);
     try {
       if (imgs?.length > 0) {

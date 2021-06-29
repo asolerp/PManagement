@@ -1,15 +1,19 @@
 import moment from 'moment';
 import React from 'react';
 import {TouchableOpacity, StyleSheet, View, Text} from 'react-native';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import useNoReadMessages from '../hooks/useNoReadMessages';
 import {DARK_BLUE, GREY_1} from '../styles/colors';
 import {useTheme} from '../Theme';
+import {Colors} from '../Theme/Variables';
 import {CHECKLISTS} from '../utils/firebaseKeys';
+import Avatar from '../components/Avatar';
 
 // Utils
 import {minimizetext} from '../utils/parsers';
 import {parsePercentageDone} from '../utils/parsers';
 import Counter from './Counter';
+import Badge from './Elements/Badge';
 
 const styles = StyleSheet.create({
   bold: {
@@ -80,28 +84,49 @@ const CheckItem = ({check, onPress}) => {
             styles.checkItemWrapper,
             {borderLeftColor: parsePercentageDone(check.done / check.total)},
           ]}>
-          <View style={[Layout.fill]}>
+          <View
+            style={[
+              Layout.fill,
+              Layout.row,
+              Layout.justifyContentSpaceBetween,
+            ]}>
             <View>
-              <View
-                style={[
-                  Layout.fill,
-                  Layout.rowCenter,
-                  Layout.justifyContentSpaceBetween,
-                ]}>
-                <Text>🏡 {check?.house?.[0].houseName}</Text>
-                <Text style={styles.date}>
-                  ⏱ {moment(check?.date?.toDate()).format('LL')}
-                </Text>
-              </View>
-              <Text style={[Fonts.textTitle, Gutters.smallTMargin]}>
+              <Badge
+                label="Fecha: "
+                text={moment(check?.date?.toDate()).format('LL')}
+              />
+              <Text style={[Fonts.textInfo, Gutters.smallVMargin]}>
                 {minimizetext(check.observations, 30)}
               </Text>
+              <Badge text={check?.house?.[0].houseName} variant="purple" />
+              <View style={[Layout.row, Gutters.smallTMargin]}>
+                {check?.workers?.map((worker, i) => (
+                  <Avatar
+                    overlap={check?.workers.length > 1}
+                    index={i}
+                    id={worker.id}
+                    key={worker.id}
+                    uri={worker.profileImage}
+                    size="medium"
+                  />
+                ))}
+              </View>
             </View>
-            <View
-              style={[Layout.fill, Layout.rowCenter, Layout.justifyContentEnd]}>
-              <Text style={styles.countStyle}>
-                {check.done}/{check.total}
-              </Text>
+            <View>
+              <AnimatedCircularProgress
+                size={50}
+                width={3}
+                fill={Math.round((check?.done / check?.total) * 100)}
+                tintColor={Colors.pm}
+                backgroundColor={Colors.lowGrey}
+                backgroundWidth={2}
+                onAnimationComplete={() => console.log('onAnimationComplete')}>
+                {() => (
+                  <Text style={{fontSize: 12}}>
+                    {Math.round((check?.done / check?.total) * 100)}%
+                  </Text>
+                )}
+              </AnimatedCircularProgress>
             </View>
           </View>
         </View>

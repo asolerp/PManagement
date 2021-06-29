@@ -80,7 +80,8 @@ const Info = () => {
               Layout.row,
               Layout.justifyContentSpaceBetween,
             ]}>
-            <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
+            <Text
+              style={[Fonts.textTitle, Gutters.smallBMargin, {width: '70%'}]}>
               {job?.task?.desc}
             </Text>
             <Badge
@@ -101,15 +102,17 @@ const Info = () => {
           />
           <Badge
             label="Fecha: "
-            text={moment(job?.date?.toDate()).format('LL')}
+            text={moment(job?.date?.toDate()).format('LLL')}
           />
-          <View style={[Gutters.mediumTMargin]}>
+          <View style={[Layout.grouw, Gutters.mediumTMargin]}>
             <Text style={{...defaultLabel, ...marginBottom(10)}}>
               Asignado a
             </Text>
-            <View style={styles.workers}>
-              {job?.workers?.map((worker) => (
+            <View style={[Layout.row]}>
+              {job?.workers?.map((worker, i) => (
                 <Avatar
+                  overlap={job?.workers.length > 1}
+                  index={i}
                   id={worker.id}
                   key={worker.id}
                   uri={worker.profileImage}

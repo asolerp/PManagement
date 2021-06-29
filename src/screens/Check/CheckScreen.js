@@ -50,8 +50,6 @@ const CheckScreen = ({route}) => {
     finishAndSendChecklist(docId);
   };
 
-  console.log(user, '[[USER]]');
-
   return (
     <React.Fragment>
       <ChatButtonWithMessagesCounter collection={CHECKLISTS} docId={docId} />
@@ -59,21 +57,19 @@ const CheckScreen = ({route}) => {
         safe
         backButton
         titleRightSide={
-          user.role === 'admin' && (
-            <TouchableWithoutFeedback
-              onPress={() => {
-                openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                  collection: CHECKLISTS,
-                  docId: docId,
-                  showDelete: true,
-                  duplicate: true,
-                });
-              }}>
-              <View>
-                <Icon name="settings" size={25} color={Colors.white} />
-              </View>
-            </TouchableWithoutFeedback>
-          )
+          <TouchableWithoutFeedback
+            onPress={() => {
+              openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
+                collection: CHECKLISTS,
+                docId: docId,
+                showDelete: true,
+                duplicate: true,
+              });
+            }}>
+            <View>
+              <Icon name="settings" size={25} color={Colors.white} />
+            </View>
+          </TouchableWithoutFeedback>
         }
         titleProps={{
           subPage: true,

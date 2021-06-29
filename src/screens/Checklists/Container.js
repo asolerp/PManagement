@@ -14,6 +14,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
+import {CHECKLISTS} from '../../utils/firebaseKeys';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -40,7 +41,7 @@ const Container = () => {
   const [filterHouses, setFilterHouses] = useState([]);
 
   const [values, loading] = useCollectionData(
-    firestore().collection('checklists').orderBy('date', 'asc'),
+    firestore().collection(CHECKLISTS),
     {
       idField: 'id',
     },

@@ -50,11 +50,7 @@ const CheckItem = ({item}) => {
           <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={2}>
             {item?.observations}
           </Text>
-          <Badge
-            text={item?.house?.[0].houseName}
-            variant="purple"
-            containerStyle={Gutters.smallBMargin}
-          />
+          <Badge text={item?.house?.[0].houseName} variant="purple" />
         </View>
         <View
           style={[
@@ -64,13 +60,15 @@ const CheckItem = ({item}) => {
             Layout.alignItemsCenter,
             Gutters.smallVMargin,
           ]}>
-          <View style={[Layout.rowCenter, Gutters.smallLMargin]}>
-            {item?.workers?.map((worker) => (
+          <View style={[Layout.row]}>
+            {item?.workers?.map((worker, i) => (
               <Avatar
+                overlap={item?.workers?.length > 1}
+                index={i}
+                id={worker.id}
                 key={worker.id}
                 uri={worker.profileImage}
-                size="small"
-                overlap={item?.workers?.length > 0}
+                size="medium"
               />
             ))}
           </View>
@@ -101,7 +99,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: 220,
-    height: 170,
+    height: 165,
     borderLeftWidth: 10,
     borderWidth: 1,
   },

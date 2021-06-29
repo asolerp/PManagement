@@ -8,14 +8,23 @@ import {
   ImageBackground,
   Dimensions,
   StyleSheet,
+  Platform,
+  ActivityIndicator,
 } from 'react-native';
 
 import ImageView from 'react-native-image-viewing';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useDocumentData} from 'react-firebase-hooks/firestore';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {useTheme} from '../../Theme';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {Colors} from '../../Theme/Variables';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {handleImagePicker} from '../../utils/imageFunctions';
+import {INCIDENCES} from '../../utils/firebaseKeys';
+import {usePhotos} from './utils/usePhotos';
+import {parseImages} from './utils/parserImages';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,39 +53,68 @@ const styles = StyleSheet.create({
 const Photos = () => {
   const route = useRoute();
   const {incidenceId} = route.params;
-  const {Fonts, Gutters} = useTheme();
+  const {Layout, Fonts, Gutters} = useTheme();
   const [modal, setModal] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
+  const {uploadPhotos, removePhotos, loading} = usePhotos({incidenceId});
+  const [deletePhotos, setDeletePhotos] = useState([]);
 
   const handlePressPhoto = (i) => {
     setImageIndex(i);
     setModal(true);
   };
 
+  const handleLongPressPhoto = (photo) => {
+    const isSelected = deletePhotos.find((p) => p.id === photo.id);
+    if (isSelected) {
+      return setDeletePhotos([
+        ...deletePhotos.filter((p) => p.id !== photo.id),
+      ]);
+    }
+    setDeletePhotos([...deletePhotos, photo]);
+  };
+
   const Photo = ({photo, index}) => {
+    const isSelected = deletePhotos.find((p) => p.id === photo.id);
+
     return (
-      <TouchableOpacity onPress={() => handlePressPhoto(index)} key={index}>
+      <TouchableOpacity
+        onPress={() => handlePressPhoto(index)}
+        key={index}
+        onLongPress={() => handleLongPressPhoto(photo)}>
         <ImageBackground
           source={{uri: photo.uri}}
-          style={styles.photo}
-          imageStyle={{borderRadius: 5}}
-        />
+          style={[styles.photo]}
+          imageStyle={{borderRadius: 5}}>
+          {isSelected && (
+            <View
+              style={{
+                width: '100%',
+                height: '100%',
+                backgroundColor: Colors.danger,
+                opacity: 0.5,
+                borderRadius: 5,
+              }}
+            />
+          )}
+        </ImageBackground>
       </TouchableOpacity>
     );
   };
 
-  const [incidence, loading] = useDocumentData(
-    firestore().doc(`incidences/${incidenceId}`),
+  const [photos, loadingPhotos] = useCollectionData(
+    firestore().collection(INCIDENCES).doc(incidenceId).collection('photos'),
     {
       idField: 'id',
     },
   );
 
-  const photos = incidence?.photos?.map((photo) => ({uri: photo}));
+  const photosSaved = photos?.map((photo) => ({
+    uri: photo.image,
+    id: photo.id,
+  }));
 
-  console.log(photos, '[[photos]]');
-
-  if (loading) {
+  if (loadingPhotos) {
     return (
       <View vtyle={styles.container}>
         <Text>Cargando imágenes..</Text>
@@ -89,12 +127,42 @@ const Photos = () => {
       <ImageView
         visible={modal}
         imageIndex={imageIndex}
-        images={photos}
+        images={photosSaved}
         onRequestClose={() => setModal(false)}
       />
-      <Text style={[Fonts.textTitle, Gutters.smallTMargin]}>📷 Fotos</Text>
+      <Text style={[Fonts.textTitle, Gutters.smallTMargin]}>Fotos</Text>
       <View style={styles.container}>
-        {photos?.map((photo, i) => (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            if (deletePhotos.length > 0) {
+              return removePhotos(deletePhotos, setDeletePhotos);
+            }
+            return handleImagePicker((imgs) => {
+              const mappedImages = parseImages(imgs);
+              uploadPhotos(mappedImages);
+            });
+          }}>
+          <View
+            style={[
+              Layout.colCenter,
+              styles.photo,
+              {
+                backgroundColor:
+                  deletePhotos.length > 0 ? Colors.danger : Colors.pm,
+              },
+            ]}>
+            {loading ? (
+              <ActivityIndicator color={Colors.white} size="small" />
+            ) : (
+              <Icon
+                name={deletePhotos.length > 0 ? 'delete' : 'add'}
+                color={Colors.white}
+                size={25}
+              />
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+        {photosSaved?.map((photo, i) => (
           <View key={i}>
             <Photo photo={photo} index={i} />
           </View>

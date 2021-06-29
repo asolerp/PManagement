@@ -16,11 +16,6 @@ const useNoReadMessages = ({collection, docId}) => {
 
   useEffect(() => {
     const onResult = (QuerySnapshot) => {
-      console.log(
-        QuerySnapshot.docs
-          .map((doc) => ({...doc.data(), id: doc.id}))
-          .filter((message) => !message.received),
-      );
       setLoading(false);
       setNoReadCounter(
         QuerySnapshot.docs

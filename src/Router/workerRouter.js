@@ -11,12 +11,16 @@ import {
   CHAT_SCREEN_KEY,
   CHECK_SCREEN_KEY,
   MAIN_WORKER_STACK_KEY,
+  NEW_CHECKLIST_SCREEN,
   NEW_INCIDENCE_SCREEN_KEY,
+  PAGE_OPTIONS_SCREEN_KEY,
 } from './utils/routerKeys';
 import {MainWorker} from '../Stacks/MainWorker';
 import {NewIncidenceScreen} from '../Screens/NewIncidence';
 import {ChatScreen} from '../Screens/Chat';
 import {CheckScreen} from '../Screens/Check';
+import {PageOptionsScreen} from '../Screens/PageOptions';
+import {NewCheckListScreen} from '../Screens/NewCheckList';
 
 const {Navigator, Screen} = createStackNavigator();
 
@@ -41,6 +45,16 @@ const WorkerRouter = () => {
         <Screen
           name={CHECK_SCREEN_KEY}
           component={CheckScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={PAGE_OPTIONS_SCREEN_KEY}
+          component={PageOptionsScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={NEW_CHECKLIST_SCREEN}
+          component={NewCheckListScreen}
           options={{headerShown: false}}
         />
         <Screen

@@ -20,9 +20,12 @@ import {
 } from '../../Router/utils/routerKeys';
 import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
 
 const JobScreen = ({route}) => {
   const {Gutters} = useTheme();
+  const user = useSelector(userSelector);
   const {jobId} = route.params;
   const query = useMemo(() => {
     return firestore().collection(JOBS).doc(jobId);
@@ -49,20 +52,23 @@ const JobScreen = ({route}) => {
           color: 'white',
         }}
         titleRightSide={
-          <TouchableWithoutFeedback
-            onPress={() => {
-              openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                backScreen: JOBS_SCREEN_KEY,
-                collection: JOBS,
-                docId: jobId,
-                showDelete: true,
-                duplicate: true,
-              });
-            }}>
-            <View>
-              <Icon name="settings" size={25} color={Colors.white} />
-            </View>
-          </TouchableWithoutFeedback>
+          user.role === 'admin' && (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
+                  backScreen: JOBS_SCREEN_KEY,
+                  collection: JOBS,
+                  docId: jobId,
+                  edit: true,
+                  showDelete: true,
+                  duplicate: true,
+                });
+              }}>
+              <View>
+                <Icon name="settings" size={25} color={Colors.white} />
+              </View>
+            </TouchableWithoutFeedback>
+          )
         }
         footer={
           <CustomButton

@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
 import {BottomModal, ModalContent} from 'react-native-modals';
 
@@ -13,7 +13,7 @@ import moment from 'moment';
 import 'moment/locale/es';
 
 // Firebase
-
+import firestore from '@react-native-firebase/firestore';
 import DateSelector from './DateSelector';
 import CustomInput from '../../Elements/CustomInput';
 import {
@@ -21,8 +21,10 @@ import {
   houseSelector,
   observationsSelector,
   setForm,
+  setEditableForm,
   workersSelector,
 } from '../../../Store/JobForm/jobFormSlice';
+import {JOBS} from '../../../utils/firebaseKeys';
 
 moment.locale('es');
 
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const JobForm = () => {
+const JobForm = ({docId, edit}) => {
   const dispatch = useDispatch();
 
   const house = useSelector(houseSelector);
@@ -77,9 +79,34 @@ const JobForm = () => {
     [dispatch],
   );
 
+  const setEditableFormAction = useCallback(
+    (jobToEdit) => dispatch(setEditableForm(jobToEdit)),
+    [dispatch],
+  );
+
   // Form State
   const [modalContent, setModalContent] = useState();
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    const getJob = async () => {
+      const jobToEdit = await firestore().collection(JOBS).doc(docId).get();
+      const {date, house, workers, observations} = jobToEdit.data();
+      setEditableFormAction({
+        date: date.toDate(),
+        house: {
+          value: house,
+        },
+        workers: {
+          value: workers,
+        },
+        observations,
+      });
+    };
+    if (edit) {
+      getJob();
+    }
+  }, [edit, docId, setEditableFormAction]);
 
   const modalSwitcher = (modal) => {
     switch (modal) {

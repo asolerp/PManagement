@@ -27,7 +27,7 @@ export const Variants = {
   },
   success: {
     backgroundColor: Colors.successLow,
-    color: Colors.warning,
+    color: Colors.success,
   },
   warning: {
     backgroundColor: Colors.warningLow,

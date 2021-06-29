@@ -46,6 +46,7 @@ export const handleCamera = (callback) => {
 
 export const handleImagePicker = (callback) => {
   ImagePicker.openPicker({
+    smartAlbums: ['UserLibrary', 'Generic'],
     compressImageMaxWidth: 300,
     compressImageQuality: 0.3,
     multiple: true,

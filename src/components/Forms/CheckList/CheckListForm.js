@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 
 import {BottomModal, ModalContent} from 'react-native-modals';
 import {Text, View, TextInput, StyleSheet} from 'react-native';
@@ -22,6 +22,7 @@ import {useTheme} from '../../../Theme';
 import {defaultLabel} from '../../../styles/common';
 
 // Firebase
+import firestore from '@react-native-firebase/firestore';
 import {useGetFirebase} from '../../../hooks/useGetFirebase';
 import {DARK_BLUE, PM_COLOR} from '../../../styles/colors';
 import {
@@ -29,13 +30,17 @@ import {
   observationsSelector,
   workersSelector,
   setForm,
+  setEditableForm,
   checksSelector,
   setCheck,
+  setEditableChecks,
   setAllChecks,
 } from '../../../Store/CheckList/checkListSlice';
 import {Colors} from '../../../Theme/Variables';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Label from '../../Elements/Label';
+
+import {CHECKLISTS} from '../../../utils/firebaseKeys';
 
 moment.locale('es');
 
@@ -90,7 +95,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CheckListForm = () => {
+const CheckListForm = ({edit, docId}) => {
   const dispatch = useDispatch();
   const {Layout} = useTheme();
   const {list} = useGetFirebase('checks');
@@ -105,6 +110,16 @@ const CheckListForm = () => {
     [dispatch],
   );
 
+  const setInputFormEditable = useCallback(
+    (form) => dispatch(setEditableForm(form)),
+    [dispatch],
+  );
+
+  const setChecksEditable = useCallback(
+    (checkEditableList) => dispatch(setEditableChecks(checkEditableList)),
+    [dispatch],
+  );
+
   const setToggleCheckBox = useCallback(
     (item, newValue) => {
       dispatch(setCheck({check: item, checkState: newValue}));
@@ -115,7 +130,7 @@ const CheckListForm = () => {
   const allChecks = list.reduce(
     (acc, check) => ({
       ...acc,
-      [check.id]: {...check, check: true},
+      [check.id]: {...check, check: true, originalId: check.id},
     }),
     {},
   );
@@ -130,6 +145,51 @@ const CheckListForm = () => {
   // Form State
   const [modalContent, setModalContent] = useState();
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    const getDocument = async () => {
+      const checkToEdit = await firestore()
+        .collection(CHECKLISTS)
+        .doc(docId)
+        .get();
+      const checks = await firestore()
+        .collection(CHECKLISTS)
+        .doc(docId)
+        .collection('checks')
+        .get();
+
+      const checksDocs = checks.docs
+        .map((doc) => doc.data())
+        .map((check) => ({
+          originalId: check.originalId,
+          check: true,
+          done: check.done,
+          id: check.id,
+          title: check.title,
+        }))
+        .reduce((acc, checkDoc) => {
+          return {
+            ...acc,
+            [checkDoc.originalId]: checkDoc,
+          };
+        }, {});
+      const {house, workers, observations} = checkToEdit.data();
+
+      setInputFormEditable({
+        house: {
+          value: house,
+        },
+        workers: {
+          value: workers,
+        },
+        observations,
+      });
+      setChecksEditable({checks: checksDocs});
+    };
+    if (edit) {
+      getDocument();
+    }
+  }, [edit, docId, setInputFormEditable, setChecksEditable]);
 
   const modalSwitcher = (modal) => {
     switch (modal) {
@@ -199,7 +259,9 @@ const CheckListForm = () => {
           disabled={false}
           value={checks?.[item.id]?.check || false}
           boxType="square"
-          onValueChange={(newValue) => setToggleCheckBox(item, newValue)}
+          onValueChange={(newValue) =>
+            setToggleCheckBox({...item, originalId: item.id}, newValue)
+          }
         />
         <Text style={styles.checkStyle}>{item.title}</Text>
       </View>
@@ -250,7 +312,7 @@ const CheckListForm = () => {
           subtitle={
             <View style={{flexDirection: 'row'}}>
               {workers?.value?.map((worker, i) => (
-                <View key={worker.id}>
+                <View key={worker.id} style={[Layout.row]}>
                   <Text style={styles.subtitle}>{worker.firstName}</Text>
                   {workers?.value?.length - 1 !== i && (
                     <Text style={styles.subtitle}> & </Text>

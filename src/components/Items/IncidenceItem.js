@@ -10,6 +10,7 @@ import moment from 'moment';
 import Counter from '../Counter';
 import useNoReadMessages from '../../hooks/useNoReadMessages';
 import {CHECKLISTS, INCIDENCES} from '../../utils/firebaseKeys';
+import Badge from '../Elements/Badge';
 
 const styles = StyleSheet.create({
   container: {},
@@ -62,8 +63,8 @@ const IncidenceItem = ({incidence, onPress}) => {
           customStyles={{
             position: 'absolute',
             zIndex: 1000,
-            right: 5,
-            top: 2,
+            right: 0,
+            top: 0,
           }}
         />
       )}
@@ -82,17 +83,18 @@ const IncidenceItem = ({incidence, onPress}) => {
             <View>
               <View
                 style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
-                <Text>🏡 {incidence?.house?.houseName}</Text>
-                <Text style={styles.date}>
-                  ⏱ {moment(incidence?.date?.toDate()).format('LL')}
+                <Text style={[Fonts.titleCard, Gutters.tinyTMargin]}>
+                  {incidence?.title}
                 </Text>
+                <Badge text={incidence?.house?.houseName} variant="purple" />
               </View>
-              <Text style={[Fonts.textTitle, Gutters.tinyTMargin]}>
-                {incidence?.title}
+              <Text style={[Gutters.smallBMargin, styles.checkText]}>
+                {minimizetext(incidence?.incidence, 50)}
               </Text>
-              <Text style={styles.checkText}>
-                {minimizetext(incidence?.incidence, 30)}
-              </Text>
+              <Badge
+                label="Fecha: "
+                text={moment(incidence?.date?.toDate()).format('LL')}
+              />
             </View>
           </View>
         </View>

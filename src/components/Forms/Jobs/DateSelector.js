@@ -10,7 +10,6 @@ import CustomButton from '../../Elements/CustomButton';
 import moment from 'moment';
 
 const DateSelector = ({closeModal, set, get}) => {
-  console.log('get', get);
   const today = new Date();
   const initialTime = new Date(
     today.getFullYear(),
@@ -41,14 +40,13 @@ const DateSelector = ({closeModal, set, get}) => {
         flex: 1,
         width: '100%',
       }}>
-      {dateSelected && (
-        <DatePicker
-          style={{width: 350}}
-          date={dateSelected || initialTime}
-          onDateChange={setDateSelected}
-          locale="es-es"
-        />
-      )}
+      <DatePicker
+        style={{width: 350}}
+        date={dateSelected || initialTime}
+        onDateChange={setDateSelected}
+        locale="es-es"
+      />
+
       <View style={{marginTop: 'auto'}}>
         <CustomButton
           styled="rounded"

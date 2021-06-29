@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {Variants} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
@@ -9,7 +10,7 @@ const styles = StyleSheet.create({
   filterWrapper: {
     paddingHorizontal: 5,
     paddingVertical: 5,
-    borderRadius: 50,
+    borderRadius: 5,
     marginRight: 10,
   },
   filterText: {
@@ -23,9 +24,12 @@ const Filter = ({text, onPress, color, active}) => {
       <View
         style={{
           ...styles.filterWrapper,
-          ...{backgroundColor: color, opacity: active ? 1 : 0.4},
+          ...{
+            backgroundColor: color.backgroundColor,
+            opacity: active ? 1 : 0.4,
+          },
         }}>
-        <Text style={styles.filterText}>{text}</Text>
+        <Text style={(styles.filterText, {color: color.color})}>{text}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -36,13 +40,13 @@ const StatusIncidence = ({onChangeFilter, state}) => {
     <View style={styles.container}>
       <Filter
         text="Resuletas"
-        color="#7dd891"
+        color={Variants.success}
         active={state === true}
         onPress={() => onChangeFilter(true)}
       />
       <Filter
         text="Sin resolver"
-        color="#ED7A7A"
+        color={Variants.danger}
         active={state === false}
         onPress={() => onChangeFilter(false)}
       />

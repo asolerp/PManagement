@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
 // UI
@@ -12,6 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Firebase
+import firestore from '@react-native-firebase/firestore';
 import {useGetFirebase} from '../../hooks/useGetFirebase';
 import TaskItem from '../../components/Elements/TaskItem';
 import PageLayout from '../../components/PageLayout';
@@ -19,6 +20,7 @@ import {setTask} from '../../Store/JobForm/jobFormSlice';
 import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import {NEW_JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {Colors} from '../../Theme/Variables';
+import {JOBS} from '../../utils/firebaseKeys';
 
 const styles = StyleSheet.create({
   container: {
@@ -53,7 +55,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const NewJobTaskSelectorScreen = ({navigation}) => {
+const NewJobTaskSelectorScreen = ({route}) => {
+  const {docId, edit} = route.params;
   const dispatch = useDispatch();
   const {job} = useSelector(({jobForm: {job}}) => ({job}), shallowEqual);
 

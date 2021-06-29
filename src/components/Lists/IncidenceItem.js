@@ -61,7 +61,7 @@ const IncidenceItem = ({item}) => {
             <Avatar
               key={item?.user?.id}
               uri={item?.user?.profileImage}
-              size="small"
+              size="medium"
             />
           </View>
         </View>

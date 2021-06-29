@@ -4,6 +4,7 @@ import AuthRouter from './Router/authRouter';
 import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
 import Toast from 'react-native-toast-message';
+import {MenuProvider} from 'react-native-popup-menu';
 
 import ErrorBoundary from 'react-native-error-boundary';
 
@@ -85,11 +86,13 @@ const App = () => {
 
   return (
     <ErrorBoundary FallbackComponent={CustomFallback}>
-      <Provider store={store}>
-        <AuthRouter />
-        <ModalPortal />
-        <Toast ref={(ref) => Toast.setRef(ref)} />
-      </Provider>
+      <MenuProvider>
+        <Provider store={store}>
+          <AuthRouter />
+          <ModalPortal />
+          <Toast ref={(ref) => Toast.setRef(ref)} />
+        </Provider>
+      </MenuProvider>
     </ErrorBoundary>
   );
 };

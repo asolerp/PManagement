@@ -12,6 +12,12 @@ const jobFormSlice = createSlice({
   name: 'jobForm',
   initialState,
   reducers: {
+    setEditableForm: (state, {payload}) => {
+      state.house = payload.house;
+      state.workers = payload.workers;
+      state.observations = payload.observations;
+      state.date = payload.date;
+    },
     setForm: (state, {payload}) => {
       state[payload.label] = payload.value;
     },
@@ -36,6 +42,7 @@ export const observationsSelector = (state) => state.jobForm?.observations;
 export const dateSelector = (state) => state.jobForm?.date;
 
 // Actions
-export const {setForm, setTask, editForm, resetForm} = jobFormSlice.actions;
+export const {setForm, setEditableForm, setTask, editForm, resetForm} =
+  jobFormSlice.actions;
 
 export default jobFormSlice.reducer;

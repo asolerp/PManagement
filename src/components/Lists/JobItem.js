@@ -64,13 +64,15 @@ const JobItem = ({item}) => {
             Layout.justifyContentSpaceBetween,
             Layout.alignItemsCenter,
           ]}>
-          <View style={[Layout.rowCenter, Gutters.smallLMargin]}>
-            {item?.workers?.map((worker) => (
+          <View style={[Layout.row]}>
+            {item?.workers?.map((worker, i) => (
               <Avatar
+                overlap={item?.workers?.length > 1}
+                index={i}
+                id={worker.id}
                 key={worker.id}
                 uri={worker.profileImage}
-                size="small"
-                overlap={item?.workers?.length > 0}
+                size="medium"
               />
             ))}
           </View>
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: 220,
-    height: 180,
+    height: 195,
     borderLeftWidth: 10,
   },
   avatarWrapper: {

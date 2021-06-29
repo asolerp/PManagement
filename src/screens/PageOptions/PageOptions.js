@@ -12,17 +12,21 @@ import {Colors} from '../../Theme/Variables';
 import Container from './Container';
 import useRecursiveDelete from '../../utils/useRecursiveDelete';
 import duplicateCheckList from '../../Services/duplicateCheckList';
-import {CHECKLISTS} from '../../utils/firebaseKeys';
+import {CHECKLISTS, JOBS} from '../../utils/firebaseKeys';
 import duplicateJob from '../../Services/duplicateJob';
-import {HOME_ADMIN_STACK_KEY} from '../../Router/utils/routerKeys';
+import {
+  HOME_ADMIN_STACK_KEY,
+  NEW_CHECKLIST_SCREEN,
+  NEW_JOB_STACK_KEY,
+} from '../../Router/utils/routerKeys';
 import {useTheme} from '../../Theme';
 
 const PageOptionsScreen = ({route}) => {
   const {Layout, Fonts} = useTheme();
   const {showDelete, duplicate, collection, docId, backScreen} = route.params;
   const {loading, recursiveDelete} = useRecursiveDelete({
+    path: `${collection}/${docId}`,
     collection,
-    docId,
     backScreen,
   });
 
@@ -31,6 +35,11 @@ const PageOptionsScreen = ({route}) => {
       return await duplicateCheckList(docId);
     }
     return await duplicateJob(docId);
+  };
+
+  const parseScreenByCollection = {
+    [CHECKLISTS]: NEW_CHECKLIST_SCREEN,
+    [JOBS]: NEW_JOB_STACK_KEY,
   };
 
   return (
@@ -60,6 +69,12 @@ const PageOptionsScreen = ({route}) => {
           collection={collection}
           docId={docId}
           showDelete={showDelete}
+          onEdit={() => {
+            openScreenWithPush(parseScreenByCollection[collection], {
+              edit: true,
+              docId,
+            });
+          }}
           onDelete={recursiveDelete}
           duplicate={duplicate}
           onDuplicate={async () => {

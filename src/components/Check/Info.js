@@ -16,7 +16,6 @@ import {GREY_1, PM_COLOR} from '../../styles/colors';
 
 // utils
 import moment from 'moment';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import EditableInput from '../Elements/EditableInput';
 
@@ -133,15 +132,15 @@ const Info = () => {
             </View>
             {!loadingChecks && (
               <AnimatedCircularProgress
-                size={40}
-                width={3}
+                size={60}
+                width={4}
                 fill={(doneCounter / checklist?.total) * 100}
                 tintColor={Colors.pm}
                 backgroundColor={Colors.lowGrey}
                 backgroundWidth={2}
                 onAnimationComplete={() => console.log('onAnimationComplete')}>
                 {() => (
-                  <Text style={{fontSize: 10}}>
+                  <Text style={{fontSize: 12}}>
                     {Math.round((doneCounter / checklist?.total) * 100)}%
                   </Text>
                 )}
@@ -155,16 +154,19 @@ const Info = () => {
             <Text style={[Gutters.smallBMargin, Fonts.textTitle]}>
               Asignado a
             </Text>
-            <Icon name="keyboard-control" size={25} color={Colors.darkBlue} />
           </View>
-          {checklist?.workers?.map((worker) => (
-            <Avatar
-              id={worker.id}
-              key={worker.id}
-              uri={worker.profileImage}
-              size="big"
-            />
-          ))}
+          <View style={[Layout.row]}>
+            {checklist?.workers?.map((worker, i) => (
+              <Avatar
+                overlap={checklist?.workers?.length > 1}
+                index={i}
+                id={worker.id}
+                key={worker.id}
+                uri={worker.profileImage}
+                size="big"
+              />
+            ))}
+          </View>
         </View>
         <Divider />
       </View>

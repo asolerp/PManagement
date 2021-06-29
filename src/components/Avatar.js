@@ -22,10 +22,12 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     borderRadius: 100,
+    borderWidth: 2,
+    borderColor: 'white',
   },
 });
 
-const Avatar = ({id, uri, name, overlap, position, size = 'small'}) => {
+const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
   const parseSize = (sizeImage) => {
     switch (sizeImage) {
       case 'xxl': {
@@ -62,7 +64,7 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small'}) => {
           style={[
             styles.ownerImage,
             {width: parseSize(size), height: parseSize(size)},
-            {marginLeft: overlap ? -10 : 0},
+            {marginLeft: index > 0 && overlap ? -20 : 0},
             {marginRight: name ? 15 : 0},
           ]}
           source={{
