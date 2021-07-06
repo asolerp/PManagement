@@ -55,15 +55,24 @@ const IncidenceItem = ({item}) => {
           <Badge
             text={item?.house?.houseName}
             variant="purple"
-            containerStyle={Gutters.regularBMargin}
+            containerStyle={Gutters.smallBMargin}
           />
-          <View style={styles.avatarWrapper}>
-            <Avatar
-              key={item?.user?.id}
-              uri={item?.user?.profileImage}
-              size="medium"
-            />
-          </View>
+          {!item?.workers || item?.workers.length === 0 ? (
+            <Badge text={'Sin asignar'} variant="danger" />
+          ) : (
+            <View style={[Layout.row]}>
+              {item?.workers?.map((worker, i) => (
+                <Avatar
+                  overlap={item?.workers?.length > 1}
+                  index={i}
+                  id={worker.id}
+                  key={worker.id}
+                  uri={worker.profileImage}
+                  size="medium"
+                />
+              ))}
+            </View>
+          )}
         </View>
       </View>
     </View>

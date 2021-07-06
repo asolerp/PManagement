@@ -122,6 +122,8 @@ const NewIncidenceScreen = () => {
         house: incidence.house.value[0],
         user: user,
         houseId: incidence.house.value[0].id,
+        workers: [user],
+        workersId: [user.uid],
         state: 'iniciada',
         date: new Date(),
         done: false,

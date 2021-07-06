@@ -10,6 +10,7 @@ import {
 import {
   CHAT_SCREEN_KEY,
   CHECK_SCREEN_KEY,
+  HOUSE_SCREEN_KEY,
   MAIN_WORKER_STACK_KEY,
   NEW_CHECKLIST_SCREEN,
   NEW_INCIDENCE_SCREEN_KEY,
@@ -21,6 +22,7 @@ import {ChatScreen} from '../Screens/Chat';
 import {CheckScreen} from '../Screens/Check';
 import {PageOptionsScreen} from '../Screens/PageOptions';
 import {NewCheckListScreen} from '../Screens/NewCheckList';
+import {HouseScreen} from '../Screens/House';
 
 const {Navigator, Screen} = createStackNavigator();
 
@@ -55,6 +57,11 @@ const WorkerRouter = () => {
         <Screen
           name={NEW_CHECKLIST_SCREEN}
           component={NewCheckListScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={HOUSE_SCREEN_KEY}
+          component={HouseScreen}
           options={{headerShown: false}}
         />
         <Screen

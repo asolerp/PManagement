@@ -8,7 +8,7 @@ import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessag
 import PageLayout from '../../components/PageLayout';
 
 import CustomButton from '../../components/Elements/CustomButton';
-import {shallowEqual, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Colors} from '../../Theme/Variables';
@@ -57,26 +57,24 @@ const CheckScreen = ({route}) => {
         safe
         backButton
         titleRightSide={
-          <TouchableWithoutFeedback
-            onPress={() => {
-              openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                collection: CHECKLISTS,
-                docId: docId,
-                showDelete: true,
-                duplicate: true,
-              });
-            }}>
-            <View>
-              <Icon name="settings" size={25} color={Colors.white} />
-            </View>
-          </TouchableWithoutFeedback>
+          user.role === 'admin' && (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
+                  collection: CHECKLISTS,
+                  docId: docId,
+                  showDelete: true,
+                  duplicate: true,
+                });
+              }}>
+              <View>
+                <Icon name="settings" size={25} color={Colors.white} />
+              </View>
+            </TouchableWithoutFeedback>
+          )
         }
         titleProps={{
           subPage: true,
-          title: `Checklist en ${
-            checklist?.house && checklist?.house[0]?.houseName
-          }`,
-          color: 'white',
         }}
         footer={
           areAllChecksDone &&

@@ -25,6 +25,10 @@ export const Variants = {
     backgroundColor: Colors.pmLow,
     color: Colors.pm,
   },
+  filter: {
+    backgroundColor: Colors.pm,
+    color: Colors.white,
+  },
   success: {
     backgroundColor: Colors.successLow,
     color: Colors.success,

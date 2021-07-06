@@ -1,14 +1,10 @@
 import React from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {useSelector, shallowEqual} from 'react-redux';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {useTranslation} from 'react-i18next';
-import TitlePage from '../../components/TitlePage';
-import ProfileBar from '../../components/ProfileBar';
-import AddButton from '../../components/Elements/AddButton';
 
-// Styles
-import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
+import {useSelector, shallowEqual} from 'react-redux';
+import {View, Text, StyleSheet} from 'react-native';
+import {useTranslation} from 'react-i18next';
+
+import ProfileBar from '../../components/ProfileBar';
 
 // Utils
 import moment from 'moment';
@@ -22,10 +18,12 @@ import ChecklistList from '../../components/Lists/ChecklistList';
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {Colors} from '../../Theme/Variables';
+import PageLayout from '../../components/PageLayout';
+
+import {useTheme} from '../../Theme';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.lowGrey,
     flex: 1,
   },
   addButton: {
@@ -38,7 +36,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   home: {
-    backgroundColor: Colors.lowGrey,
     flex: 5,
   },
   content: {
@@ -57,9 +54,9 @@ const styles = StyleSheet.create({
 
 const DashboardOwner = () => {
   const {t} = useTranslation();
-  const navigation = useNavigation();
-  const user = useSelector(userSelector, shallowEqual);
 
+  const user = useSelector(userSelector, shallowEqual);
+  const {Fonts, Layout, Gutters} = useTheme();
   const [houseOwner] = useCollectionData(
     firestore().collection('houses').where('owner.id', '==', user.uid),
     {
@@ -71,37 +68,29 @@ const DashboardOwner = () => {
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.addButton}>
-        <TouchableOpacity onPress={() => navigation.navigate('NewIncidence')}>
-          <AddButton iconName="warning" backColor={Colors.pm} />
-        </TouchableOpacity>
-      </View>
-      <ScrollView contentContainerStyle={{backgroundColor: Colors.lowGrey}}>
-        <TitlePage
-          background={{
-            uri: houseOwner?.[0]?.houseImage,
-          }}>
-          <ProfileBar />
-        </TitlePage>
+    <PageLayout
+      white
+      titleChildren={<ProfileBar />}
+      titleProps={{
+        background: {
+          uri: houseOwner?.[0]?.houseImage,
+        },
+      }}
+      titleLefSide={true}>
+      <ScrollView
+        style={[Layout.fill, styles.container, Gutters.smallTMargin]}
+        nestedScrollEnabled
+        showsVerticalScrollIndicator={false}>
         <View style={styles.home}>
-          <View style={styles.content}>
-            <Text
-              style={{
-                ...defaultLabel,
-                ...marginBottom(10),
-                ...marginTop(20),
-              }}>
-              {t('welcome', {date: date.join(' ')})}
-            </Text>
-            <Text style={{...styles.label, ...marginBottom(20)}}>
-              {t('homeMessage')}
+          <View>
+            <Text style={[Fonts.textTitle, Gutters.mediumVMargin]}>
+              Hoy es {date.join(' ')} ☀️
             </Text>
             <ChecklistList house={houseOwner?.[0]} />
           </View>
         </View>
       </ScrollView>
-    </View>
+    </PageLayout>
   );
 };
 

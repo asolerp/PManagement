@@ -13,7 +13,7 @@ import CustomButton from '../../components/Elements/CustomButton';
 import updateJobStatus from '../../Services/updateJobStatus';
 import {JOBS} from '../../utils/firebaseKeys';
 import {TouchableWithoutFeedback, View} from 'react-native';
-import {openScreenWithPush} from '../../Router/utils/actions';
+import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import {
   JOBS_SCREEN_KEY,
   PAGE_OPTIONS_SCREEN_KEY,
@@ -22,6 +22,7 @@ import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
+import {finishJob} from '../../components/Alerts/jobs';
 
 const JobScreen = ({route}) => {
   const {Gutters} = useTheme();
@@ -37,6 +38,7 @@ const JobScreen = ({route}) => {
 
   const onSubmit = () => {
     updateJobStatus(jobId, {done: !job?.done});
+    popScreen();
   };
 
   return (
@@ -47,9 +49,6 @@ const JobScreen = ({route}) => {
         backButton
         titleProps={{
           subPage: true,
-          title: `Trabajos en ${job?.house && job?.house[0]?.houseName}`,
-          subtitle: job?.task?.desc,
-          color: 'white',
         }}
         titleRightSide={
           user.role === 'admin' && (
@@ -75,7 +74,7 @@ const JobScreen = ({route}) => {
             styled="rounded"
             loading={false}
             title={job?.done ? 'No está terminada' : 'Finalizar'}
-            onPress={onSubmit}
+            onPress={() => finishJob(onSubmit)}
           />
         }>
         <View style={[Gutters.smallTMargin]}>

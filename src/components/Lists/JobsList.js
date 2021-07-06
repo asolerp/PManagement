@@ -1,6 +1,12 @@
 import React from 'react';
 
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {defaultLabel, marginRight, width} from '../../styles/common';
@@ -20,7 +26,11 @@ import {JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 import {JOBS} from '../../utils/firebaseKeys';
 import JobItem from './JobItem';
-import {useMemo} from 'react';
+
+import {useTheme} from '../../Theme';
+import {useState} from 'react';
+import {parseTimeFilter} from '../../utils/parsers';
+import TimeFilter from '../Filters/TimeFilter';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -75,7 +85,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: 20,
+    marginBottom: 10,
   },
   badget: {
     color: Colors.white,
@@ -89,15 +100,24 @@ const styles = StyleSheet.create({
 });
 
 const JobsList = ({uid}) => {
+  const {Gutters} = useTheme();
+  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('week'));
+
   let firestoreQuery;
   if (uid) {
     firestoreQuery = firestore()
       .collection(JOBS)
+      .where('workersId', 'array-contains', uid)
       .where('done', '==', false)
-      .where('workersId', 'array-contains', uid);
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
   if (!uid) {
-    firestoreQuery = firestore().collection(JOBS).where('done', '==', false);
+    firestoreQuery = firestore()
+      .collection(JOBS)
+      .where('done', '==', false)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
@@ -118,31 +138,31 @@ const JobsList = ({uid}) => {
     );
   };
 
-  if (loading) {
-    return <DashboardSectionSkeleton />;
-  }
-
-  if (values?.docs?.length === 0) {
-    return <Text>No hay ninguna incidencia</Text>;
-  }
-
   return (
     <React.Fragment>
       <View style={{...styles.filterWrapper, ...width(80)}}>
-        <Text style={{...defaultLabel, ...marginRight(10)}}>Trabajos</Text>
-        <View style={styles.badget}>
-          <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-            {values?.filter((item) => item.id !== 'stats').length}
-          </Text>
+        <View style={[styles.badget, Gutters.tinyRMargin]}>
+          {!loading && (
+            <Text style={{color: Colors.white, fontWeight: 'bold'}}>
+              {values?.filter((item) => item.id !== 'stats').length || 0}
+            </Text>
+          )}
         </View>
+        <Text style={{...defaultLabel, ...marginRight(10)}}>Trabajos</Text>
       </View>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={values?.filter((item) => item.id !== 'stats').sort(sortByDate)}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      <TimeFilter onChangeFilter={setTimeFilter} state={timeFilter} />
+      {loading && <DashboardSectionSkeleton />}
+      {(!loading && !values) || values?.length === 0 ? (
+        <Text>No hay ningun trabajo</Text>
+      ) : (
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={values?.filter((item) => item.id !== 'stats').sort(sortByDate)}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </React.Fragment>
   );
 };

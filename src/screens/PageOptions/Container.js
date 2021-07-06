@@ -16,7 +16,6 @@ const Container = ({
 
   return (
     <View style={[Gutters.regularTMargin]}>
-      <Divider />
       {editable && (
         <Button title={'Editar'} onPress={onEdit} color={Colors.pm} />
       )}

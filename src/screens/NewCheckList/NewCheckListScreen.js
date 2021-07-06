@@ -19,6 +19,7 @@ import {useAddFirebase} from '../../hooks/useAddFirebase';
 
 import {
   checksSelector,
+  dateSelector,
   houseSelector,
   observationsSelector,
   resetForm,
@@ -40,6 +41,7 @@ const NewCheckListScreen = ({route, navigation}) => {
   const house = useSelector(houseSelector);
   const workers = useSelector(workersSelector);
   const observations = useSelector(observationsSelector);
+  const date = useSelector(dateSelector);
 
   const {addFirebase} = useAddFirebase();
   const {updateFirebase} = useUpdateFirebase(CHECKLISTS);
@@ -59,6 +61,7 @@ const NewCheckListScreen = ({route, navigation}) => {
       setLoading(true);
       const editCheckListForm = {
         observations: observations,
+        date: date?._i,
         workers: workers?.value,
         workersId: workers?.value?.map((worker) => worker.id),
         houseId: house?.value[0].id,
@@ -97,8 +100,8 @@ const NewCheckListScreen = ({route, navigation}) => {
     try {
       setLoading(true);
       const newCheckListForm = {
-        observations: observations,
-        date: new Date(),
+        observations: observations || 'Sin observaciones',
+        date: date?._i,
         workers: workers?.value,
         workersId: workers?.value?.map((worker) => worker.id),
         houseId: house?.value[0].id,

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-import {defaultLabel, width} from '../../styles/common';
+import {width} from '../../styles/common';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -17,6 +17,8 @@ import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
+import TimeFilter from '../Filters/TimeFilter';
+import {parseTimeFilter} from '../../utils/parsers';
 
 const styles = StyleSheet.create({
   checkWrapper: {
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginVertical: 20,
+    marginBottom: 10,
   },
   badget: {
     backgroundColor: Colors.success,
@@ -85,26 +87,35 @@ const styles = StyleSheet.create({
 
 const ChecklistList = ({uid, house}) => {
   const {Gutters, Fonts} = useTheme();
+  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('week'));
+
   let firestoreQuery;
+
   if (house) {
     firestoreQuery = firestore()
       .collection('checklists')
       .where('send', '==', false)
-      .where('houseId', '==', house?.id);
+      .where('houseId', '==', house?.id)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
   if (uid) {
     firestoreQuery = firestore()
       .collection('checklists')
       .where('send', '==', false)
-      .where('workersId', 'array-contains', uid);
+      .where('workersId', 'array-contains', uid)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
   if (!uid && !house) {
     firestoreQuery = firestore()
       .collection('checklists')
-      .where('send', '==', false);
+      .where('send', '==', false)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
 
-  const [value, loading] = useCollectionData(firestoreQuery, {
+  const [values, loading] = useCollectionData(firestoreQuery, {
     idField: 'id',
   });
 
@@ -123,33 +134,31 @@ const ChecklistList = ({uid, house}) => {
     );
   };
 
-  if (loading) {
-    return <DashboardSectionSkeleton />;
-  }
-
-  if (!value || value?.length === 0) {
-    return <Text>No hay ningun checklist</Text>;
-  }
-
   return (
     <React.Fragment>
       <View style={{...styles.filterWrapper, ...width(80)}}>
-        <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>Checklists</Text>
         {!house && (
-          <View style={styles.badget}>
+          <View style={[styles.badget, Gutters.tinyRMargin]}>
             <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-              {value?.length || 0}
+              {values?.length || 0}
             </Text>
           </View>
         )}
+        <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>Checklists</Text>
       </View>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={value.sort(sortByDate)}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      <TimeFilter onChangeFilter={setTimeFilter} state={timeFilter} />
+      {loading && <DashboardSectionSkeleton />}
+      {(!loading && !values) || values?.length === 0 ? (
+        <Text>No hay ningun checklist</Text>
+      ) : (
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={values?.sort(sortByDate)}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </React.Fragment>
   );
 };

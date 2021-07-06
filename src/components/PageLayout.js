@@ -1,5 +1,5 @@
 import React from 'react';
-import {useNavigation} from '@react-navigation/core';
+
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
@@ -8,7 +8,6 @@ import TitlePage from './TitlePage';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import {LOW_GREY} from '../styles/colors';
 import {popScreen} from '../Router/utils/actions';
 import {Colors} from '../Theme/Variables';
 
@@ -55,6 +54,7 @@ const styles = StyleSheet.create({
 
 const Container = ({
   titleProps,
+  white,
   backButton,
   titleLefSide,
   titleRightSide,
@@ -86,7 +86,7 @@ const Container = ({
     <LinearGradient
       start={{x: 0, y: 0}}
       end={{x: 1, y: 0}}
-      colors={['#126D9B', '#67B26F']}
+      colors={white ? ['#FFFFFF', '#FFFFFF'] : ['#126D9B', '#67B26F']}
       style={styles.pageBackScreen}>
       <View style={styles.pageWrapper}>
         <View style={styles.pageScreen}>{children}</View>
@@ -97,6 +97,7 @@ const Container = ({
 );
 
 const PageLayout = ({
+  white,
   backButton,
   titleChildren,
   titleProps,
@@ -111,6 +112,7 @@ const PageLayout = ({
     return (
       <SafeAreaView style={styles.container} edges={edges}>
         <Container
+          white={white}
           backButton={backButton}
           titleProps={titleProps}
           children={children}
@@ -126,6 +128,7 @@ const PageLayout = ({
   return (
     <View style={styles.container}>
       <Container
+        white={white}
         backButton={backButton}
         titleProps={titleProps}
         children={children}

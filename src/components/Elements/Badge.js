@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {Colors, Variants} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
@@ -20,22 +21,24 @@ const styles = StyleSheet.create({
   },
 });
 
-const Badge = ({containerStyle, label, text, variant = 'pm'}) => {
+const Badge = ({containerStyle, label, text, variant = 'pm', onPress}) => {
   const variantSelected = Variants[variant];
   return (
-    <View
-      style={[
-        styles.container,
-        {backgroundColor: variantSelected.backgroundColor},
-        {...containerStyle},
-      ]}>
-      <Text>
-        {label && <Text style={styles.label}>{label}</Text>}
-        <Text style={[styles.text, {color: variantSelected.color}]}>
-          {text}
+    <TouchableWithoutFeedback onPress={onPress}>
+      <View
+        style={[
+          styles.container,
+          {backgroundColor: variantSelected.backgroundColor},
+          {...containerStyle},
+        ]}>
+        <Text>
+          {label && <Text style={styles.label}>{label}</Text>}
+          <Text style={[styles.text, {color: variantSelected.color}]}>
+            {text}
+          </Text>
         </Text>
-      </Text>
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

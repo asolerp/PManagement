@@ -23,7 +23,8 @@ import {useTheme} from '../../Theme';
 
 const PageOptionsScreen = ({route}) => {
   const {Layout, Fonts} = useTheme();
-  const {showDelete, duplicate, collection, docId, backScreen} = route.params;
+  const {editable, showDelete, duplicate, collection, docId, backScreen} =
+    route.params;
   const {loading, recursiveDelete} = useRecursiveDelete({
     path: `${collection}/${docId}`,
     collection,
@@ -68,6 +69,7 @@ const PageOptionsScreen = ({route}) => {
         <Container
           collection={collection}
           docId={docId}
+          editable={editable}
           showDelete={showDelete}
           onEdit={() => {
             openScreenWithPush(parseScreenByCollection[collection], {

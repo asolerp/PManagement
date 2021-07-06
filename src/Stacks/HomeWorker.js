@@ -73,6 +73,22 @@ const HomeWorker = () => {
         })}
       />
       <Tabs.Screen
+        name={tabNameByScreen[JOBS_SCREEN_KEY]}
+        initialParams={{screenKey: JOBS_SCREEN_KEY}}
+        component={JobsScreen}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisible(route),
+          tabBarIcon: ({focused, color, size}) => (
+            <Icon
+              name="format-list-bulleted"
+              size={size ? size : 24}
+              color={focused ? color : '#3E93A8'}
+              focused={focused}
+            />
+          ),
+        })}
+      />
+      <Tabs.Screen
         name={tabNameByScreen[INCIDENCES_SCREEN_KEY]}
         initialParams={{screenKey: INCIDENCES_SCREEN_KEY}}
         component={IncidencesScreen}

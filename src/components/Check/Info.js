@@ -31,6 +31,10 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
 import Badge from '../Elements/Badge';
 import {Colors} from '../../Theme/Variables';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {HOUSE_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import useAuth from '../../utils/useAuth';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -78,8 +82,10 @@ const styles = StyleSheet.create({
 
 const Info = () => {
   const route = useRoute();
+  const {isOwner} = useAuth();
   const {Layout, Gutters, Fonts} = useTheme();
   const {docId} = route.params;
+  const {t} = useTranslation();
   const query = useMemo(() => {
     return firestore().collection('checklists').doc(docId).collection('checks');
   }, [docId]);
@@ -101,16 +107,37 @@ const Info = () => {
   return (
     <View style={styles.checklistContainer}>
       <View style={{marginBottom: 20}}>
+        {checklist?.finished && (
+          <Badge text={t('checklists.checkPage.done')} variant={'success'} />
+        )}
         <View style={[Gutters.smallBMargin]}>
-          <Text style={[Fonts.textTitle, Gutters.smallVMargin, {width: '90%'}]}>
-            {`Checklist en ${checklist?.house?.[0].houseName}`}
-          </Text>
-          <EditableInput
-            value={checklist?.observations}
-            onPressAccept={(change) =>
-              updateChecklistInput(docId, {observations: change})
-            }
-          />
+          {isOwner ? (
+            <View style={{width: '90%'}}>
+              <Text
+                style={[Fonts.textTitle, Gutters.smallVMargin, {width: '90%'}]}>
+                {'Checklist'}
+              </Text>
+              <Text style={[Gutters.tinyBMargin]}>
+                Our team is working hard to keep your house clean and safe! 🚀🚀
+              </Text>
+              <Text>
+                Here you will see the update of the jobs made in your house
+              </Text>
+            </View>
+          ) : (
+            <View>
+              <Text
+                style={[Fonts.textTitle, Gutters.smallVMargin, {width: '90%'}]}>
+                {`Checklist en ${checklist?.house?.[0].houseName}`}
+              </Text>
+              <EditableInput
+                value={checklist?.observations}
+                onPressAccept={(change) =>
+                  updateChecklistInput(docId, {observations: change})
+                }
+              />
+            </View>
+          )}
           <View
             style={[
               Layout.row,
@@ -123,6 +150,11 @@ const Info = () => {
                 text={checklist?.house?.[0].houseName}
                 variant="purple"
                 containerStyle={Gutters.smallBMargin}
+                onPress={() =>
+                  openScreenWithPush(HOUSE_SCREEN_KEY, {
+                    houseId: checklist?.house?.[0].id,
+                  })
+                }
               />
               <Badge
                 label={'Fecha: '}
@@ -170,7 +202,13 @@ const Info = () => {
         </View>
         <Divider />
       </View>
-      {!loadingChecklist && <ListOfChecks checks={checks} checkId={docId} />}
+      {!loadingChecklist && (
+        <ListOfChecks
+          editable={isOwner || checklist.finished}
+          checks={checks}
+          checkId={docId}
+        />
+      )}
     </View>
   );
 };

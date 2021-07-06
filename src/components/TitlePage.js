@@ -27,32 +27,32 @@ const TitlePage = ({
 
   const TitleWrapper = () => (
     <React.Fragment>
-      <View
-        style={{
-          ...styles.titleWrapper,
-          ...{
-            justifyContent: 'center',
-            marginTop: Platform.OS === 'ios' ? 0 : 20,
-          },
-        }}>
-        {title ? (
-          <React.Fragment>
-            <View>
-              <View style={[Layout.rowCenter]}>
-                <View
-                  style={{
-                    ...{
-                      width: 30,
-                      marginTop: Platform.OS === 'ios' ? 30 : 0,
-                    },
-                  }}>
-                  {leftSide}
-                </View>
-                <View
-                  style={{
-                    ...styles.box,
-                    ...{marginHorizontal: 20},
-                  }}>
+      {!children ? (
+        <View
+          style={{
+            ...styles.titleWrapper,
+            ...{
+              justifyContent: 'center',
+              marginTop: Platform.OS === 'ios' ? 0 : 20,
+            },
+          }}>
+          <View>
+            <View style={[Layout.rowCenter]}>
+              <View
+                style={{
+                  ...{
+                    width: 30,
+                    marginTop: Platform.OS === 'ios' ? 30 : 0,
+                  },
+                }}>
+                {leftSide}
+              </View>
+              <View
+                style={{
+                  ...styles.box,
+                  ...{marginHorizontal: 20},
+                }}>
+                {title ? (
                   <Text
                     adjustsFontSizeToFit
                     numberOfLines={1}
@@ -60,67 +60,70 @@ const TitlePage = ({
                       ...styles.title,
                       ...{
                         color: color,
-
-                        marginTop: Platform.OS === 'ios' ? 40 : 0,
-                        // fontSize: leftSide ? 20 : 35,
+                        marginTop: Platform.OS === 'ios' ? 30 : 0,
                         textAlign: 'center',
                       },
                     }}>
                     {title}
                   </Text>
-                </View>
-                <View
-                  style={{
-                    ...{
-                      width: 30,
-                      marginTop: Platform.OS === 'ios' ? 30 : 0,
-                    },
-                  }}>
-                  {rightSide}
-                </View>
+                ) : (
+                  <View>
+                    {subPage && (
+                      <View
+                        style={{
+                          ...styles.logoContent,
+                          ...{
+                            paddingTop: 35,
+                          },
+                        }}>
+                        <Image
+                          style={styles.logo}
+                          source={require('../assets/images/logo_pm_servicios.png')}
+                        />
+                      </View>
+                    )}
+                  </View>
+                )}
               </View>
-              <View>
-                {subtitle && !subPage && (
-                  <Text
-                    style={{
-                      ...styles.subtitle,
-                      ...{color: color, marginLeft: 0},
-                    }}>
-                    {subtitle}
-                  </Text>
-                )}
-                {subtitle && subPage && (
-                  <Text
-                    style={{
-                      ...{
-                        color: color,
-                        textAlign: 'center',
-                        fontSize: 13,
-                        marginBottom: 5,
-                      },
-                    }}>
-                    {subtitle}
-                  </Text>
-                )}
+              <View
+                style={{
+                  ...{
+                    width: 30,
+                    marginTop: Platform.OS === 'ios' ? 30 : 0,
+                  },
+                }}>
+                {rightSide}
               </View>
             </View>
-          </React.Fragment>
-        ) : (
-          <View
-            style={{
-              ...styles.logoContent,
-              ...{
-                paddingTop: background ? 60 : 0,
-              },
-            }}>
-            <Image
-              style={styles.logo}
-              source={require('../assets/images/logo_pm_servicios.png')}
-            />
+            <View>
+              {subtitle && !subPage && (
+                <Text
+                  style={{
+                    ...styles.subtitle,
+                    ...{color: color, marginLeft: 0},
+                  }}>
+                  {subtitle}
+                </Text>
+              )}
+              {subtitle && subPage && (
+                <Text
+                  style={{
+                    ...{
+                      color: color,
+                      textAlign: 'center',
+                      fontSize: 13,
+                      marginBottom: 5,
+                    },
+                  }}>
+                  {subtitle}
+                </Text>
+              )}
+            </View>
           </View>
-        )}
-      </View>
-      {children && <View style={styles.childrenWrapper}>{children}</View>}
+        </View>
+      ) : (
+        <View style={styles.childrenWrapper}>{children}</View>
+      )}
     </React.Fragment>
   );
 
@@ -178,9 +181,9 @@ const styles = StyleSheet.create({
   },
   childrenWrapper: {
     flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 20,
     width: '100%',
-    justifyContent: 'center',
-    marginTop: 10,
   },
   logo: {
     width: 80,
@@ -188,8 +191,9 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   title: {
-    fontSize: 25,
-    fontWeight: 'bold',
+    fontSize: 20,
+    letterSpacing: 2,
+    fontWeight: '600',
   },
   subtitle: {
     fontSize: 20,

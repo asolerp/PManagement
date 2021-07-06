@@ -48,8 +48,7 @@ const ProfileBar = ({onPress}) => {
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
-    padding: 10,
-    marginBottom: 20,
+    paddingHorizontal: 10,
   },
   profileBar: {
     flexDirection: 'row',

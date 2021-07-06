@@ -12,6 +12,7 @@ import CustomButton from './Elements/CustomButton';
 const DynamicSelectorList = ({
   collection,
   searchBy,
+  onSave,
   order,
   where,
   schema,
@@ -22,8 +23,10 @@ const DynamicSelectorList = ({
 }) => {
   const [search, setSearch] = useState();
   const [filteredList, setFilteredList] = useState();
-  const {list, loading, error} = useGetFirebase(collection, order, where);
+  const {list, loading} = useGetFirebase(collection, order, where);
   const [selected, setSelected] = useState(get);
+
+  const [loadingOnSave, setLoadingOnSave] = useState(false);
 
   const fList = search
     ? list.filter((item) =>
@@ -31,8 +34,19 @@ const DynamicSelectorList = ({
       )
     : list;
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     set(selected);
+    if (onSave) {
+      try {
+        setLoadingOnSave(true);
+        return await onSave(selected);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoadingOnSave(false);
+        closeModal();
+      }
+    }
     closeModal();
   };
 
@@ -98,7 +112,12 @@ const DynamicSelectorList = ({
             keyExtractor={(item) => item.id}
           />
         </View>
-        <CustomButton styled="rounded" title="Guardar" onPress={onSubmit} />
+        <CustomButton
+          loading={loadingOnSave}
+          styled="rounded"
+          title="Guardar"
+          onPress={onSubmit}
+        />
       </View>
     </View>
   );

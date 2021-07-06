@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     width: 220,
-    height: 195,
+    height: 210,
     borderLeftWidth: 10,
   },
   avatarWrapper: {

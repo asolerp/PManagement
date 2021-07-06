@@ -52,9 +52,9 @@ const styles = StyleSheet.create({
     height: 120,
   },
   activeFilter: {
-    width: 98,
-    borderWidth: 4,
-    borderColor: '#EB5B28',
+    width: 94,
+    borderWidth: 2,
+    borderColor: Colors.success,
     borderRadius: 24,
     backgroundColor: 'transparent',
   },
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#54A3AC',
     opacity: 0.56,
     borderRadius: 20,
-    width: '100%',
-    height: heightFilter,
+    width: 85,
+    height: 115,
     zIndex: 2,
   },
   textStyle: {
@@ -109,14 +109,14 @@ const HouseFilter = ({houses, onClickHouse}) => {
       onPress={() => handleSetHouse(item)}
       style={[
         isInArray(item.id) && styles.activeFilter,
-        {marginHorizontal: 10},
+        {marginHorizontal: 5},
       ]}>
       <View style={[styles.houseFilter]}>
         <View style={[styles.avatarContainer]}>
           <Image
             style={[
               styles.ownerImage,
-              {width: 90, height: 120, borderRadius: 20},
+              {width: 85, height: 115, borderRadius: 20},
             ]}
             source={{
               uri: item.houseImage,

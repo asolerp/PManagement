@@ -25,6 +25,9 @@ import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 //Utils
 import {launchImage} from '../../utils/imageFunctions';
 import {ScrollView} from 'react-native';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
+import useAuth from '../../utils/useAuth';
 
 const styles = StyleSheet.create({
   pageWrapper: {
@@ -70,16 +73,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const HouseScreen = ({route, navigation}) => {
+const HouseScreen = ({route}) => {
   const [infoHouse, setInfoHouse] = useState();
   const [newImage, setNewImage] = useState();
-  const [loadingEdit, setLoadingEdit] = useState(false);
+  const {isAdmin} = useAuth();
+
   const {houseId} = route.params;
-  const {
-    document: house,
-    loading,
-    error,
-  } = useGetDocFirebase('houses', houseId);
+  const {document: house} = useGetDocFirebase('houses', houseId);
   const {updateFirebase} = useUpdateFirebase('houses');
   const {upload} = useUploadCloudinaryImage();
   // Modal State
@@ -87,8 +87,6 @@ const HouseScreen = ({route, navigation}) => {
 
   const handleEdit = async () => {
     try {
-      setLoadingEdit(true);
-
       if (newImage) {
         const uploadImage = await upload(
           newImage,
@@ -105,8 +103,6 @@ const HouseScreen = ({route, navigation}) => {
       setNewImage(null);
     } catch (err) {
       console.log(err);
-    } finally {
-      setLoadingEdit(false);
     }
   };
 
@@ -151,7 +147,8 @@ const HouseScreen = ({route, navigation}) => {
           <ScrollView
             style={styles.pageWrapper}
             showsVerticalScrollIndicator={false}>
-            <TouchableOpacity onPress={() => launchImage(setNewImage)}>
+            <TouchableOpacity
+              onPress={() => isAdmin && launchImage(setNewImage)}>
               {newImage && (
                 <View style={styles.iconContainer}>
                   <TouchableOpacity onPress={() => setNewImage(null)}>
@@ -171,6 +168,7 @@ const HouseScreen = ({route, navigation}) => {
               <Text style={styles.inputLabel}>Nombre de la casa:</Text>
               <InputGroup>
                 <TextInput
+                  editable={isAdmin}
                   style={{height: 40}}
                   placeholder="Nombre de la casa"
                   onChangeText={(text) =>
@@ -182,6 +180,7 @@ const HouseScreen = ({route, navigation}) => {
               <Text style={styles.inputLabel}>Dirección:</Text>
               <InputGroup>
                 <TextInput
+                  editable={isAdmin}
                   style={{height: 40}}
                   placeholder="Dirección"
                   onChangeText={(text) =>
@@ -193,6 +192,7 @@ const HouseScreen = ({route, navigation}) => {
               <Text style={styles.inputLabel}>Municipio:</Text>
               <InputGroup>
                 <TextInput
+                  editable={isAdmin}
                   style={{height: 40}}
                   placeholder="Municipio"
                   onChangeText={(text) =>
@@ -221,7 +221,7 @@ const HouseScreen = ({route, navigation}) => {
                     }
                     iconProps={{name: 'person', color: '#55A5AD'}}
                     onPress={() => {
-                      setModalVisible(true);
+                      isAdmin && setModalVisible(true);
                     }}
                   />
                 </InputGroup>

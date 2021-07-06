@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ItemCheck = ({check, checklistId, imageHandler, loading}) => {
+const ItemCheck = ({check, checklistId, editable, imageHandler, loading}) => {
   const {Layout, Gutters} = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {updateFirebase} = useUpdateFirebase('checklists');
@@ -99,7 +99,7 @@ const ItemCheck = ({check, checklistId, imageHandler, loading}) => {
       />
       <View style={{...styles.container}}>
         <CheckBox
-          disabled={false}
+          disabled={editable}
           value={check.done}
           onTintColor={Colors.leftBlue}
           onCheckColor={Colors.leftBlue}

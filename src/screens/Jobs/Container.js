@@ -23,6 +23,9 @@ import WorkersFilter from '../../components/Filters/WorkeresFilter';
 import StatusIncidence from '../../components/Filters/StatusIncidence';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
+import {JOBS} from '../../utils/firebaseKeys';
 
 const Container = () => {
   const {Gutters, Layout, Fonts} = useTheme();
@@ -30,11 +33,20 @@ const Container = () => {
   const [filterWorkers, setFilterWorkers] = useState([]);
   const [state, setState] = useState(false);
 
-  const query = useMemo(() => {
-    return firestore().collection('jobs').where('done', '==', state);
-  }, [state]);
+  const user = useSelector(userSelector);
 
-  const [jobs] = useCollectionData(query, {
+  let firebaseQuery;
+
+  if (user.role === 'admin') {
+    firebaseQuery = firestore().collection(JOBS).where('done', '==', state);
+  } else {
+    firebaseQuery = firestore()
+      .collection(JOBS)
+      .where('done', '==', state)
+      .where('workersId', 'array-contains', user.uid);
+  }
+
+  const [jobs] = useCollectionData(firebaseQuery, {
     idField: 'id',
   });
 
@@ -63,12 +75,19 @@ const Container = () => {
   };
 
   return (
-    <View style={[Layout.fill]}>
-      <View style={[styles.housesWrapper, Gutters.regularBMargin]}>
-        <WorkersFilter
-          workers={filterWorkers}
-          onClickWorker={setFilterWorkers}
-        />
+    <View style={[Layout.fill, Gutters.mediumTMargin]}>
+      <View
+        style={[
+          styles.housesWrapper,
+          Gutters.tinyTMargin,
+          Gutters.regularBMargin,
+        ]}>
+        {user.role === 'admin' && (
+          <WorkersFilter
+            workers={filterWorkers}
+            onClickWorker={setFilterWorkers}
+          />
+        )}
         <HouseFilter houses={filterHouses} onClickHouse={setFilterHouses} />
       </View>
       <View

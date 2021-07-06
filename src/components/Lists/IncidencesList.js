@@ -18,6 +18,10 @@ import sortByDate from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import IncidenceItem from './IncidenceItem';
+import {useTheme} from '../../Theme';
+import {parseTimeFilter} from '../../utils/parsers';
+import {useState} from 'react';
+import TimeFilter from '../Filters/TimeFilter';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -72,7 +76,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: 20,
+    marginBottom: 10,
   },
   badget: {
     color: Colors.white,
@@ -86,17 +91,24 @@ const styles = StyleSheet.create({
 });
 
 const IncidencesList = ({uid}) => {
+  const {Gutters} = useTheme();
+  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('week'));
+
   let firestoreQuery;
   if (uid) {
     firestoreQuery = firestore()
       .collection('incidences')
+      .where('user.uid', '==', uid)
       .where('done', '==', false)
-      .where('user.uid', '==', uid);
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
   if (!uid) {
     firestoreQuery = firestore()
       .collection('incidences')
-      .where('done', '==', false);
+      .where('done', '==', false)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
@@ -117,31 +129,29 @@ const IncidencesList = ({uid}) => {
     );
   };
 
-  if (loading) {
-    return <DashboardSectionSkeleton />;
-  }
-
-  if (values?.docs?.length === 0) {
-    return <Text>No hay ninguna incidencia</Text>;
-  }
-
   return (
     <React.Fragment>
       <View style={{...styles.filterWrapper, ...width(80)}}>
-        <Text style={{...defaultLabel, ...marginRight(10)}}>Incidencias</Text>
-        <View style={styles.badget}>
+        <View style={[styles.badget, Gutters.tinyRMargin]}>
           <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-            {values?.filter((item) => item.id !== 'stats').length}
+            {values?.filter((item) => item.id !== 'stats').length || 0}
           </Text>
         </View>
+        <Text style={{...defaultLabel, ...marginRight(10)}}>Incidencias</Text>
       </View>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={values?.filter((item) => item.id !== 'stats').sort(sortByDate)}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      <TimeFilter onChangeFilter={setTimeFilter} state={timeFilter} />
+      {loading && <DashboardSectionSkeleton />}
+      {(!loading && !values) || values?.length === 0 ? (
+        <Text>No hay ninguna incidencia</Text>
+      ) : (
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={values?.filter((item) => item.id !== 'stats').sort(sortByDate)}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </React.Fragment>
   );
 };

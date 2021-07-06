@@ -35,6 +35,7 @@ import {
   setCheck,
   setEditableChecks,
   setAllChecks,
+  dateSelector,
 } from '../../../Store/CheckList/checkListSlice';
 import {Colors} from '../../../Theme/Variables';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -104,6 +105,7 @@ const CheckListForm = ({edit, docId}) => {
   const workers = useSelector(workersSelector);
   const observations = useSelector(observationsSelector);
   const checks = useSelector(checksSelector);
+  const date = useSelector(dateSelector);
 
   const setInputFormAction = useCallback(
     (label, value) => dispatch(setForm({label, value})),
@@ -209,7 +211,11 @@ const CheckListForm = ({edit, docId}) => {
   };
 
   const DateTimeSelector = () => (
-    <DateSelector closeModal={() => setModalVisible(false)} />
+    <DateSelector
+      get={date || null}
+      set={(date) => setInputFormAction('date', date)}
+      closeModal={() => setModalVisible(false)}
+    />
   );
 
   const ListDynamicHouse = () => (
@@ -284,6 +290,21 @@ const CheckListForm = ({edit, docId}) => {
           {modalContent && modalSwitcher(modalContent)}
         </ModalContent>
       </BottomModal>
+      <InputGroup>
+        <CustomInput
+          title="Fecha"
+          subtitle={
+            date && (
+              <Text style={styles.subtitle}>{moment(date).format('LLL')}</Text>
+            )
+          }
+          iconProps={{name: 'alarm', color: '#55A5AD'}}
+          onPress={() => {
+            setModalContent('date');
+            setModalVisible(true);
+          }}
+        />
+      </InputGroup>
       <InputGroup>
         <CustomInput
           title="Casa"

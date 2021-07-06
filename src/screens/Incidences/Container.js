@@ -55,7 +55,7 @@ const Container = () => {
     firebaseQuery = firestore()
       .collection('incidences')
       .where('done', '==', state)
-      .where('user.uid', '==', user.uid);
+      .where('workersId', 'array-contains', user.uid);
   }
 
   const [values, loading] = useCollectionData(firebaseQuery, {
@@ -80,12 +80,7 @@ const Container = () => {
 
   return (
     <View style={[Layout.fill, Gutters.mediumTMargin]}>
-      <View
-        style={[
-          styles.housesWrapper,
-          Gutters.tinyTMargin,
-          Gutters.smallBMargin,
-        ]}>
+      <View style={[Gutters.tinyTMargin, Gutters.smallBMargin]}>
         <HouseFilter houses={filterHouses} onClickHouse={setFilterHouses} />
       </View>
       <View style={styles.filterWrapper}>

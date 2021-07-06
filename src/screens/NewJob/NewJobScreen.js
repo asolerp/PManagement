@@ -76,7 +76,7 @@ const NewJobScreen = ({route}) => {
       setLoading(true);
       const editedForm = {
         observations: job?.observations,
-        date: job?.date?._i,
+        date: job?.date?._i || job?.date,
         workers: job?.workers?.value,
         workersId: job?.workers?.value.map((worker) => worker.id),
         houseId: job?.house?.value[0].id,

@@ -87,6 +87,7 @@ const IncidenceScreen = () => {
                   backScreen: INCIDENCES_SCREEN_KEY,
                   collection: INCIDENCES,
                   docId: incidenceId,
+                  editable: false,
                   showDelete: true,
                   duplicate: true,
                 });
@@ -114,7 +115,6 @@ const IncidenceScreen = () => {
           />
         }
         titleProps={{
-          title: 'Incidencia',
           subPage: true,
         }}>
         <View style={{flex: 1, marginTop: 15}}>

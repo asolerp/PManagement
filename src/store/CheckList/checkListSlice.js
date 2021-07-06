@@ -6,6 +6,7 @@ const initialState = {
   workers: {},
   observations: '',
   checks: {},
+  date: undefined,
 };
 
 export const checkListSlice = createSlice({
@@ -46,6 +47,7 @@ export const houseSelector = (state) => state.checklist.house;
 export const workersSelector = (state) => state.checklist.workers;
 export const observationsSelector = (state) => state.checklist.observations;
 export const checksSelector = (state) => state.checklist.checks;
+export const dateSelector = (state) => state.checklist.date;
 
 export const {
   setForm,

@@ -137,7 +137,9 @@ const JobItem = ({job, onPress}) => {
           <View>
             <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
               {job?.task?.desc && (
-                <Text style={[Fonts.titleCard]}>{job?.task?.desc}</Text>
+                <Text style={[Fonts.titleCard, {maxWidth: 150}]}>
+                  {job?.task?.desc}
+                </Text>
               )}
               <Badge text={job?.house?.[0]?.houseName} variant="purple" />
             </View>
@@ -154,15 +156,11 @@ const JobItem = ({job, onPress}) => {
                 Layout.rowCenter,
                 Layout.justifyContentSpaceBetween,
               ]}>
-              <View
-                style={[
-                  Layout.rowCenter,
-                  Layout.alignItemsEnd,
-                  Gutters.smallTMargin,
-                ]}>
+              <View style={[Layout.row, Gutters.smallTMargin]}>
                 {job?.workers?.map((worker, i) => (
                   <Avatar
                     key={worker.id || i}
+                    index={i}
                     uri={worker.profileImage}
                     overlap={job?.workers?.length > 1}
                     size="medium"

@@ -74,20 +74,20 @@ const Info = () => {
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={[styles.container]}>
         <View>
+          <Badge
+            text={job?.done ? 'Termianda' : 'Sin terminar'}
+            variant={job?.done ? 'success' : 'danger'}
+            containerStyle={Gutters.smallBMargin}
+          />
           <View
             style={[
               Layout.fill,
               Layout.row,
               Layout.justifyContentSpaceBetween,
             ]}>
-            <Text
-              style={[Fonts.textTitle, Gutters.smallBMargin, {width: '70%'}]}>
+            <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
               {job?.task?.desc}
             </Text>
-            <Badge
-              text={job?.done ? 'Termianda' : 'Sin terminar'}
-              variant={job?.done ? 'success' : 'danger'}
-            />
           </View>
           <EditableInput
             value={job?.observations}

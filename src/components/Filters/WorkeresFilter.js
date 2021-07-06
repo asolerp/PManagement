@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   activeFilter: {
     width: 64,
     borderWidth: 2,
-    borderColor: '#EB5B28',
+    borderColor: Colors.success,
     borderRadius: 100,
     backgroundColor: 'transparent',
   },
@@ -128,20 +128,18 @@ const WorkersFilter = ({workers, onClickWorker}) => {
             <Image
               style={[
                 styles.ownerImage,
-                {width: 60, height: 60, borderRadius: 100},
+                {width: 55, height: 55, borderRadius: 100},
               ]}
               source={{
                 uri: item.profileImage,
               }}
             />
           </View>
-          <View style={styles.maskWrapper} />
-          <View style={styles.textWrapper}>
-            <Text style={styles.textStyle}>{item.houseName}</Text>
-          </View>
         </View>
       </TouchableOpacity>
-      <Text style={[Fonts.textTiny]}>{item?.firstName}</Text>
+      <Text style={[Fonts.textTiny, Gutters.tinyTMargin]}>
+        {item?.firstName}
+      </Text>
     </View>
   );
 

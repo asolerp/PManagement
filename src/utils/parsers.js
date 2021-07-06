@@ -1,5 +1,5 @@
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {
   PRIORITY_LOW,
@@ -42,23 +42,23 @@ export const tabNameByScreen = {
 export const getHightByRoute = (route) => {
   switch (route) {
     case DASHBOARD_SCREEN_KEY:
-      return 180;
+      return 140;
     case DASHBOARD_WORKER_SCREEN_KEY:
-      return 180;
+      return 140;
     case HOUSE_SCREEN_KEY:
       return 180;
     case INCIDENCES_SCREEN_KEY:
-      return 100;
+      return 80;
     case CHECKLIST_SCREEN_KEY:
-      return 100;
+      return 80;
     case JOBS_SCREEN_KEY:
-      return 100;
+      return 80;
     case HOUSES_SCREEN_KEY:
-      return 100;
+      return 80;
     case PROFILE_SCREEN_KEY:
-      return 100;
+      return 80;
     default:
-      return 100;
+      return 80;
   }
 };
 
@@ -124,6 +124,28 @@ export const parsePirorityIcon = (priority) => {
     default:
       break;
   }
+};
+
+export const parseTimeFilter = (time) => {
+  const filter = {
+    week: {
+      filter: 'week',
+      start: moment(new Date()).subtract(7, 'days'),
+      end: moment(new Date()),
+    },
+    month: {
+      filter: 'month',
+      start: moment(new Date()).subtract(1, 'month'),
+      end: moment(new Date()),
+    },
+    year: {
+      filter: 'year',
+      start: moment(new Date()).subtract(1, 'year'),
+      end: moment(new Date()),
+    },
+  };
+
+  return filter[time];
 };
 
 export const parseDateWithText = (date) => {

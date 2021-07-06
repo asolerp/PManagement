@@ -1,39 +1,14 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Variants} from '../../Theme/Variables';
+import Filter from './Filter';
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     marginTop: 0,
   },
-  filterWrapper: {
-    paddingHorizontal: 5,
-    paddingVertical: 5,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  filterText: {
-    color: 'white',
-  },
 });
-
-const Filter = ({text, onPress, color, active}) => {
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <View
-        style={{
-          ...styles.filterWrapper,
-          ...{
-            backgroundColor: color.backgroundColor,
-            opacity: active ? 1 : 0.4,
-          },
-        }}>
-        <Text style={(styles.filterText, {color: color.color})}>{text}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
 
 const StatusIncidence = ({onChangeFilter, state}) => {
   return (

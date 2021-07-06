@@ -13,7 +13,7 @@ const SituationIncidence = ({incidence}) => {
 
   const handleStateIncidence = async (stateIncidence) => {
     try {
-      if (user.role === 'admin') {
+      if (user.role === 'admin' || incidence.workersId.includes(user.uid)) {
         await firestore()
           .doc(`incidences/${incidence.id}`)
           .update({state: stateIncidence});
