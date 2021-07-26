@@ -108,12 +108,7 @@ const WorkersFilter = ({workers, onClickWorker}) => {
   };
 
   const renderItem = ({item}) => (
-    <View
-      style={[
-        Layout.colCenter,
-        Layout.justifyContentCenter,
-        Gutters.smallBMargin,
-      ]}>
+    <View style={[Layout.colCenter, Layout.justifyContentCenter]}>
       <TouchableOpacity
         key={item.id}
         onPress={() => handleSetWorker(item)}

@@ -28,33 +28,35 @@ import {JOBS} from '../../utils/firebaseKeys';
 import TimeFilter from '../../components/Filters/TimeFilter';
 import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
-import Filters from '../Filters/Filters';
+import Filters from '../../components/Filters/Filters';
 
 const Container = () => {
   const {Gutters, Layout, Fonts} = useTheme();
   const [visibleModal, setVisibleModal] = useState();
-  const [filterHouses, setFilterHouses] = useState([]);
-  const [filterWorkers, setFilterWorkers] = useState([]);
-  const [state, setState] = useState(false);
-  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('all'));
+  const [filters, setFilters] = useState({
+    time: parseTimeFilter('all'),
+    state: false,
+  });
 
   const user = useSelector(userSelector);
+
+  console.log(filters, 'Filters');
 
   let firebaseQuery;
 
   if (user.role === 'admin') {
     firebaseQuery = firestore()
       .collection(JOBS)
-      .where('done', '==', state)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('done', '==', filters.state)
+      .where('date', '>', new Date(filters.time.start))
+      .where('date', '<', new Date(filters.time.end));
   } else {
     firebaseQuery = firestore()
       .collection(JOBS)
-      .where('done', '==', state)
+      .where('done', '==', filters.state)
       .where('workersId', 'array-contains', user.uid)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('date', '>', new Date(filters.time.start))
+      .where('date', '<', new Date(filters.time.end));
   }
 
   const [jobs] = useCollectionData(firebaseQuery, {
@@ -63,12 +65,12 @@ const Container = () => {
 
   const jobsList = jobs
     ?.filter((job) =>
-      filterWorkers.length > 0
-        ? filterWorkers.some((fworker) => job?.workersId?.includes(fworker))
+      filters?.workers?.length > 0
+        ? filters.workers.some((fworker) => job?.workersId?.includes(fworker))
         : true,
     )
     .filter((job) =>
-      filterHouses.length > 0 ? filterHouses.includes(job.houseId) : true,
+      filters?.houses?.length > 0 ? filters.houses.includes(job.houseId) : true,
     )
     .sort((a, b) => sortByDate(a, b, 'desc'));
 
@@ -90,8 +92,14 @@ const Container = () => {
       <CustomModal
         visible={visibleModal}
         setVisible={setVisibleModal}
-        size={0.5}>
-        <Filters />
+        size={0.7}>
+        <Filters
+          initialFilters={filters}
+          onSaveFilters={(f) => {
+            setFilters(f);
+            setVisibleModal(false);
+          }}
+        />
       </CustomModal>
       <View style={[Layout.fill]}>
         <Button title="Filtros" onPress={() => setVisibleModal(true)} />

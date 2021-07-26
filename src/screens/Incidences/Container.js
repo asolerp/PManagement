@@ -20,6 +20,9 @@ import {userSelector} from '../../Store/User/userSlice';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {parseTimeFilter} from '../../utils/parsers';
+import CustomModal from '../../components/Modal';
+import Filters from '../../components/Filters/Filters';
+import {Button} from 'react-native';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -41,9 +44,11 @@ const styles = StyleSheet.create({
 });
 
 const Container = () => {
-  const [state, setState] = useState(false);
-  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('all'));
-  const [filterHouses, setFilterHouses] = useState([]);
+  const [visibleModal, setVisibleModal] = useState();
+  const [filters, setFilters] = useState({
+    time: parseTimeFilter('all'),
+    state: false,
+  });
   const {Gutters, Layout, Fonts} = useTheme();
 
   const user = useSelector(userSelector);
@@ -53,16 +58,16 @@ const Container = () => {
   if (user.role === 'admin') {
     firebaseQuery = firestore()
       .collection('incidences')
-      .where('done', '==', state)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('done', '==', filters.state)
+      .where('date', '>', new Date(filters.time.start))
+      .where('date', '<', new Date(filters.time.end));
   } else {
     firebaseQuery = firestore()
       .collection('incidences')
-      .where('done', '==', state)
+      .where('done', '==', filters.state)
       .where('workersId', 'array-contains', user.uid)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('date', '>', new Date(filters.time.start))
+      .where('date', '<', new Date(filters.time.end));
   }
 
   const [values, loading] = useCollectionData(firebaseQuery, {
@@ -72,7 +77,9 @@ const Container = () => {
   const incidencesList = values
     ?.filter((item) => item.id !== 'stats')
     ?.filter((incidence) =>
-      filterHouses.length > 0 ? filterHouses.includes(incidence.houseId) : true,
+      filters?.houses?.length > 0
+        ? filters?.houses.includes(incidence.houseId)
+        : true,
     )
     ?.sort((a, b) => sortByDate(a, b, 'asc'));
 
@@ -87,22 +94,30 @@ const Container = () => {
 
   return (
     <View style={[Layout.fill, Gutters.mediumTMargin]}>
-      <TimeFilter
-        onChangeFilter={setTimeFilter}
-        state={timeFilter}
-        withAll={true}
-      />
-      <View style={[Gutters.tinyTMargin, Gutters.smallBMargin]}>
-        <HouseFilter houses={filterHouses} onClickHouse={setFilterHouses} />
-      </View>
-      <View style={[styles.filterWrapper, Gutters.smallBMargin]}>
-        <StatusIncidence onChangeFilter={setState} state={state} />
-      </View>
+      <CustomModal
+        visible={visibleModal}
+        setVisible={setVisibleModal}
+        size={0.7}>
+        <Filters
+          activeFilters={{
+            houses: true,
+            workers: false,
+            time: true,
+            state: true,
+          }}
+          initialFilters={filters}
+          onSaveFilters={(f) => {
+            setFilters(f);
+            setVisibleModal(false);
+          }}
+        />
+      </CustomModal>
 
       {loading ? (
         <ItemListSkeleton />
       ) : (
         <View style={[Layout.fill]}>
+          <Button title="Filtros" onPress={() => setVisibleModal(true)} />
           {incidencesList?.length > 0 ? (
             <FlatList
               showsVerticalScrollIndicator={false}

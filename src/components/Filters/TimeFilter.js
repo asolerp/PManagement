@@ -9,7 +9,7 @@ const TimeFilter = ({onChangeFilter, state, withAll}) => {
   const {Layout, Gutters} = useTheme();
 
   return (
-    <View style={[Layout.row, Gutters.smallBMargin]}>
+    <View style={[Layout.row]}>
       <Filter
         text="Esta semana"
         color={Variants.filter}
