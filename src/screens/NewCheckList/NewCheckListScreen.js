@@ -61,7 +61,7 @@ const NewCheckListScreen = ({route, navigation}) => {
       setLoading(true);
       const editCheckListForm = {
         observations: observations,
-        date: date?._i,
+        date: date?._i || date,
         workers: workers?.value,
         workersId: workers?.value?.map((worker) => worker.id),
         houseId: house?.value[0].id,

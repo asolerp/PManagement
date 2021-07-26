@@ -112,12 +112,8 @@ const Info = () => {
         )}
         <View style={[Gutters.smallBMargin]}>
           {isOwner ? (
-            <View style={{width: '90%'}}>
-              <Text
-                style={[Fonts.textTitle, Gutters.smallVMargin, {width: '90%'}]}>
-                {'Checklist'}
-              </Text>
-              <Text style={[Gutters.tinyBMargin]}>
+            <View style={[Gutters.smallBMargin, {width: '90%'}]}>
+              <Text style={[Gutters.regularTMargin, Gutters.tinyBMargin]}>
                 Our team is working hard to keep your house clean and safe! 🚀🚀
               </Text>
               <Text>
@@ -126,10 +122,6 @@ const Info = () => {
             </View>
           ) : (
             <View>
-              <Text
-                style={[Fonts.textTitle, Gutters.smallVMargin, {width: '90%'}]}>
-                {`Checklist en ${checklist?.house?.[0].houseName}`}
-              </Text>
               <EditableInput
                 value={checklist?.observations}
                 onPressAccept={(change) =>
@@ -184,7 +176,9 @@ const Info = () => {
         <View style={[Layout.col, Gutters.smallVMargin]}>
           <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
             <Text style={[Gutters.smallBMargin, Fonts.textTitle]}>
-              Asignado a
+              {isOwner
+                ? t('checklists.checkPage.workers')
+                : 'Trabajadores asignados'}
             </Text>
           </View>
           <View style={[Layout.row]}>

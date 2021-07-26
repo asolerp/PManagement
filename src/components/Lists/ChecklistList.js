@@ -17,8 +17,6 @@ import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
-import TimeFilter from '../Filters/TimeFilter';
-import {parseTimeFilter} from '../../utils/parsers';
 
 const styles = StyleSheet.create({
   checkWrapper: {
@@ -87,32 +85,25 @@ const styles = StyleSheet.create({
 
 const ChecklistList = ({uid, house}) => {
   const {Gutters, Fonts} = useTheme();
-  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('week'));
 
   let firestoreQuery;
 
   if (house) {
     firestoreQuery = firestore()
       .collection('checklists')
-      .where('send', '==', false)
-      .where('houseId', '==', house?.id)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('finished', '==', false)
+      .where('houseId', '==', house?.id);
   }
   if (uid) {
     firestoreQuery = firestore()
       .collection('checklists')
-      .where('send', '==', false)
-      .where('workersId', 'array-contains', uid)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('finished', '==', false)
+      .where('workersId', 'array-contains', uid);
   }
   if (!uid && !house) {
     firestoreQuery = firestore()
       .collection('checklists')
-      .where('send', '==', false)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('finished', '==', false);
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
@@ -146,7 +137,6 @@ const ChecklistList = ({uid, house}) => {
         )}
         <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>Checklists</Text>
       </View>
-      <TimeFilter onChangeFilter={setTimeFilter} state={timeFilter} />
       {loading && <DashboardSectionSkeleton />}
       {(!loading && !values) || values?.length === 0 ? (
         <Text>No hay ningun checklist</Text>

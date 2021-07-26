@@ -1,42 +1,56 @@
-import React, {useCallback} from 'react';
+import React from 'react';
+import {View, StyleSheet, Dimensions} from 'react-native';
 
-// Redux
-import {useSelector, useDispatch} from 'react-redux';
+import Modal from 'react-native-modal';
+import {useTheme} from '../Theme';
 
-import {BottomModal, ModalContent} from 'react-native-modals';
-import {
-  contentSelector,
-  openSelector,
-  changeState,
-} from '../Store/Modal/modalSlice';
-
-const Modal = () => {
-  const dispatch = useDispatch();
-
-  const open = useSelector(openSelector);
-  const content = useSelector(contentSelector);
-
-  const changeStateModalAction = useCallback(
-    (state) => dispatch(changeState(state)),
-    [dispatch],
-  );
+const CustomModal = ({visible, setVisible, children, size = 1}) => {
+  const {Layout, Gutters} = useTheme();
 
   return (
-    <BottomModal
-      modalStyle={{borderRadius: 30}}
+    <Modal
       height={0.5}
-      visible={open}
-      onSwipeOut={(event) => {
-        changeStateModalAction(false);
+      isVisible={visible}
+      onSwipeComplete={(event) => {
+        setVisible(false);
       }}
-      onTouchOutside={() => {
-        changeStateModalAction(false);
-      }}>
-      <ModalContent style={{flex: 1, alignItems: 'center'}}>
-        {content}
-      </ModalContent>
-    </BottomModal>
+      swipeDirection={['down']}
+      onBackdropPress={() => {
+        setVisible(false);
+      }}
+      propagateSwipe={true}
+      style={styles.view}>
+      <View
+        style={[
+          styles.content,
+          {height: Dimensions.get('window').height * size},
+        ]}>
+        <View style={[Layout.alignItemsCenter, Gutters.smallVMargin]}>
+          <View style={styles.topBar} />
+        </View>
+        {children}
+      </View>
+    </Modal>
   );
 };
 
-export default Modal;
+const styles = StyleSheet.create({
+  view: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
+  topBar: {
+    width: 50,
+    height: 5,
+    borderRadius: 10,
+    backgroundColor: 'black',
+  },
+  content: {
+    paddingHorizontal: 10,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+});
+
+export default CustomModal;

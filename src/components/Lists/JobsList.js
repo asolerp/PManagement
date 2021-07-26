@@ -101,23 +101,16 @@ const styles = StyleSheet.create({
 
 const JobsList = ({uid}) => {
   const {Gutters} = useTheme();
-  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('week'));
 
   let firestoreQuery;
   if (uid) {
     firestoreQuery = firestore()
       .collection(JOBS)
       .where('workersId', 'array-contains', uid)
-      .where('done', '==', false)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('done', '==', false);
   }
   if (!uid) {
-    firestoreQuery = firestore()
-      .collection(JOBS)
-      .where('done', '==', false)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+    firestoreQuery = firestore().collection(JOBS).where('done', '==', false);
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
@@ -150,7 +143,6 @@ const JobsList = ({uid}) => {
         </View>
         <Text style={{...defaultLabel, ...marginRight(10)}}>Trabajos</Text>
       </View>
-      <TimeFilter onChangeFilter={setTimeFilter} state={timeFilter} />
       {loading && <DashboardSectionSkeleton />}
       {(!loading && !values) || values?.length === 0 ? (
         <Text>No hay ningun trabajo</Text>

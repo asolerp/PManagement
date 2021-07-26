@@ -1,8 +1,7 @@
-import React, {useState, useMemo} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, Button} from 'react-native';
 
 // UI
-import HouseFilter from '../../components/Filters/HouseFilter';
 
 import JobItem from '../../components/JobItem';
 
@@ -11,7 +10,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Styles
-import {defaultLabel} from '../../styles/common';
+
 import {LOW_GREY, PM_COLOR} from '../../styles/colors';
 
 // Utils
@@ -26,24 +25,36 @@ import {JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import {JOBS} from '../../utils/firebaseKeys';
+import TimeFilter from '../../components/Filters/TimeFilter';
+import {parseTimeFilter} from '../../utils/parsers';
+import CustomModal from '../../components/Modal';
+import Filters from '../Filters/Filters';
 
 const Container = () => {
   const {Gutters, Layout, Fonts} = useTheme();
+  const [visibleModal, setVisibleModal] = useState();
   const [filterHouses, setFilterHouses] = useState([]);
   const [filterWorkers, setFilterWorkers] = useState([]);
   const [state, setState] = useState(false);
+  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('all'));
 
   const user = useSelector(userSelector);
 
   let firebaseQuery;
 
   if (user.role === 'admin') {
-    firebaseQuery = firestore().collection(JOBS).where('done', '==', state);
+    firebaseQuery = firestore()
+      .collection(JOBS)
+      .where('done', '==', state)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   } else {
     firebaseQuery = firestore()
       .collection(JOBS)
       .where('done', '==', state)
-      .where('workersId', 'array-contains', user.uid);
+      .where('workersId', 'array-contains', user.uid)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
 
   const [jobs] = useCollectionData(firebaseQuery, {
@@ -75,31 +86,15 @@ const Container = () => {
   };
 
   return (
-    <View style={[Layout.fill, Gutters.mediumTMargin]}>
-      <View
-        style={[
-          styles.housesWrapper,
-          Gutters.tinyTMargin,
-          Gutters.regularBMargin,
-        ]}>
-        {user.role === 'admin' && (
-          <WorkersFilter
-            workers={filterWorkers}
-            onClickWorker={setFilterWorkers}
-          />
-        )}
-        <HouseFilter houses={filterHouses} onClickHouse={setFilterHouses} />
-      </View>
-      <View
-        style={[
-          Layout.rowCenter,
-          Layout.justifyContentSpaceBetween,
-          Gutters.smallBMargin,
-        ]}>
-        <Text style={{...defaultLabel}}>Trabajos</Text>
-        <StatusIncidence onChangeFilter={setState} state={state} />
-      </View>
+    <View style={[Layout.fill, user.role !== 'admin' && Gutters.mediumTMargin]}>
+      <CustomModal
+        visible={visibleModal}
+        setVisible={setVisibleModal}
+        size={0.5}>
+        <Filters />
+      </CustomModal>
       <View style={[Layout.fill]}>
+        <Button title="Filtros" onPress={() => setVisibleModal(true)} />
         {jobsList?.length !== 0 ? (
           <FlatList
             data={jobsList}

@@ -9,6 +9,7 @@ import HouseFilter from '../../components/Filters/HouseFilter';
 import {useTheme} from '../../Theme';
 
 import sortByDate from '../../utils/sorts';
+import TimeFilter from '../../components/Filters/TimeFilter';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -18,13 +19,14 @@ import {userSelector} from '../../Store/User/userSlice';
 
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import {parseTimeFilter} from '../../utils/parsers';
 
 const styles = StyleSheet.create({
   filterWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 20,
+    marginBottom: 10,
   },
   addButton: {
     position: 'absolute',
@@ -40,6 +42,7 @@ const styles = StyleSheet.create({
 
 const Container = () => {
   const [state, setState] = useState(false);
+  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('all'));
   const [filterHouses, setFilterHouses] = useState([]);
   const {Gutters, Layout, Fonts} = useTheme();
 
@@ -50,12 +53,16 @@ const Container = () => {
   if (user.role === 'admin') {
     firebaseQuery = firestore()
       .collection('incidences')
-      .where('done', '==', state);
+      .where('done', '==', state)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   } else {
     firebaseQuery = firestore()
       .collection('incidences')
       .where('done', '==', state)
-      .where('workersId', 'array-contains', user.uid);
+      .where('workersId', 'array-contains', user.uid)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end));
   }
 
   const [values, loading] = useCollectionData(firebaseQuery, {
@@ -80,18 +87,23 @@ const Container = () => {
 
   return (
     <View style={[Layout.fill, Gutters.mediumTMargin]}>
+      <TimeFilter
+        onChangeFilter={setTimeFilter}
+        state={timeFilter}
+        withAll={true}
+      />
       <View style={[Gutters.tinyTMargin, Gutters.smallBMargin]}>
         <HouseFilter houses={filterHouses} onClickHouse={setFilterHouses} />
       </View>
-      <View style={styles.filterWrapper}>
-        <Text style={{...defaultLabel, ...marginBottom(10)}}>Incidencias</Text>
+      <View style={[styles.filterWrapper, Gutters.smallBMargin]}>
         <StatusIncidence onChangeFilter={setState} state={state} />
       </View>
+
       {loading ? (
         <ItemListSkeleton />
       ) : (
         <View style={[Layout.fill]}>
-          {incidencesList.length > 0 ? (
+          {incidencesList?.length > 0 ? (
             <FlatList
               showsVerticalScrollIndicator={false}
               data={incidencesList}

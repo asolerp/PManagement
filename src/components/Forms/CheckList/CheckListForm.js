@@ -175,9 +175,13 @@ const CheckListForm = ({edit, docId}) => {
             [checkDoc.originalId]: checkDoc,
           };
         }, {});
-      const {house, workers, observations} = checkToEdit.data();
+
+      console.log(checkToEdit.data(), 'CHECKDATA');
+
+      const {date, house, workers, observations} = checkToEdit.data();
 
       setInputFormEditable({
+        date: date.toDate(),
         house: {
           value: house,
         },

@@ -128,6 +128,11 @@ export const parsePirorityIcon = (priority) => {
 
 export const parseTimeFilter = (time) => {
   const filter = {
+    all: {
+      filter: 'all',
+      start: moment(new Date('01-01-2000')),
+      end: moment(new Date()),
+    },
     week: {
       filter: 'week',
       start: moment(new Date()).subtract(7, 'days'),

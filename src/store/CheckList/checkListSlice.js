@@ -14,6 +14,7 @@ export const checkListSlice = createSlice({
   initialState,
   reducers: {
     setEditableForm: (state, {payload}) => {
+      state.date = payload.date;
       state.house = payload.house;
       state.workers = payload.workers;
       state.observations = payload.observations;

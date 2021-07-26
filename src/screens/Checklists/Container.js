@@ -9,12 +9,15 @@ import {defaultLabel, marginBottom} from '../../styles/common';
 import HouseFilter from '../../components/Filters/HouseFilter';
 import {useTheme} from '../../Theme';
 import ItemListSkeleton from '../../components/Skeleton/ItemListSkeleton';
+import TimeFilter from '../../components/Filters/TimeFilter';
 
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
+import StatusIncidence from '../../components/Filters/StatusIncidence';
+import {parseTimeFilter} from '../../utils/parsers';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -39,9 +42,15 @@ const styles = StyleSheet.create({
 const Container = () => {
   const {Gutters, Layout, Fonts} = useTheme();
   const [filterHouses, setFilterHouses] = useState([]);
+  const [state, setState] = useState(false);
+  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('week'));
 
   const [values, loading] = useCollectionData(
-    firestore().collection(CHECKLISTS),
+    firestore()
+      .collection(CHECKLISTS)
+      .where('finished', '==', state)
+      .where('date', '>', new Date(timeFilter.start))
+      .where('date', '<', new Date(timeFilter.end)),
     {
       idField: 'id',
     },
@@ -73,18 +82,30 @@ const Container = () => {
     <View style={[Layout.fill]}>
       <View style={[Layout.fill, styles.filterWrapper]}>
         <View style={[Layout.fill, styles.checkListWrapper]}>
+          <TimeFilter
+            onChangeFilter={setTimeFilter}
+            state={timeFilter}
+            withAll={true}
+          />
           <View
             style={[
               styles.housesWrapper,
               Gutters.tinyTMargin,
-              Gutters.regularBMargin,
+              Gutters.smallBMargin,
             ]}>
             <HouseFilter
               houses={filterHouses}
               onClickHouse={(houses) => setFilterHouses(houses)}
             />
           </View>
-          <Text style={{...defaultLabel, ...marginBottom(20)}}>CheckList</Text>
+          <View
+            style={[
+              Layout.row,
+              Layout.justifyContentSpaceBetween,
+              Gutters.smallBMargin,
+            ]}>
+            <StatusIncidence onChangeFilter={setState} state={state} />
+          </View>
           {noFoundHouses(values) && (
             <View style={[Layout.rowCenter]}>
               <Text style={[Fonts.textSmall]}>

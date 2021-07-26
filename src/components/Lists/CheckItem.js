@@ -8,12 +8,17 @@ import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
+import useAuth from '../../utils/useAuth';
+
 import Avatar from '../Avatar';
 import Counter from '../Counter';
 import Badge from '../Elements/Badge';
+import {useTranslation} from 'react-i18next';
 
 const CheckItem = ({item}) => {
   const {Layout, Gutters, Fonts} = useTheme();
+  const {isOwner} = useAuth();
+  const {t} = useTranslation();
   const {noReadCounter} = useNoReadMessages({
     collection: CHECKLISTS,
     docId: item.id,
@@ -21,11 +26,6 @@ const CheckItem = ({item}) => {
 
   return (
     <React.Fragment>
-      {item?.finished && (
-        <View style={styles.checkDoneMask}>
-          <Text style={[Fonts.textWhite]}>Job done! 🚀</Text>
-        </View>
-      )}
       <View
         style={[
           styles.checkWrapper,
@@ -57,7 +57,7 @@ const CheckItem = ({item}) => {
               style={styles.infoStyle}
               ellipsizeMode="tail"
               numberOfLines={2}>
-              {item?.observations}
+              {isOwner ? `${t('checklists.owner_text_1')}` : item?.observations}
             </Text>
             <Badge text={item?.house?.[0].houseName} variant="purple" />
           </View>

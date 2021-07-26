@@ -10,9 +10,11 @@ import {CHECK_PHOTO_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {useTheme} from '../../Theme';
+import {useTranslation} from 'react-i18next';
 
 const ListOfChecks = ({checkId, editable, checks}) => {
   const {Layout, Fonts, Gutters} = useTheme();
+  const {t} = useTranslation();
 
   const {
     loading: loadingUploadImage,
@@ -46,7 +48,9 @@ const ListOfChecks = ({checkId, editable, checks}) => {
 
   return (
     <View style={[Layout.fill]}>
-      <Text style={[Fonts.textTitle, Gutters.smallBPadding]}>Tareas</Text>
+      <Text style={[Fonts.textTitle, Gutters.smallBPadding]}>
+        {t('checklists.checkPage.jobs')}
+      </Text>
       <FlatList
         data={checks}
         showsVerticalScrollIndicator={false}

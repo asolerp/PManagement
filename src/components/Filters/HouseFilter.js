@@ -13,7 +13,8 @@ import {Colors} from '../../Theme/Variables';
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 
-const heightFilter = 120;
+const heightFilter = 80;
+const heightImage = 75;
 const widthFilter = 90;
 
 const styles = StyleSheet.create({
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
     width: widthFilter,
-    height: 120,
+    height: heightFilter,
   },
   avatarContainer: {
     position: 'absolute',
@@ -49,13 +50,13 @@ const styles = StyleSheet.create({
   maskContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 120,
+    height: heightFilter,
   },
   activeFilter: {
     width: 94,
     borderWidth: 2,
     borderColor: Colors.success,
-    borderRadius: 24,
+    borderRadius: 15,
     backgroundColor: 'transparent',
   },
   textWrapper: {
@@ -71,9 +72,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: '#54A3AC',
     opacity: 0.56,
-    borderRadius: 20,
+    borderRadius: 10,
     width: 85,
-    height: 115,
+    height: heightImage,
     zIndex: 2,
   },
   textStyle: {
@@ -116,7 +117,7 @@ const HouseFilter = ({houses, onClickHouse}) => {
           <Image
             style={[
               styles.ownerImage,
-              {width: 85, height: 115, borderRadius: 20},
+              {width: 85, height: heightImage, borderRadius: 10},
             ]}
             source={{
               uri: item.houseImage,

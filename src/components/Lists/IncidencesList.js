@@ -92,23 +92,18 @@ const styles = StyleSheet.create({
 
 const IncidencesList = ({uid}) => {
   const {Gutters} = useTheme();
-  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('week'));
 
   let firestoreQuery;
   if (uid) {
     firestoreQuery = firestore()
       .collection('incidences')
       .where('user.uid', '==', uid)
-      .where('done', '==', false)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('done', '==', false);
   }
   if (!uid) {
     firestoreQuery = firestore()
       .collection('incidences')
-      .where('done', '==', false)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end));
+      .where('done', '==', false);
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
@@ -139,7 +134,6 @@ const IncidencesList = ({uid}) => {
         </View>
         <Text style={{...defaultLabel, ...marginRight(10)}}>Incidencias</Text>
       </View>
-      <TimeFilter onChangeFilter={setTimeFilter} state={timeFilter} />
       {loading && <DashboardSectionSkeleton />}
       {(!loading && !values) || values?.length === 0 ? (
         <Text>No hay ninguna incidencia</Text>
