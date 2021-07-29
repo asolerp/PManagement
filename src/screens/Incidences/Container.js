@@ -1,15 +1,11 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, FlatList} from 'react-native';
-import StatusIncidence from '../../components/Filters/StatusIncidence';
+import {View, Text, FlatList, TouchableWithoutFeedback} from 'react-native';
+
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import IncidenceItem from '../../components/Items/IncidenceItem';
-
-import {defaultLabel, marginBottom} from '../../styles/common';
 import ItemListSkeleton from '../../components/Skeleton/ItemListSkeleton';
-import HouseFilter from '../../components/Filters/HouseFilter';
 import {useTheme} from '../../Theme';
-
 import sortByDate from '../../utils/sorts';
-import TimeFilter from '../../components/Filters/TimeFilter';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -22,26 +18,6 @@ import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
 import Filters from '../../components/Filters/Filters';
-import {Button} from 'react-native';
-
-const styles = StyleSheet.create({
-  filterWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  addButton: {
-    position: 'absolute',
-    right: 30,
-    bottom: 20,
-    zIndex: 10,
-  },
-  todayStyle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-});
 
 const Container = () => {
   const [visibleModal, setVisibleModal] = useState();
@@ -97,7 +73,7 @@ const Container = () => {
       <CustomModal
         visible={visibleModal}
         setVisible={setVisibleModal}
-        size={0.7}>
+        size={0.6}>
         <Filters
           activeFilters={{
             houses: true,
@@ -117,7 +93,18 @@ const Container = () => {
         <ItemListSkeleton />
       ) : (
         <View style={[Layout.fill]}>
-          <Button title="Filtros" onPress={() => setVisibleModal(true)} />
+          <TouchableWithoutFeedback onPress={() => setVisibleModal(true)}>
+            <View
+              style={[
+                Layout.row,
+                Layout.alignItemsCenter,
+                Gutters.tinyBMargin,
+                {width: 70},
+              ]}>
+              <Icon name="filter-alt" size={20} />
+              <Text style={Fonts.textSmall}>Filtros</Text>
+            </View>
+          </TouchableWithoutFeedback>
           {incidencesList?.length > 0 ? (
             <FlatList
               showsVerticalScrollIndicator={false}

@@ -131,7 +131,7 @@ export const parseTimeFilter = (time) => {
     all: {
       filter: 'all',
       start: moment(new Date('01-01-2000')),
-      end: moment(new Date()),
+      end: moment(new Date()).add(1, 'year'),
     },
     week: {
       filter: 'week',

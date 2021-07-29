@@ -5,9 +5,9 @@ import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   filterWrapper: {
-    paddingHorizontal: 7,
-    paddingVertical: 7,
-    borderRadius: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
     marginRight: 10,
   },
   filterText: {

@@ -6,6 +6,7 @@ export default function ({FontSize, Colors}) {
       textAlign: 'center',
     },
     textTitle: {
+      letterSpacing: 1,
       fontSize: FontSize.regular,
       fontWeight: 'bold',
       color: Colors.darkBlue,

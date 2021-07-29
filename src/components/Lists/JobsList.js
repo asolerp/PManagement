@@ -145,7 +145,7 @@ const JobsList = ({uid}) => {
       </View>
       {loading && <DashboardSectionSkeleton />}
       {(!loading && !values) || values?.length === 0 ? (
-        <Text>No hay ningun trabajo</Text>
+        <Text>No tienes ningún trabajo asignado</Text>
       ) : (
         <FlatList
           horizontal

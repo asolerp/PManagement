@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, TouchableWithoutFeedback} from 'react-native';
 import {useSelector} from 'react-redux';
 import HouseFilter from './HouseFilter';
 import StatusIncidence from './StatusIncidence';
@@ -11,7 +11,11 @@ import {useTheme} from '../../Theme';
 
 import CustomButton from '../Elements/CustomButton';
 
+import {Colors} from '../../Theme/Variables';
+import {parseTimeFilter} from '../../utils/parsers';
+
 const Filters = ({
+  onClearFilters,
   onSaveFilters,
   initialFilters,
   activeFilters = {
@@ -29,6 +33,13 @@ const Filters = ({
   const [filterHouses, setFilterHouses] = useState(initialFilters.houses);
   const [state, setState] = useState(initialFilters.state);
 
+  const clearFilters = () => {
+    setFilterWorkers(null);
+    setTimeFilter(parseTimeFilter('all'));
+    setFilterHouses(null);
+    setState(false);
+  };
+
   return (
     <View
       style={[
@@ -40,7 +51,9 @@ const Filters = ({
         <View style={[Gutters.mediumBMargin]}>
           {user.role === 'admin' && (
             <React.Fragment>
-              <Text style={[Fonts.textTitle]}>Trabajadores</Text>
+              <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
+                Trabajadores
+              </Text>
               <WorkersFilter
                 workers={filterWorkers}
                 onClickWorker={setFilterWorkers}
@@ -51,7 +64,9 @@ const Filters = ({
       )}
       {activeFilters.time && (
         <View style={[Gutters.mediumBMargin]}>
-          <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>Cuando</Text>
+          <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>
+            Rango de tiempo
+          </Text>
           <TimeFilter
             onChangeFilter={setTimeFilter}
             state={timeFilter}
@@ -61,13 +76,13 @@ const Filters = ({
       )}
       {activeFilters.houses && (
         <View style={[Gutters.mediumBMargin]}>
-          <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>Casa</Text>
+          <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>Casa</Text>
           <HouseFilter houses={filterHouses} onClickHouse={setFilterHouses} />
         </View>
       )}
       {activeFilters.state && (
         <View style={[Gutters.mediumBMargin]}>
-          <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>Estado</Text>
+          <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>Estado</Text>
           <StatusIncidence onChangeFilter={setState} state={state} />
         </View>
       )}
@@ -77,6 +92,19 @@ const Filters = ({
           Layout.justifyContentEnd,
           Gutters.regularBPadding,
         ]}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            clearFilters();
+          }}>
+          <Text
+            style={[
+              Gutters.smallBMargin,
+              {textAlign: 'center', color: Colors.pm},
+            ]}>
+            Limpiar
+          </Text>
+        </TouchableWithoutFeedback>
+
         <CustomButton
           styled="rounded"
           loading={false}

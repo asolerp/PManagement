@@ -42,7 +42,7 @@ const CheckItem = ({item}) => {
           <View
             style={[
               Layout.rowCenter,
-              Layout.justifyContentStart,
+              Layout.justifyContentSpaceBetween,
               Gutters.smallBMargin,
             ]}>
             <Badge

@@ -1,23 +1,26 @@
 import React, {useState} from 'react';
 
-import {View, FlatList, Text, StyleSheet} from 'react-native';
+import {
+  View,
+  FlatList,
+  Text,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import CheckItem from '../../components/CheckItem';
 
-// Styles
-import {defaultLabel, marginBottom} from '../../styles/common';
-
-import HouseFilter from '../../components/Filters/HouseFilter';
 import {useTheme} from '../../Theme';
 import ItemListSkeleton from '../../components/Skeleton/ItemListSkeleton';
-import TimeFilter from '../../components/Filters/TimeFilter';
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
-import StatusIncidence from '../../components/Filters/StatusIncidence';
+
 import {parseTimeFilter} from '../../utils/parsers';
+import CustomModal from '../../components/Modal';
+import Filters from '../../components/Filters/Filters';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -40,24 +43,28 @@ const styles = StyleSheet.create({
 });
 
 const Container = () => {
-  const {Gutters, Layout, Fonts} = useTheme();
-  const [filterHouses, setFilterHouses] = useState([]);
-  const [state, setState] = useState(false);
-  const [timeFilter, setTimeFilter] = useState(parseTimeFilter('week'));
+  const {Layout, Fonts, Gutters} = useTheme();
+  const [visibleModal, setVisibleModal] = useState();
+  const [filters, setFilters] = useState({
+    time: parseTimeFilter('all'),
+    state: false,
+  });
 
   const [values, loading] = useCollectionData(
     firestore()
       .collection(CHECKLISTS)
-      .where('finished', '==', state)
-      .where('date', '>', new Date(timeFilter.start))
-      .where('date', '<', new Date(timeFilter.end)),
+      .where('finished', '==', filters.state)
+      .where('date', '>', new Date(filters.time.start))
+      .where('date', '<', new Date(filters.time.end)),
     {
       idField: 'id',
     },
   );
 
   const checklist = values?.filter((check) =>
-    filterHouses.length > 0 ? filterHouses.includes(check.houseId) : true,
+    filters?.houses?.length > 0
+      ? filters?.houses?.includes(check.houseId)
+      : true,
   );
 
   const renderItem = ({item}) => (
@@ -75,39 +82,47 @@ const Container = () => {
 
   const noFoundHouses = (checklist) =>
     checklist?.filter((check) =>
-      filterHouses.length > 0 ? filterHouses.includes(check.houseId) : true,
+      filters?.houses?.length > 0
+        ? filters?.houses.includes(check.houseId)
+        : true,
     ).length === 0;
 
   return (
     <View style={[Layout.fill]}>
       <View style={[Layout.fill, styles.filterWrapper]}>
-        <View style={[Layout.fill, styles.checkListWrapper]}>
-          <TimeFilter
-            onChangeFilter={setTimeFilter}
-            state={timeFilter}
-            withAll={true}
+        <CustomModal
+          visible={visibleModal}
+          setVisible={setVisibleModal}
+          size={0.6}>
+          <Filters
+            activeFilters={{
+              houses: true,
+              workers: false,
+              time: true,
+              state: true,
+            }}
+            initialFilters={filters}
+            onSaveFilters={(f) => {
+              setFilters(f);
+              setVisibleModal(false);
+            }}
           />
-          <View
-            style={[
-              styles.housesWrapper,
-              Gutters.tinyTMargin,
-              Gutters.smallBMargin,
-            ]}>
-            <HouseFilter
-              houses={filterHouses}
-              onClickHouse={(houses) => setFilterHouses(houses)}
-            />
-          </View>
-          <View
-            style={[
-              Layout.row,
-              Layout.justifyContentSpaceBetween,
-              Gutters.smallBMargin,
-            ]}>
-            <StatusIncidence onChangeFilter={setState} state={state} />
-          </View>
+        </CustomModal>
+        <View style={[Layout.fill, styles.checkListWrapper]}>
+          <TouchableWithoutFeedback onPress={() => setVisibleModal(true)}>
+            <View
+              style={[
+                Layout.row,
+                Layout.alignItemsCenter,
+                Gutters.tinyBMargin,
+                {width: 70},
+              ]}>
+              <Icon name="filter-alt" size={20} />
+              <Text style={Fonts.textSmall}>Filtros</Text>
+            </View>
+          </TouchableWithoutFeedback>
           {noFoundHouses(values) && (
-            <View style={[Layout.rowCenter]}>
+            <View style={[Layout.fill, Layout.rowCenter]}>
               <Text style={[Fonts.textSmall]}>
                 No hay ningún checklist con esta selección de casas
               </Text>

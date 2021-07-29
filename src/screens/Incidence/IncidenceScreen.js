@@ -99,20 +99,22 @@ const IncidenceScreen = () => {
           )
         }
         footer={
-          <CustomButton
-            loading={false}
-            styled="rounded"
-            title={
-              incidence?.done ? 'Incidencia resuelta' : 'Resolver incidencia'
-            }
-            onPress={() => {
-              if (incidence?.done) {
-                openIncidence(() => handleFinishTask(false));
-              } else {
-                finishIncidence(() => handleFinishTask(true));
+          user.role === 'admin' && (
+            <CustomButton
+              loading={false}
+              styled="rounded"
+              title={
+                incidence?.done ? 'Incidencia resuelta' : 'Resolver incidencia'
               }
-            }}
-          />
+              onPress={() => {
+                if (incidence?.done) {
+                  openIncidence(() => handleFinishTask(false));
+                } else {
+                  finishIncidence(() => handleFinishTask(true));
+                }
+              }}
+            />
+          )
         }
         titleProps={{
           subPage: true,

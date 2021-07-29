@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
 
 const CustomButton = ({
   styled,
-  color = Colors.pm,
   title,
   onPress,
   loading = false,
@@ -41,7 +40,7 @@ const CustomButton = ({
   const parseStyled = () => {
     switch (styled) {
       default:
-        return 5;
+        return 12;
     }
   };
 
