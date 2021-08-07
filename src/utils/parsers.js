@@ -154,20 +154,27 @@ export const parseTimeFilter = (time) => {
 };
 
 export const parseDateWithText = (date) => {
-  if (
-    moment(date?.toDate()).format('MM/DD/YYYY') ===
-    moment(new Date()).format('MM/DD/YYYY')
-  ) {
+  const eventDay = moment(date.toDate()).format('MM/DD/YYYY');
+  const today = moment(new Date()).format('MM/DD/YYYY');
+  const inOneWeek = moment(new Date()).subtract(7, 'days').format('MM/DD/YYYY');
+
+  const diff = moment(date.toDate())
+    .add(1, 'day')
+    .diff(moment(new Date()), 'days');
+
+  if (eventDay === today) {
     return {
       text: 'Hoy',
       variant: 'pm',
     };
-  } else if (
-    moment(date.toDate()).format('MM/DD/YYYY') <
-      moment(new Date()).format('MM/DD/YYYY') &&
-    moment(date.toDate()).format('MM/DD/YYYY') >
-      moment(new Date()).subtract(7, 'days').format('MM/DD/YYYY')
-  ) {
+  }
+  if (eventDay > today) {
+    return {
+      text: `Dentro de ${diff} días`,
+      variant: 'pm',
+    };
+  }
+  if (eventDay < today && eventDay > inOneWeek) {
     return {
       text: 'Esta semana',
       variant: 'warning',

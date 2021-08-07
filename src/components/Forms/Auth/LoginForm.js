@@ -3,28 +3,45 @@ import {useForm, Controller} from 'react-hook-form';
 
 import {Text, View, StyleSheet} from 'react-native';
 import CustomButton from '../../Elements/CustomButton';
+import Toast from 'react-native-toast-message';
 
 //Firebase
 import auth from '@react-native-firebase/auth';
 
 // UI
-import Input from '../../Elements/Input';
-import {set} from 'react-native-reanimated';
+
 import {TextInput} from 'react-native';
+import {TouchableWithoutFeedback} from 'react-native';
 
 const LoginForm = () => {
-  const {control, handleSubmit} = useForm();
-  const [error, setError] = useState();
+  const {control, handleSubmit, getValues} = useForm();
+
   const [loadingLogin, setLoadingLogin] = useState(false);
+
+  const resetPassword = async () => {
+    try {
+      await auth().sendPasswordResetEmail(getValues().username);
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Atención!',
+        text2: 'Comprueba que has introducido tu email y que es correcto',
+      });
+    }
+  };
 
   const signIn = async (data) => {
     setLoadingLogin(true);
     try {
       await auth().signInWithEmailAndPassword(data.username, data.password);
     } catch (err) {
-      setError(
-        'Ha ocurrido un error, asegúrase de que el email y la contraseña son correcotos',
-      );
+      Toast.show({
+        type: 'info',
+        position: 'bottom',
+        text1: 'Atención!',
+        text2: 'Asegúrate de que el email y la contraseña son correctos',
+      });
     } finally {
       setLoadingLogin(false);
     }
@@ -38,6 +55,7 @@ const LoginForm = () => {
           <TextInput
             value={value}
             onChangeText={(v) => onChange(v)}
+            onBlur={onBlur}
             placeholder="Email"
             autoCapitalize="none"
             name="username"
@@ -55,6 +73,7 @@ const LoginForm = () => {
           <TextInput
             value={value}
             onChangeText={(v) => onChange(v)}
+            onBlur={onBlur}
             placeholder="Password"
             name="password"
             autoCapitalize="none"
@@ -67,8 +86,9 @@ const LoginForm = () => {
         rules={{required: true}}
         defaultValue=""
       />
-
-      <Text style={styles.forgotText}>He olvidado mi contraseña</Text>
+      <TouchableWithoutFeedback onPress={() => resetPassword()}>
+        <Text style={styles.forgotText}>He olvidado mi contraseña</Text>
+      </TouchableWithoutFeedback>
       <View style={styles.buttonWrapper}>
         <CustomButton
           onPress={handleSubmit(signIn)}
@@ -76,7 +96,6 @@ const LoginForm = () => {
           loading={loadingLogin}
         />
       </View>
-      <View>{error && <Text style={styles.errorMessage}>{error}</Text>}</View>
     </View>
   );
 };

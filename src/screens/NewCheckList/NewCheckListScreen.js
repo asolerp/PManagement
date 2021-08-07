@@ -1,7 +1,5 @@
-import React, {useState, useCallback} from 'react';
+import React from 'react';
 import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
-
-import {useSelector, useDispatch} from 'react-redux';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -13,128 +11,13 @@ import CheckListForm from '../../components/Forms/CheckList/CheckListForm';
 import CustomButton from '../../components/Elements/CustomButton';
 import PageLayout from '../../components/PageLayout';
 
-// Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useAddFirebase} from '../../hooks/useAddFirebase';
-
-import {
-  checksSelector,
-  dateSelector,
-  houseSelector,
-  observationsSelector,
-  resetForm,
-  workersSelector,
-} from '../../Store/CheckList/checkListSlice';
 import {popScreen} from '../../Router/utils/actions';
 import {Colors} from '../../Theme/Variables';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {CHECKLISTS} from '../../utils/firebaseKeys';
-import useRecursiveDelete from '../../utils/useRecursiveDelete';
+import {useAddEditCheckist} from './utils/useAddEditCheckList';
 
-const NewCheckListScreen = ({route, navigation}) => {
+const NewCheckListScreen = ({route}) => {
   const {docId, edit} = route.params;
-
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState();
-
-  const checks = useSelector(checksSelector);
-  const house = useSelector(houseSelector);
-  const workers = useSelector(workersSelector);
-  const observations = useSelector(observationsSelector);
-  const date = useSelector(dateSelector);
-
-  const {addFirebase} = useAddFirebase();
-  const {updateFirebase} = useUpdateFirebase(CHECKLISTS);
-  const {recursiveDelete} = useRecursiveDelete({
-    path: `${CHECKLISTS}/${docId}/checks`,
-    collection: CHECKLISTS,
-  });
-
-  const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
-
-  const cleanForm = () => {
-    resetFormAction();
-  };
-
-  const handleEdit = async () => {
-    try {
-      setLoading(true);
-      const editCheckListForm = {
-        observations: observations,
-        date: date?._i || date,
-        workers: workers?.value,
-        workersId: workers?.value?.map((worker) => worker.id),
-        houseId: house?.value[0].id,
-        house: house?.value,
-        total: Object.entries(checks).filter(([key, value]) => value.check)
-          .length,
-        finished: false,
-        done: 0,
-      };
-      await updateFirebase(docId, editCheckListForm);
-      await recursiveDelete();
-      await Promise.all(
-        Object.entries(checks)
-          .filter(([key, value]) => value.check)
-          .map(([key, value]) =>
-            addFirebase(`checklists/${docId}/checks`, {
-              title: value.title,
-              originalId: value.originalId,
-              numberOfPhotos: 0,
-              done: value.done,
-              worker: null,
-              date: null,
-            }),
-          ),
-      );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-      cleanForm();
-      popScreen();
-    }
-  };
-
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      const newCheckListForm = {
-        observations: observations || 'Sin observaciones',
-        date: date?._i,
-        workers: workers?.value,
-        workersId: workers?.value?.map((worker) => worker.id),
-        houseId: house?.value[0].id,
-        house: house?.value,
-        total: Object.entries(checks).filter(([key, value]) => value.check)
-          .length,
-        finished: false,
-        send: false,
-        done: 0,
-      };
-      const newCheckList = await addFirebase('checklists', newCheckListForm);
-      await Promise.all(
-        Object.entries(checks)
-          .filter(([key, value]) => value.check)
-          .map(([key, value]) =>
-            addFirebase(`checklists/${newCheckList.id}/checks`, {
-              title: value.title,
-              originalId: value.id,
-              numberOfPhotos: 0,
-              done: false,
-              worker: null,
-              date: null,
-            }),
-          ),
-      );
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-      cleanForm();
-      popScreen();
-    }
-  };
+  const {loading, handleEdit, handleAdd} = useAddEditCheckist({docId});
 
   return (
     <PageLayout
@@ -154,7 +37,7 @@ const NewCheckListScreen = ({route, navigation}) => {
           loading={loading}
           styled="rounded"
           title={edit ? 'Editar' : 'Crear'}
-          onPress={() => (edit ? handleEdit() : handleSubmit())}
+          onPress={() => (edit ? handleEdit() : handleAdd())}
         />
       }
       titleProps={{

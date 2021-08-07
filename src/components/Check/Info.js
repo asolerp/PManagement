@@ -197,11 +197,7 @@ const Info = () => {
         <Divider />
       </View>
       {!loadingChecklist && (
-        <ListOfChecks
-          editable={isOwner || checklist.finished}
-          checks={checks}
-          checkId={docId}
-        />
+        <ListOfChecks editable={true} checks={checks} checkId={docId} />
       )}
     </View>
   );

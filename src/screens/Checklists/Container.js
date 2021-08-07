@@ -21,6 +21,7 @@ import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
 import Filters from '../../components/Filters/Filters';
+import sortByDate from '../../utils/sorts';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -61,11 +62,18 @@ const Container = () => {
     },
   );
 
-  const checklist = values?.filter((check) =>
-    filters?.houses?.length > 0
-      ? filters?.houses?.includes(check.houseId)
-      : true,
-  );
+  const checklist = values
+    ?.filter((check) =>
+      filters?.workers?.length > 0
+        ? filters.workers.some((fworker) => check?.workersId?.includes(fworker))
+        : true,
+    )
+    .filter((check) =>
+      filters?.houses?.length > 0
+        ? filters.houses.includes(check.houseId)
+        : true,
+    )
+    .sort((a, b) => sortByDate(a, b, 'desc'));
 
   const renderItem = ({item}) => (
     <CheckItem
@@ -93,11 +101,11 @@ const Container = () => {
         <CustomModal
           visible={visibleModal}
           setVisible={setVisibleModal}
-          size={0.6}>
+          size={0.8}>
           <Filters
             activeFilters={{
               houses: true,
-              workers: false,
+              workers: true,
               time: true,
               state: true,
             }}

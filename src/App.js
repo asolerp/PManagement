@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Text, Button, Alert} from 'react-native';
+import {View, Text, Button} from 'react-native';
 import AuthRouter from './Router/authRouter';
 import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
@@ -48,15 +48,6 @@ const App = () => {
         }
       }
     });
-
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      Toast.show({
-        position: 'bottom',
-        text1: 'Hello',
-        text2: 'This is some something 👋',
-      });
-    });
-    return unsubscribe;
   }, []);
 
   useEffect(() => {

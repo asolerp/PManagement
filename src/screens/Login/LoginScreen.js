@@ -29,11 +29,6 @@ const LoginScreen = () => {
               <LoginForm />
             </View>
           </KeyboardAwareScrollView>
-          <View style={styles.bottomWrapper}>
-            <Text style={styles.signUpText}>
-              Soy un nuevo usuario. Regístrate!
-            </Text>
-          </View>
         </LinearGradient>
       </View>
     </React.Fragment>
