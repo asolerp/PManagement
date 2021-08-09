@@ -12,7 +12,7 @@ import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {useTheme} from '../../Theme';
 import {useTranslation} from 'react-i18next';
 
-const ListOfChecks = ({checkId, editable, checks}) => {
+const ListOfChecks = ({checkId, disabled, checks}) => {
   const {Layout, Fonts, Gutters} = useTheme();
   const {t} = useTranslation();
 
@@ -36,7 +36,7 @@ const ListOfChecks = ({checkId, editable, checks}) => {
           : null
       }>
       <ItemCheck
-        editable={editable}
+        disabled={disabled}
         key={item.id}
         check={item}
         checklistId={checkId}

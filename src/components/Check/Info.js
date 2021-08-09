@@ -197,7 +197,7 @@ const Info = () => {
         <Divider />
       </View>
       {!loadingChecklist && (
-        <ListOfChecks editable={true} checks={checks} checkId={docId} />
+        <ListOfChecks disabled={false} checks={checks} checkId={docId} />
       )}
     </View>
   );

@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
 });
 
 const NewIncidenceScreen = () => {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
   const {t} = useTranslation();
   const [lo, setLo] = useState(false);
@@ -95,21 +94,6 @@ const NewIncidenceScreen = () => {
 
   const {addFirebase} = useAddFirebase();
   const {upload} = useUploadCloudinaryImage();
-
-  const showAlert = () =>
-    Alert.alert(
-      'Lo sentimos',
-      'Ha ocurrido un error al crear la incidencia. Inténtelo más tarde',
-      [
-        {
-          text: 'Cancelar',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Ok', onPress: () => console.log('OK Pressed')},
-        ,
-      ],
-    );
 
   const createIncidence = async () => {
     try {
@@ -145,7 +129,8 @@ const NewIncidenceScreen = () => {
       popScreen();
     } catch (err) {
       console.log(err);
-      showAlert();
+      // TODO: toast
+      // showAlert();
     } finally {
       setLo(false);
     }

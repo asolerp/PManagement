@@ -16,7 +16,10 @@ import ImageView from 'react-native-image-viewing';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {
+  useCollectionData,
+  useDocumentData,
+} from 'react-firebase-hooks/firestore';
 import {useTheme} from '../../Theme';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {Colors} from '../../Theme/Variables';
@@ -102,19 +105,19 @@ const Photos = () => {
     );
   };
 
-  const [photos, loadingPhotos] = useCollectionData(
-    firestore().collection(INCIDENCES).doc(incidenceId).collection('photos'),
+  const [incidence, loadingIncidence] = useDocumentData(
+    firestore().collection(INCIDENCES).doc(incidenceId),
     {
       idField: 'id',
     },
   );
 
-  const photosSaved = photos?.map((photo) => ({
-    uri: photo.image,
-    id: photo.id,
+  const photosSaved = incidence?.photos?.map((photo) => ({
+    uri: photo,
+    id: photo,
   }));
 
-  if (loadingPhotos) {
+  if (loadingIncidence) {
     return (
       <View vtyle={styles.container}>
         <Text>Cargando imágenes..</Text>

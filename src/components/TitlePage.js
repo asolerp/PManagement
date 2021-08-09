@@ -55,7 +55,7 @@ const TitlePage = ({
                 {title ? (
                   <Text
                     adjustsFontSizeToFit
-                    numberOfLines={1}
+                    numberOfLines={2}
                     style={{
                       ...styles.title,
                       ...{

@@ -45,57 +45,6 @@ import {CHECKLISTS} from '../../../utils/firebaseKeys';
 
 moment.locale('es');
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  subtitle: {
-    color: '#2A7BA5',
-  },
-  newJobScreen: {
-    flex: 1,
-    height: '100%',
-    paddingTop: 20,
-    justifyContent: 'flex-start',
-  },
-  asignList: {},
-  inputRecurrenteWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingRight: 10,
-  },
-  inputRecurrente: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  cleanButton: {
-    textAlign: 'right',
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#4F8AA3',
-  },
-  checkListWrapper: {
-    marginTop: 20,
-    paddingHorizontal: 10,
-  },
-  checkWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 5,
-  },
-  checkDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 100,
-    backgroundColor: PM_COLOR,
-  },
-  checkStyle: {
-    marginLeft: 10,
-    fontSize: 18,
-    color: DARK_BLUE,
-  },
-});
-
 const CheckListForm = ({edit, docId}) => {
   const dispatch = useDispatch();
   const {Layout} = useTheme();
@@ -175,8 +124,6 @@ const CheckListForm = ({edit, docId}) => {
             [checkDoc.originalId]: checkDoc,
           };
         }, {});
-
-      console.log(checkToEdit.data(), 'CHECKDATA');
 
       const {date, house, workers, observations} = checkToEdit.data();
 
@@ -282,7 +229,7 @@ const CheckListForm = ({edit, docId}) => {
     <View style={[styles.newJobScreen]}>
       <BottomModal
         modalStyle={{borderRadius: 30}}
-        height={modalContent === 'date' ? 0.5 : 0.9}
+        height={modalContent === 'date' ? 0.4 : 0.9}
         visible={modalVisible}
         onSwipeOut={(event) => {
           setModalVisible(false);
@@ -393,5 +340,56 @@ const CheckListForm = ({edit, docId}) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  subtitle: {
+    color: '#2A7BA5',
+  },
+  newJobScreen: {
+    flex: 1,
+    height: '100%',
+    paddingTop: 20,
+    justifyContent: 'flex-start',
+  },
+  asignList: {},
+  inputRecurrenteWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 10,
+  },
+  inputRecurrente: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cleanButton: {
+    textAlign: 'right',
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#4F8AA3',
+  },
+  checkListWrapper: {
+    marginTop: 20,
+    paddingHorizontal: 10,
+  },
+  checkWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  checkDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 100,
+    backgroundColor: PM_COLOR,
+  },
+  checkStyle: {
+    marginLeft: 10,
+    fontSize: 18,
+    color: DARK_BLUE,
+  },
+});
 
 export default CheckListForm;

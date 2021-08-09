@@ -57,7 +57,7 @@ const Info = () => {
   const handleAsignWorker = async (asignedWorkers) => {
     await asignWorkerToIncidence(incidenceId, {
       workers: asignedWorkers,
-      workersId: asignedWorkers?.map((worker) => worker.id),
+      workersId: asignedWorkers?.map((worker) => worker.uid || worker.id),
     });
   };
 
@@ -168,14 +168,15 @@ const Info = () => {
               </View>
             </TouchableWithoutFeedback>
             {asignedUsers?.map((worker, i) => (
-              <Avatar
-                overlap={asignedUsers?.length > 1}
-                index={i}
-                id={worker.id}
-                key={worker.id}
-                uri={worker.profileImage}
-                size="big"
-              />
+              <React.Fragment key={worker.id}>
+                <Avatar
+                  overlap={asignedUsers?.length > 1}
+                  index={i}
+                  id={worker.id}
+                  uri={worker.profileImage}
+                  size="big"
+                />
+              </React.Fragment>
             ))}
           </View>
         </View>

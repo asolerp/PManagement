@@ -8,7 +8,7 @@ import {useSelector, shallowEqual} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {useForm, Controller} from 'react-hook-form';
 
-import {TextInput, StyleSheet, Text, Alert, View} from 'react-native';
+import {StyleSheet, Text, Alert, View} from 'react-native';
 
 // UI
 import ImageLoader from '../../Elements/ImageLoader';
@@ -23,6 +23,7 @@ import {newHouse} from '../../../firebase/uploadNewHouse';
 
 // Utils
 import {launchImage} from '../../../utils/imageFunctions';
+import Toast from 'react-native-toast-message';
 
 const NewFormHome = () => {
   const navigation = useNavigation();
@@ -46,12 +47,19 @@ const NewFormHome = () => {
       await newHouse({...data, owner: owner[0]}, houseImage);
       reset();
       setHouseImage(null);
-      Alert.alert(
-        'Nueva casa registrada',
-        'Se ha registrado una nueva casa :)!',
-      );
+      Toast.show({
+        type: 'success',
+        position: 'bottom',
+        text1: 'Nueva casa ✅',
+        text2: 'Se ha creado una nueva casa',
+      });
     } catch (err) {
-      console.log(err);
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Error',
+        text2: 'Algo ocurrió al crear la casa, inténtalo más tarde',
+      });
     } finally {
       setLoading(false);
       navigation.goBack();
@@ -84,7 +92,10 @@ const NewFormHome = () => {
             searchBy="firstName"
             schema={{img: 'profileImage', name: 'firstName'}}
             get={owner}
-            set={(owners) => setOwner(owners)}
+            set={(owners) => {
+              setOwner(owners);
+            }}
+            closeModal={() => setModalVisible(false)}
           />
         </ModalContent>
       </BottomModal>
@@ -194,7 +205,7 @@ const NewFormHome = () => {
           <CustomInput
             title="Propietario"
             subtitle={
-              owner.length > 0 && (
+              owner?.length > 0 && (
                 <View style={{flexDirection: 'row'}}>
                   <View style={{flexDirection: 'row'}}>
                     <Text style={styles.subtitle}>{owner[0]?.firstName}</Text>
