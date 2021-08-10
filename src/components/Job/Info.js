@@ -4,7 +4,6 @@ import {View, Text, StyleSheet, Image} from 'react-native';
 
 // UI
 import Avatar from '../Avatar';
-import InfoIcon from '../InfoIcon';
 
 // Firebase
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
@@ -18,6 +17,8 @@ import {defaultLabel, marginBottom} from '../../styles/common';
 import EditableInput from '../Elements/EditableInput';
 import updateDocument from '../../Services/updateDocument';
 import {useTheme} from '../../Theme';
+import {useTranslation} from 'react-i18next';
+import {useLocales} from '../../utils/useLocales';
 
 const styles = StyleSheet.create({
   container: {
@@ -67,15 +68,21 @@ const Info = () => {
   const route = useRoute();
   const {Layout, Fonts, Gutters} = useTheme();
   const {jobId} = route.params;
-
+  const {t} = useTranslation();
+  const {locale} = useLocales();
   const {document: job} = useGetDocFirebase('jobs', jobId);
+
+  const taksDescByLocale = (job) =>
+    job?.task?.locales?.[locale].desc ||
+    job?.task?.locales?.en.desc ||
+    job?.task?.desc;
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={[styles.container]}>
         <View>
           <Badge
-            text={job?.done ? 'Termianda' : 'Sin terminar'}
+            text={job?.done ? t('job.finished') : t('job.not_finished')}
             variant={job?.done ? 'success' : 'danger'}
             containerStyle={Gutters.smallBMargin}
           />
@@ -86,7 +93,7 @@ const Info = () => {
               Layout.justifyContentSpaceBetween,
             ]}>
             <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-              {job?.task?.desc}
+              {taksDescByLocale(job)}
             </Text>
           </View>
           <EditableInput
@@ -101,12 +108,12 @@ const Info = () => {
             containerStyle={Gutters.smallVMargin}
           />
           <Badge
-            label="Fecha: "
+            label={t('common.date') + ': '}
             text={moment(job?.date?.toDate()).format('LLL')}
           />
           <View style={[Layout.grouw, Gutters.mediumTMargin]}>
             <Text style={{...defaultLabel, ...marginBottom(10)}}>
-              Asignado a
+              {t('common.asigned_to')}
             </Text>
             <View style={[Layout.row]}>
               {job?.workers?.map((worker, i) => (

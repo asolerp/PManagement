@@ -1,5 +1,5 @@
 import React from 'react';
-import {useNavigation} from '@react-navigation/core';
+
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
@@ -10,7 +10,6 @@ import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Utils
-
 import {Colors} from '../../Theme/Variables';
 
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
@@ -19,9 +18,7 @@ import {openScreenWithPush} from '../../Router/utils/actions';
 import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import IncidenceItem from './IncidenceItem';
 import {useTheme} from '../../Theme';
-import {parseTimeFilter} from '../../utils/parsers';
-import {useState} from 'react';
-import TimeFilter from '../Filters/TimeFilter';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -92,6 +89,7 @@ const styles = StyleSheet.create({
 
 const IncidencesList = ({uid}) => {
   const {Gutters} = useTheme();
+  const {t} = useTranslation();
 
   let firestoreQuery;
   if (uid) {
@@ -132,11 +130,13 @@ const IncidencesList = ({uid}) => {
             {values?.filter((item) => item.id !== 'stats').length || 0}
           </Text>
         </View>
-        <Text style={{...defaultLabel, ...marginRight(10)}}>Incidencias</Text>
+        <Text style={{...defaultLabel, ...marginRight(10)}}>
+          {t('incidences.title')}
+        </Text>
       </View>
       {loading && <DashboardSectionSkeleton />}
       {(!loading && !values) || values?.length === 0 ? (
-        <Text>No hay ninguna incidencia</Text>
+        <Text>{t('incidences.empty')}</Text>
       ) : (
         <FlatList
           horizontal

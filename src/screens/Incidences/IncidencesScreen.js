@@ -7,8 +7,10 @@ import AddButton from '../../components/Elements/AddButton';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {NEW_INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import Container from './Container';
+import {useTranslation} from 'react-i18next';
 
 const IncidencesScreen = () => {
+  const {t} = useTranslation();
   return (
     <React.Fragment>
       <AddButton
@@ -18,7 +20,7 @@ const IncidencesScreen = () => {
       <PageLayout
         titleLefSide={true}
         titleProps={{
-          title: 'Incidencias',
+          title: t('incidences.title'),
           subPage: false,
         }}>
         <Container />

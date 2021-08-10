@@ -6,14 +6,15 @@ import useNoReadMessages from '../../hooks/useNoReadMessages';
 import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
 import {JOBS} from '../../utils/firebaseKeys';
-import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
+import {parseDateWithText} from '../../utils/parsers';
 import Avatar from '../Avatar';
 import Counter from '../Counter';
 import Badge from '../Elements/Badge';
+import {useTranslation} from 'react-i18next';
 
 const JobItem = ({item}) => {
   const {Layout, Gutters, Fonts} = useTheme();
-
+  const {t} = useTranslation();
   const {noReadCounter} = useNoReadMessages({
     collection: JOBS,
     docId: item?.id,
@@ -40,7 +41,10 @@ const JobItem = ({item}) => {
             Gutters.smallBMargin,
           ]}>
           <Badge
-            text={parseDateWithText(item?.date).text}
+            text={t(parseDateWithText(item?.date).text, {
+              numberOfDays: parseDateWithText(item?.date).metaData
+                ?.numberOfDays,
+            })}
             variant={parseDateWithText(item?.date).variant}
           />
           {noReadCounter > 0 && <Counter count={noReadCounter} />}

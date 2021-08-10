@@ -23,9 +23,11 @@ import {useTheme} from '../../Theme';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import {finishJob} from '../../components/Alerts/jobs';
+import {useTranslation} from 'react-i18next';
 
 const JobScreen = ({route}) => {
   const {Gutters} = useTheme();
+  const {t} = useTranslation();
   const user = useSelector(userSelector);
   const {jobId} = route.params;
   const query = useMemo(() => {
@@ -73,7 +75,7 @@ const JobScreen = ({route}) => {
           <CustomButton
             styled="rounded"
             loading={false}
-            title={job?.done ? 'No está terminada' : 'Finalizar'}
+            title={job?.done ? t('job.done') : t('job.no_done')}
             onPress={() => finishJob(onSubmit)}
           />
         }>

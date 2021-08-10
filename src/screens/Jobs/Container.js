@@ -25,6 +25,7 @@ import {JOBS} from '../../utils/firebaseKeys';
 import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
 import Filters from '../../components/Filters/Filters';
+import {useTranslation} from 'react-i18next';
 
 const defaultFilterValues = {
   time: parseTimeFilter('all'),
@@ -32,6 +33,7 @@ const defaultFilterValues = {
 };
 
 const Container = () => {
+  const {t} = useTranslation();
   const {Gutters, Layout, Fonts} = useTheme();
   const [visibleModal, setVisibleModal] = useState();
   const [filters, setFilters] = useState(defaultFilterValues);
@@ -108,7 +110,7 @@ const Container = () => {
               {width: 70},
             ]}>
             <Icon name="filter-alt" size={20} />
-            <Text style={Fonts.textSmall}>Filtros</Text>
+            <Text style={Fonts.textSmall}>{t('common.filters.title')}</Text>
           </View>
         </TouchableWithoutFeedback>
         {jobsList?.length !== 0 ? (

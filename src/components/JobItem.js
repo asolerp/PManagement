@@ -1,34 +1,22 @@
-import React, {useState, useEffect} from 'react';
-import {useSelector} from 'react-redux';
+import React from 'react';
 
-import firestore from '@react-native-firebase/firestore';
-
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-  UIManager,
-} from 'react-native';
+import {TouchableOpacity, View, Text, StyleSheet} from 'react-native';
 
 //UI
 import Avatar from './Avatar';
-
-import InfoIcon from './InfoIcon';
 
 // Utils
 import moment from 'moment';
 import {minimizetext} from '../utils/parsers';
 import {DARK_BLUE, GREY, GREY_1} from '../styles/colors';
-import {marginRight} from '../styles/common';
-import {userSelector} from '../Store/User/userSlice';
+import {useLocales} from '../utils/useLocales';
 import {useTheme} from '../Theme';
 import {Colors} from '../Theme/Variables';
 import useNoReadMessages from '../hooks/useNoReadMessages';
 import {JOBS} from '../utils/firebaseKeys';
 import Counter from './Counter';
 import Badge from './Elements/Badge';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   container: {
@@ -103,11 +91,19 @@ const styles = StyleSheet.create({
 
 const JobItem = ({job, onPress}) => {
   const {Layout, Gutters, Fonts} = useTheme();
-
+  const {locale} = useLocales();
+  const {t} = useTranslation();
   const {noReadCounter} = useNoReadMessages({
     collection: JOBS,
     docId: job?.id,
   });
+
+  console.log(job.task);
+
+  const taksDescByLocale =
+    job?.task?.locales?.[locale].desc ||
+    job?.task?.locales?.en.desc ||
+    job?.task?.desc;
 
   return (
     <React.Fragment>
@@ -138,7 +134,7 @@ const JobItem = ({job, onPress}) => {
             <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
               {job?.task?.desc && (
                 <Text style={[Fonts.titleCard, {maxWidth: 150}]}>
-                  {job?.task?.desc}
+                  {taksDescByLocale}
                 </Text>
               )}
               <Badge text={job?.house?.[0]?.houseName} variant="purple" />
@@ -148,7 +144,7 @@ const JobItem = ({job, onPress}) => {
             </Text>
             <Badge
               text={moment(job?.date?.toDate()).format('LL')}
-              label="Fecha: "
+              label={t('common.date') + ': '}
             />
             <View
               style={[

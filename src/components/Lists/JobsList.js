@@ -1,12 +1,6 @@
 import React from 'react';
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-} from 'react-native';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {defaultLabel, marginRight, width} from '../../styles/common';
@@ -16,7 +10,6 @@ import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Utils
-
 import {Colors} from '../../Theme/Variables';
 
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
@@ -28,9 +21,8 @@ import {JOBS} from '../../utils/firebaseKeys';
 import JobItem from './JobItem';
 
 import {useTheme} from '../../Theme';
-import {useState} from 'react';
-import {parseTimeFilter} from '../../utils/parsers';
-import TimeFilter from '../Filters/TimeFilter';
+
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -101,7 +93,7 @@ const styles = StyleSheet.create({
 
 const JobsList = ({uid}) => {
   const {Gutters} = useTheme();
-
+  const {t} = useTranslation();
   let firestoreQuery;
   if (uid) {
     firestoreQuery = firestore()
@@ -141,7 +133,9 @@ const JobsList = ({uid}) => {
             </Text>
           )}
         </View>
-        <Text style={{...defaultLabel, ...marginRight(10)}}>Trabajos</Text>
+        <Text style={{...defaultLabel, ...marginRight(10)}}>
+          {t('common.jobs')}
+        </Text>
       </View>
       {loading && <DashboardSectionSkeleton />}
       {(!loading && !values) || values?.length === 0 ? (

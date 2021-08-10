@@ -15,10 +15,11 @@ import moment from 'moment';
 import {useTheme} from '../../Theme';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {PROFILE_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import {useTranslation} from 'react-i18next';
 
 const DashboardScreen = () => {
   const {Layout, Gutters, Fonts} = useTheme();
-
+  const {t} = useTranslation();
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
 
@@ -35,7 +36,7 @@ const DashboardScreen = () => {
         <View style={styles.home}>
           <View>
             <Text style={[Fonts.textTitle, Gutters.mediumVMargin]}>
-              Hoy es {date.join(' ')} ☀️
+              {t('welcome', {date: date.join(' ')})}
             </Text>
             <ChecklistList />
             <IncidencesList />

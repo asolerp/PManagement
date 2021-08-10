@@ -1,26 +1,23 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
 // UI
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useGetFirebase} from '../../hooks/useGetFirebase';
+
 import TaskItem from '../../components/Elements/TaskItem';
 import PageLayout from '../../components/PageLayout';
 import {setTask} from '../../Store/JobForm/jobFormSlice';
 import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import {NEW_JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {Colors} from '../../Theme/Variables';
-import {JOBS} from '../../utils/firebaseKeys';
+
+import {useTranslation} from 'react-i18next';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {useLocales} from '../../utils/useLocales';
 
 const styles = StyleSheet.create({
   container: {
@@ -56,23 +53,37 @@ const styles = StyleSheet.create({
 });
 
 const NewJobTaskSelectorScreen = ({route}) => {
-  const {docId, edit} = route.params;
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const {job} = useSelector(({jobForm: {job}}) => ({job}), shallowEqual);
-
-  const {list: tasks, loading: loadingTasks} = useGetFirebase('tasks');
+  const {locale} = useLocales();
+  const [tasks, loadingTasks] = useCollectionData(
+    firestore().collection('tasks'),
+    {
+      idField: 'id',
+    },
+  );
 
   const setTaskAction = useCallback(
     (task) => dispatch(setTask({task})),
     [dispatch],
   );
 
+  const taskName = (task) =>
+    task?.locales?.[locale].name || task?.locales?.en.name || task.name;
+
   const handlerTaskClick = (task) => {
+    console.log(task);
     setTaskAction(task);
     openScreenWithPush(NEW_JOB_SCREEN_KEY, {
-      taskName: task?.name,
+      taskName: task.name,
     });
   };
+
+  const tasksByLocale = tasks?.map((task) => ({
+    ...task,
+    name: taskName(task),
+  }));
 
   return (
     <PageLayout
@@ -87,7 +98,7 @@ const NewJobTaskSelectorScreen = ({route}) => {
         </TouchableWithoutFeedback>
       }
       titleProps={{
-        title: 'Nuevo trabajo',
+        title: t('newJob.title'),
         subPage: true,
       }}>
       {loadingTasks ? (
@@ -96,7 +107,7 @@ const NewJobTaskSelectorScreen = ({route}) => {
         </View>
       ) : (
         <View style={styles.taskSelectorScreen}>
-          {tasks
+          {tasksByLocale
             .sort(function (a, b) {
               if (a.name > b.name) {
                 return 1;

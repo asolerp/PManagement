@@ -11,6 +11,7 @@ import Counter from '../Counter';
 import useNoReadMessages from '../../hooks/useNoReadMessages';
 import {CHECKLISTS, INCIDENCES} from '../../utils/firebaseKeys';
 import Badge from '../Elements/Badge';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   container: {},
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
 
 const IncidenceItem = ({incidence, onPress}) => {
   const {Fonts, Gutters, Layout} = useTheme();
-
+  const {t} = useTranslation();
   const {noReadCounter} = useNoReadMessages({
     collection: INCIDENCES,
     docId: incidence.id,
@@ -92,7 +93,7 @@ const IncidenceItem = ({incidence, onPress}) => {
                 {minimizetext(incidence?.incidence, 50)}
               </Text>
               <Badge
-                label="Fecha: "
+                label={t('common.date') + ': '}
                 text={moment(incidence?.date?.toDate()).format('LL')}
               />
             </View>

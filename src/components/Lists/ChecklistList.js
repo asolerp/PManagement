@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
@@ -17,6 +17,7 @@ import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import sortByDate from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   checkWrapper: {
@@ -85,6 +86,7 @@ const styles = StyleSheet.create({
 
 const ChecklistList = ({uid, house}) => {
   const {Gutters, Fonts} = useTheme();
+  const {t} = useTranslation();
 
   let firestoreQuery;
 
@@ -135,11 +137,13 @@ const ChecklistList = ({uid, house}) => {
             </Text>
           </View>
         )}
-        <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>Checklists</Text>
+        <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>
+          {t('checklists.title')}
+        </Text>
       </View>
       {loading && <DashboardSectionSkeleton />}
       {(!loading && !values) || values?.length === 0 ? (
-        <Text>No hay ningun checklist</Text>
+        <Text>{t('checklists.empty')}</Text>
       ) : (
         <FlatList
           horizontal

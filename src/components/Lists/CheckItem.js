@@ -5,7 +5,11 @@ import useNoReadMessages from '../../hooks/useNoReadMessages';
 import {useTheme} from '../../Theme';
 import {Colors, FontSize} from '../../Theme/Variables';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
-import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
+import {
+  parseDateWithText,
+  parsePercentageDone,
+  parseTimeFilter,
+} from '../../utils/parsers';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
 import useAuth from '../../utils/useAuth';
@@ -46,7 +50,10 @@ const CheckItem = ({item}) => {
               Gutters.smallBMargin,
             ]}>
             <Badge
-              text={parseDateWithText(item?.date).text}
+              text={t(parseDateWithText(item?.date).text, {
+                numberOfDays: parseDateWithText(item?.date)?.metaData
+                  ?.numberOfDays,
+              })}
               variant={parseDateWithText(item?.date).variant}
             />
 

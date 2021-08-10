@@ -42,12 +42,7 @@ export const onNavigatorReady = () =>
   (routeName.current = navigation?.current?.getCurrentRoute().name);
 
 export const onNavigatorStateChange = () => {
-  const previousRouteName = routeName?.current;
   const currentRouteName = navigation?.current?.getCurrentRoute().name;
-
-  // if (previousRouteName !== currentRouteName) {
-  //   setCurrentScreen(currentRouteName);
-  // }
 
   routeName.current = currentRouteName;
 };

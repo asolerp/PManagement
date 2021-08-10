@@ -7,7 +7,7 @@ import {
   onNavigatorStateChange,
 } from './utils/actions';
 
-import {Main, MainAdmin} from '../Stacks/MainAdmin';
+import {MainAdmin} from '../Stacks/MainAdmin';
 
 import {NewCheckListScreen} from '../Screens/NewCheckList';
 import NewJob from '../Stacks/NewJob';

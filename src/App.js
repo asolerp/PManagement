@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Text, Button} from 'react-native';
+import {View} from 'react-native';
 import AuthRouter from './Router/authRouter';
 import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
@@ -17,12 +17,11 @@ import * as RNLocalize from 'react-native-localize';
 import './Translations';
 import {openScreenWithPush} from './Router/utils/actions';
 import {CHAT_SCREEN_KEY, CHECK_SCREEN_KEY} from './Router/utils/routerKeys';
+import {ErrorScreen} from './Screens/Error';
 
 const CustomFallback = (props) => (
-  <View>
-    <Text>Something happened!</Text>
-    <Text>{props.error.toString()}</Text>
-    <Button onPress={props.resetError} title={'Try again'} />
+  <View style={{flex: 1}}>
+    <ErrorScreen />
   </View>
 );
 

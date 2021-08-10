@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, SafeAreaView} from 'react-native';
+import {View, SafeAreaView, NativeModules} from 'react-native';
 
 //UI
 import DatePicker from 'react-native-date-picker';
@@ -8,6 +8,8 @@ import CustomButton from '../../Elements/CustomButton';
 
 // Utils
 import moment from 'moment';
+import {useLocales} from '../../../utils/useLocales';
+import {useTranslation} from 'react-i18next';
 
 const DateSelector = ({closeModal, set, get}) => {
   const today = new Date();
@@ -20,7 +22,8 @@ const DateSelector = ({closeModal, set, get}) => {
     0,
   );
   const [dateSelected, setDateSelected] = useState();
-
+  const {t} = useTranslation();
+  const {locale} = useLocales();
   useEffect(() => {
     if (get) {
       setDateSelected(get._i);
@@ -44,13 +47,13 @@ const DateSelector = ({closeModal, set, get}) => {
         style={{width: 350}}
         date={dateSelected || initialTime}
         onDateChange={setDateSelected}
-        locale="es-es"
+        locale={locale}
       />
 
       <View style={{marginTop: 'auto'}}>
         <CustomButton
           styled="rounded"
-          title={'Seleccionar fecha'}
+          title={t('common.save')}
           onPress={handleSubmit}
         />
       </View>

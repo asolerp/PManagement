@@ -25,6 +25,7 @@ import {
   workersSelector,
 } from '../../../Store/JobForm/jobFormSlice';
 import {JOBS} from '../../../utils/firebaseKeys';
+import {useTranslation} from 'react-i18next';
 
 moment.locale('es');
 
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
 
 const JobForm = ({docId, edit}) => {
   const dispatch = useDispatch();
-
+  const {t} = useTranslation();
   const house = useSelector(houseSelector);
   const workers = useSelector(workersSelector);
   const date = useSelector(dateSelector);
@@ -185,7 +186,7 @@ const JobForm = ({docId, edit}) => {
       </BottomModal>
       <InputGroup>
         <CustomInput
-          title="Fecha"
+          title={t('common.date')}
           subtitle={
             date && (
               <Text style={styles.subtitle}>{moment(date).format('LLL')}</Text>
@@ -200,7 +201,7 @@ const JobForm = ({docId, edit}) => {
       </InputGroup>
       <InputGroup>
         <CustomInput
-          title="Asignar a.."
+          title={t('common.asigned_to')}
           subtitle={
             <View style={{flexDirection: 'row'}}>
               {workers?.value?.map((worker, i) => (
@@ -220,7 +221,7 @@ const JobForm = ({docId, edit}) => {
           }}
         />
         <CustomInput
-          title="Casa"
+          title={t('common.house')}
           subtitle={
             <View style={{flexDirection: 'row'}}>
               {house?.value?.map((house, i) => (
@@ -242,7 +243,7 @@ const JobForm = ({docId, edit}) => {
           multiline
           numberOfLines={10}
           style={{height: 120}}
-          placeholder="Observaciones"
+          placeholder={t('common.observations')}
           onChangeText={(text) => setInputFormAction('observations', text)}
           value={observations}
         />

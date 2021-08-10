@@ -8,6 +8,7 @@ import {useGetFirebase} from '../hooks/useGetFirebase';
 import {SearchBar} from 'react-native-elements';
 import ItemList from './ItemList';
 import CustomButton from './Elements/CustomButton';
+import {useTranslation} from 'react-i18next';
 
 const DynamicSelectorList = ({
   collection,
@@ -21,11 +22,10 @@ const DynamicSelectorList = ({
   multiple = false,
   closeModal,
 }) => {
+  const {t} = useTranslation();
   const [search, setSearch] = useState();
-  const [filteredList, setFilteredList] = useState();
-  const {list, loading} = useGetFirebase(collection, order, where);
+  const {list} = useGetFirebase(collection, order, where);
   const [selected, setSelected] = useState(get);
-
   const [loadingOnSave, setLoadingOnSave] = useState(false);
 
   const fList = search
@@ -50,12 +50,6 @@ const DynamicSelectorList = ({
     closeModal();
   };
 
-  useEffect(() => {
-    if (search?.lenght === 0 || !search) {
-      setFilteredList(undefined);
-    }
-  }, [search]);
-
   const renderItem = ({item}) => {
     const handleChange = (newValue) => {
       if (!multiple) {
@@ -72,8 +66,6 @@ const DynamicSelectorList = ({
       }
     };
 
-    console.log(selected);
-
     return (
       <React.Fragment>
         <ItemList
@@ -89,15 +81,11 @@ const DynamicSelectorList = ({
     );
   };
 
-  if (loading) {
-    return <Text>No se han encontrado propietarios</Text>;
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.userListSelectorScreen}>
         <SearchBar
-          placeholder="Escribe aquí..."
+          placeholder={t('common.search_name')}
           onChangeText={setSearch}
           value={search}
           platform="ios"
@@ -115,7 +103,7 @@ const DynamicSelectorList = ({
         <CustomButton
           loading={loadingOnSave}
           styled="rounded"
-          title="Guardar"
+          title={t('common.save')}
           onPress={onSubmit}
         />
       </View>

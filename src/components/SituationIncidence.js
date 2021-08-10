@@ -6,11 +6,12 @@ import {userSelector} from '../Store/User/userSlice';
 import {useTheme} from '../Theme';
 
 import firestore from '@react-native-firebase/firestore';
+import {useTranslation} from 'react-i18next';
 
 const SituationIncidence = ({incidence}) => {
   const {Layout, Gutters, Colors, Fonts} = useTheme();
   const user = useSelector(userSelector);
-
+  const {t} = useTranslation();
   const handleStateIncidence = async (stateIncidence) => {
     try {
       if (user.role === 'admin' || incidence.workersId.includes(user.uid)) {
@@ -25,7 +26,7 @@ const SituationIncidence = ({incidence}) => {
 
   return (
     <View style={[Gutters.regularTMargin]}>
-      <Text style={[Fonts.textTitle]}>Estado de la incidencia</Text>
+      <Text style={[Fonts.textTitle]}>{t('incidence.status.title')}</Text>
       <View
         style={[
           Layout.fill,
@@ -35,19 +36,19 @@ const SituationIncidence = ({incidence}) => {
           Gutters.regularBMargin,
         ]}>
         <Filter
-          text="Iniciada"
+          text={t('incidence.status.ini')}
           color={Colors.warning}
           active={incidence?.state === 'iniciada'}
           onPress={() => handleStateIncidence('iniciada')}
         />
         <Filter
-          text="En trámite"
+          text={t('incidence.status.process')}
           color={Colors.leftBlue}
           active={incidence?.state === 'tramite'}
           onPress={() => handleStateIncidence('tramite')}
         />
         <Filter
-          text="Finalizada"
+          text={t('incidence.status.done')}
           color={Colors.rightGreen}
           active={incidence?.state === 'finalizada'}
           onPress={() => handleStateIncidence('finalizada')}

@@ -25,18 +25,16 @@ import {firebase} from '@react-native-firebase/firestore';
 
 import {Colors} from '../../Theme/Variables';
 import {openScreenWithPush} from '../../Router/utils/actions';
-import {
-  INCIDENCES_SCREEN_KEY,
-  PAGE_OPTIONS_SCREEN_KEY,
-} from '../../Router/utils/routerKeys';
+import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {INCIDENCES} from '../../utils/firebaseKeys';
 
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
+import {useTranslation} from 'react-i18next';
 
 const IncidenceScreen = () => {
   const navigation = useNavigation();
-
+  const {t} = useTranslation();
   const route = useRoute();
   const {incidenceId} = route.params;
   const user = useSelector(userSelector);
@@ -84,7 +82,6 @@ const IncidenceScreen = () => {
             <TouchableOpacity
               onPress={() => {
                 openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                  backScreen: INCIDENCES_SCREEN_KEY,
                   collection: INCIDENCES,
                   docId: incidenceId,
                   editable: false,
@@ -104,7 +101,9 @@ const IncidenceScreen = () => {
               loading={false}
               styled="rounded"
               title={
-                incidence?.done ? 'Incidencia resuelta' : 'Resolver incidencia'
+                incidence?.done
+                  ? t('incidence.resolved')
+                  : t('incidence.no_resolved')
               }
               onPress={() => {
                 if (incidence?.done) {

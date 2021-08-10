@@ -3,7 +3,10 @@ import {useState} from 'react';
 import Toast from 'react-native-toast-message';
 
 import {openScreenWithPush} from '../Router/utils/actions';
-import {HOME_ADMIN_STACK_KEY} from '../Router/utils/routerKeys';
+import {
+  HOME_ADMIN_STACK_KEY,
+  MAIN_ADMIN_STACK_KEY,
+} from '../Router/utils/routerKeys';
 import {firebase} from '@react-native-firebase/firestore';
 
 const useRecursiveDelete = ({path, collection, backScreen}) => {
@@ -17,9 +20,10 @@ const useRecursiveDelete = ({path, collection, backScreen}) => {
         collection: collection,
       });
       openScreenWithPush(HOME_ADMIN_STACK_KEY, {
-        screen: backScreen,
+        screen: backScreen || MAIN_ADMIN_STACK_KEY,
       });
     } catch (error) {
+      console.log(error);
       Toast.show({
         position: 'bottom',
         type: 'error',

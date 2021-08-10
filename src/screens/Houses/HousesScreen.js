@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   View,
   Text,
@@ -21,12 +22,9 @@ import {
   NEW_HOUSE_SCREEN_KEY,
 } from '../../Router/utils/routerKeys';
 
-const HousesScreen = ({navigation}) => {
-  const {
-    list: houses,
-    loading: loadingHouses,
-    error,
-  } = useGetFirebase('houses');
+const HousesScreen = () => {
+  const {t} = useTranslation();
+  const {list: houses} = useGetFirebase('houses');
 
   const handleNewHome = () => {
     openScreenWithPush(NEW_HOUSE_SCREEN_KEY);
@@ -53,7 +51,7 @@ const HousesScreen = ({navigation}) => {
         titleLefSide={true}
         titleProps={{
           leftSide: true,
-          title: 'Casas',
+          title: t('houses.title'),
           subPage: false,
         }}>
         <View style={styles.container}>
@@ -72,7 +70,7 @@ const HousesScreen = ({navigation}) => {
                 />
               </SafeAreaView>
             ) : (
-              <Text>No se han encontrado casas</Text>
+              <Text>{t('houses.no_found')}</Text>
             )}
           </View>
         </View>

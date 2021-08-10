@@ -42,6 +42,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import Label from '../../Elements/Label';
 
 import {CHECKLISTS} from '../../../utils/firebaseKeys';
+import {useTranslation} from 'react-i18next';
 
 moment.locale('es');
 
@@ -49,7 +50,7 @@ const CheckListForm = ({edit, docId}) => {
   const dispatch = useDispatch();
   const {Layout} = useTheme();
   const {list} = useGetFirebase('checks');
-
+  const {t} = useTranslation();
   const house = useSelector(houseSelector);
   const workers = useSelector(workersSelector);
   const observations = useSelector(observationsSelector);
@@ -243,7 +244,7 @@ const CheckListForm = ({edit, docId}) => {
       </BottomModal>
       <InputGroup>
         <CustomInput
-          title="Fecha"
+          title={t('common.date')}
           subtitle={
             date && (
               <Text style={styles.subtitle}>{moment(date).format('LLL')}</Text>
@@ -258,7 +259,7 @@ const CheckListForm = ({edit, docId}) => {
       </InputGroup>
       <InputGroup>
         <CustomInput
-          title="Casa"
+          title={t('common.house')}
           subtitle={
             <View style={{flexDirection: 'row'}}>
               {house?.value?.map((house, i) => (
@@ -280,7 +281,7 @@ const CheckListForm = ({edit, docId}) => {
       </InputGroup>
       <InputGroup>
         <CustomInput
-          title="Trabajador"
+          title={t('common.worker')}
           subtitle={
             <View style={{flexDirection: 'row'}}>
               {workers?.value?.map((worker, i) => (
@@ -305,7 +306,7 @@ const CheckListForm = ({edit, docId}) => {
           multiline
           numberOfLines={10}
           style={{height: 120}}
-          placeholder="Observaciones"
+          placeholder={t('common.observations')}
           onChangeText={(text) => setInputFormAction('observations', text)}
           value={observations}
         />
@@ -317,18 +318,22 @@ const CheckListForm = ({edit, docId}) => {
           Layout.justifyContentSpaceBetween,
         ]}>
         <Text style={{...defaultLabel, marginTop: 10}}>
-          Checklist a realizar
+          {t('new_checklist.check_list')}
         </Text>
         <View style={[Layout.rowCenter, Layout.justifyContentCenter]}>
           <TouchableOpacity
             onPress={() => setAllChecksActions()}
             style={styles.labelWrapper}>
-            <Label title="Todos" color={Colors.pm} active={true} />
+            <Label title={t('common.all')} color={Colors.pm} active={true} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => removeAllChecksActions()}
             style={styles.labelWrapper}>
-            <Label title="Ninguno" color={Colors.danger} active={true} />
+            <Label
+              title={t('common.neither')}
+              color={Colors.danger}
+              active={true}
+            />
           </TouchableOpacity>
         </View>
       </View>

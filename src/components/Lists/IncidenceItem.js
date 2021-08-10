@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {View, Text, StyleSheet} from 'react-native';
 
 import useNoReadMessages from '../../hooks/useNoReadMessages';
@@ -12,6 +13,7 @@ import Counter from '../Counter';
 import Badge from '../Elements/Badge';
 
 const IncidenceItem = ({item}) => {
+  const {t} = useTranslation();
   const {Layout, Gutters, Fonts} = useTheme();
 
   const {noReadCounter} = useNoReadMessages({
@@ -40,7 +42,10 @@ const IncidenceItem = ({item}) => {
             Gutters.smallBMargin,
           ]}>
           <Badge
-            text={parseDateWithText(item?.date).text}
+            text={t(parseDateWithText(item?.date).text, {
+              numberOfDays: parseDateWithText(item?.date).metaData
+                ?.numberOfDays,
+            })}
             variant={parseDateWithText(item?.date).variant}
           />
           {noReadCounter > 0 && <Counter count={noReadCounter} />}
@@ -63,7 +68,6 @@ const IncidenceItem = ({item}) => {
             <View style={[Layout.row]}>
               {item?.workers?.map((worker, i) => (
                 <React.Fragment key={worker.id}>
-                  {console.log(worker.id)}
                   <Avatar
                     overlap={item?.workers?.length > 1}
                     index={i}

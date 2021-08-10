@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 
 import {StyleSheet} from 'react-native';
 
@@ -11,6 +12,7 @@ import {NEW_CHECKLIST_SCREEN} from '../../Router/utils/routerKeys';
 import Container from './Container';
 
 const CheckListScreen = () => {
+  const {t} = useTranslation();
   const handleNewCheckList = () => {
     openScreenWithPush(NEW_CHECKLIST_SCREEN);
   };
@@ -20,7 +22,7 @@ const CheckListScreen = () => {
       <PageLayout
         titleLefSide={true}
         titleProps={{
-          title: 'CheckList',
+          title: t('checklists.title'),
           subPage: false,
         }}>
         <Container />

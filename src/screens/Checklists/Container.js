@@ -22,6 +22,8 @@ import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
 import Filters from '../../components/Filters/Filters';
 import sortByDate from '../../utils/sorts';
+import {useTranslation} from 'react-i18next';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   filterWrapper: {
@@ -44,6 +46,7 @@ const styles = StyleSheet.create({
 });
 
 const Container = () => {
+  const {t} = useTranslation();
   const {Layout, Fonts, Gutters} = useTheme();
   const [visibleModal, setVisibleModal] = useState();
   const [filters, setFilters] = useState({
@@ -88,13 +91,6 @@ const Container = () => {
     />
   );
 
-  const noFoundHouses = (checklist) =>
-    checklist?.filter((check) =>
-      filters?.houses?.length > 0
-        ? filters?.houses.includes(check.houseId)
-        : true,
-    ).length === 0;
-
   return (
     <View style={[Layout.fill]}>
       <View style={[Layout.fill, styles.filterWrapper]}>
@@ -126,27 +122,42 @@ const Container = () => {
                 {width: 70},
               ]}>
               <Icon name="filter-alt" size={20} />
-              <Text style={Fonts.textSmall}>Filtros</Text>
+              <Text style={Fonts.textSmall}>{t('common.filters.title')}</Text>
             </View>
           </TouchableWithoutFeedback>
-          {noFoundHouses(values) && (
-            <View style={[Layout.fill, Layout.rowCenter]}>
-              <Text style={[Fonts.textSmall]}>
-                No hay ningún checklist con esta selección de casas
-              </Text>
-            </View>
-          )}
           {loading ? (
             <ItemListSkeleton />
           ) : (
-            <View style={[Layout.fill]}>
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                data={checklist}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-              />
-            </View>
+            <React.Fragment>
+              {checklist?.length === 0 ? (
+                <View
+                  style={[
+                    Layout.fill,
+                    Layout.colCenter,
+                    Layout.justifyContentCenter,
+                    Layout.alignItemsCenter,
+                  ]}>
+                  <Icon
+                    name="search-off"
+                    size={150}
+                    color={Colors.pm}
+                    style={[Gutters.smallBMargin]}
+                  />
+                  <Text style={[Fonts.textSmall, {textAlign: 'center'}]}>
+                    {t('checklists.no_found')}
+                  </Text>
+                </View>
+              ) : (
+                <View style={[Layout.fill]}>
+                  <FlatList
+                    showsVerticalScrollIndicator={false}
+                    data={checklist}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                  />
+                </View>
+              )}
+            </React.Fragment>
           )}
         </View>
       </View>

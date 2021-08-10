@@ -149,7 +149,7 @@ const Info = () => {
                 }
               />
               <Badge
-                label={'Fecha: '}
+                label={t('common.date') + ': '}
                 text={moment(checklist?.date?.toDate()).format('LL')}
                 variant={'pm'}
               />
@@ -178,7 +178,7 @@ const Info = () => {
             <Text style={[Gutters.smallBMargin, Fonts.textTitle]}>
               {isOwner
                 ? t('checklists.checkPage.workers')
-                : 'Trabajadores asignados'}
+                : t('common.asigned_workers')}
             </Text>
           </View>
           <View style={[Layout.row]}>

@@ -3,11 +3,10 @@ import {
   View,
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
 
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -21,7 +20,7 @@ import PageLayout from '../../components/PageLayout';
 
 // Firebase
 import {newJob} from '../../firebase/newJob';
-import {LOW_GREY} from '../../styles/colors';
+
 import {jobSelector, resetForm} from '../../Store/JobForm/jobFormSlice';
 import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import {Colors} from '../../Theme/Variables';
@@ -31,12 +30,13 @@ import {
 } from '../../Router/utils/routerKeys';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {JOBS} from '../../utils/firebaseKeys';
+import {useTranslation} from 'react-i18next';
 
 const NewJobScreen = ({route}) => {
   const dispatch = useDispatch();
   const {taskName, docId, edit} = route.params;
   const [loading, setLoading] = useState();
-
+  const {t} = useTranslation();
   const job = useSelector(jobSelector);
   const {updateFirebase} = useUpdateFirebase(JOBS);
 
@@ -72,6 +72,7 @@ const NewJobScreen = ({route}) => {
   };
 
   const handleEdit = async () => {
+    console.log(job?.task);
     try {
       setLoading(true);
       const editedForm = {
@@ -114,12 +115,12 @@ const NewJobScreen = ({route}) => {
         <CustomButton
           styled="rounded"
           loading={loading}
-          title={edit ? 'Editar' : 'Crear'}
+          title={edit ? t('common.edit') : t('common.create')}
           onPress={() => (edit ? handleEdit() : handleSubmit())}
         />
       }
       titleProps={{
-        title: `Nuevo trabajo de ${taskName.toLowerCase()}`,
+        title: t('newJob.desc_title', {job: taskName.toLowerCase()}),
         subPage: true,
       }}>
       <SafeAreaView style={styles.jobScreen}>

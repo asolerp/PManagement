@@ -13,6 +13,7 @@ import CustomButton from '../Elements/CustomButton';
 
 import {Colors} from '../../Theme/Variables';
 import {parseTimeFilter} from '../../utils/parsers';
+import {useTranslation} from 'react-i18next';
 
 const Filters = ({
   onClearFilters,
@@ -26,6 +27,7 @@ const Filters = ({
   },
 }) => {
   const user = useSelector(userSelector);
+  const {t} = useTranslation();
   const {Layout, Fonts, Gutters} = useTheme();
 
   const [filterWorkers, setFilterWorkers] = useState(initialFilters.workers);
@@ -52,7 +54,7 @@ const Filters = ({
           {user.role === 'admin' && (
             <React.Fragment>
               <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-                Trabajadores
+                {t('common.workers')}
               </Text>
               <WorkersFilter
                 workers={filterWorkers}
@@ -65,7 +67,7 @@ const Filters = ({
       {activeFilters.time && (
         <View style={[Gutters.mediumBMargin]}>
           <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>
-            Rango de tiempo
+            {t('common.filters.range_time')}
           </Text>
           <TimeFilter
             onChangeFilter={setTimeFilter}
@@ -76,13 +78,17 @@ const Filters = ({
       )}
       {activeFilters.houses && (
         <View style={[Gutters.mediumBMargin]}>
-          <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>Casa</Text>
+          <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>
+            {t('common.houses')}
+          </Text>
           <HouseFilter houses={filterHouses} onClickHouse={setFilterHouses} />
         </View>
       )}
       {activeFilters.state && (
         <View style={[Gutters.mediumBMargin]}>
-          <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>Estado</Text>
+          <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>
+            {t('common.state')}
+          </Text>
           <StatusIncidence onChangeFilter={setState} state={state} />
         </View>
       )}
@@ -101,14 +107,14 @@ const Filters = ({
               Gutters.smallBMargin,
               {textAlign: 'center', color: Colors.pm},
             ]}>
-            Limpiar
+            {t('common.clean')}
           </Text>
         </TouchableWithoutFeedback>
 
         <CustomButton
           styled="rounded"
           loading={false}
-          title={'Guardar'}
+          title={t('common.save')}
           onPress={() => {
             onSaveFilters({
               workers: filterWorkers,

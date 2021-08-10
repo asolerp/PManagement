@@ -19,6 +19,7 @@ import updateIncidenceInput from '../../Services/updateIncidenceInput';
 import Badge from '../Elements/Badge';
 import DynamicSelectorList from '../DynamicSelectorList';
 import {asignWorkerToIncidence} from '../../Services/asignWorkerToIncidence';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   asignerContainer: {
@@ -38,7 +39,7 @@ const Info = () => {
   const [modalVisible, setModalVisible] = useState();
   const [workers, setWorkers] = useState();
   const route = useRoute();
-
+  const {t} = useTranslation();
   const {incidenceId} = route.params;
 
   const [value, loading] = useDocument(
@@ -52,7 +53,7 @@ const Info = () => {
     <Text>Cargando incidencia</Text>;
   }
 
-  const asignedUsers = workers || value?.data().workers;
+  const asignedUsers = workers || value?.data()?.workers;
 
   const handleAsignWorker = async (asignedWorkers) => {
     await asignWorkerToIncidence(incidenceId, {
@@ -97,13 +98,15 @@ const Info = () => {
       <View style={[Layout.row, Gutters.smallBMargin]}>
         {(!value?.data()?.workers || value?.data()?.workers.length === 0) && (
           <Badge
-            text={'Sin asginar'}
+            text={t('common.no_assigned')}
             variant={'danger'}
             containerStyle={Gutters.tinyRMargin}
           />
         )}
         <Badge
-          text={value?.data()?.done ? 'Resuelta' : 'Sin resolver'}
+          text={
+            value?.data()?.done ? t('common.resolved') : t('common.no_resolved')
+          }
           variant={value?.data()?.done ? 'success' : 'danger'}
         />
       </View>
@@ -128,7 +131,7 @@ const Info = () => {
         containerStyle={Gutters.smallVMargin}
       />
       <Badge
-        label="Fecha: "
+        label={t('common.date') + ': '}
         text={moment(value?.data()?.date?.toDate()).format('LL')}
       />
       <SituationIncidence incidence={{...value?.data(), id: value?.id}} />
@@ -142,7 +145,7 @@ const Info = () => {
             Gutters.regularRMargin,
           ]}>
           <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-            Informador
+            {t('common.informer')}
           </Text>
           <Avatar uri={value?.data()?.user?.profileImage} size="big" />
         </View>
@@ -154,7 +157,7 @@ const Info = () => {
             Gutters.smallVMargin,
           ]}>
           <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
-            Asignado a
+            {t('common.asigned_to')}
           </Text>
           <View style={[Layout.row]}>
             <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>

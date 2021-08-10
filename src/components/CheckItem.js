@@ -14,6 +14,7 @@ import {minimizetext} from '../utils/parsers';
 import {parsePercentageDone} from '../utils/parsers';
 import Counter from './Counter';
 import Badge from './Elements/Badge';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   bold: {
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
 
 const CheckItem = ({check, onPress}) => {
   const {Layout, Gutters, Fonts} = useTheme();
-
+  const {t} = useTranslation();
   const {noReadCounter} = useNoReadMessages({
     collection: CHECKLISTS,
     docId: check.id,
@@ -92,7 +93,7 @@ const CheckItem = ({check, onPress}) => {
             ]}>
             <View>
               <Badge
-                label="Fecha: "
+                label={t('common.date') + ': '}
                 text={moment(check?.date?.toDate()).format('LL')}
               />
               <Text style={[Fonts.textInfo, Gutters.smallVMargin]}>

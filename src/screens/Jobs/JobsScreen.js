@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
 
 // UI
@@ -15,7 +16,7 @@ const JobsScreen = () => {
   const handleNewJob = () => {
     openScreenWithPush(NEW_JOB_STACK_KEY);
   };
-
+  const {t} = useTranslation();
   const user = useSelector(userSelector);
 
   return (
@@ -26,7 +27,7 @@ const JobsScreen = () => {
       <PageLayout
         titleLefSide={true}
         titleProps={{
-          title: 'Trabajos',
+          title: t('jobs.title'),
           subPage: false,
         }}>
         <Container />

@@ -28,15 +28,15 @@ export const minimizetext = (text, numberOfCharts = 40) => {
 };
 
 export const tabNameByScreen = {
-  [DASHBOARD_SCREEN_KEY]: 'Home',
-  [USERS_SCREEN_KEY]: 'Usuarios',
-  [DASHBOARD_WORKER_SCREEN_KEY]: 'Dashboard',
-  [DASHBOARD_OWNER_SCREEN_KEY]: 'Dashboard',
-  [CHECKLIST_SCREEN_KEY]: 'Checks',
-  [INCIDENCES_SCREEN_KEY]: 'Incidencias',
-  [JOBS_SCREEN_KEY]: 'Trabajos',
-  [HOUSES_SCREEN_KEY]: 'Casas',
-  [PROFILE_SCREEN_KEY]: 'Perfil',
+  [DASHBOARD_SCREEN_KEY]: 'tabs.dashboard',
+  [USERS_SCREEN_KEY]: 'tabs.users',
+  [DASHBOARD_WORKER_SCREEN_KEY]: 'tabs.dashboard',
+  [DASHBOARD_OWNER_SCREEN_KEY]: 'tabs.dashboard',
+  [CHECKLIST_SCREEN_KEY]: 'tabs.checks',
+  [INCIDENCES_SCREEN_KEY]: 'tabs.incidences',
+  [JOBS_SCREEN_KEY]: 'tabs.jobs',
+  [HOUSES_SCREEN_KEY]: 'tabs.houses',
+  [PROFILE_SCREEN_KEY]: 'tabs.profile',
 };
 
 export const getHightByRoute = (route) => {
@@ -164,24 +164,25 @@ export const parseDateWithText = (date) => {
 
   if (eventDay === today) {
     return {
-      text: 'Hoy',
+      text: 'common.range_time.today',
       variant: 'pm',
     };
   }
   if (eventDay > today) {
     return {
-      text: `Dentro de ${diff} días`,
+      text: 'common.range_time.next',
+      metaData: {numberOfDays: diff},
       variant: 'pm',
     };
   }
   if (eventDay < today && eventDay > inOneWeek) {
     return {
-      text: 'Esta semana',
+      text: 'common.range_time.week',
       variant: 'warning',
     };
   } else {
     return {
-      text: 'Más de una semana',
+      text: 'common.range_time.more_week',
       variant: 'danger',
     };
   }

@@ -22,7 +22,7 @@ import {
 import {useTheme} from '../../Theme';
 
 const PageOptionsScreen = ({route}) => {
-  const {Layout, Fonts} = useTheme();
+  const {Layout} = useTheme();
   const {editable, showDelete, duplicate, collection, docId, backScreen} =
     route.params;
   const {loading, recursiveDelete} = useRecursiveDelete({

@@ -18,8 +18,10 @@ import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
 import Filters from '../../components/Filters/Filters';
+import {useTranslation} from 'react-i18next';
 
 const Container = () => {
+  const {t} = useTranslation();
   const [visibleModal, setVisibleModal] = useState();
   const [filters, setFilters] = useState({
     time: parseTimeFilter('all'),
@@ -102,7 +104,7 @@ const Container = () => {
                 {width: 70},
               ]}>
               <Icon name="filter-alt" size={20} />
-              <Text style={Fonts.textSmall}>Filtros</Text>
+              <Text style={Fonts.textSmall}>{t('common.filters.title')}</Text>
             </View>
           </TouchableWithoutFeedback>
           {incidencesList?.length > 0 ? (
@@ -121,7 +123,7 @@ const Container = () => {
                 Layout.alignItemsCenter,
               ]}>
               <Text style={[Fonts.textSmall, {textAlign: 'center'}]}>
-                No hay incidencias
+                {t('incidences.no_found')}
               </Text>
             </View>
           )}

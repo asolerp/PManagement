@@ -20,10 +20,11 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
+import {useTranslation} from 'react-i18next';
 
 const CheckScreen = ({route}) => {
   const {docId} = route.params;
-
+  const {t} = useTranslation();
   const [checks] = useCollectionData(
     firestore().collection(CHECKLISTS).doc(docId).collection('checks'),
     {
@@ -51,7 +52,7 @@ const CheckScreen = ({route}) => {
               onPress={() => {
                 openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
                   collection: CHECKLISTS,
-                  docId: docId,
+                  docId,
                   showDelete: true,
                   duplicate: true,
                 });
@@ -71,7 +72,7 @@ const CheckScreen = ({route}) => {
             <CustomButton
               styled="rounded"
               loading={false}
-              title="Finalizar y enviar al propietario"
+              title={t('check.done')}
               onPress={() => sendOwnerChecklist(() => handleFinishAndSend())}
             />
           )

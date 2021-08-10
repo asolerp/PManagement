@@ -250,16 +250,6 @@ exports.recursiveDelete = functions
       token: functions.config().fb.token,
     });
 
-    if (collection === 'incidences') {
-      await admin
-        .firestore()
-        .collection(collection)
-        .doc('stats')
-        .update({
-          count: FieldValue.increment(-1),
-        });
-    }
-
     return {
       path: path,
     };

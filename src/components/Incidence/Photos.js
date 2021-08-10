@@ -28,6 +28,7 @@ import {handleImagePicker} from '../../utils/imageFunctions';
 import {INCIDENCES} from '../../utils/firebaseKeys';
 import {usePhotos} from './utils/usePhotos';
 import {parseImages} from './utils/parserImages';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,6 +55,7 @@ const styles = StyleSheet.create({
 });
 
 const Photos = () => {
+  const {t} = useTranslation();
   const route = useRoute();
   const {incidenceId} = route.params;
   const {Layout, Fonts, Gutters} = useTheme();
@@ -79,7 +81,6 @@ const Photos = () => {
 
   const Photo = ({photo, index}) => {
     const isSelected = deletePhotos.find((p) => p.id === photo.id);
-
     return (
       <TouchableOpacity
         onPress={() => handlePressPhoto(index)}
@@ -133,7 +134,9 @@ const Photos = () => {
         images={photosSaved}
         onRequestClose={() => setModal(false)}
       />
-      <Text style={[Fonts.textTitle, Gutters.smallTMargin]}>Fotos</Text>
+      <Text style={[Fonts.textTitle, Gutters.smallTMargin]}>
+        {t('photos.title')}
+      </Text>
       <View style={styles.container}>
         <TouchableWithoutFeedback
           onPress={() => {

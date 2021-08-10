@@ -28,6 +28,7 @@ import {
   USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import {UsersScreen} from '../Screens/Users';
+import {useTranslation} from 'react-i18next';
 
 const {Navigator, Screen} = AnimatedTabBarNavigator();
 
@@ -68,6 +69,7 @@ export const IconWithBadge = ({badgeCount, children}) => {
 };
 
 const HomeAdmin = () => {
+  const {t} = useTranslation();
   const [incidencesCounter] = useDocumentData(
     firestore().collection('incidences').doc('stats'),
   );
@@ -112,7 +114,7 @@ const HomeAdmin = () => {
         tabBarBackground: 'white',
       }}>
       <Screen
-        name={tabNameByScreen[DASHBOARD_SCREEN_KEY]}
+        name={t(tabNameByScreen[DASHBOARD_SCREEN_KEY])}
         initialParams={{screenKey: DASHBOARD_SCREEN_KEY}}
         component={DashboardScreen}
         options={({route}) => ({
@@ -129,7 +131,7 @@ const HomeAdmin = () => {
         })}
       />
       <Screen
-        name={tabNameByScreen[CHECKLIST_SCREEN_KEY]}
+        name={t(tabNameByScreen[CHECKLIST_SCREEN_KEY])}
         initialParams={{screenKey: CHECKLIST_SCREEN_KEY}}
         component={CheckListScreen}
         options={({route}) => ({
@@ -146,7 +148,7 @@ const HomeAdmin = () => {
         })}
       />
       <Screen
-        name={tabNameByScreen[JOBS_SCREEN_KEY]}
+        name={t(tabNameByScreen[JOBS_SCREEN_KEY])}
         initialParams={{screenKey: JOBS_SCREEN_KEY}}
         component={JobsScreen}
         options={({route}) => ({
@@ -162,7 +164,7 @@ const HomeAdmin = () => {
         })}
       />
       <Screen
-        name={tabNameByScreen[INCIDENCES_SCREEN_KEY]}
+        name={t(tabNameByScreen[INCIDENCES_SCREEN_KEY])}
         initialParams={{screenKey: INCIDENCES_SCREEN_KEY}}
         component={IncidencesScreen}
         options={({route}) => ({
@@ -180,7 +182,7 @@ const HomeAdmin = () => {
         })}
       />
       <Screen
-        name={tabNameByScreen[USERS_SCREEN_KEY]}
+        name={t(tabNameByScreen[USERS_SCREEN_KEY])}
         initialParams={{screenKey: USERS_SCREEN_KEY}}
         component={UsersScreen}
         options={({route}) => ({
@@ -196,7 +198,7 @@ const HomeAdmin = () => {
         })}
       />
       <Screen
-        name={tabNameByScreen[HOUSES_SCREEN_KEY]}
+        name={t(tabNameByScreen[HOUSES_SCREEN_KEY])}
         initialParams={{screenKey: HOUSES_SCREEN_KEY}}
         component={HousesScreen}
         options={({route}) => ({

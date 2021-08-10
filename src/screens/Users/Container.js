@@ -10,9 +10,11 @@ import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import Avatar from '../../components/Avatar';
 import {parseRoleName} from './utils/parsers';
+import {useTranslation} from 'react-i18next';
 
 const Container = () => {
   const {Layout, Gutters, Fonts} = useTheme();
+  const {t} = useTranslation();
   const [search, setSearch] = useState();
   const [users] = useCollectionData(firestore().collection('users'), {
     idField: 'id',
@@ -48,7 +50,7 @@ const Container = () => {
         round={true}
         containerStyle={styles.searchBarContainer}
         inputContainerStyle={styles.inputContainer}
-        placeholder="Escribe el nombre..."
+        placeholder={t('common.search_name')}
         onChangeText={setSearch}
         value={search}
       />
@@ -64,7 +66,7 @@ const Container = () => {
                     Gutters.tinyHPadding,
                   ]}>
                   <Text style={[Fonts.textTitle, {color: Colors.white}]}>
-                    {parseRoleName(key)}
+                    {t(parseRoleName(key))}
                   </Text>
                 </View>
                 <ScrollView

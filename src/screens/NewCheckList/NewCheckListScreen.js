@@ -14,10 +14,12 @@ import PageLayout from '../../components/PageLayout';
 import {popScreen} from '../../Router/utils/actions';
 import {Colors} from '../../Theme/Variables';
 import {useAddEditCheckist} from './utils/useAddEditCheckList';
+import {useTranslation} from 'react-i18next';
 
 const NewCheckListScreen = ({route}) => {
   const {docId, edit} = route.params;
   const {loading, handleEdit, handleAdd} = useAddEditCheckist({docId});
+  const {t} = useTranslation();
 
   return (
     <PageLayout
@@ -36,12 +38,12 @@ const NewCheckListScreen = ({route}) => {
         <CustomButton
           loading={loading}
           styled="rounded"
-          title={edit ? 'Editar' : 'Crear'}
+          title={edit ? t('common.edit') : t('common.create')}
           onPress={() => (edit ? handleEdit() : handleAdd())}
         />
       }
       titleProps={{
-        title: 'Nuevo checklist',
+        title: t('new_checklist.title'),
         subPage: true,
       }}>
       <View style={styles.jobScreen}>

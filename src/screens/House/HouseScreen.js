@@ -28,6 +28,7 @@ import {ScrollView} from 'react-native';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import useAuth from '../../utils/useAuth';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   pageWrapper: {
@@ -77,7 +78,7 @@ const HouseScreen = ({route}) => {
   const [infoHouse, setInfoHouse] = useState();
   const [newImage, setNewImage] = useState();
   const {isAdmin} = useAuth();
-
+  const {t} = useTranslation();
   const {houseId} = route.params;
   const {document: house} = useGetDocFirebase('houses', houseId);
   const {updateFirebase} = useUpdateFirebase('houses');
@@ -164,37 +165,43 @@ const HouseScreen = ({route}) => {
             </TouchableOpacity>
 
             <View style={styles.infoWrapper}>
-              <Text style={styles.titleStyle}>🏡 Datos de la vivienda</Text>
-              <Text style={styles.inputLabel}>Nombre de la casa:</Text>
+              <Text style={styles.titleStyle}>{t('houses.house_data')}</Text>
+              <Text style={styles.inputLabel}>
+                {t('houses.house_name') + ':'}
+              </Text>
               <InputGroup>
                 <TextInput
                   editable={isAdmin}
                   style={{height: 40}}
-                  placeholder="Nombre de la casa"
+                  placeholder={t('houses.house_name')}
                   onChangeText={(text) =>
                     setInfoHouse({...infoHouse, phone: text})
                   }
                   value={infoHouse?.houseName || house?.houseName}
                 />
               </InputGroup>
-              <Text style={styles.inputLabel}>Dirección:</Text>
+              <Text style={styles.inputLabel}>
+                {t('houses.house_address') + ':'}
+              </Text>
               <InputGroup>
                 <TextInput
                   editable={isAdmin}
                   style={{height: 40}}
-                  placeholder="Dirección"
+                  placeholder={t('houses.house_address')}
                   onChangeText={(text) =>
                     setInfoHouse({...infoHouse, street: text})
                   }
                   value={infoHouse?.street || house?.street}
                 />
               </InputGroup>
-              <Text style={styles.inputLabel}>Municipio:</Text>
+              <Text style={styles.inputLabel}>
+                {t('houses.house_municipality') + ':'}
+              </Text>
               <InputGroup>
                 <TextInput
                   editable={isAdmin}
                   style={{height: 40}}
-                  placeholder="Municipio"
+                  placeholder={t('houses.house_municipality')}
                   onChangeText={(text) =>
                     setInfoHouse({...infoHouse, municipio: text})
                   }
@@ -202,7 +209,7 @@ const HouseScreen = ({route}) => {
                 />
               </InputGroup>
               <View>
-                <Text style={styles.titleStyle}>🔑 Propietario</Text>
+                <Text style={styles.titleStyle}>{t('common.owner')}</Text>
                 <InputGroup>
                   <CustomInput
                     title="Propietario"
@@ -225,11 +232,15 @@ const HouseScreen = ({route}) => {
                     }}
                   />
                 </InputGroup>
-                <Text style={styles.inputLabel}>Nombre:</Text>
+                <Text style={styles.inputLabel}>
+                  {t('houses.owner_name') + ':'}
+                </Text>
                 <Text style={styles.infoStyle}>
                   {infoHouse?.owner?.firstName || house?.owner?.firstName}
                 </Text>
-                <Text style={styles.inputLabel}>Teléfono de contacto:</Text>
+                <Text style={styles.inputLabel}>
+                  {t('houses.owner_phone') + ':'}
+                </Text>
                 <Text style={styles.infoStyle}>
                   {infoHouse?.owner?.phone || house?.owner?.phone}
                 </Text>
