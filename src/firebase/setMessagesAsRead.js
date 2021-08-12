@@ -14,7 +14,6 @@ export const setMessagesAsRead = async (docId, userId, collection) => {
       .where('user._id', '!=', userId)
       .get();
     querySnapshot.forEach((doc) => {
-      console.log(doc);
       const docRef = firestore()
         .collection(collection)
         .doc(docId)

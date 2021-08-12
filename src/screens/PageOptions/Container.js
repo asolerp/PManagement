@@ -5,6 +5,7 @@ import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {useTranslation} from 'react-i18next';
 
 const Container = ({
   showDelete,
@@ -15,7 +16,7 @@ const Container = ({
   onEdit = () => {},
 }) => {
   const {Gutters, Layout} = useTheme();
-
+  const {t} = useTranslation();
   const Option = ({onPress, title, textColor = Colors.pm}) => {
     return (
       <TouchableWithoutFeedback onPress={onPress}>
@@ -35,12 +36,18 @@ const Container = ({
 
   return (
     <View style={[Gutters.regularTMargin]}>
-      {editable && <Option onPress={onEdit} title="Editar" />}
+      {editable && <Option onPress={onEdit} title={t('options.edit')} />}
       <Divider />
-      {duplicate && <Option onPress={onDuplicate} title="Duplicar" />}
+      {duplicate && (
+        <Option onPress={onDuplicate} title={t('options.duplicate')} />
+      )}
       <Divider />
       {showDelete && (
-        <Option onPress={onDelete} title="Eliminar" textColor={Colors.danger} />
+        <Option
+          onPress={onDelete}
+          title={t('options.delete')}
+          textColor={Colors.danger}
+        />
       )}
       <Divider />
     </View>

@@ -6,11 +6,12 @@ import {useSelector} from 'react-redux';
 // Firebase
 import firestore from '@react-native-firebase/firestore';
 import {userSelector} from '../Store/User/userSlice';
+import {useTranslation} from 'react-i18next';
 
 const ProfileBar = ({onPress}) => {
   const user = useSelector(userSelector);
   const [userProfile, setUserProfile] = useState();
-
+  const {t} = useTranslation();
   useEffect(() => {
     const subscriber = firestore()
       .collection('users')
@@ -27,7 +28,7 @@ const ProfileBar = ({onPress}) => {
     <View style={styles.container}>
       <View style={styles.profileBar}>
         <View>
-          <Text style={styles.welcome}>Hola!</Text>
+          <Text style={styles.welcome}>{t('common.hey')}</Text>
           <Text style={styles.userName}>{userProfile?.firstName}</Text>
         </View>
         <View>

@@ -171,7 +171,7 @@ const Info = () => {
               </View>
             </TouchableWithoutFeedback>
             {asignedUsers?.map((worker, i) => (
-              <React.Fragment key={worker.id}>
+              <React.Fragment key={worker.id || i}>
                 <Avatar
                   overlap={asignedUsers?.length > 1}
                   index={i}

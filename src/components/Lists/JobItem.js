@@ -11,14 +11,21 @@ import Avatar from '../Avatar';
 import Counter from '../Counter';
 import Badge from '../Elements/Badge';
 import {useTranslation} from 'react-i18next';
+import {useLocales} from '../../utils/useLocales';
 
 const JobItem = ({item}) => {
   const {Layout, Gutters, Fonts} = useTheme();
   const {t} = useTranslation();
+  const {locale} = useLocales();
   const {noReadCounter} = useNoReadMessages({
     collection: JOBS,
     docId: item?.id,
   });
+
+  const taksDescByLocale =
+    item?.task?.locales?.[locale].desc ||
+    item?.task?.locales?.en.desc ||
+    item?.task?.desc;
 
   return (
     <View
@@ -50,7 +57,7 @@ const JobItem = ({item}) => {
           {noReadCounter > 0 && <Counter count={noReadCounter} />}
         </View>
         <Text style={[Fonts.titleCard]} numberOfLines={2} ellipsizeMode="tail">
-          {item?.task?.desc}
+          {taksDescByLocale}
         </Text>
         <View style={styles.infoWrapper}>
           <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={2}>

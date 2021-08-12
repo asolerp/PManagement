@@ -161,8 +161,7 @@ const Info = () => {
                 fill={(doneCounter / checklist?.total) * 100}
                 tintColor={Colors.pm}
                 backgroundColor={Colors.lowGrey}
-                backgroundWidth={2}
-                onAnimationComplete={() => console.log('onAnimationComplete')}>
+                backgroundWidth={2}>
                 {() => (
                   <Text style={{fontSize: 12}}>
                     {Math.round((doneCounter / checklist?.total) * 100)}%

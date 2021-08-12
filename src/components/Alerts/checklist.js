@@ -1,31 +1,32 @@
 import {Alert} from 'react-native';
+import i18n from '../../Translations/index';
 
 export const sendOwnerChecklist = (action) =>
   Alert.alert(
-    '🚨 Atención 🚨',
-    '¿Seguro que quieres finalizar y enviar el informe al propietario?',
+    `🚨 ${i18n.t('alerts.attention')} 🚨`,
+    i18n.t('alerts.checklist.finish'),
     [
       {
-        text: 'Cancelar',
+        text: i18n.t('alerts.cancel'),
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      {text: 'Duplicar', onPress: () => action()},
+      {text: i18n.t('alerts.accept'), onPress: () => action()},
     ],
     {cancelable: false},
   );
 
 export const deleteCheckListAlert = (action) =>
   Alert.alert(
-    '🚨 Atención 🚨',
-    '¿Seguro que quieres eliminar este checklist?',
+    `🚨 ${i18n.t('alerts.attention')} 🚨`,
+    i18n.t('alerts.checklist.remove'),
     [
       {
-        text: 'Cancelar',
+        text: i18n.t('alerts.cancel'),
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      {text: 'Eliminar', onPress: () => action()},
+      {text: i18n.t('alerts.accept'), onPress: () => action()},
     ],
     {cancelable: false},
   );

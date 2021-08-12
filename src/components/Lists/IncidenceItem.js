@@ -67,7 +67,7 @@ const IncidenceItem = ({item}) => {
           ) : (
             <View style={[Layout.row]}>
               {item?.workers?.map((worker, i) => (
-                <React.Fragment key={worker.id}>
+                <React.Fragment key={worker.id || i}>
                   <Avatar
                     overlap={item?.workers?.length > 1}
                     index={i}

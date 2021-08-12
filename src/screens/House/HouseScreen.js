@@ -139,6 +139,7 @@ const HouseScreen = ({route}) => {
             schema={{img: 'profileImage', name: 'firstName'}}
             get={[infoHouse?.owner || house?.owner]}
             set={(owners) => setInfoHouse({...infoHouse, owner: owners[0]})}
+            closeModal={() => setModalVisible(false)}
           />
         </ModalContent>
       </BottomModal>
@@ -254,7 +255,6 @@ const HouseScreen = ({route}) => {
                 <View style={{flex: 1}}>
                   <CustomButton
                     title="Editar perfil"
-                    type="clear"
                     onPress={() => handleEdit()}
                   />
                 </View>

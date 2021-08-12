@@ -15,9 +15,9 @@ export const usePhotos = ({incidenceId}) => {
         await firestore()
           .collection(INCIDENCES)
           .doc(incidenceId)
-          .collection('photos')
-          .doc(photo.id)
-          .delete(),
+          .update({
+            photos: firestore.FieldValue.arrayRemove(photo.uri),
+          }),
     );
     try {
       setLoading(true);
@@ -47,8 +47,9 @@ export const usePhotos = ({incidenceId}) => {
         firestore()
           .collection(INCIDENCES)
           .doc(incidenceId)
-          .collection('photos')
-          .add({image}),
+          .update({
+            photos: firestore.FieldValue.arrayUnion(image),
+          }),
       );
       await Promise.all(uploadImageFirebase);
     } catch (err) {

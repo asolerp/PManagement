@@ -129,7 +129,6 @@ const NewIncidenceScreen = () => {
       resetFormAction();
       popScreen();
     } catch (err) {
-      console.log(err);
       error({
         message: err.message,
         track: true,
@@ -168,7 +167,7 @@ const NewIncidenceScreen = () => {
       <View style={styles.container}>
         <View>
           <NewIncidenceForm />
-          <Text style={styles.label}>📷 {t('newIncidence.form.photos')}</Text>
+          <Text style={styles.label}>{t('newIncidence.form.photos')}</Text>
           <MultipleImageSelector
             images={incidenceImages}
             setImages={setImagesAction}

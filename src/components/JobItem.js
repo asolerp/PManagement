@@ -97,9 +97,6 @@ const JobItem = ({job, onPress}) => {
     collection: JOBS,
     docId: job?.id,
   });
-
-  console.log(job.task);
-
   const taksDescByLocale =
     job?.task?.locales?.[locale].desc ||
     job?.task?.locales?.en.desc ||

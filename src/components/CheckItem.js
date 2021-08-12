@@ -120,8 +120,7 @@ const CheckItem = ({check, onPress}) => {
                 fill={Math.round((check?.done / check?.total) * 100)}
                 tintColor={Colors.pm}
                 backgroundColor={Colors.lowGrey}
-                backgroundWidth={2}
-                onAnimationComplete={() => console.log('onAnimationComplete')}>
+                backgroundWidth={2}>
                 {() => (
                   <Text style={{fontSize: 12}}>
                     {Math.round((check?.done / check?.total) * 100)}%

@@ -22,7 +22,7 @@ import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
-import {finishJob} from '../../components/Alerts/jobs';
+import {finishJob, openJob} from '../../components/Alerts/jobs';
 import {useTranslation} from 'react-i18next';
 
 const JobScreen = ({route}) => {
@@ -76,7 +76,9 @@ const JobScreen = ({route}) => {
             styled="rounded"
             loading={false}
             title={job?.done ? t('job.done') : t('job.no_done')}
-            onPress={() => finishJob(onSubmit)}
+            onPress={() =>
+              job?.done ? openJob(onSubmit) : finishJob(onSubmit)
+            }
           />
         }>
         <View style={[Gutters.smallTMargin]}>

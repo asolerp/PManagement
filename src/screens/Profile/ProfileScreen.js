@@ -22,6 +22,7 @@ import {launchImage} from '../../utils/imageFunctions';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {logout, userSelector} from '../../Store/User/userSlice';
 import {error} from '../../lib/logging';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -83,7 +84,7 @@ const ProfileScreen = ({route}) => {
   const logOutUser = useCallback((user) => dispatch(logout()), [dispatch]);
 
   const user = useSelector(userSelector, shallowEqual);
-
+  const {t} = useTranslation();
   const {updateFirebase} = useUpdateFirebase('users');
   const {upload} = useUploadCloudinaryImage();
 
@@ -140,7 +141,7 @@ const ProfileScreen = ({route}) => {
         (userId === user.uid || !userId) && (
           <CustomButton
             styled="rounded"
-            title="Desconectarse"
+            title={t('profile.logout')}
             onPress={() => logOut()}
           />
         )
@@ -148,7 +149,7 @@ const ProfileScreen = ({route}) => {
       titleLefSide={true}
       backButton={user?.role === 'admin'}
       titleProps={{
-        title: 'Perfil',
+        title: t('profile.title'),
         subPage: true,
       }}>
       <View style={styles.pageContainer}>
@@ -169,35 +170,31 @@ const ProfileScreen = ({route}) => {
               source={{uri: newImage?.fileUri || userLoggedIn?.profileImage}}
               style={styles.avatarWrapper}
             />
-            {/* <Avatar
-              uri={newImage?.fileUri || userLoggedIn?.profileImage}
-              size="xxl"
-            /> */}
           </TouchableOpacity>
           <Text style={styles.comonTextStyle}>
             {userLoggedIn?.firstName} {userLoggedIn?.lastName}
           </Text>
         </View>
         <View style={styles.formContainer}>
-          <Text style={styles.titleStyle}>💻 Datos Personales</Text>
-          <Text style={styles.inputLabel}>Teléfono de contacto:</Text>
+          <Text style={styles.titleStyle}>{t('profile.personal_data')}</Text>
+          <Text style={styles.inputLabel}>{t('profile.phone') + ': '}</Text>
           <InputGroup>
             <TextInput
               editable={userId ? userId === user.uid : true}
               style={{height: 40}}
-              placeholder="Teléfono"
+              placeholder={t('profile.phone')}
               onChangeText={(text) =>
                 setInfoProfile({...infoProfile, phone: text})
               }
               value={infoProfile?.phone || userLoggedIn?.phone}
             />
           </InputGroup>
-          <Text style={styles.inputLabel}>Email:</Text>
+          <Text style={styles.inputLabel}>{t('profile.email') + ': '}</Text>
           <InputGroup>
             <TextInput
               editable={userId ? userId === user.uid : true}
               style={{height: 40}}
-              placeholder="Email"
+              placeholder={t('profile.email')}
               onChangeText={(text) =>
                 setInfoProfile({...infoProfile, email: text})
               }
@@ -208,7 +205,7 @@ const ProfileScreen = ({route}) => {
             <View style={{flex: 1}}>
               <CustomButton
                 loading={editLoading}
-                title="Editar perfil"
+                title={t('common.edit')}
                 styled="rounded"
                 onPress={() => handleEdit()}
               />

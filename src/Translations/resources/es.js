@@ -13,6 +13,7 @@ export default {
     profile: 'Perfil',
   },
   common: {
+    hey: 'Hola!',
     create: 'Crear',
     all: 'Todos',
     neither: 'Ninguno',
@@ -104,7 +105,7 @@ export default {
   job: {
     finished: 'Terminada',
     not_finished: 'Sin terminar',
-    done: 'Sin finalizar',
+    done: 'Abrir',
     no_done: 'Finalizar',
   },
   jobs: {
@@ -135,5 +136,33 @@ export default {
   },
   photos: {
     title: 'Fotos',
+  },
+  profile: {
+    personal_data: 'Datos personales',
+    title: 'Perfil',
+    phone: 'Teléfono',
+    email: 'Email',
+    logout: 'Desconectarse',
+  },
+  options: {
+    title: 'Opciones',
+    edit: 'Editar',
+    duplicate: 'Duplicar',
+    delete: 'Borrar',
+    removing: 'Eliminando...',
+  },
+  alerts: {
+    attention: 'Atención',
+    cancel: 'Cancelar',
+    accept: 'Aceptar',
+    job: {
+      finish: '¿Seguro que quieres finalizar el trabajo?',
+      open: '¿Seguro que quieres abrir el trabajo?',
+    },
+    checklist: {
+      remove: '¿Seguro que quieres eliminar este checklist?',
+      finish:
+        '¿Seguro que quieres finalizar y enviar el informe al propietario?',
+    },
   },
 };

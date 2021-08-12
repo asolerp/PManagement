@@ -74,7 +74,7 @@ const NewIncidenceForm = () => {
       {user.role !== 'owner' && (
         <InputGroup>
           <CustomInput
-            title="Casa"
+            title={t('common.house')}
             subtitle={
               <View style={{flexDirection: 'row'}}>
                 {incidence?.house?.value.map((house, i) => (

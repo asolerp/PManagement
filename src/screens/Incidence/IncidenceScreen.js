@@ -91,7 +91,7 @@ const IncidenceScreen = () => {
                   docId: incidenceId,
                   editable: false,
                   showDelete: true,
-                  duplicate: true,
+                  duplicate: false,
                 });
               }}>
               <View>

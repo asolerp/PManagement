@@ -121,8 +121,6 @@ exports.sendPushNotificationNewMessage = functions.firestore
       );
 
       const workersTokens = users.map((user) => user.data().token);
-      console.log(workersTokens);
-
       const adminsSnapshot = await admin
         .firestore()
         .collection('users')

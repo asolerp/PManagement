@@ -20,8 +20,10 @@ import {
   NEW_JOB_STACK_KEY,
 } from '../../Router/utils/routerKeys';
 import {useTheme} from '../../Theme';
+import {useTranslation} from 'react-i18next';
 
 const PageOptionsScreen = ({route}) => {
+  const {t} = useTranslation();
   const {Layout} = useTheme();
   const {editable, showDelete, duplicate, collection, docId, backScreen} =
     route.params;
@@ -57,12 +59,12 @@ const PageOptionsScreen = ({route}) => {
         </TouchableWithoutFeedback>
       }
       titleProps={{
-        title: 'Opciones',
+        title: t('options.title'),
         subPage: true,
       }}>
       {loading ? (
         <View style={[Layout.fill, Layout.colCenter]}>
-          <Text>Eliminando..</Text>
+          <Text>{t('options.removing')}</Text>
           <ActivityIndicator color={Colors.pm} size={40} />
         </View>
       ) : (

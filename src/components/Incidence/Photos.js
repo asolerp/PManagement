@@ -8,7 +8,6 @@ import {
   ImageBackground,
   Dimensions,
   StyleSheet,
-  Platform,
   ActivityIndicator,
 } from 'react-native';
 
@@ -16,10 +15,7 @@ import ImageView from 'react-native-image-viewing';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-import {
-  useCollectionData,
-  useDocumentData,
-} from 'react-firebase-hooks/firestore';
+import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {useTheme} from '../../Theme';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {Colors} from '../../Theme/Variables';
