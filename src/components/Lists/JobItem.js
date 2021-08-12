@@ -23,7 +23,7 @@ const JobItem = ({item}) => {
   });
 
   const taksDescByLocale =
-    item?.task?.locales?.[locale].desc ||
+    item?.task?.locales?.[locale]?.desc ||
     item?.task?.locales?.en.desc ||
     item?.task?.desc;
 

@@ -2,15 +2,7 @@ import React, {useState, useCallback} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
-import {useNavigation} from '@react-navigation/native';
-import {
-  Alert,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 
 // UI
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -33,6 +25,8 @@ import {
 import {popScreen} from '../../Router/utils/actions';
 import {Colors} from '../../Theme/Variables';
 import {error} from '../../lib/logging';
+
+import {DismissKeyboard} from '../../components/DismissKeyboard';
 
 const styles = StyleSheet.create({
   container: {
@@ -164,16 +158,18 @@ const NewIncidenceScreen = () => {
         title: t('newIncidence.title'),
         subPage: true,
       }}>
-      <View style={styles.container}>
-        <View>
-          <NewIncidenceForm />
-          <Text style={styles.label}>{t('newIncidence.form.photos')}</Text>
-          <MultipleImageSelector
-            images={incidenceImages}
-            setImages={setImagesAction}
-          />
+      <DismissKeyboard>
+        <View style={styles.container}>
+          <View>
+            <NewIncidenceForm />
+            <Text style={styles.label}>{t('newIncidence.form.photos')}</Text>
+            <MultipleImageSelector
+              images={incidenceImages}
+              setImages={setImagesAction}
+            />
+          </View>
         </View>
-      </View>
+      </DismissKeyboard>
     </PageLayout>
   );
 };

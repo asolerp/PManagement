@@ -5,11 +5,7 @@ import useNoReadMessages from '../../hooks/useNoReadMessages';
 import {useTheme} from '../../Theme';
 import {Colors, FontSize} from '../../Theme/Variables';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
-import {
-  parseDateWithText,
-  parsePercentageDone,
-  parseTimeFilter,
-} from '../../utils/parsers';
+import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
 import useAuth from '../../utils/useAuth';
@@ -20,7 +16,7 @@ import Badge from '../Elements/Badge';
 import {useTranslation} from 'react-i18next';
 
 const CheckItem = ({item}) => {
-  const {Layout, Gutters, Fonts} = useTheme();
+  const {Layout, Gutters} = useTheme();
   const {isOwner} = useAuth();
   const {t} = useTranslation();
   const {noReadCounter} = useNoReadMessages({

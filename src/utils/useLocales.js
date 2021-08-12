@@ -9,6 +9,6 @@ export const useLocales = () => {
   };
 
   return {
-    locale: locales[Platform.OS],
+    locale: locales[Platform.OS].split('_')[0],
   };
 };

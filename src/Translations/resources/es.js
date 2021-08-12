@@ -17,13 +17,14 @@ export default {
     create: 'Crear',
     all: 'Todos',
     neither: 'Ninguno',
-    oberservations: 'Observaciones',
+    observations: 'Observaciones',
     no_assigned: 'Sin asignar',
     resolved: 'Resuelta',
     no_resolved: 'Sin resolver',
     date: 'Fecha',
     admins: 'Administradores',
     jobs: 'Trabajos',
+    owner: 'Propietario',
     owners: 'Propietarios',
     worker: 'Trabajador',
     workers: 'Trabajadores',
@@ -39,7 +40,7 @@ export default {
     asigned_workers: 'Trabajadores asignados',
     range_time: {
       today: 'Hoy',
-      next: 'En {{numberOfdays}} días',
+      next: 'En {{numberOfDays}} días',
       week: 'Esta semana',
       more_week: 'Más de una semana',
     },
@@ -65,7 +66,7 @@ export default {
     done: 'Finalizar y enviar al propietario',
     photos: 'Fotos',
   },
-  newChecklist: {
+  new_checklist: {
     title: 'Nuevo checklist',
     check_list: 'Lista de checks',
   },
@@ -80,7 +81,7 @@ export default {
     checkPage: {
       done: 'Terminado',
       workers: 'Working in your hosue',
-      jobs: 'Jobs',
+      jobs: 'Trabajos',
     },
   },
   incidence: {
@@ -112,13 +113,13 @@ export default {
     title: 'Trabajos',
   },
   newIncidence: {
-    title: 'New Incidence',
+    title: 'Nueva Incidencia',
     subtitle: 'Info',
     form: {
-      title: 'Title',
-      incidence: 'Incidence',
-      photos: 'Photos',
-      create: 'Create incidence',
+      title: 'Título',
+      incidence: 'Incidencia',
+      photos: 'Fotos',
+      create: 'Crear incidencia',
     },
   },
   users: {

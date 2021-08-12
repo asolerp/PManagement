@@ -5,12 +5,13 @@ import {useTranslation} from 'react-i18next';
 import InputGroup from '../../../components/Elements/InputGroup';
 import DynamicSelectorList from '../../../components/DynamicSelectorList';
 import CustomInput from '../../Elements/CustomInput';
-import {BottomModal, ModalTitle, ModalContent} from 'react-native-modals';
+import {BottomModal, ModalContent} from 'react-native-modals';
 
 // Redux
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
 import {setInputForm} from '../../../Store/IncidenceForm/incidenceFormSlice';
 import {userSelector} from '../../../Store/User/userSlice';
+import {Colors} from '../../../Theme/Variables';
 
 const styles = StyleSheet.create({
   subtitle: {
@@ -56,6 +57,7 @@ const NewIncidenceForm = () => {
         <TextInput
           style={{height: 40}}
           placeholder={t('newIncidence.form.title')}
+          placeholderTextColor={Colors.darkGrey}
           onChangeText={(text) => setInputFormAction('title', text)}
           value={incidence?.title}
         />
@@ -66,6 +68,7 @@ const NewIncidenceForm = () => {
           numberOfLines={10}
           textAlignVertical="top"
           style={{height: 120}}
+          placeholderTextColor={Colors.darkGrey}
           placeholder={t('newIncidence.form.incidence')}
           onChangeText={(text) => setInputFormAction('incidence', text)}
           value={incidence?.incidence}
