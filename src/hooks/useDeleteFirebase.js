@@ -1,4 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
+import {error as errorLog} from '../lib/logging';
 
 import {useState} from 'react';
 
@@ -12,6 +13,11 @@ export const useDeleteFirebase = () => {
       await firestore().collection(coll).doc(doc).delete();
       setLoading(false);
     } catch (err) {
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
       setError(err);
       setLoading(false);
     }

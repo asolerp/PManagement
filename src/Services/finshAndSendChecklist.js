@@ -1,4 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
+import {error} from '../lib/logging';
 
 const finishAndSendChecklist = async (checkId) => {
   try {
@@ -7,7 +8,11 @@ const finishAndSendChecklist = async (checkId) => {
       .doc(checkId)
       .update({send: true});
   } catch (err) {
-    console.log(err);
+    error({
+      message: err.message,
+      track: true,
+      asToast: true,
+    });
   }
 };
 

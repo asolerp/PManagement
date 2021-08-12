@@ -3,7 +3,6 @@ import {useForm, Controller} from 'react-hook-form';
 
 import {Text, View, StyleSheet} from 'react-native';
 import CustomButton from '../../Elements/CustomButton';
-import Toast from 'react-native-toast-message';
 
 //Firebase
 import auth from '@react-native-firebase/auth';
@@ -12,21 +11,21 @@ import auth from '@react-native-firebase/auth';
 
 import {TextInput} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native';
+import {info} from '../../../lib/logging';
+import {useTranslation} from 'react-i18next';
 
 const LoginForm = () => {
   const {control, handleSubmit, getValues} = useForm();
-
+  const {t} = useTranslation();
   const [loadingLogin, setLoadingLogin] = useState(false);
 
   const resetPassword = async () => {
     try {
       await auth().sendPasswordResetEmail(getValues().username);
     } catch (err) {
-      Toast.show({
-        type: 'error',
-        position: 'bottom',
-        text1: 'Atención!',
-        text2: 'Comprueba que has introducido tu email y que es correcto',
+      info({
+        message: t('login.reset_fail'),
+        asToast: true,
       });
     }
   };
@@ -36,11 +35,9 @@ const LoginForm = () => {
     try {
       await auth().signInWithEmailAndPassword(data.username, data.password);
     } catch (err) {
-      Toast.show({
-        type: 'info',
-        position: 'bottom',
-        text1: 'Atención!',
-        text2: 'Asegúrate de que el email y la contraseña son correctos',
+      info({
+        message: t('login.fail'),
+        asToast: true,
       });
     } finally {
       setLoadingLogin(false);

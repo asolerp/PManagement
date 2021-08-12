@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-
+import {error as errorLog} from '../lib/logging';
 import {useState} from 'react';
 
 export const useAddFirebase = () => {
@@ -14,7 +14,11 @@ export const useAddFirebase = () => {
       const result = await firestore().collection(coll).add(document);
       return result;
     } catch (err) {
-      console.log(err);
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
       setError(err);
       setLoading(false);
     }

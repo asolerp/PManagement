@@ -21,6 +21,7 @@ import auth from '@react-native-firebase/auth';
 import {launchImage} from '../../utils/imageFunctions';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {logout, userSelector} from '../../Store/User/userSlice';
+import {error} from '../../lib/logging';
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -109,7 +110,11 @@ const ProfileScreen = ({route}) => {
       setInfoProfile(null);
       setNewImage(null);
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       setEditLoading(false);
     }
@@ -119,8 +124,12 @@ const ProfileScreen = ({route}) => {
     try {
       logOutUser();
       await auth().signOut();
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     }
   };
 

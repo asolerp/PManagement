@@ -1,4 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
+import {error} from '../lib/logging';
 import {JOBS} from '../utils/firebaseKeys';
 
 const duplicateJob = async (jobId) => {
@@ -15,7 +16,11 @@ const duplicateJob = async (jobId) => {
 
     await firestore().collection(JOBS).add(duplicatedJob);
   } catch (err) {
-    console.log(err);
+    error({
+      message: err.message,
+      track: true,
+      asToast: true,
+    });
   }
 };
 

@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import storage from '@react-native-firebase/storage';
+import {error as errorLog} from '../lib/logging';
 
 export const useUploadFirebaseStorageImage = () => {
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,11 @@ export const useUploadFirebaseStorageImage = () => {
         downloadURL: await storage().ref(name).getDownloadURL(),
       };
     } catch (err) {
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       setLoading(false);
     }

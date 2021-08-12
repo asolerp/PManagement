@@ -2,6 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 
 // Redux
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
+import {error as errorLog} from '../lib/logging';
 
 import {View, StyleSheet, StatusBar, Dimensions} from 'react-native';
 
@@ -84,7 +85,11 @@ const AuthRouter = () => {
           token: await messaging().getToken(),
         });
       } catch (err) {
-        console.log(err);
+        errorLog({
+          message: err.message,
+          track: true,
+          asToast: true,
+        });
       } finally {
         setInitializing(false);
       }

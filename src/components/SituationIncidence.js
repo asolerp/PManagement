@@ -7,6 +7,7 @@ import {useTheme} from '../Theme';
 
 import firestore from '@react-native-firebase/firestore';
 import {useTranslation} from 'react-i18next';
+import {error} from '../lib/logging';
 
 const SituationIncidence = ({incidence}) => {
   const {Layout, Gutters, Colors, Fonts} = useTheme();
@@ -20,7 +21,11 @@ const SituationIncidence = ({incidence}) => {
           .update({state: stateIncidence});
       }
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     }
   };
 

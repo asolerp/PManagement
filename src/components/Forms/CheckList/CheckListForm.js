@@ -44,8 +44,6 @@ import Label from '../../Elements/Label';
 import {CHECKLISTS} from '../../../utils/firebaseKeys';
 import {useTranslation} from 'react-i18next';
 
-moment.locale('es');
-
 const CheckListForm = ({edit, docId}) => {
   const dispatch = useDispatch();
   const {Layout} = useTheme();

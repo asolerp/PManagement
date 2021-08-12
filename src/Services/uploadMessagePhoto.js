@@ -1,6 +1,7 @@
 import {messageIdGenerator} from '../utils/uuid';
 import firestore from '@react-native-firebase/firestore';
 import {cloudinaryUpload} from '../cloudinary';
+import {error} from '../lib/logging';
 
 const uploadMessagePhoto = async (collection, docId, messageImage, user) => {
   try {
@@ -51,7 +52,11 @@ const uploadMessagePhoto = async (collection, docId, messageImage, user) => {
         image: image,
       });
   } catch (err) {
-    console.log(err);
+    error({
+      message: err.message,
+      track: true,
+      asToast: true,
+    });
   }
 };
 

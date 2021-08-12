@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {error as errorLog} from '../lib/logging';
 
 export const useUploadCloudinaryImage = () => {
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,11 @@ export const useUploadCloudinaryImage = () => {
         return data.secure_url;
       })
       .catch((err) => {
+        errorLog({
+          message: err.message,
+          track: true,
+          asToast: true,
+        });
         setError(err);
       });
 

@@ -1,6 +1,7 @@
 //Firebase
 
 import firestore from '@react-native-firebase/firestore';
+import {error} from '../lib/logging';
 
 export const setMessagesAsRead = async (docId, userId, collection) => {
   // Create a new batch instance
@@ -24,6 +25,10 @@ export const setMessagesAsRead = async (docId, userId, collection) => {
 
     batch.commit();
   } catch (err) {
-    console.log(err);
+    error({
+      message: err.message,
+      track: true,
+      asToast: true,
+    });
   }
 };

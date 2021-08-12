@@ -23,6 +23,7 @@ import {
   resetForm,
   setImages,
 } from '../../Store/IncidenceForm/incidenceFormSlice';
+import {error} from '../../lib/logging';
 
 const styles = StyleSheet.create({
   container: {
@@ -132,8 +133,11 @@ const NewIncidence = () => {
       resetFormAction();
       navigation.goBack();
     } catch (err) {
-      console.log(err);
-      showAlert();
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       setLo(false);
     }

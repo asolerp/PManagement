@@ -135,12 +135,12 @@ const Info = () => {
             }}
           />
           <Badge
-            label="Municipio: "
+            label={t('houses.house_municipality') + ': '}
             text={job?.house?.[0]?.municipio}
             containerStyle={Gutters.smallBMargin}
           />
           <Badge
-            label="Calle: "
+            label={t('houses.house_street') + ': '}
             text={job?.house?.[0]?.street}
             variant="warning"
           />

@@ -1,4 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
+import {error} from '../lib/logging';
 
 const duplicateCheckList = async (checkId) => {
   try {
@@ -44,7 +45,11 @@ const duplicateCheckList = async (checkId) => {
       ),
     );
   } catch (err) {
-    console.log(err);
+    error({
+      message: err.message,
+      track: true,
+      asToast: true,
+    });
   }
 };
 

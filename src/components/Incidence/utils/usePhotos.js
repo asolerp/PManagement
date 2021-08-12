@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {useUploadCloudinaryImage} from '../../../hooks/useUploadCloudinaryImage';
 import firestore from '@react-native-firebase/firestore';
 import {INCIDENCES} from '../../../utils/firebaseKeys';
+import {error as errorLog} from '../../../lib/logging';
 
 export const usePhotos = ({incidenceId}) => {
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,11 @@ export const usePhotos = ({incidenceId}) => {
       await Promise.all(photosToDelete);
       setter([]);
     } catch (err) {
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
       setError(err);
     } finally {
       setLoading(false);
@@ -46,6 +52,11 @@ export const usePhotos = ({incidenceId}) => {
       );
       await Promise.all(uploadImageFirebase);
     } catch (err) {
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
       setError(err);
     } finally {
       setLoading(false);

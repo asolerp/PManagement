@@ -29,6 +29,7 @@ import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import useAuth from '../../utils/useAuth';
 import {useTranslation} from 'react-i18next';
+import {error} from '../../lib/logging';
 
 const styles = StyleSheet.create({
   pageWrapper: {
@@ -103,7 +104,11 @@ const HouseScreen = ({route}) => {
       setInfoHouse(null);
       setNewImage(null);
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     }
   };
 

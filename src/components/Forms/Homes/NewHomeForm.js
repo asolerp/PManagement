@@ -24,6 +24,7 @@ import {newHouse} from '../../../firebase/uploadNewHouse';
 // Utils
 import {launchImage} from '../../../utils/imageFunctions';
 import Toast from 'react-native-toast-message';
+import {error} from '../../../lib/logging';
 
 const NewFormHome = () => {
   const navigation = useNavigation();
@@ -54,11 +55,10 @@ const NewFormHome = () => {
         text2: 'Se ha creado una nueva casa',
       });
     } catch (err) {
-      Toast.show({
-        type: 'error',
-        position: 'bottom',
-        text1: 'Error',
-        text2: 'Algo ocurrió al crear la casa, inténtalo más tarde',
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
       });
     } finally {
       setLoading(false);

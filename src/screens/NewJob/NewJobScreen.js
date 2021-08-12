@@ -31,6 +31,7 @@ import {
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {JOBS} from '../../utils/firebaseKeys';
 import {useTranslation} from 'react-i18next';
+import {error} from '../../lib/logging';
 
 const NewJobScreen = ({route}) => {
   const dispatch = useDispatch();
@@ -61,7 +62,11 @@ const NewJobScreen = ({route}) => {
       };
       await newJob(newJobForm);
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       setLoading(false);
       cleanForm();
@@ -87,7 +92,11 @@ const NewJobScreen = ({route}) => {
       };
       await updateFirebase(docId, editedForm);
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       setLoading(false);
       cleanForm();

@@ -31,6 +31,7 @@ import {INCIDENCES} from '../../utils/firebaseKeys';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import {useTranslation} from 'react-i18next';
+import {error} from '../../lib/logging';
 
 const IncidenceScreen = () => {
   const navigation = useNavigation();
@@ -62,7 +63,11 @@ const IncidenceScreen = () => {
         done: status,
       });
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       navigation.goBack();
     }

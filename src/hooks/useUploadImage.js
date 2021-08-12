@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {useAddFirebase} from './useAddFirebase';
 import {useUpdateFirebase} from './useUpdateFirebase';
 import {useUploadCloudinaryImage} from './useUploadCloudinaryImage';
+import {error as errorLog} from '../lib/logging';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -74,7 +75,11 @@ const useUploadImageCheck = (collection, docId) => {
         );
       }
     } catch (err) {
-      console.log(err);
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       setLoading(false);
       setIdCheckLoading(null);

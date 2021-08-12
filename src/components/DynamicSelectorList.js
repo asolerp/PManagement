@@ -1,10 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList, StyleSheet} from 'react-native';
 
 // Firebase
 import {useGetFirebase} from '../hooks/useGetFirebase';
 
+import {error} from '../lib/logging';
 import {SearchBar} from 'react-native-elements';
 import ItemList from './ItemList';
 import CustomButton from './Elements/CustomButton';
@@ -40,8 +41,12 @@ const DynamicSelectorList = ({
       try {
         setLoadingOnSave(true);
         return await onSave(selected);
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        error({
+          message: err.message,
+          track: true,
+          asToast: true,
+        });
       } finally {
         setLoadingOnSave(false);
         closeModal();

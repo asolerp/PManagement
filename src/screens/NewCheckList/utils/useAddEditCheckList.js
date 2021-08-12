@@ -14,6 +14,7 @@ import {CHECKLISTS} from '../../../utils/firebaseKeys';
 import useRecursiveDelete from '../../../utils/useRecursiveDelete';
 import Toast from 'react-native-toast-message';
 import {popScreen} from '../../../Router/utils/actions';
+import {error as errorLog} from '../../../lib/logging';
 
 export const useAddEditCheckist = ({docId}) => {
   const dispatch = useDispatch({id: docId});
@@ -77,13 +78,12 @@ export const useAddEditCheckist = ({docId}) => {
         text1: 'Checklist ✅',
         text2: 'El checklist se actualizó correctamente',
       });
-    } catch (error) {
+    } catch (err) {
       setError(true);
-      Toast.show({
-        type: 'error',
-        position: 'bottom',
-        text1: 'Error',
-        text2: 'Algo ocurrió al crear el checklist, inténtalo más tarde',
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
       });
     } finally {
       setLoading(false);

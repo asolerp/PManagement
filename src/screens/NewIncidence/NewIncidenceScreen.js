@@ -32,6 +32,7 @@ import {
 } from '../../Store/IncidenceForm/incidenceFormSlice';
 import {popScreen} from '../../Router/utils/actions';
 import {Colors} from '../../Theme/Variables';
+import {error} from '../../lib/logging';
 
 const styles = StyleSheet.create({
   container: {
@@ -129,8 +130,11 @@ const NewIncidenceScreen = () => {
       popScreen();
     } catch (err) {
       console.log(err);
-      // TODO: toast
-      // showAlert();
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       setLo(false);
     }

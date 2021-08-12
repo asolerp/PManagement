@@ -19,6 +19,9 @@ import Badge from './Elements/Badge';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../Store/User/userSlice';
 import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
+import {error} from '../lib/logging';
+import {useLocales} from '../utils/useLocales';
+import {useTranslation} from 'react-i18next';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,6 +62,8 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
   const {Layout, Gutters} = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {updateFirebase} = useUpdateFirebase('checklists');
+
+  const {t} = useTranslation();
   const user = useSelector(userSelector);
 
   const handleCheck = async (status) => {
@@ -75,7 +80,11 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
           : firebase.firestore.FieldValue.increment(-1),
       });
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     }
   };
 
@@ -138,7 +147,7 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
                 ]}>
                 {check?.numberOfPhotos > 0 && (
                   <Badge
-                    label={'Fotos: '}
+                    label={t('check.photos') + ': '}
                     text={check?.numberOfPhotos}
                     variant="warning"
                   />

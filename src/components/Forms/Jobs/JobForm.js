@@ -27,8 +27,6 @@ import {
 import {JOBS} from '../../../utils/firebaseKeys';
 import {useTranslation} from 'react-i18next';
 
-moment.locale('es');
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

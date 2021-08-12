@@ -3,6 +3,7 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 
 import {cloudinaryUpload} from '../cloudinary/index';
+import {error} from '../lib/logging';
 
 export const uploadHouseImage = async (houseUID, imageName, uploadUri) => {
   try {
@@ -12,7 +13,11 @@ export const uploadHouseImage = async (houseUID, imageName, uploadUri) => {
       .getDownloadURL();
     return url;
   } catch (err) {
-    console.log(err);
+    error({
+      message: err.message,
+      track: true,
+      asToast: true,
+    });
   }
 };
 
@@ -28,6 +33,10 @@ export const newHouse = async (data, houseImage, userUID) => {
       .doc(house.id)
       .update({houseImage: uploadImage});
   } catch (err) {
-    console.log(err);
+    error({
+      message: err.message,
+      track: true,
+      asToast: true,
+    });
   }
 };

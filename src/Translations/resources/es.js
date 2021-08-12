@@ -1,4 +1,8 @@
 export default {
+  login: {
+    reset_fail: 'Por favor, introduzca un correo electrónico correcto',
+    fail: 'El email o la contraseña son incorrectos',
+  },
   tabs: {
     dashboard: 'Home',
     checks: 'Checks',
@@ -17,6 +21,7 @@ export default {
     resolved: 'Resuelta',
     no_resolved: 'Sin resolver',
     date: 'Fecha',
+    admins: 'Administradores',
     jobs: 'Trabajos',
     owners: 'Propietarios',
     worker: 'Trabajador',
@@ -57,6 +62,7 @@ export default {
   homeMessage: 'Estos son tus trabajos asignados para hoy 💪🏡',
   check: {
     done: 'Finalizar y enviar al propietario',
+    photos: 'Fotos',
   },
   newChecklist: {
     title: 'Nuevo checklist',
@@ -123,6 +129,7 @@ export default {
     house_address: 'Dirección',
     house_name: 'Nombre',
     house_municipality: 'Municipio',
+    house_street: 'Calle',
     owner_name: 'Nombre del propietario',
     owner_phone: 'Teléfono',
   },
