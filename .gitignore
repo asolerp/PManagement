@@ -57,6 +57,6 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
-
+/ios/portmanagement.app.dSYM.zip
 
 *.hprof
