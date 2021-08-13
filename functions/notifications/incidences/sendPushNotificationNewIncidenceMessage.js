@@ -20,11 +20,25 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
         .where('role', '==', 'admin')
         .get();
 
-      const userToken = incidenceSnapshot.data().user.token;
+      const workers = await Promise.all(
+        incidenceSnapshot
+          .data()
+          .workersId.map(
+            async (workerId) =>
+              await admin.firestore().collection('users').doc(workerId).get(),
+          ),
+      );
+
+      const workersTokens = workers
+        .filter((worker) => worker.data().token)
+        .map((worker) => worker.data().token);
 
       const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
 
-      const listTokens = removeUserActionToken(adminTokens, userToken);
+      const listTokens = removeUserActionToken(
+        adminTokens.concat(workersTokens),
+        message.user.token,
+      );
 
       let notification = {
         title: 'Nuevo mensaje! 📣',

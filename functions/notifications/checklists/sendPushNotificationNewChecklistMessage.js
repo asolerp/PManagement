@@ -20,19 +20,20 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
         .where('role', '==', 'admin')
         .get();
 
-      const users = await Promise.all(
-        workersId.map(
-          async (workerId) =>
-            await admin.firestore().collection('users').doc(workerId).get(),
-        ),
+      const workers = await Promise.all(
+        checklistSnapshot
+          .data()
+          .workersId.map(
+            async (workerId) =>
+              await admin.firestore().collection('users').doc(workerId).get(),
+          ),
       );
 
-      console.log(message, '[[MESSAGE]]');
-
       const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-      const workersTokens = users
-        .filter((user) => user.data().token)
-        .map((user) => user.data().token);
+      const workersTokens = workers
+        .filter((worker) => worker.data().token)
+        .map((worker) => worker.data().token);
+
       const listTokens = removeUserActionToken(
         adminTokens.concat(workersTokens),
         message.user.token,

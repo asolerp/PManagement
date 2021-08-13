@@ -20,8 +20,22 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         .where('role', '==', 'admin')
         .get();
 
+      const workers = await Promise.all(
+        updatedIncidence.workersId.map(
+          async (workerId) =>
+            await admin.firestore().collection('users').doc(workerId).get(),
+        ),
+      );
+
+      const workersTokens = workers
+        .filter((worker) => worker.data().token)
+        .map((worker) => worker.data().token);
+
       const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-      const listTokens = removeUserActionToken(adminTokens, check.worker.token);
+      const listTokens = removeUserActionToken(
+        adminTokens.concat(workersTokens),
+        check.worker.token,
+      );
 
       let notification = {
         title: 'Nuevo trabajo completado! 🚀',

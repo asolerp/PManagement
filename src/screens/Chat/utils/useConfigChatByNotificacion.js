@@ -1,5 +1,6 @@
 import {openScreenWithPush} from '../../../Router/utils/actions';
 import {
+  CHECK_STACK_KEY,
   INCIDENCE_SCREEN_KEY,
   JOB_SCREEN_KEY,
 } from '../../../Router/utils/routerKeys';
@@ -32,6 +33,13 @@ export const useConfigChatByNotification = ({
       return () => {
         openScreenWithPush(JOB_SCREEN_KEY, {
           jobId: docId,
+        });
+      };
+    }
+    if (collection === CHECKLISTS) {
+      return () => {
+        openScreenWithPush(CHECK_STACK_KEY, {
+          docId,
         });
       };
     }

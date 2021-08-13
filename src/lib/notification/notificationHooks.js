@@ -33,7 +33,7 @@ export const useNotification = () => {
 
 export const useRedirectNotification = () => {
   const {isAdmin} = useAuth();
-  console.log(isAdmin);
+
   const mainStack = isAdmin ? MAIN_ADMIN_STACK_KEY : MAIN_WORKER_STACK_KEY;
   useEffect(() => {
     messaging().onNotificationOpenedApp(async (remoteMessage) => {

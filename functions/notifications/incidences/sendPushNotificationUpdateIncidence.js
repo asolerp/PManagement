@@ -6,7 +6,6 @@ const sendPushNotificationUpdateCheckList = functions.firestore
   .onUpdate(async (change, context) => {
     try {
       const updatedIncidence = change.after.data();
-      const userToken = updatedIncidence.user.token;
 
       const adminsSnapshot = await admin
         .firestore()
@@ -14,8 +13,19 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         .where('role', '==', 'admin')
         .get();
 
+      const workers = await Promise.all(
+        updatedIncidence.workersId.map(
+          async (workerId) =>
+            await admin.firestore().collection('users').doc(workerId).get(),
+        ),
+      );
+
+      const workersTokens = workers
+        .filter((worker) => worker.data().token)
+        .map((worker) => worker.data().token);
+
       const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-      const listTokens = adminTokens.concat([userToken]);
+      const listTokens = adminTokens.concat(workersTokens);
 
       let notification = {
         title: 'Actulaización 🚀',

@@ -73,7 +73,6 @@ const NewJobTaskSelectorScreen = ({route}) => {
     task?.locales?.[locale].name || task?.locales?.en.name || task.name;
 
   const handlerTaskClick = (task) => {
-    console.log(task);
     setTaskAction(task);
     openScreenWithPush(NEW_JOB_SCREEN_KEY, {
       taskName: task.name,

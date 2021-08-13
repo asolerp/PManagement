@@ -77,7 +77,6 @@ const NewJobScreen = ({route}) => {
   };
 
   const handleEdit = async () => {
-    console.log(job?.task);
     try {
       setLoading(true);
       const editedForm = {

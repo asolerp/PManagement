@@ -85,7 +85,11 @@ const AuthRouter = () => {
           return;
         }
         const usuario = await getUser(result?.uid);
-        setUser({...usuario?.data(), uid: result?.uid});
+        setUser({
+          ...usuario?.data(),
+          uid: result?.uid,
+          token: (await messaging().getToken()) || null,
+        });
         updateFirebase(`${result?.uid}`, {
           token: await messaging().getToken(),
         });

@@ -14,31 +14,31 @@ const sendPushNotificationJobMessage = functions.firestore
         .doc(context.params.jobId)
         .get();
 
-      const messageSnapshot = await admin
-        .firestore()
-        .collection('jobs')
-        .doc(context.params.jobId)
-        .collection('messages')
-        .doc(context.params.messageId)
-        .get();
-
       const adminsSnapshot = await admin
         .firestore()
         .collection('users')
         .where('role', '==', 'admin')
         .get();
 
-      const userToken = messageSnapshot.data().user.token;
+      const workers = await Promise.all(
+        jobSnapshot
+          .data()
+          .workersId.map(
+            async (workerId) =>
+              await admin.firestore().collection('users').doc(workerId).get(),
+          ),
+      );
+
       const task = jobSnapshot.data().task;
 
       const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-      const workersTokens = jobSnapshot
-        .data()
-        .workers.map((worker) => worker.token);
+      const workersTokens = workers
+        .filter((worker) => worker.data().token)
+        .map((worker) => worker.data().token);
 
       const listTokens = removeUserActionToken(
         adminTokens.concat(workersTokens),
-        userToken,
+        message.user.token,
       );
 
       let notification = {
