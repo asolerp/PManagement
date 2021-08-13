@@ -95,7 +95,7 @@ const IncidencesList = ({uid}) => {
   if (uid) {
     firestoreQuery = firestore()
       .collection('incidences')
-      .where('user.uid', '==', uid)
+      .where('workersId', 'array-contains', uid)
       .where('done', '==', false);
   }
   if (!uid) {

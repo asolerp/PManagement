@@ -9,6 +9,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {getHightByRoute} from '../utils/parsers';
 import {Colors} from '../Theme/Variables';
 import {useTheme} from '../Theme';
+import {TouchableWithoutFeedback} from 'react-native';
 
 const TitlePage = ({
   title,
@@ -19,6 +20,7 @@ const TitlePage = ({
   subPage = false,
   color = 'white',
   background,
+  onPress,
 }) => {
   const {
     params: {screenKey = ''},
@@ -53,19 +55,21 @@ const TitlePage = ({
                   ...{marginHorizontal: 20},
                 }}>
                 {title ? (
-                  <Text
-                    adjustsFontSizeToFit
-                    numberOfLines={2}
-                    style={{
-                      ...styles.title,
-                      ...{
-                        color: color,
-                        marginTop: Platform.OS === 'ios' ? 30 : 0,
-                        textAlign: 'center',
-                      },
-                    }}>
-                    {title}
-                  </Text>
+                  <TouchableWithoutFeedback onPress={onPress}>
+                    <Text
+                      adjustsFontSizeToFit
+                      numberOfLines={2}
+                      style={{
+                        ...styles.title,
+                        ...{
+                          color: color,
+                          marginTop: Platform.OS === 'ios' ? 30 : 0,
+                          textAlign: 'center',
+                        },
+                      }}>
+                      {title}
+                    </Text>
+                  </TouchableWithoutFeedback>
                 ) : (
                   <View>
                     {subPage && (

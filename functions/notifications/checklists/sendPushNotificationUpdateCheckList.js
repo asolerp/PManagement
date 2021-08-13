@@ -31,7 +31,8 @@ const sendPushNotificationUpdateCheckList = functions.firestore
       };
 
       let data = {
-        screen: 'Check',
+        type: 'entity',
+        collection: 'checklists',
         docId: context.params.checklistId,
       };
 

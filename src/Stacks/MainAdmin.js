@@ -18,17 +18,37 @@ import HomeAdmin from './HomeAdmin';
 
 const {Navigator, Screen} = createStackNavigator();
 
-export const MainAdmin = () => (
-  <Navigator
-    options={{headerShown: false}}
-    screenOptions={{
-      headerShown: false,
-    }}>
-    <Screen name={HOME_ADMIN_STACK_KEY} component={HomeAdmin} />
-    <Screen name={PROFILE_SCREEN_KEY} component={ProfileScreen} />
-    <Screen name={JOB_SCREEN_KEY} component={JobScreen} />
-    <Screen name={INCIDENCE_SCREEN_KEY} component={IncidenceScreen} />
-    <Screen name={CHECK_STACK_KEY} component={Check} />
-    <Screen name={HOUSE_SCREEN_KEY} component={HouseScreen} />
-  </Navigator>
-);
+export const MainAdmin = ({route}) => {
+  return (
+    <Navigator
+      options={{headerShown: false}}
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Screen name={HOME_ADMIN_STACK_KEY} component={HomeAdmin} />
+      <Screen name={PROFILE_SCREEN_KEY} component={ProfileScreen} />
+      <Screen
+        name={JOB_SCREEN_KEY}
+        component={JobScreen}
+        initialParams={{
+          jobId: route?.params?.docId,
+        }}
+      />
+      <Screen
+        name={INCIDENCE_SCREEN_KEY}
+        component={IncidenceScreen}
+        initialParams={{
+          incidenceId: route?.params?.docId,
+        }}
+      />
+      <Screen
+        name={CHECK_STACK_KEY}
+        component={Check}
+        initialParams={{
+          docId: route?.params?.docId,
+        }}
+      />
+      <Screen name={HOUSE_SCREEN_KEY} component={HouseScreen} />
+    </Navigator>
+  );
+};

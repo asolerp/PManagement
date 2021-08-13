@@ -18,6 +18,9 @@ const getCustomData = () => {
 
 export const init = () => {
   try {
+    if (Bugsnag._client) {
+      return;
+    }
     if (isBugsnagInitialised) {
       return;
     }

@@ -24,7 +24,7 @@ const sendPushNotificationUpdateCheckList = functions.firestore
 
       let data = {
         type: 'entity',
-        colection: 'incidences',
+        collection: 'incidences',
         docId: context.params.incidenceId,
       };
 

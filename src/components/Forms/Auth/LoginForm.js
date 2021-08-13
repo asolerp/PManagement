@@ -84,12 +84,12 @@ const LoginForm = () => {
         defaultValue=""
       />
       <TouchableWithoutFeedback onPress={() => resetPassword()}>
-        <Text style={styles.forgotText}>He olvidado mi contraseña</Text>
+        <Text style={styles.forgotText}>{t('login.forgot')}</Text>
       </TouchableWithoutFeedback>
       <View style={styles.buttonWrapper}>
         <CustomButton
           onPress={handleSubmit(signIn)}
-          title="Login"
+          title={t('login.cta')}
           loading={loadingLogin}
         />
       </View>

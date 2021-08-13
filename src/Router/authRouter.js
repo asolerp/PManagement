@@ -20,6 +20,7 @@ import {loadingSelector} from '../Store/App/appSlice';
 import AdminRouter from '../Router/adminRouter';
 import WorkerRouter from '../Router/workerRouter';
 import OwnerRouter from '../Router/ownerRouter';
+import {useRedirectNotification} from '../lib/notification/notificationHooks';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -67,6 +68,7 @@ const getUserSignInStack = (role) => {
 };
 
 const AuthRouter = () => {
+  useRedirectNotification();
   const [initializing, setInitializing] = useState(true);
   const dispatch = useDispatch();
 
@@ -79,16 +81,19 @@ const AuthRouter = () => {
   const onAuthStateChanged = useCallback(
     async (result) => {
       try {
+        if (!result) {
+          return;
+        }
         const usuario = await getUser(result?.uid);
-        setUser({...usuario.data(), uid: result.uid});
-        updateFirebase(`${result.uid}`, {
+        setUser({...usuario?.data(), uid: result?.uid});
+        updateFirebase(`${result?.uid}`, {
           token: await messaging().getToken(),
         });
       } catch (err) {
         errorLog({
           message: err.message,
           track: true,
-          asToast: true,
+          asToast: false,
         });
       } finally {
         setInitializing(false);

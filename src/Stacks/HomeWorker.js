@@ -10,7 +10,6 @@ import {Platform} from 'react-native';
 import {
   DASHBOARD_WORKER_SCREEN_KEY,
   INCIDENCES_SCREEN_KEY,
-  INCIDENCE_SCREEN_KEY,
   JOBS_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
@@ -19,10 +18,12 @@ import {IncidencesScreen} from '../Screens/Incidences';
 import {ProfileScreen} from '../Screens/Profile';
 import {tabNameByScreen} from '../utils/parsers';
 import JobsScreen from '../Screens/Jobs/JobsScreen';
+import {useTranslation} from 'react-i18next';
 
 const Tabs = AnimatedTabBarNavigator();
 
 const HomeWorker = () => {
+  const {t} = useTranslation();
   const getTabBarVisible = (route) => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (
@@ -57,7 +58,7 @@ const HomeWorker = () => {
         tabBarBackground: 'white',
       }}>
       <Tabs.Screen
-        name={tabNameByScreen[DASHBOARD_WORKER_SCREEN_KEY]}
+        name={t(tabNameByScreen[DASHBOARD_WORKER_SCREEN_KEY])}
         initialParams={{screenKey: DASHBOARD_WORKER_SCREEN_KEY}}
         component={DashboardWorkerScreen}
         options={({route}) => ({
@@ -73,7 +74,7 @@ const HomeWorker = () => {
         })}
       />
       <Tabs.Screen
-        name={tabNameByScreen[JOBS_SCREEN_KEY]}
+        name={t(tabNameByScreen[JOBS_SCREEN_KEY])}
         initialParams={{screenKey: JOBS_SCREEN_KEY}}
         component={JobsScreen}
         options={({route}) => ({
@@ -89,7 +90,7 @@ const HomeWorker = () => {
         })}
       />
       <Tabs.Screen
-        name={tabNameByScreen[INCIDENCES_SCREEN_KEY]}
+        name={t(tabNameByScreen[INCIDENCES_SCREEN_KEY])}
         initialParams={{screenKey: INCIDENCES_SCREEN_KEY}}
         component={IncidencesScreen}
         options={({route}) => ({
@@ -105,7 +106,7 @@ const HomeWorker = () => {
         })}
       />
       <Tabs.Screen
-        name={tabNameByScreen[PROFILE_SCREEN_KEY]}
+        name={t(tabNameByScreen[PROFILE_SCREEN_KEY])}
         initialParams={{screenKey: PROFILE_SCREEN_KEY}}
         component={ProfileScreen}
         options={{

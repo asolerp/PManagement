@@ -17,14 +17,13 @@ const {
   sendPushNotificationNewIncidenceMessage,
 } = require('./notifications/incidences');
 
+const {sendPushNotificationJobMessage} = require('./notifications/jobs');
+
 cloudinary.config({
   cloud_name: 'enalbis',
   api_key: '152722439921117',
   api_secret: '2vw8GysZv9EUsv9qEToqrZueaa4',
 });
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-const FieldValue = require('firebase-admin').firestore.FieldValue;
 
 admin.initializeApp(functions.config().firebase);
 
@@ -99,62 +98,9 @@ exports.sendPushNotificationNewIncidence = sendPushNotificationNewIncidence;
 exports.sendPushNotificationNewIncidenceMessage =
   sendPushNotificationNewIncidenceMessage;
 
-exports.sendPushNotificationNewMessage = functions.firestore
-  .document('jobs/{jobId}/messages/{messageId}')
-  .onCreate(async (snap, context) => {
-    try {
-      const message = snap.data();
+// JOBS
 
-      const jobSnapshot = await admin
-        .firestore()
-        .collection('jobs')
-        .doc(context.params.jobId)
-        .get();
-
-      const workersId = jobSnapshot.data().workersId;
-
-      const users = await Promise.all(
-        workersId.map(
-          async (workerId) =>
-            await admin.firestore().collection('users').doc(workerId).get(),
-        ),
-      );
-
-      const workersTokens = users.map((user) => user.data().token);
-      const adminsSnapshot = await admin
-        .firestore()
-        .collection('users')
-        .where('role', '==', 'admin')
-        .get();
-
-      const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-
-      let notification = {
-        title: 'Tienes un nuevo mensaje 💬',
-        body: message.text
-          ? `${
-              message.user.name + 'dice: ' + message.text.length > 25
-                ? message.text.substring(0, 25 - 3) + '...'
-                : message.text
-            }`
-          : 'Nueva imagen...',
-      };
-
-      await admin.messaging().sendMulticast({
-        tokens: adminTokens.concat(workersTokens),
-        notification,
-        apns: {
-          payload: {
-            aps: {
-              sound: 'default',
-            },
-          },
-        },
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  });
+exports.sendPushNotificationJobMessage = sendPushNotificationJobMessage;
 
 exports.updateProfileImage = functions.firestore
   .document('users/{userId}')

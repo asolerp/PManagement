@@ -93,9 +93,6 @@ const NewIncidenceScreen = () => {
   const createIncidence = async () => {
     try {
       setLo(true);
-      await updateFirebase('stats', {
-        count: firebase.firestore.FieldValue.increment(1),
-      });
       const newIncidence = await addFirebase('incidences', {
         ...incidence,
         house: incidence.house.value[0],

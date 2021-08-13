@@ -27,7 +27,7 @@ const Filter = ({text, onPress, color, active}) => {
             opacity: active ? 1 : 0.4,
           },
         }}>
-        <Text style={{fontSize: 10, color: color.color, fontWeight: 'bold'}}>
+        <Text style={{fontSize: 14, color: color.color, fontWeight: 'bold'}}>
           {text}
         </Text>
       </View>

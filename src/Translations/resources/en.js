@@ -1,7 +1,11 @@
 export default {
   login: {
+    welcome: 'Welcome!',
+    login: 'Login to manage your house',
+    forgot: 'Remember password',
     reset_fail: 'Please enter a correct email',
     fail: 'Email or password are wrong',
+    cta: 'Login',
   },
   tabs: {
     dashboard: 'Home',
@@ -163,5 +167,9 @@ export default {
       finish:
         'Are you sure you want to finalize and send the report to the owner?',
     },
+  },
+  chat: {
+    view_incidence: 'Go to incidence',
+    view_checklist: 'Go to checklist',
   },
 };

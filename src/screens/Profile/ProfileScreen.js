@@ -126,6 +126,7 @@ const ProfileScreen = ({route}) => {
       logOutUser();
       await auth().signOut();
     } catch (err) {
+      console.log(err);
       error({
         message: err.message,
         track: true,

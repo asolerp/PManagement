@@ -13,8 +13,8 @@ import {Colors} from '../../Theme/Variables';
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 
-const heightFilter = 80;
-const heightImage = 75;
+const heightFilter = 100;
+const heightImage = 95;
 const widthFilter = 90;
 
 const styles = StyleSheet.create({
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     textAlign: 'left',
-    fontSize: 12,
+    fontSize: 14,
     color: 'white',
     fontWeight: 'bold',
   },

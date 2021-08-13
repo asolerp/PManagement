@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import useNoReadMessages from '../../hooks/useNoReadMessages';
 
@@ -15,6 +15,9 @@ import Counter from '../Counter';
 import Badge from '../Elements/Badge';
 import {useTranslation} from 'react-i18next';
 
+import {useCollectionData} from 'react-firebase-hooks/firestore';
+import firestore from '@react-native-firebase/firestore';
+
 const CheckItem = ({item}) => {
   const {Layout, Gutters} = useTheme();
   const {isOwner} = useAuth();
@@ -23,6 +26,19 @@ const CheckItem = ({item}) => {
     collection: CHECKLISTS,
     docId: item.id,
   });
+
+  const query = useMemo(() => {
+    return firestore()
+      .collection('checklists')
+      .doc(item.id)
+      .collection('checks');
+  }, [item.id]);
+
+  const [checks] = useCollectionData(query, {
+    idField: 'id',
+  });
+
+  const doneCounter = checks?.filter((check) => check.done).length;
 
   return (
     <React.Fragment>
@@ -87,13 +103,13 @@ const CheckItem = ({item}) => {
             <AnimatedCircularProgress
               size={30}
               width={3}
-              fill={Math.round((item?.done / item?.total) * 100)}
+              fill={Math.round((doneCounter / item?.total) * 100)}
               tintColor={Colors.pm}
               backgroundColor={Colors.lowGrey}
               backgroundWidth={2}>
               {() => (
                 <Text style={{fontSize: 7}}>
-                  {Math.round((item?.done / item?.total) * 100)}%
+                  {Math.round((doneCounter / item?.total) * 100)}%
                 </Text>
               )}
             </AnimatedCircularProgress>

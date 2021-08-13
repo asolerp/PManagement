@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {View, Text, Image, StyleSheet, StatusBar} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -9,6 +10,7 @@ import LoginForm from '../../components/Forms/Auth/LoginForm';
 export const LOGIN_SCREEN_KEY = 'loginScreen';
 
 const LoginScreen = () => {
+  const {t} = useTranslation();
   return (
     <React.Fragment>
       <StatusBar barStyle="light-content" />
@@ -21,8 +23,8 @@ const LoginScreen = () => {
             />
           </View>
           <View style={styles.welcomeWrapper}>
-            <Text style={styles.welcomeText}>Bienvenido!</Text>
-            <Text style={styles.welcomeTextSub}>Logeate para continuar</Text>
+            <Text style={styles.welcomeText}>{t('login.welcome')}</Text>
+            <Text style={styles.welcomeTextSub}>{t('login.login')}</Text>
           </View>
           <KeyboardAwareScrollView>
             <View style={styles.inputsWrapper}>

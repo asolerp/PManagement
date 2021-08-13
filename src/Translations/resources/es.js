@@ -1,7 +1,11 @@
 export default {
   login: {
+    welcome: 'Bienvenido!',
+    login: 'Logeate para continuar',
+    forgot: 'He olvidado mi contraseña',
     reset_fail: 'Por favor, introduzca un correo electrónico correcto',
     fail: 'El email o la contraseña son incorrectos',
+    cta: 'Login',
   },
   tabs: {
     dashboard: 'Home',
@@ -165,5 +169,9 @@ export default {
       finish:
         '¿Seguro que quieres finalizar y enviar el informe al propietario?',
     },
+  },
+  chat: {
+    view_incidence: 'Ver incidencia',
+    view_checklist: 'Ver checklist',
   },
 };

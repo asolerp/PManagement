@@ -1,34 +1,30 @@
 import React from 'react';
-import {TouchableWithoutFeedback, View, Text} from 'react-native';
+import {TouchableWithoutFeedback, View} from 'react-native';
 import PageLayout from '../../components/PageLayout';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Chat from '../../components/Chat/Chat';
 import {Colors} from '../../Theme/Variables';
 import {popScreen} from '../../Router/utils/actions';
 
-import firestore from '@react-native-firebase/firestore';
-import {useDocumentDataOnce} from 'react-firebase-hooks/firestore';
 import Avatar from '../../components/Avatar';
+
+import {useConfigChatByNotification} from './utils/useConfigChatByNotificacion';
 
 const ChatScreen = ({route}) => {
   const {collection, docId} = route.params;
-
-  const [values] = useDocumentDataOnce(
-    firestore().collection(collection).doc(docId),
-    {
-      idField: 'id',
-    },
+  const {header, onPressHeader, chat} = useConfigChatByNotification(
+    route.params,
   );
 
   return (
     <PageLayout
       safe
       titleLefSide={
-        values?.user && (
+        chat?.user && (
           <Avatar
-            id={values?.user.id}
-            key={values?.user.id}
-            uri={values?.user.profileImage}
+            id={chat?.user.id}
+            key={chat?.user.id}
+            uri={chat?.user.profileImage}
             size="medium"
           />
         )
@@ -44,8 +40,9 @@ const ChatScreen = ({route}) => {
         </TouchableWithoutFeedback>
       }
       titleProps={{
-        title: 'Chat',
+        title: header,
         subPage: true,
+        onPress: onPressHeader,
       }}>
       <Chat collection={collection} docId={docId} />
     </PageLayout>

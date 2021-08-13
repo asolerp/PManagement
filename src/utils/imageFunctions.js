@@ -44,17 +44,13 @@ export const handleCamera = (callback) => {
   });
 };
 
-export const handleImagePicker = (callback) => {
-  ImagePicker.openPicker({
-    smartAlbums: ['UserLibrary', 'Generic'],
+export const handleImagePicker = async (callback) => {
+  await ImagePicker.clean();
+  await ImagePicker.openPicker({
+    writeTempFile: false,
     compressImageMaxWidth: 300,
     compressImageQuality: 0.3,
     multiple: true,
-    waitAnimationEnd: false,
-    includeExif: false,
-    forceJpg: true,
-    maxFiles: 10,
-    mediaType: 'photo',
     includeBase64: true,
   }).then((imgs) => {
     callback(imgs);

@@ -15,15 +15,33 @@ import Check from './Check';
 
 const {Navigator, Screen} = createStackNavigator();
 
-export const MainWorker = () => (
+export const MainWorker = ({route}) => (
   <Navigator
     options={{headerShown: false}}
     screenOptions={{
       headerShown: false,
     }}>
     <Screen name={HOME_WORKER_STACK_KEY} component={HomeWorker} />
-    <Screen name={INCIDENCE_SCREEN_KEY} component={IncidenceScreen} />
-    <Screen name={JOB_SCREEN_KEY} component={JobScreen} />
-    <Screen name={CHECK_STACK_KEY} component={Check} />
+    <Screen
+      name={JOB_SCREEN_KEY}
+      component={JobScreen}
+      initialParams={{
+        jobId: route?.params?.docId,
+      }}
+    />
+    <Screen
+      name={INCIDENCE_SCREEN_KEY}
+      component={IncidenceScreen}
+      initialParams={{
+        incidenceId: route?.params?.docId,
+      }}
+    />
+    <Screen
+      name={CHECK_STACK_KEY}
+      component={Check}
+      initialParams={{
+        docId: route?.params?.docId,
+      }}
+    />
   </Navigator>
 );
