@@ -52,35 +52,6 @@ exports.onCreateJob = functions.firestore
     return Promise.all([addNewStats()]);
   });
 
-exports.setCheckListAsFinished = functions.firestore
-  .document('checklists/{checklistId}')
-  .onUpdate(async (change, context) => {
-    try {
-      const checkBefore = change.before.data();
-      const checkAfter = change.after.data();
-      if (checkAfter.done === checkAfter.total) {
-        await admin
-          .firestore()
-          .collection('checklists')
-          .doc(context.params.checklistId)
-          .update({
-            finished: true,
-          });
-      }
-      if (checkBefore.finished && checkAfter.done < checkAfter.total) {
-        await admin
-          .firestore()
-          .collection('checklists')
-          .doc(context.params.checklistId)
-          .update({
-            finished: false,
-          });
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
 // CHECKLISTS
 
 exports.sendPushNotificationUpdateCheckList =
