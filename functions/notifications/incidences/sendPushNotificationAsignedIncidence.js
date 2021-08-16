@@ -1,14 +1,21 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-const sendPushNotificationUpdateCheckList = functions.firestore
+const sendPushNotificationAsignedIncidence = functions.firestore
   .document('incidences/{incidenceId}')
   .onUpdate(async (change, context) => {
     try {
       const updatedIncidence = change.after.data();
       const beforeIncidence = change.before.data();
 
-      if (beforeIncidence.state !== updatedIncidence.state) {
+      if (
+        JSON.stringify(updatedIncidence.workersId) !==
+        JSON.stringify(beforeIncidence.workerId)
+      ) {
+        const asignedWorkers = updatedIncidence.workersId.filter(
+          (worker) => beforeIncidence.workersId.indexOf(worker) === -1,
+        );
+
         const adminsSnapshot = await admin
           .firestore()
           .collection('users')
@@ -16,7 +23,7 @@ const sendPushNotificationUpdateCheckList = functions.firestore
           .get();
 
         const workers = await Promise.all(
-          updatedIncidence.workersId.map(
+          asignedWorkers.map(
             async (workerId) =>
               await admin.firestore().collection('users').doc(workerId).get(),
           ),
@@ -30,8 +37,8 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         const listTokens = adminTokens.concat(workersTokens);
 
         let notification = {
-          title: 'Actulaización 🚀',
-          body: `Ha habido cambios en el estado de la incidencia!`,
+          title: 'Incidencia ⚠️',
+          body: `Se te ha asignado una incidencia!`,
         };
 
         let data = {
@@ -58,4 +65,4 @@ const sendPushNotificationUpdateCheckList = functions.firestore
     }
   });
 
-module.exports = sendPushNotificationUpdateCheckList;
+module.exports = sendPushNotificationAsignedIncidence;

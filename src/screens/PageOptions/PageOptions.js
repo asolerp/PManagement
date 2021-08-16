@@ -29,6 +29,7 @@ const PageOptionsScreen = ({route}) => {
     route.params;
   const {loading, recursiveDelete} = useRecursiveDelete({
     path: `${collection}/${docId}`,
+    docId,
     collection,
     backScreen,
   });

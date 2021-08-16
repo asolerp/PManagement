@@ -8,7 +8,7 @@ import {
 import {firebase} from '@react-native-firebase/firestore';
 import {error} from '../lib/logging';
 
-const useRecursiveDelete = ({path, collection, backScreen}) => {
+const useRecursiveDelete = ({path, collection, docId, backScreen}) => {
   const [loading, setLoading] = useState(false);
   const recursiveDelete = async () => {
     const deleteFn = firebase.functions().httpsCallable('recursiveDelete');
@@ -16,6 +16,7 @@ const useRecursiveDelete = ({path, collection, backScreen}) => {
       setLoading(true);
       await deleteFn({
         path: path,
+        docId,
         collection: collection,
       });
       openScreenWithPush(HOME_ADMIN_STACK_KEY, {

@@ -1,16 +1,14 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-const sendPushNotificationNewChecklistMessage = functions.firestore
-  .document('checklists/{checklistId}')
+const sendPushNotificationNewJob = functions.firestore
+  .document('jobs/{jobId}')
   .onCreate(async (snap, context) => {
-    const checklist = snap.data();
-
     try {
-      const workersId = checklist.workersId;
+      const job = snap.data();
 
-      const users = await Promise.all(
-        workersId.map(
+      const workers = await Promise.all(
+        job.workersId.map(
           async (workerId) =>
             await admin.firestore().collection('users').doc(workerId).get(),
         ),
@@ -20,19 +18,21 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
         .filter((worker) => worker.data().token)
         .map((worker) => worker.data().token);
 
+      const listTokens = workersTokens;
+
       let notification = {
-        title: 'Manos a la obra! 📝',
-        body: `Se te ha asignado a un checklist! ✅`,
+        title: 'Nuevo trabajo 💪',
+        body: `Se te ha asignado un nuevo trabajo!`,
       };
 
       let data = {
         type: 'entity',
-        collection: 'checklists',
-        docId: context.params.checklistId,
+        collection: 'jobs',
+        docId: context.params.jobId,
       };
 
       await admin.messaging().sendMulticast({
-        tokens: workersTokens,
+        tokens: listTokens,
         notification,
         apns: {
           payload: {
@@ -48,4 +48,4 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
     }
   });
 
-module.exports = sendPushNotificationNewChecklistMessage;
+module.exports = sendPushNotificationNewJob;

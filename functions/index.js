@@ -15,9 +15,13 @@ const {
   sendPushNotificationUpdateIncidence,
   sendPushNotificationNewIncidence,
   sendPushNotificationNewIncidenceMessage,
+  sendPushNotificationAsignedIncidence,
 } = require('./notifications/incidences');
 
-const {sendPushNotificationJobMessage} = require('./notifications/jobs');
+const {
+  sendPushNotificationJobMessage,
+  sendPushNotificationNewJob,
+} = require('./notifications/jobs');
 
 cloudinary.config({
   cloud_name: 'enalbis',
@@ -98,9 +102,13 @@ exports.sendPushNotificationNewIncidence = sendPushNotificationNewIncidence;
 exports.sendPushNotificationNewIncidenceMessage =
   sendPushNotificationNewIncidenceMessage;
 
+exports.sendPushNotificationAsignedIncidence =
+  sendPushNotificationAsignedIncidence;
+
 // JOBS
 
 exports.sendPushNotificationJobMessage = sendPushNotificationJobMessage;
+exports.sendPushNotificationNewJob = sendPushNotificationNewJob;
 
 exports.updateProfileImage = functions.firestore
   .document('users/{userId}')
@@ -179,10 +187,16 @@ exports.recursiveDelete = functions
   .https.onCall(async (data, context) => {
     // Only allow admin users to execute this function.
 
-    const {path, collection} = data;
+    const {path, collection, docId} = data;
     console.log(
       `User ${context.auth.uid} has requested to delete path ${path} with collection ${collection}`,
     );
+
+    const collectionFolders = {
+      checklists: 'CheckLists',
+      incidences: 'Incidences',
+      jobs: 'Jobs',
+    };
 
     // Run a recursive delete on the given document or collection path.
     // The 'token' must be set in the functions config, and can be generated
@@ -193,6 +207,13 @@ exports.recursiveDelete = functions
       yes: true,
       token: functions.config().fb.token,
     });
+
+    await cloudinary.api.delete_resources_by_prefix(
+      `PortManagement/${collectionFolders[collection]}/${docId}`,
+      (error, result) => {
+        console.log(result, error);
+      },
+    );
 
     return {
       path: path,
