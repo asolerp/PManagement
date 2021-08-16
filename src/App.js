@@ -20,6 +20,8 @@ import {useLocales} from './utils/useLocales';
 import moment from 'moment';
 import {useNotification} from './lib/notification/notificationHooks';
 
+import codePush from 'react-native-code-push';
+
 const CustomFallback = (props) => (
   <View style={{flex: 1}}>
     <ErrorScreen />
@@ -55,4 +57,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default codePush(App);
