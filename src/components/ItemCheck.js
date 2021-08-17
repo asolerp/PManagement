@@ -1,11 +1,16 @@
 import React, {useState} from 'react';
-import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 
 import CheckBox from '@react-native-community/checkbox';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Avatar from '../components/Avatar';
 
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {handleCamera, handleImagePicker} from '../utils/imageFunctions';
 import {GREY_1, PM_COLOR} from '../styles/colors';
 
@@ -20,8 +25,10 @@ import {useSelector} from 'react-redux';
 import {userSelector} from '../Store/User/userSlice';
 import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
 import {error} from '../lib/logging';
-import {useLocales} from '../utils/useLocales';
+
 import {useTranslation} from 'react-i18next';
+import {openScreenWithPush} from '../Router/utils/actions';
+import {CHECK_PHOTO_SCREEN_KEY} from '../Router/utils/routerKeys';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +40,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   checkboxWrapper: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
     flexDirection: 'row',
+  },
+  checkInfo: {
+    maxWidth: 230,
   },
   infoWrapper: {
     marginLeft: 0,
@@ -114,48 +126,65 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
           onCheckColor={Colors.leftBlue}
           onValueChange={(e) => handleCheck(e)}
         />
-        <View style={[Gutters.smallLMargin, Layout.fill]}>
-          <Text
-            style={[
-              styles.name,
-              check.done && {textDecorationLine: 'line-through'},
-            ]}>
-            {check.title}
-          </Text>
-          {check?.date && (
-            <Text style={styles.dateStyle}>
-              {moment(check?.date?.toDate()).format('LL')}
+        <TouchableOpacity
+          onPress={
+            check.numberOfPhotos > 0
+              ? () =>
+                  openScreenWithPush(CHECK_PHOTO_SCREEN_KEY, {
+                    checkId: checklistId,
+                    checkItemId: check.id,
+                    title: check.title,
+                    date: check.date,
+                  })
+              : null
+          }>
+          <View style={[styles.checkInfo, Gutters.smallLMargin, Layout.fill]}>
+            <Text
+              style={[
+                styles.name,
+                check.done && {textDecorationLine: 'line-through'},
+              ]}>
+              {check.title}
             </Text>
-          )}
-          <View
-            style={[Layout.row, Layout.alignItemsCenter, Gutters.tinyTMargin]}>
-            {check?.worker && (
-              <View style={[Gutters.tinyRMargin]}>
-                <Avatar
-                  key={check?.worker?.uid}
-                  uri={check?.worker?.profileImage}
-                  size="small"
-                />
-              </View>
+            {check?.date && (
+              <Text style={styles.dateStyle}>
+                {moment(check?.date?.toDate()).format('LL')}
+              </Text>
             )}
-            {check?.numberOfPhotos > 0 && (
-              <View
-                style={[
-                  Layout.fill,
-                  Layout.column,
-                  Layout.justifyContentStart,
-                ]}>
-                {check?.numberOfPhotos > 0 && (
-                  <Badge
-                    label={t('check.photos') + ': '}
-                    text={check?.numberOfPhotos}
-                    variant="warning"
+            <View
+              style={[
+                Layout.row,
+                Layout.alignItemsCenter,
+                Gutters.tinyTMargin,
+              ]}>
+              {check?.worker && (
+                <View style={[Gutters.tinyRMargin]}>
+                  <Avatar
+                    key={check?.worker?.uid}
+                    uri={check?.worker?.profileImage}
+                    size="small"
                   />
-                )}
-              </View>
-            )}
+                </View>
+              )}
+              {check?.numberOfPhotos > 0 && (
+                <View
+                  style={[
+                    Layout.fill,
+                    Layout.column,
+                    Layout.justifyContentStart,
+                  ]}>
+                  {check?.numberOfPhotos > 0 && (
+                    <Badge
+                      label={t('check.photos') + ': '}
+                      text={check?.numberOfPhotos}
+                      variant="warning"
+                    />
+                  )}
+                </View>
+              )}
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
         <View style={styles.checkboxWrapper}>
           <TouchableOpacity onPress={() => setPhotoCameraModal(true)}>
             <View style={styles.buttonStyle}>

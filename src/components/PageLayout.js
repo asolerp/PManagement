@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {popScreen} from '../Router/utils/actions';
 import {Colors} from '../Theme/Variables';
+import {Platform} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
     paddingTop: 10,
+    marginBottom: 20,
   },
   iconWrapper: {
     width: 30,
@@ -108,7 +110,7 @@ const PageLayout = ({
   edges = ['bottom'],
   safe = false,
 }) => {
-  if (safe) {
+  if (safe && Platform.OS === 'ios') {
     return (
       <SafeAreaView style={styles.container} edges={edges}>
         <Container

@@ -1,4 +1,5 @@
 import React from 'react';
+import {TouchableOpacity} from 'react-native';
 import {View, Text, Image, StyleSheet} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {openScreenWithPush} from '../Router/utils/actions';
@@ -10,20 +11,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
-  withBorder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#4DAABF',
-    borderRadius: 100,
-    padding: 5,
-  },
   ownerImage: {
     width: 25,
     height: 25,
     borderRadius: 100,
     borderWidth: 2,
     borderColor: 'white',
+    overflow: 'hidden',
   },
 });
 
@@ -48,7 +42,7 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
     }
   };
   return (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       key={id}
       onPress={() =>
         id &&
@@ -58,10 +52,12 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
       }
       style={[
         styles.ownerWrapper,
+        {backgroundColor: 'transparent'},
         {flexDirection: name ? 'column' : 'row', zIndex: position},
       ]}>
-      <View>
+      <React.Fragment>
         <Image
+          resizeMode={'cover'}
           style={[
             styles.ownerImage,
             {width: parseSize(size), height: parseSize(size)},
@@ -73,8 +69,8 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
           }}
         />
         {name && <Text>{name}</Text>}
-      </View>
-    </TouchableWithoutFeedback>
+      </React.Fragment>
+    </TouchableOpacity>
   );
 };
 

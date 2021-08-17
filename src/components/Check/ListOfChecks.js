@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, FlatList} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity} from 'react-native';
 
 import useUploadImageCheck from '../../hooks/useUploadImage';
 
@@ -8,7 +8,7 @@ import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_PHOTO_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 import {CHECKLISTS} from '../../utils/firebaseKeys';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+
 import {useTheme} from '../../Theme';
 import {useTranslation} from 'react-i18next';
 
@@ -23,27 +23,14 @@ const ListOfChecks = ({checkId, disabled, checks}) => {
   } = useUploadImageCheck(CHECKLISTS, checkId);
 
   const renderItem = ({item}) => (
-    <TouchableWithoutFeedback
-      onPress={
-        item.numberOfPhotos > 0
-          ? () =>
-              openScreenWithPush(CHECK_PHOTO_SCREEN_KEY, {
-                checkId: checkId,
-                checkItemId: item.id,
-                title: item.title,
-                date: item.date,
-              })
-          : null
-      }>
-      <ItemCheck
-        disabled={disabled}
-        key={item.id}
-        check={item}
-        checklistId={checkId}
-        imageHandler={(imgs) => uploadImages(imgs, item)}
-        loading={loadingUploadImage && item.id === idCheckLoading}
-      />
-    </TouchableWithoutFeedback>
+    <ItemCheck
+      disabled={disabled}
+      key={item.id}
+      check={item}
+      checklistId={checkId}
+      imageHandler={(imgs) => uploadImages(imgs, item)}
+      loading={loadingUploadImage && item.id === idCheckLoading}
+    />
   );
 
   return (

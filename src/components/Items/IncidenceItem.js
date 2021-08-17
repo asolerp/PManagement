@@ -9,9 +9,10 @@ import {useTheme} from '../../Theme';
 import moment from 'moment';
 import Counter from '../Counter';
 import useNoReadMessages from '../../hooks/useNoReadMessages';
-import {CHECKLISTS, INCIDENCES} from '../../utils/firebaseKeys';
+import {INCIDENCES} from '../../utils/firebaseKeys';
 import Badge from '../Elements/Badge';
 import {useTranslation} from 'react-i18next';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {},
@@ -25,7 +26,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderLeftWidth: 10,
-    borderColor: GREY_1,
   },
   date: {
     fontSize: 10,
@@ -77,6 +77,10 @@ const IncidenceItem = ({incidence, onPress}) => {
             Layout.fill,
             styles.checkItemWrapper,
             {
+              backgroundColor: Colors.white,
+              borderTopColor: Colors.lowGrey,
+              borderRightColor: Colors.lowGrey,
+              borderBottomColor: Colors.lowGrey,
               borderLeftColor: parseStateIncidecne(incidence?.state),
             },
           ]}>

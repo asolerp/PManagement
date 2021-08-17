@@ -20,6 +20,7 @@ import {
   PROFILE_SCREEN_KEY,
   USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
+import {isIOS} from './platform';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
   return text?.length > numberOfCharts
@@ -42,23 +43,23 @@ export const tabNameByScreen = {
 export const getHightByRoute = (route) => {
   switch (route) {
     case DASHBOARD_SCREEN_KEY:
-      return 140;
+      return isIOS ? 140 : 120;
     case DASHBOARD_WORKER_SCREEN_KEY:
-      return 140;
+      return isIOS ? 140 : 120;
     case HOUSE_SCREEN_KEY:
-      return 180;
+      return isIOS ? 180 : 160;
     case INCIDENCES_SCREEN_KEY:
-      return 80;
+      return isIOS ? 80 : 60;
     case CHECKLIST_SCREEN_KEY:
-      return 80;
+      return isIOS ? 80 : 60;
     case JOBS_SCREEN_KEY:
-      return 80;
+      return isIOS ? 80 : 60;
     case HOUSES_SCREEN_KEY:
-      return 80;
+      return isIOS ? 80 : 60;
     case PROFILE_SCREEN_KEY:
-      return 80;
+      return isIOS ? 80 : 60;
     default:
-      return 80;
+      return isIOS ? 80 : 60;
   }
 };
 
@@ -130,7 +131,7 @@ export const parseTimeFilter = (time) => {
   const filter = {
     all: {
       filter: 'all',
-      start: moment(new Date('01-01-2000')),
+      start: moment(new Date()).subtract(5, 'year'),
       end: moment(new Date()).add(1, 'year'),
     },
     week: {

@@ -60,7 +60,7 @@ const JobItem = ({item}) => {
           {taksDescByLocale}
         </Text>
         <View style={styles.infoWrapper}>
-          <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={2}>
+          <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={1}>
             {item?.observations}
           </Text>
           <Badge

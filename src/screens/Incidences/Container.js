@@ -19,6 +19,8 @@ import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
 import Filters from '../../components/Filters/Filters';
 import {useTranslation} from 'react-i18next';
+import {Platform} from 'react-native';
+import {isIOS} from 'react-native-elements/dist/helpers';
 
 const Container = () => {
   const {t} = useTranslation();
@@ -75,7 +77,7 @@ const Container = () => {
       <CustomModal
         visible={visibleModal}
         setVisible={setVisibleModal}
-        size={0.6}>
+        size={isIOS ? 0.7 : 0.8}>
         <Filters
           activeFilters={{
             houses: true,

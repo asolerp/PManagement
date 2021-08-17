@@ -10,6 +10,7 @@ import {getHightByRoute} from '../utils/parsers';
 import {Colors} from '../Theme/Variables';
 import {useTheme} from '../Theme';
 import {TouchableWithoutFeedback} from 'react-native';
+import {isIOS} from '../utils/platform';
 
 const TitlePage = ({
   title,
@@ -35,7 +36,7 @@ const TitlePage = ({
             ...styles.titleWrapper,
             ...{
               justifyContent: 'center',
-              marginTop: Platform.OS === 'ios' ? 0 : 20,
+              marginTop: Platform.OS === 'ios' ? 0 : 0,
             },
           }}>
           <View>
@@ -77,7 +78,7 @@ const TitlePage = ({
                         style={{
                           ...styles.logoContent,
                           ...{
-                            paddingTop: 35,
+                            paddingTop: isIOS ? 35 : 0,
                           },
                         }}>
                         <Image

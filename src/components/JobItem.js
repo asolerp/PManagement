@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderLeftWidth: 10,
-    borderColor: GREY_1,
   },
   titleSubtitle: {
     flex: 1,
@@ -98,9 +97,10 @@ const JobItem = ({job, onPress}) => {
     docId: job?.id,
   });
   const taksDescByLocale =
-    job?.task?.locales?.[locale].desc ||
-    job?.task?.locales?.en.desc ||
-    job?.task?.desc;
+    job &&
+    (job?.task?.locales?.[locale]?.desc ||
+      job?.task?.locales?.en?.desc ||
+      job?.task?.desc);
 
   return (
     <React.Fragment>
@@ -123,6 +123,10 @@ const JobItem = ({job, onPress}) => {
           Gutters.smallTMargin,
           styles.firstSection,
           {
+            backgroundColor: Colors.white,
+            borderTopColor: Colors.lowGrey,
+            borderRightColor: Colors.lowGrey,
+            borderBottomColor: Colors.lowGrey,
             borderLeftColor: Colors.pm,
           },
         ]}>

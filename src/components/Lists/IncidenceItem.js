@@ -54,7 +54,7 @@ const IncidenceItem = ({item}) => {
           {item?.title}
         </Text>
         <View style={styles.infoWrapper}>
-          <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={2}>
+          <Text style={styles.infoStyle} ellipsizeMode="tail" numberOfLines={1}>
             {item?.incidence}
           </Text>
           <Badge
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   infoStyle: {
     color: Colors.darkGrey,
-    height: 40,
+    height: 30,
   },
   titleWrapper: {
     flexDirection: 'row',
