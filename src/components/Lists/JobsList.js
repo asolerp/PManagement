@@ -13,7 +13,7 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {Colors} from '../../Theme/Variables';
 
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
-import sortByDate from '../../utils/sorts';
+import {sortByDate} from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
@@ -139,7 +139,7 @@ const JobsList = ({uid}) => {
       </View>
       {loading && <DashboardSectionSkeleton />}
       {(!loading && !values) || values?.length === 0 ? (
-        <Text>No tienes ningún trabajo asignado</Text>
+        <Text>{t('job.empty')}</Text>
       ) : (
         <FlatList
           horizontal

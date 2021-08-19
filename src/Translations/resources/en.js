@@ -76,7 +76,7 @@ export default {
   },
   checklists: {
     title: 'Checklists',
-    empty: 'No checklist to check',
+    empty: 'No active checklist at the moment',
     no_found: 'No checklist found',
     owner_text_1: 'Our team is working to keep your house clean and safe! 🚀🚀',
     owner_text_2: 'Here you will see the update of the jobs made in your house',
@@ -87,6 +87,7 @@ export default {
     },
   },
   incidence: {
+    title: 'Incidence',
     resolved: 'Open incidence',
     no_resolved: 'Resolve incidence',
     status: {
@@ -98,7 +99,7 @@ export default {
   },
   incidences: {
     title: 'Incidences',
-    empty: 'No incidences actived in this moment',
+    empty: 'No active incidences in this moment',
     no_found: 'No incidences found',
   },
   newJob: {
@@ -106,10 +107,12 @@ export default {
     desc_title: 'New job of {{job}}',
   },
   job: {
+    title: 'Job',
     finished: 'Finished',
     not_finished: 'Unfinished',
     done: 'Open',
     no_done: 'Finish',
+    empty: 'No active jobs at the moment',
   },
   jobs: {
     title: 'Jobs',
@@ -158,6 +161,11 @@ export default {
     attention: 'Attention',
     cancel: 'Cancel',
     accept: 'Accept',
+    incidence: {
+      resolve: 'Are yuu sure you wanto to resolve the incidence?',
+      remove: 'Are you sure you want to delete the incidence?',
+      open: 'Are you sure you want to open the incidence?',
+    },
     job: {
       finish: 'Are you sure you want to finish the job?',
       open: 'Are you sure you want to open the job?',

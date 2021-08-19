@@ -1,46 +1,47 @@
 import {Alert} from 'react-native';
+import i18n from '../../Translations/index';
 
 export const finishIncidence = (action) =>
   Alert.alert(
-    '🚨 Atención 🚨',
-    '¿Seguro que quieres resolver la incidencia?',
+    `🚨 ${i18n.t('alerts.attention')} 🚨`,
+    i18n.t('alerts.incidence.finish'),
     [
       {
-        text: 'Cancelar',
+        text: i18n.t('alerts.cancel'),
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      {text: 'Resolver', onPress: () => action()},
+      {text: i18n.t('alerts.accept'), onPress: () => action()},
     ],
     {cancelable: false},
   );
 
 export const deleteIncidenceAlert = (action) =>
   Alert.alert(
-    '🚨 Atención 🚨',
-    '¿Vas a eliminar la incidencia?',
+    `🚨 ${i18n.t('alerts.attention')} 🚨`,
+    i18n.t('alerts.incidence.remove'),
     [
       {
-        text: 'Cancelar',
+        text: i18n.t('alerts.cancel'),
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      {text: 'Borrar', onPress: () => action()},
+      {text: i18n.t('alerts.accept'), onPress: () => action()},
     ],
     {cancelable: false},
   );
 
 export const openIncidence = (action) =>
   Alert.alert(
-    '🚨 Atención 🚨',
-    '¿Seguro que quieres volver a abrir la incidencia?',
+    `🚨 ${i18n.t('alerts.attention')} 🚨`,
+    i18n.t('alerts.incidence.open'),
     [
       {
-        text: 'Cancelar',
+        text: i18n.t('alerts.cancel'),
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      {text: 'Abrir', onPress: () => action()},
+      {text: i18n.t('alerts.accept'), onPress: () => action()},
     ],
     {cancelable: false},
   );

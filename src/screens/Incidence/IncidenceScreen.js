@@ -50,15 +50,6 @@ const IncidenceScreen = () => {
 
   const handleFinishTask = async (status) => {
     try {
-      if (status) {
-        await updateFirebase('stats', {
-          count: firebase.firestore.FieldValue.increment(-1),
-        });
-      } else {
-        await updateFirebase('stats', {
-          count: firebase.firestore.FieldValue.increment(1),
-        });
-      }
       await updateFirebase(`${incidenceId}`, {
         done: status,
       });

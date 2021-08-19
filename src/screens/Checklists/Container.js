@@ -21,7 +21,7 @@ import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
 import Filters from '../../components/Filters/Filters';
-import sortByDate from '../../utils/sorts';
+import {sortByDate} from '../../utils/sorts';
 import {useTranslation} from 'react-i18next';
 import {Colors} from '../../Theme/Variables';
 

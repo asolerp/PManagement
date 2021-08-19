@@ -65,7 +65,7 @@ export default {
     },
   },
   welcome: 'Hoy es {{date}}',
-  homeMessage: 'Estos son tus trabajos asignados para hoy 💪🏡',
+  homeMessage: 'Estos son tus tareas asignadas para hoy 💪🏡',
   check: {
     done: 'Finalizar y enviar al propietario',
     photos: 'Fotos',
@@ -89,6 +89,7 @@ export default {
     },
   },
   incidence: {
+    title: 'Incidencia',
     resolved: 'Abrir incidencia',
     no_resolved: 'Resolver incidencia',
     status: {
@@ -108,10 +109,12 @@ export default {
     desc_title: 'Nuevo trabajo de {{job}}',
   },
   job: {
+    title: 'Trabajo',
     finished: 'Terminada',
     not_finished: 'Sin terminar',
     done: 'Abrir',
     no_done: 'Finalizar',
+    empty: 'No hay trabajos activos en estos momentos',
   },
   jobs: {
     title: 'Trabajos',
@@ -160,6 +163,11 @@ export default {
     attention: 'Atención',
     cancel: 'Cancelar',
     accept: 'Aceptar',
+    incidence: {
+      resolve: '¿Seguro que quieres resolver la incidencia?',
+      remove: '¿Seguro que quieres eliminar la incidencia?',
+      open: '¿Seguro que quieres volver a abrir la incidencia?',
+    },
     job: {
       finish: '¿Seguro que quieres finalizar el trabajo?',
       open: '¿Seguro que quieres abrir el trabajo?',

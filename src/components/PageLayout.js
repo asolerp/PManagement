@@ -11,6 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {popScreen} from '../Router/utils/actions';
 import {Colors} from '../Theme/Variables';
 import {Platform} from 'react-native';
+import {isIOS} from '../utils/platform';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
     paddingTop: 10,
-    marginBottom: 20,
+    marginBottom: isIOS ? 0 : 20,
   },
   iconWrapper: {
     width: 30,

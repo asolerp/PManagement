@@ -1,5 +1,8 @@
 import {useEffect, useCallback} from 'react';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {
+  useCollectionData,
+  useDocumentData,
+} from 'react-firebase-hooks/firestore';
 import {shallowEqual, useSelector} from 'react-redux';
 import {setMessagesAsRead} from '../../../firebase/setMessagesAsRead';
 import {useAddFirebase} from '../../../hooks/useAddFirebase';
@@ -9,6 +12,10 @@ import {launchImage} from '../../../utils/imageFunctions';
 import firestore from '@react-native-firebase/firestore';
 
 const useChat = ({collection, docId}) => {
+  const [entity] = useDocumentData(
+    firestore().collection(collection).doc(docId),
+  );
+
   const [messages] = useCollectionData(
     firestore()
       .collection(collection)
@@ -21,6 +28,7 @@ const useChat = ({collection, docId}) => {
   );
 
   const user = useSelector(userSelector, shallowEqual);
+
   const {addFirebase: addMessage} = useAddFirebase();
 
   const onSendImage = () => {
@@ -35,10 +43,16 @@ const useChat = ({collection, docId}) => {
         ...messages[0],
         createdAt: new Date(),
         sent: true,
-        received: false,
+        received: entity?.workersId.reduce(
+          (acc, worker) => ({
+            ...acc,
+            [worker]: false,
+          }),
+          {},
+        ),
       });
     },
-    [addMessage, collection, docId],
+    [addMessage, collection, docId, entity],
   );
 
   useEffect(() => {

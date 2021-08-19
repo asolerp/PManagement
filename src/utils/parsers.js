@@ -1,5 +1,5 @@
 import moment from 'moment';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import i18n from '../Translations/index';
 
 import {
   PRIORITY_LOW,
@@ -229,4 +229,10 @@ export const parseDeleteTextButton = (length) => {
 export const percentageOfComplete = (tasks) => {
   const completedTasks = tasks?.filter((task) => task.complete).length;
   return completedTasks / tasks?.length;
+};
+
+export const parseEntities = {
+  checklists: i18n.t('checklists.title'),
+  incidences: i18n.t('incidence.title'),
+  jobs: i18n.t('job.title'),
 };

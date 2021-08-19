@@ -17,7 +17,7 @@ import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
 
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {openScreenWithPush} from '../../Router/utils/actions';
+import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {useTranslation} from 'react-i18next';
@@ -25,7 +25,7 @@ import {useTranslation} from 'react-i18next';
 const CheckScreen = ({route}) => {
   const {docId} = route.params;
   const {t} = useTranslation();
-  const [checks] = useCollectionData(
+  const [checks, checksLoading] = useCollectionData(
     firestore().collection(CHECKLISTS).doc(docId).collection('checks'),
     {
       idField: 'id',
@@ -38,6 +38,7 @@ const CheckScreen = ({route}) => {
 
   const handleFinishAndSend = () => {
     finishAndSendChecklist(docId);
+    popScreen();
   };
 
   return (
@@ -68,7 +69,8 @@ const CheckScreen = ({route}) => {
         }}
         footer={
           areAllChecksDone &&
-          user.role === 'admin' && (
+          user.role === 'admin' &&
+          !checksLoading && (
             <CustomButton
               styled="rounded"
               loading={false}

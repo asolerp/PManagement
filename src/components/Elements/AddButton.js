@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 30,
     width: 50,
-    elevation: 3,
     height: 50,
     borderRadius: 100,
     justifyContent: 'center',

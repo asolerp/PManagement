@@ -19,7 +19,9 @@ export const setMessagesAsRead = async (docId, userId, collection) => {
         .doc(docId)
         .collection('messages')
         .doc(doc.id);
-      batch.update(docRef, {received: true});
+      batch.update(docRef, {
+        received: {...doc.data().received, [userId]: true},
+      });
     });
 
     batch.commit();

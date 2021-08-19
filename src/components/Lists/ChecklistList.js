@@ -14,7 +14,7 @@ import {Colors} from '../../Theme/Variables';
 import {useTheme} from '../../Theme';
 
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
-import sortByDate from '../../utils/sorts';
+import {sortByDate} from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';

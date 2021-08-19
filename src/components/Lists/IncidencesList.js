@@ -13,7 +13,7 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {Colors} from '../../Theme/Variables';
 
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
-import sortByDate from '../../utils/sorts';
+import {sortByDate, sortByIncidenceStatus} from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import IncidenceItem from './IncidenceItem';
@@ -141,7 +141,10 @@ const IncidencesList = ({uid}) => {
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={values?.filter((item) => item.id !== 'stats').sort(sortByDate)}
+          data={values
+            ?.filter((item) => item.id !== 'stats')
+            .sort(sortByDate)
+            .sort(sortByIncidenceStatus('state'))}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />

@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import IncidenceItem from '../../components/Items/IncidenceItem';
 import ItemListSkeleton from '../../components/Skeleton/ItemListSkeleton';
 import {useTheme} from '../../Theme';
-import sortByDate from '../../utils/sorts';
+import {sortByDate} from '../../utils/sorts';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';

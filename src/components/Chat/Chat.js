@@ -120,4 +120,4 @@ const Chat = ({collection, docId}) => {
   );
 };
 
-export default React.memo(Chat);
+export default Chat;

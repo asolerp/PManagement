@@ -6,7 +6,7 @@ const finishAndSendChecklist = async (checkId) => {
     await firestore()
       .collection('checklists')
       .doc(checkId)
-      .update({send: true});
+      .update({finished: true, send: true});
   } catch (err) {
     error({
       message: err.message,

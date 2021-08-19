@@ -29,6 +29,7 @@ import {
 } from '../Router/utils/routerKeys';
 import {UsersScreen} from '../Screens/Users';
 import {useTranslation} from 'react-i18next';
+import {isIOS} from '../utils/platform';
 
 const {Navigator, Screen} = AnimatedTabBarNavigator();
 
@@ -36,17 +37,21 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
   },
+  children: {
+    position: 'relative',
+    zIndex: 10,
+  },
   badge: {
     width: 20,
     height: 20,
     borderRadius: 100,
     backgroundColor: PRIORITY_HEIGHT,
     position: 'absolute',
-    zIndex: 2,
+    zIndex: 999,
     justifyContent: 'center',
     alignItems: 'center',
-    right: -10,
-    top: -10,
+    right: isIOS ? -10 : 0,
+    top: isIOS ? -10 : 0,
   },
   badgeText: {
     color: 'white',
@@ -63,7 +68,7 @@ export const IconWithBadge = ({badgeCount, children}) => {
           <Text style={styles.badgeText}>{badgeCount}</Text>
         </View>
       )}
-      {children}
+      <View style={styles.children}>{children}</View>
     </View>
   );
 };

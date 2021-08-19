@@ -8,6 +8,7 @@ import {CHECKLISTS, INCIDENCES, JOBS} from '../../../utils/firebaseKeys';
 import firestore from '@react-native-firebase/firestore';
 import {useDocumentDataOnce} from 'react-firebase-hooks/firestore';
 import {useTranslation} from 'react-i18next';
+import {parseEntities} from '../../../utils/parsers';
 
 const {useLocales} = require('../../../utils/useLocales');
 
@@ -69,7 +70,11 @@ export const useConfigChatByNotification = ({
   };
 
   return {
-    header: notification ? header || headerChat() : 'Chat',
+    header: notification
+      ? header || headerChat()
+      : `${parseEntities[collection]} chat ${
+          chat?.house?.houseName || chat?.house[0]?.houseName
+        }`,
     onPressHeader: handlerOnPressByNotification(),
     chat,
   };

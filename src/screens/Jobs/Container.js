@@ -15,7 +15,7 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {FlatList} from 'react-native';
 
 import {useTheme} from '../../Theme';
-import sortByDate from '../../utils/sorts';
+import {sortByDate} from '../../utils/sorts';
 
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
