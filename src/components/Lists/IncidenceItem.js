@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   infoWrapper: {
-    marginTop: 10,
+    marginTop: 0,
   },
   infoStyle: {
     color: Colors.darkGrey,
