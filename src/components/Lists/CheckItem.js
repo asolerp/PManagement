@@ -145,10 +145,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
   },
-
+  infoWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+  },
   infoStyle: {
     color: Colors.darkGrey,
-    height: 40,
+    maxHeight: 40,
+    marginBottom: 10,
   },
   titleWrapper: {
     flexDirection: 'row',

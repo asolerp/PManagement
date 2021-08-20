@@ -86,9 +86,13 @@ const IncidenceItem = ({incidence, onPress}) => {
           ]}>
           <View style={[Layout.fill]}>
             <View>
-              <View
-                style={[Layout.rowCenter, Layout.justifyContentSpaceBetween]}>
-                <Text style={[Fonts.titleCard, Gutters.tinyTMargin]}>
+              <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
+                <Text
+                  style={[
+                    Fonts.titleCard,
+                    Gutters.tinyTMargin,
+                    {maxWidth: 200},
+                  ]}>
                   {incidence?.title}
                 </Text>
                 <Badge text={incidence?.house?.houseName} variant="purple" />
