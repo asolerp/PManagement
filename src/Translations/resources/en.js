@@ -24,7 +24,7 @@ export default {
     observations: 'Observations',
     no_assigned: 'Not assigned',
     resolved: 'Resolved',
-    no_resolved: 'Without resolving',
+    no_resolved: 'No resolved',
     date: 'Date',
     jobs: 'Jobs',
     admins: 'Admins',
@@ -60,7 +60,7 @@ export default {
       },
       state: {
         resolved: 'Resolved',
-        no_resolved: 'Without resolving',
+        no_resolved: 'No resolved',
       },
     },
   },

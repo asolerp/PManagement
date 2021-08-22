@@ -21,6 +21,7 @@ import AdminRouter from '../Router/adminRouter';
 import WorkerRouter from '../Router/workerRouter';
 import OwnerRouter from '../Router/ownerRouter';
 import {useRedirectNotification} from '../lib/notification/notificationHooks';
+import {useInAppNotification} from '../lib/notification/useInAppNotification';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -69,6 +70,7 @@ const getUserSignInStack = (role) => {
 
 const AuthRouter = () => {
   useRedirectNotification();
+  useInAppNotification();
   const [initializing, setInitializing] = useState(true);
   const dispatch = useDispatch();
 

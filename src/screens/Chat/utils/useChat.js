@@ -3,7 +3,7 @@ import {
   useCollectionData,
   useDocumentData,
 } from 'react-firebase-hooks/firestore';
-import {shallowEqual, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {setMessagesAsRead} from '../../../firebase/setMessagesAsRead';
 import {useAddFirebase} from '../../../hooks/useAddFirebase';
 import uploadMessagePhoto from '../../../Services/uploadMessagePhoto';
@@ -27,7 +27,7 @@ const useChat = ({collection, docId}) => {
     },
   );
 
-  const user = useSelector(userSelector, shallowEqual);
+  const user = useSelector(userSelector);
 
   const {addFirebase: addMessage} = useAddFirebase();
 

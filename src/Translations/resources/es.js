@@ -65,7 +65,7 @@ export default {
     },
   },
   welcome: 'Hoy es {{date}}',
-  homeMessage: 'Estos son tus tareas asignadas para hoy 💪🏡',
+  homeMessage: 'Estas son tus tareas asignadas para hoy 💪🏡',
   check: {
     done: 'Finalizar y enviar al propietario',
     photos: 'Fotos',

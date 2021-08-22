@@ -24,8 +24,8 @@ export const useConfigChatByNotification = ({
 
   if (task) {
     header =
-      JSON.parse(task)?.locales?.[locale].desc ||
-      JSON.parse(task)?.locales?.en.desc ||
+      JSON.parse(task)?.locales?.[locale]?.desc ||
+      JSON.parse(task)?.locales?.en?.desc ||
       JSON.parse(task)?.desc;
   }
 

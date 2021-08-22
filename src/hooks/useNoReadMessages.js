@@ -20,8 +20,8 @@ const useNoReadMessages = ({collection, docId}) => {
       setNoReadCounter(
         QuerySnapshot.docs
           .map((doc) => ({...doc.data(), id: doc.id}))
-          .filter((message) => !message.received[user.uid])
-          .filter((message) => message.user._id !== user.uid).length,
+          ?.filter((message) => !message?.received?.[user?.uid])
+          ?.filter((message) => message?.user._id !== user.uid).length,
       );
     };
     const onError = (err) => {

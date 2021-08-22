@@ -7,8 +7,8 @@ export const LOG_TYPES = {
 };
 
 export const TOAST_DURATION = {
-  NORMAL: 5000,
-  LONG: 10000,
+  NORMAL: 4000,
+  LONG: 8000,
 };
 
 export const TOAST_OFFSET = {

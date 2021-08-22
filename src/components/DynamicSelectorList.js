@@ -64,7 +64,9 @@ const DynamicSelectorList = ({
         return setSelected([item]);
       } else {
         if (!newValue) {
-          const updatedItemList = selected?.filter((i) => i?.id !== item?.id);
+          const updatedItemList = selected?.filter(
+            (i) => (i?.id || i?.uid) !== item?.id,
+          );
           return setSelected(updatedItemList);
         }
         return setSelected([...(selected || []), item]);
@@ -78,7 +80,7 @@ const DynamicSelectorList = ({
           schema={schema}
           setter={set}
           handleChange={handleChange}
-          active={selected?.some((i) => i?.id === item?.id)}
+          active={selected?.some((i) => (i?.id || i?.uid) === item?.id)}
           multiple={multiple}
         />
         <View style={styles.separator} />

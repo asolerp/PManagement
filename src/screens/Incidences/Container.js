@@ -19,7 +19,7 @@ import {parseTimeFilter} from '../../utils/parsers';
 import CustomModal from '../../components/Modal';
 import Filters from '../../components/Filters/Filters';
 import {useTranslation} from 'react-i18next';
-import {Platform} from 'react-native';
+
 import {isIOS} from 'react-native-elements/dist/helpers';
 
 const Container = () => {
@@ -57,6 +57,13 @@ const Container = () => {
   const incidencesList = values
     ?.filter((item) => item.id !== 'stats')
     ?.filter((incidence) =>
+      filters?.workers?.length > 0
+        ? filters.workers.some((fworker) =>
+            incidence?.workersId?.includes(fworker),
+          )
+        : true,
+    )
+    ?.filter((incidence) =>
       filters?.houses?.length > 0
         ? filters?.houses.includes(incidence.houseId)
         : true,
@@ -77,11 +84,11 @@ const Container = () => {
       <CustomModal
         visible={visibleModal}
         setVisible={setVisibleModal}
-        size={isIOS ? 0.7 : 0.8}>
+        size={isIOS ? 0.8 : 0.8}>
         <Filters
           activeFilters={{
             houses: true,
-            workers: false,
+            workers: true,
             time: true,
             state: true,
           }}

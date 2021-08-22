@@ -9,7 +9,7 @@ import {showToast} from './utils/showToast';
 
 export {showToast, TOAST_DURATION, LOG_TYPES};
 
-export const info = ({message, asToast, additionalData = ''}) => {
+export const info = ({message, asToast, additionalData = '', onPress}) => {
   if (isDevelopment()) {
     console.log(LOG_TYPES.info, message, additionalData);
   }
@@ -18,6 +18,7 @@ export const info = ({message, asToast, additionalData = ''}) => {
     showToast({
       message,
       type: 'info',
+      onPress: onPress,
     });
   }
 };

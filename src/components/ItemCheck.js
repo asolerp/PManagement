@@ -187,7 +187,14 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
         </TouchableOpacity>
         <View style={styles.checkboxWrapper}>
           <TouchableOpacity onPress={() => setPhotoCameraModal(true)}>
-            <View style={styles.buttonStyle}>
+            <View
+              style={[
+                styles.buttonStyle,
+                {
+                  backgroundColor:
+                    check?.numberOfPhotos > 0 ? Colors.warning : Colors.pm,
+                },
+              ]}>
               {loading ? (
                 <ActivityIndicator color="white" />
               ) : (

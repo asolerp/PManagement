@@ -13,6 +13,7 @@ import {INCIDENCES} from '../../utils/firebaseKeys';
 import Badge from '../Elements/Badge';
 import {useTranslation} from 'react-i18next';
 import {Colors} from '../../Theme/Variables';
+import Avatar from '../Avatar';
 
 const styles = StyleSheet.create({
   container: {},
@@ -104,6 +105,18 @@ const IncidenceItem = ({incidence, onPress}) => {
                 label={t('common.date') + ': '}
                 text={moment(incidence?.date?.toDate()).format('LL')}
               />
+              <View style={[Layout.row, Gutters.smallTMargin]}>
+                {incidence?.workers?.map((worker, i) => (
+                  <Avatar
+                    overlap={incidence?.workers.length > 1}
+                    index={i}
+                    id={worker.id}
+                    key={worker.id}
+                    uri={worker.profileImage}
+                    size="medium"
+                  />
+                ))}
+              </View>
             </View>
           </View>
         </View>
