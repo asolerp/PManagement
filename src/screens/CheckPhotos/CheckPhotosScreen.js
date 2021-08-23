@@ -23,7 +23,11 @@ import {useDeleteFirebase} from '../../hooks/useDeleteFirebase';
 
 import {firebase} from '@react-native-firebase/firestore';
 import {useDeleteFirebaseImage} from '../../hooks/useDeleteFirebaseImage';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {
+  useCollectionData,
+  useDocumentData,
+} from 'react-firebase-hooks/firestore';
+import {usePhotos} from '../../utils/usePhotos';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,19 +80,21 @@ const CheckPhotosScreen = ({route}) => {
   const [imageIndex, setImageIndex] = useState(0);
 
   const {deleteImage} = useDeleteFirebaseImage();
-  const {deleteFirebase} = useDeleteFirebase();
-  const {updateFirebase} = useUpdateFirebase('checklists');
+
+  const {removePhotos} = usePhotos({
+    collection: 'checklists',
+    docId: checkId,
+  });
 
   const query = useMemo(() => {
     return firestore()
       .collection('checklists')
       .doc(checkId)
       .collection('checks')
-      .doc(checkItemId)
-      .collection('photos');
+      .doc(checkItemId);
   }, [checkId, checkItemId]);
 
-  const [values, loading] = useCollectionData(query, {
+  const [values] = useDocumentData(query, {
     idField: 'id',
   });
 
@@ -97,8 +103,8 @@ const CheckPhotosScreen = ({route}) => {
     setImageIndex(i);
   };
   const handleSelectDeletePhoto = ({id, ref}) => {
-    const urlExists = photosSelected.some((photo) => photo.id === id);
-    const selectedPhotos = photosSelected.filter((photo) => photo.id != id);
+    const urlExists = photosSelected.some((photo) => photo === id);
+    const selectedPhotos = photosSelected.filter((photo) => photo !== id);
     if (urlExists) {
       setPhotosSelected([...selectedPhotos]);
     } else {
@@ -107,26 +113,18 @@ const CheckPhotosScreen = ({route}) => {
   };
 
   const handleDeletePhoto = async (photo) => {
-    setPhotosSelected(photosSelected.filter((p) => p.id != photo.id));
+    setPhotosSelected(photosSelected.filter((p) => p.id !== photo));
     await deleteImage(photo.ref);
-    await deleteFirebase(
-      `checklists/${checkId}/checks/${checkItemId}/photos`,
-      photo.id,
-    );
-    await updateFirebase(`${checkId}/checks/${checkItemId}`, {
-      numberOfPhotos: firebase.firestore.FieldValue.increment(-1),
-    });
+    await removePhotos(photo);
   };
 
   const Photo = ({photo, index}) => {
     return (
       <TouchableOpacity
-        onLongPress={() =>
-          handleSelectDeletePhoto({id: photo.id, ref: photo.ref})
-        }
+        onLongPress={() => handleSelectDeletePhoto({id: photo, ref: photo})}
         onPress={() => handlePressPhoto(index)}>
         <View style={styles.photo}>
-          {photosSelected.some((p) => photo.id === p.id) && (
+          {photosSelected.some((p) => photo === p.id) && (
             <View style={styles.deleteMask}>
               <View style={styles.deleteMark}>
                 <Icon name="check" color="white" size={20} />
@@ -134,7 +132,7 @@ const CheckPhotosScreen = ({route}) => {
             </View>
           )}
           <ImageBackground
-            source={{uri: photo.url}}
+            source={{uri: photo}}
             style={styles.photo}
             imageStyle={{borderRadius: 5}}
           />
@@ -155,7 +153,7 @@ const CheckPhotosScreen = ({route}) => {
         <ImageView
           visible={modal}
           imageIndex={imageIndex}
-          images={values?.map((photo) => ({uri: photo.url}))}
+          images={values?.photos?.map((photo) => ({uri: photo}))}
           onRequestClose={() => setModal(false)}
         />
         <View style={{flex: 1}}>
@@ -178,8 +176,8 @@ const CheckPhotosScreen = ({route}) => {
             }
           />
           <View style={styles.container}>
-            {values?.map((photo, i) => (
-              <Photo photo={photo} index={i} key={photo.id} />
+            {values?.photos?.map((photo, i) => (
+              <Photo photo={photo} index={i} key={photo} />
             ))}
           </View>
         </View>

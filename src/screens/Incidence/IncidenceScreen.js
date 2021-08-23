@@ -21,8 +21,6 @@ import {
   openIncidence,
 } from '../../components/Alerts/incidences';
 
-import {firebase} from '@react-native-firebase/firestore';
-
 import {Colors} from '../../Theme/Variables';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';

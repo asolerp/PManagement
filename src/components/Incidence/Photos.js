@@ -22,7 +22,7 @@ import {Colors} from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {handleImagePicker} from '../../utils/imageFunctions';
 import {INCIDENCES} from '../../utils/firebaseKeys';
-import {usePhotos} from './utils/usePhotos';
+import {usePhotos} from '../../utils/usePhotos';
 import {parseImages} from './utils/parserImages';
 import {useTranslation} from 'react-i18next';
 
@@ -57,7 +57,7 @@ const Photos = () => {
   const {Layout, Fonts, Gutters} = useTheme();
   const [modal, setModal] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
-  const {uploadPhotos, removePhotos, loading} = usePhotos({incidenceId});
+  const {uploadPhotos, removePhotos, loading} = usePhotos();
   const [deletePhotos, setDeletePhotos] = useState([]);
 
   const handlePressPhoto = (i) => {
@@ -141,7 +141,13 @@ const Photos = () => {
             }
             return handleImagePicker((imgs) => {
               const mappedImages = parseImages(imgs);
-              uploadPhotos(mappedImages);
+              uploadPhotos(mappedImages, {
+                collectionRef: firestore()
+                  .collection(INCIDENCES)
+                  .doc(incidenceId),
+                cloudinaryFolder: 'Incidences',
+                docId: incidenceId,
+              });
             });
           }}>
           <View

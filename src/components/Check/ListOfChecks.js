@@ -1,11 +1,9 @@
 import React from 'react';
-import {View, Text, FlatList, TouchableOpacity} from 'react-native';
+import {View, Text, FlatList} from 'react-native';
 
 import useUploadImageCheck from '../../hooks/useUploadImage';
 
 import ItemCheck from '../../components/ItemCheck';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {CHECK_PHOTO_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 
@@ -22,6 +20,8 @@ const ListOfChecks = ({checkId, disabled, checks}) => {
     uploadImages,
   } = useUploadImageCheck(CHECKLISTS, checkId);
 
+  console.log(loadingUploadImage, idCheckLoading);
+
   const renderItem = ({item}) => (
     <ItemCheck
       disabled={disabled}
@@ -29,7 +29,7 @@ const ListOfChecks = ({checkId, disabled, checks}) => {
       check={item}
       checklistId={checkId}
       imageHandler={(imgs) => uploadImages(imgs, item)}
-      loading={loadingUploadImage && item.id === idCheckLoading}
+      loading={loadingUploadImage}
     />
   );
 

@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React from 'react';
 import {View, TouchableWithoutFeedback} from 'react-native';
 
 import {Info} from '../../components/Check';

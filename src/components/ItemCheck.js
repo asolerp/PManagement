@@ -75,6 +75,8 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {updateFirebase} = useUpdateFirebase('checklists');
 
+  console.log(check);
+
   const {t} = useTranslation();
   const user = useSelector(userSelector);
 
@@ -128,7 +130,7 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
         />
         <TouchableOpacity
           onPress={
-            check.numberOfPhotos > 0
+            check?.photos?.length > 0
               ? () =>
                   openScreenWithPush(CHECK_PHOTO_SCREEN_KEY, {
                     checkId: checklistId,
@@ -166,17 +168,17 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
                   />
                 </View>
               )}
-              {check?.numberOfPhotos > 0 && (
+              {check?.photos?.length > 0 && (
                 <View
                   style={[
                     Layout.fill,
                     Layout.column,
                     Layout.justifyContentStart,
                   ]}>
-                  {check?.numberOfPhotos > 0 && (
+                  {check?.photos?.length > 0 && (
                     <Badge
                       label={t('check.photos') + ': '}
-                      text={check?.numberOfPhotos}
+                      text={check?.photos?.length}
                       variant="warning"
                     />
                   )}
@@ -192,7 +194,7 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
                 styles.buttonStyle,
                 {
                   backgroundColor:
-                    check?.numberOfPhotos > 0 ? Colors.warning : Colors.pm,
+                    check?.photos?.length > 0 ? Colors.warning : Colors.pm,
                 },
               ]}>
               {loading ? (
