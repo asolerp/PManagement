@@ -75,8 +75,6 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {updateFirebase} = useUpdateFirebase('checklists');
 
-  console.log(check);
-
   const {t} = useTranslation();
   const user = useSelector(userSelector);
 

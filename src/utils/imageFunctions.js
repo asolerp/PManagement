@@ -53,7 +53,13 @@ export const handleImagePicker = async (callback) => {
     multiple: true,
     includeBase64: true,
   }).then((imgs) => {
-    callback(imgs);
+    const imagesWithTimestamp = imgs.map((img) => {
+      return {
+        ...img,
+        filename: `photo_${Math.floor(Date.now() / 1000)}`,
+      };
+    });
+    callback(imagesWithTimestamp);
   });
 };
 

@@ -34,24 +34,6 @@ admin.initializeApp(functions.config().firebase);
 exports.newUser = functions.auth.user().onCreate((user) => {
   admin.firestore().collection('users').doc(user.uid).set({email: user.email});
 });
-
-exports.onCreateJob = functions.firestore
-  .document('jobs/{jobId}')
-  .onCreate((snap, context) => {
-    const jobCreated = snap.data();
-
-    const addNewStats = () => {
-      admin.firestore().collection('stats').add({
-        jobId: snap.id,
-        priority: jobCreated.priority,
-        date: jobCreated.date,
-        done: false,
-      });
-    };
-
-    return Promise.all([addNewStats()]);
-  });
-
 // CHECKLISTS
 
 exports.sendPushNotificationUpdateCheckList =
@@ -137,17 +119,20 @@ exports.updateHouseImageJobs = functions.firestore
     }
   });
 
-exports.deletePhotoCloudinary = functions.firestore
-  .document('checklists/{checklistId}/checks/{checkId}/photos/{photoId}')
-  .onDelete(async (snap, context) => {
-    const deletePhoto = snap.data();
-    await cloudinary.uploader.destroy(
-      deletePhoto.ref,
-      {resource_type: 'image'},
-      (error, result) => {
-        console.log(result, error);
-      },
-    );
+exports.deletePhotoCloudinary = functions
+  .runWith({
+    timeoutSeconds: 540,
+    memory: '2GB',
+  })
+  .https.onCall(async (data) => {
+    const {photoIds} = data;
+
+    console.log(photoIds);
+
+    await cloudinary.api.delete_resources(photoIds, (error, result) => {
+      console.log('error', error);
+      console.log('result', result);
+    });
   });
 
 exports.recursiveDelete = functions
@@ -156,8 +141,6 @@ exports.recursiveDelete = functions
     memory: '2GB',
   })
   .https.onCall(async (data, context) => {
-    // Only allow admin users to execute this function.
-
     const {path, collection, docId} = data;
     console.log(
       `User ${context.auth.uid} has requested to delete path ${path} with collection ${collection}`,

@@ -14,13 +14,10 @@ const ListOfChecks = ({checkId, disabled, checks}) => {
   const {Layout, Fonts, Gutters} = useTheme();
   const {t} = useTranslation();
 
-  const {
-    loading: loadingUploadImage,
-    idCheckLoading,
-    uploadImages,
-  } = useUploadImageCheck(CHECKLISTS, checkId);
-
-  console.log(loadingUploadImage, idCheckLoading);
+  const {loading: loadingUploadImage, uploadImages} = useUploadImageCheck(
+    CHECKLISTS,
+    checkId,
+  );
 
   const renderItem = ({item}) => (
     <ItemCheck

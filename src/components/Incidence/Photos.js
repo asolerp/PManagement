@@ -25,6 +25,7 @@ import {INCIDENCES} from '../../utils/firebaseKeys';
 import {usePhotos} from '../../utils/usePhotos';
 import {parseImages} from './utils/parserImages';
 import {useTranslation} from 'react-i18next';
+import {parseRef} from '../../Screens/CheckPhotos/utils/parseRef';
 
 const styles = StyleSheet.create({
   container: {
@@ -65,23 +66,24 @@ const Photos = () => {
     setModal(true);
   };
 
-  const handleLongPressPhoto = (photo) => {
-    const isSelected = deletePhotos.find((p) => p.id === photo.id);
+  const handleLongPressPhoto = ({id, ref}) => {
+    const isSelected = deletePhotos.find((p) => p.id === id);
     if (isSelected) {
-      return setDeletePhotos([
-        ...deletePhotos.filter((p) => p.id !== photo.id),
-      ]);
+      return setDeletePhotos([...deletePhotos.filter((p) => p.id !== id)]);
     }
-    setDeletePhotos([...deletePhotos, photo]);
+    setDeletePhotos([...deletePhotos, {id, uri: id, ref}]);
   };
 
   const Photo = ({photo, index}) => {
+    console.log(photo, 'photo');
     const isSelected = deletePhotos.find((p) => p.id === photo.id);
     return (
       <TouchableOpacity
         onPress={() => handlePressPhoto(index)}
         key={index}
-        onLongPress={() => handleLongPressPhoto(photo)}>
+        onLongPress={() =>
+          handleLongPressPhoto({id: photo.uri, ref: parseRef(photo.uri)})
+        }>
         <ImageBackground
           source={{uri: photo.uri}}
           style={[styles.photo]}
@@ -102,12 +104,11 @@ const Photos = () => {
     );
   };
 
-  const [incidence, loadingIncidence] = useDocumentData(
-    firestore().collection(INCIDENCES).doc(incidenceId),
-    {
-      idField: 'id',
-    },
-  );
+  const incidenceQuery = firestore().collection(INCIDENCES).doc(incidenceId);
+
+  const [incidence, loadingIncidence] = useDocumentData(incidenceQuery, {
+    idField: 'id',
+  });
 
   const photosSaved = incidence?.photos?.map((photo) => ({
     uri: photo,
@@ -137,7 +138,9 @@ const Photos = () => {
         <TouchableWithoutFeedback
           onPress={() => {
             if (deletePhotos.length > 0) {
-              return removePhotos(deletePhotos, setDeletePhotos);
+              return removePhotos(deletePhotos, setDeletePhotos, {
+                collectionRef: incidenceQuery,
+              });
             }
             return handleImagePicker((imgs) => {
               const mappedImages = parseImages(imgs);
@@ -145,7 +148,7 @@ const Photos = () => {
                 collectionRef: firestore()
                   .collection(INCIDENCES)
                   .doc(incidenceId),
-                cloudinaryFolder: 'Incidences',
+                cloudinaryFolder: `/PortManagement/${INCIDENCES}/${incidenceId}/Photos`,
                 docId: incidenceId,
               });
             });

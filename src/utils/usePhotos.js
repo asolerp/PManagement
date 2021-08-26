@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {useUploadCloudinaryImage} from '../hooks/useUploadCloudinaryImage';
-import firestore from '@react-native-firebase/firestore';
+import firestore, {firebase} from '@react-native-firebase/firestore';
 
 import {error as errorLog} from '../lib/logging';
 
@@ -9,21 +9,35 @@ export const usePhotos = () => {
   const [error, setError] = useState();
   const {upload} = useUploadCloudinaryImage();
 
-  const removePhotos = async (photos, setter, fbRoute) => {
-    const {docId, collection} = fbRoute;
-    const photosToDelete = photos.map(
+  const deleteFn = firebase.functions().httpsCallable('deletePhotoCloudinary');
+
+  const removePhotos = async (imgs, setter, fbRoute) => {
+    const {collectionRef} = fbRoute;
+    const photosToDelete = imgs.map(
       async (photo) =>
-        await firestore()
-          .collection(collection)
-          .doc(docId)
-          .update({
-            photos: firestore.FieldValue.arrayRemove(photo.uri),
-          }),
+        await collectionRef.update({
+          photos: firestore.FieldValue.arrayRemove(photo.uri),
+        }),
     );
+
+    const photoIds = imgs.map((photo) => {
+      console.log(photo.ref);
+      const id = photo.ref.split('.')[0];
+
+      return id;
+    });
+
+    console.log(photoIds, 'photos');
+
     try {
       setLoading(true);
       await Promise.all(photosToDelete);
-      setter([]);
+      await deleteFn({
+        photoIds,
+      });
+      if (setter) {
+        setter([]);
+      }
     } catch (err) {
       errorLog({
         message: err.message,
@@ -41,7 +55,7 @@ export const usePhotos = () => {
     try {
       setLoading(true);
       const uploadImagesCloudinary = imgs.map((file) =>
-        upload(file, `/PortManagement/${cloudinaryFolder}/${docId}/Photos`),
+        upload(file, cloudinaryFolder),
       );
       const imagesURLs = await Promise.all(uploadImagesCloudinary);
 

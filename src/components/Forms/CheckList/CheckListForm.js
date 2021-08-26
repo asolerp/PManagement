@@ -116,6 +116,7 @@ const CheckListForm = ({edit, docId}) => {
           done: check.done,
           id: check.id,
           title: check.title,
+          photos: check.photos,
         }))
         .reduce((acc, checkDoc) => {
           return {

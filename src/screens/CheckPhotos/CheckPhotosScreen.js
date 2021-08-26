@@ -18,16 +18,11 @@ import {parseDeleteTextButton} from '../../utils/parsers';
 
 //Firestore
 import firestore from '@react-native-firebase/firestore';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {useDeleteFirebase} from '../../hooks/useDeleteFirebase';
 
-import {firebase} from '@react-native-firebase/firestore';
-import {useDeleteFirebaseImage} from '../../hooks/useDeleteFirebaseImage';
-import {
-  useCollectionData,
-  useDocumentData,
-} from 'react-firebase-hooks/firestore';
+import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {usePhotos} from '../../utils/usePhotos';
+import {parseRef} from './utils/parseRef';
+import {CHECKLISTS} from '../../utils/firebaseKeys';
 
 const styles = StyleSheet.create({
   container: {
@@ -79,12 +74,7 @@ const CheckPhotosScreen = ({route}) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
 
-  const {deleteImage} = useDeleteFirebaseImage();
-
-  const {removePhotos} = usePhotos({
-    collection: 'checklists',
-    docId: checkId,
-  });
+  const {removePhotos} = usePhotos();
 
   const query = useMemo(() => {
     return firestore()
@@ -103,8 +93,9 @@ const CheckPhotosScreen = ({route}) => {
     setImageIndex(i);
   };
   const handleSelectDeletePhoto = ({id, ref}) => {
-    const urlExists = photosSelected.some((photo) => photo === id);
-    const selectedPhotos = photosSelected.filter((photo) => photo !== id);
+    const urlExists = photosSelected.some((photo) => photo.id === id);
+    const selectedPhotos = photosSelected.filter((photo) => photo.id !== id);
+
     if (urlExists) {
       setPhotosSelected([...selectedPhotos]);
     } else {
@@ -112,16 +103,29 @@ const CheckPhotosScreen = ({route}) => {
     }
   };
 
-  const handleDeletePhoto = async (photo) => {
-    setPhotosSelected(photosSelected.filter((p) => p.id !== photo));
-    await deleteImage(photo.ref);
-    await removePhotos(photo);
+  const handleDeletePhoto = async () => {
+    const checkQuery = firestore()
+      .collection(CHECKLISTS)
+      .doc(checkId)
+      .collection('checks')
+      .doc(checkItemId);
+
+    const photosWithUri = photosSelected.map((photo) => ({
+      uri: photo.id,
+      ref: photo.ref,
+    }));
+
+    await removePhotos(photosWithUri, setPhotosSelected, {
+      collectionRef: checkQuery,
+    });
   };
 
   const Photo = ({photo, index}) => {
     return (
       <TouchableOpacity
-        onLongPress={() => handleSelectDeletePhoto({id: photo, ref: photo})}
+        onLongPress={() =>
+          handleSelectDeletePhoto({id: photo, ref: parseRef(photo)})
+        }
         onPress={() => handlePressPhoto(index)}>
         <View style={styles.photo}>
           {photosSelected.some((p) => photo === p.id) && (
@@ -169,11 +173,7 @@ const CheckPhotosScreen = ({route}) => {
             handleVisibility={setDeleteModal}
             info="Las fotos que se eliminen no se podrán recuperar"
             textButton={parseDeleteTextButton(photosSelected.length)}
-            handleDelete={() =>
-              Promise.all(
-                photosSelected.map((photo) => handleDeletePhoto(photo)),
-              )
-            }
+            handleDelete={() => handleDeletePhoto()}
           />
           <View style={styles.container}>
             {values?.photos?.map((photo, i) => (

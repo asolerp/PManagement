@@ -72,8 +72,6 @@ const Container = () => {
     )
     .sort((a, b) => sortByDate(a, b, 'desc'));
 
-  console.log(jobsList, 'trabajos');
-
   const renderItem = ({item}) => {
     return (
       <JobItem

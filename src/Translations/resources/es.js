@@ -151,6 +151,8 @@ export default {
     phone: 'Teléfono',
     email: 'Email',
     logout: 'Desconectarse',
+    name: 'Nombre',
+    last_name: 'Apellido',
   },
   options: {
     title: 'Opciones',

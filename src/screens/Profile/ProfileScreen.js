@@ -23,6 +23,11 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {logout, userSelector} from '../../Store/User/userSlice';
 import {error} from '../../lib/logging';
 import {useTranslation} from 'react-i18next';
+import {ScrollView} from 'react-native';
+import {Button} from 'react-native';
+import {useTheme} from '../../Theme';
+import {ActivityIndicator} from 'react-native';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   pageContainer: {
@@ -32,7 +37,7 @@ const styles = StyleSheet.create({
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 40,
     marginBottom: 40,
   },
   avatarWrapper: {
@@ -64,7 +69,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   formContainer: {
-    flex: 3,
+    flex: 5,
     justifyContent: 'flex-start',
   },
   inputLabel: {
@@ -80,13 +85,16 @@ const ProfileScreen = ({route}) => {
   const [infoProfile, setInfoProfile] = useState();
   const [editLoading, setEditLoading] = useState(false);
   const dispatch = useDispatch();
-
+  const {Layout} = useTheme();
   const logOutUser = useCallback((user) => dispatch(logout()), [dispatch]);
 
   const user = useSelector(userSelector, shallowEqual);
   const {t} = useTranslation();
   const {updateFirebase} = useUpdateFirebase('users');
   const {upload} = useUploadCloudinaryImage();
+
+  const defaultImg =
+    'https://res.cloudinary.com/enalbis/image/upload/v1629876203/PortManagement/varios/avatar-1577909_1280_gcinj5.png';
 
   const {document: userLoggedIn} = useGetDocFirebase(
     'users',
@@ -168,7 +176,10 @@ const ProfileScreen = ({route}) => {
               thumbnailSource={{
                 uri: newImage?.fileUri || userLoggedIn?.profileImage,
               }}
-              source={{uri: newImage?.fileUri || userLoggedIn?.profileImage}}
+              source={{
+                uri:
+                  newImage?.fileUri || userLoggedIn?.profileImage || defaultImg,
+              }}
               style={styles.avatarWrapper}
             />
           </TouchableOpacity>
@@ -177,41 +188,73 @@ const ProfileScreen = ({route}) => {
           </Text>
         </View>
         <View style={styles.formContainer}>
-          <Text style={styles.titleStyle}>{t('profile.personal_data')}</Text>
-          <Text style={styles.inputLabel}>{t('profile.phone') + ': '}</Text>
-          <InputGroup>
-            <TextInput
-              editable={userId ? userId === user.uid : true}
-              style={{height: 40}}
-              placeholder={t('profile.phone')}
-              onChangeText={(text) =>
-                setInfoProfile({...infoProfile, phone: text})
-              }
-              value={infoProfile?.phone || userLoggedIn?.phone}
-            />
-          </InputGroup>
-          <Text style={styles.inputLabel}>{t('profile.email') + ': '}</Text>
-          <InputGroup>
-            <TextInput
-              editable={userId ? userId === user.uid : true}
-              style={{height: 40}}
-              placeholder={t('profile.email')}
-              onChangeText={(text) =>
-                setInfoProfile({...infoProfile, email: text})
-              }
-              value={infoProfile?.email || userLoggedIn?.email}
-            />
-          </InputGroup>
-          {(infoProfile || newImage) && (
-            <View style={{flex: 1}}>
-              <CustomButton
-                loading={editLoading}
-                title={t('common.edit')}
-                styled="rounded"
-                onPress={() => handleEdit()}
+          <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
+            <Text style={styles.titleStyle}>{t('profile.personal_data')}</Text>
+            {(infoProfile || newImage) && (
+              <React.Fragment>
+                {editLoading ? (
+                  <ActivityIndicator color={Colors.pm} size="small" />
+                ) : (
+                  <Button
+                    title={t('common.edit')}
+                    onPress={() => handleEdit()}
+                  />
+                )}
+              </React.Fragment>
+            )}
+          </View>
+          <ScrollView>
+            <Text style={styles.inputLabel}>{t('profile.name') + ': '}</Text>
+            <InputGroup>
+              <TextInput
+                editable={userId ? userId === user.uid : true}
+                style={{height: 40}}
+                placeholder={t('profile.name')}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, firstName: text})
+                }
+                value={infoProfile?.firstName || userLoggedIn?.firstName}
               />
-            </View>
-          )}
+            </InputGroup>
+            <Text style={styles.inputLabel}>
+              {t('profile.last_name') + ': '}
+            </Text>
+            <InputGroup>
+              <TextInput
+                editable={userId ? userId === user.uid : true}
+                style={{height: 40}}
+                placeholder={t('profile.last_name')}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, lastName: text})
+                }
+                value={infoProfile?.lastName || userLoggedIn?.lastName}
+              />
+            </InputGroup>
+            <Text style={styles.inputLabel}>{t('profile.phone') + ': '}</Text>
+            <InputGroup>
+              <TextInput
+                editable={userId ? userId === user.uid : true}
+                style={{height: 40}}
+                placeholder={t('profile.phone')}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, phone: text})
+                }
+                value={infoProfile?.phone || userLoggedIn?.phone}
+              />
+            </InputGroup>
+            <Text style={styles.inputLabel}>{t('profile.email') + ': '}</Text>
+            <InputGroup>
+              <TextInput
+                editable={userId ? userId === user.uid : true}
+                style={{height: 40}}
+                placeholder={t('profile.email')}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, email: text})
+                }
+                value={infoProfile?.email || userLoggedIn?.email}
+              />
+            </InputGroup>
+          </ScrollView>
         </View>
       </View>
     </PageLayout>

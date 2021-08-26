@@ -16,7 +16,7 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
         ),
       );
 
-      const workersTokens = workers
+      const workersTokens = users
         .filter((worker) => worker.data().token)
         .map((worker) => worker.data().token);
 

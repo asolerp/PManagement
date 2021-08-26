@@ -4,6 +4,7 @@ import {usePhotos} from '../utils/usePhotos';
 import {error as errorLog} from '../lib/logging';
 import firestore from '@react-native-firebase/firestore';
 import {parseImages} from '../components/Incidence/utils/parserImages';
+import {CHECKLISTS} from '../utils/firebaseKeys';
 
 const useUploadImageCheck = (collection, docId) => {
   const [idCheckLoading, setIdCheckLoading] = useState();
@@ -21,8 +22,8 @@ const useUploadImageCheck = (collection, docId) => {
               .doc(docId)
               .collection('checks')
               .doc(item.id),
-            cloudinaryFolder: 'Checklists',
-            docId: item.id,
+            cloudinaryFolder: `/PortManagement/${CHECKLISTS}/${docId}/Check/${item.id}/Photos`,
+            docId: docId,
           });
         }
       }

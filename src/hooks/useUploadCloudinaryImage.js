@@ -12,10 +12,10 @@ export const useUploadCloudinaryImage = () => {
       type: photo.fileType,
       name: photo.fileName,
     };
+
     const data = new FormData();
     data.append('file', source);
     data.append('upload_preset', 'port_management');
-    data.append('public_id', photo.fileName);
     data.append('cloud_name', 'enalbis');
     data.append('folder', folder);
 

@@ -9,6 +9,9 @@ import {userSelector} from '../Store/User/userSlice';
 import {useTranslation} from 'react-i18next';
 
 const ProfileBar = ({onPress}) => {
+  const defaultImg =
+    'https://res.cloudinary.com/enalbis/image/upload/v1629876203/PortManagement/varios/avatar-1577909_1280_gcinj5.png';
+
   const user = useSelector(userSelector);
   const [userProfile, setUserProfile] = useState();
   const {t} = useTranslation();
@@ -36,7 +39,7 @@ const ProfileBar = ({onPress}) => {
             <Image
               style={styles.avatar}
               source={{
-                uri: userProfile?.profileImage,
+                uri: userProfile?.profileImage || defaultImg,
               }}
             />
           </TouchableOpacity>

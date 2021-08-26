@@ -149,6 +149,8 @@ export default {
     phone: 'Phone',
     email: 'Email',
     logout: 'Logout',
+    name: 'Name',
+    last_name: 'Surname',
   },
   options: {
     title: 'Options',

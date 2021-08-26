@@ -65,7 +65,7 @@ export const useAddEditCheckist = ({docId}) => {
             addFirebase(`checklists/${docId}/checks`, {
               title: value.title,
               originalId: value.originalId,
-              numberOfPhotos: 0,
+              photos: value.photos,
               done: value.done,
               worker: null,
               date: null,
