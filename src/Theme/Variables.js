@@ -18,6 +18,7 @@ export const Colors = {
   pmLow: '#55A5AD20',
   purpleLow: 'rgb(243, 240, 250)',
   purple: 'rgb(136, 112, 213)',
+  black: 'black',
 };
 
 export const Variants = {
@@ -26,8 +27,24 @@ export const Variants = {
     color: Colors.pm,
   },
   filter: {
-    backgroundColor: Colors.success,
-    color: Colors.white,
+    backgroundColor: `${Colors.success}30`,
+    color: Colors.black,
+    borderColor: Colors.pm,
+  },
+  dangerFilter: {
+    backgroundColor: `${Colors.danger}30`,
+    color: Colors.black,
+    borderColor: Colors.danger,
+  },
+  successFilter: {
+    backgroundColor: `${Colors.rightGreen}30`,
+    color: Colors.black,
+    borderColor: Colors.rightGreen,
+  },
+  warningFilter: {
+    backgroundColor: `${Colors.warning}30`,
+    color: Colors.black,
+    borderColor: Colors.warning,
   },
   success: {
     backgroundColor: Colors.successLow,
@@ -54,6 +71,7 @@ export const NavigationColors = {
 // FontSize
 export const FontSize = {
   tiny: 10,
+  xs: 14,
   small: 16,
   regular: 20,
   large: 40,

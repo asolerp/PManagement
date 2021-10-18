@@ -18,18 +18,9 @@ import {sortByDate} from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';
+import {useFilters} from './hooks/useFilters';
 
 const styles = StyleSheet.create({
-  checkWrapper: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 10,
-    width: 220,
-    height: 170,
-    borderLeftWidth: 10,
-    borderWidth: 1,
-  },
   avatarWrapper: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -84,33 +75,46 @@ const styles = StyleSheet.create({
   },
 });
 
-const ChecklistList = ({uid, house}) => {
+const ChecklistList = ({uid, house, houses, workers, time, typeFilters}) => {
   const {Gutters, Fonts} = useTheme();
   const {t} = useTranslation();
 
-  let firestoreQuery;
+  const isOnlyTypeFilter = typeFilters.length === 1;
+
+  // let filteredValues;
+  let firestoreQuery = firestore().collection('checklists');
 
   if (house) {
-    firestoreQuery = firestore()
-      .collection('checklists')
+    firestoreQuery = firestoreQuery
       .where('finished', '==', false)
-      .where('houseId', '==', house?.id);
+      .where('houseId', '==', house?.id)
+      .where('date', '>', new Date(time.start))
+      .where('date', '<', new Date(time.end));
   }
   if (uid) {
-    firestoreQuery = firestore()
-      .collection('checklists')
+    firestoreQuery = firestoreQuery
       .where('finished', '==', false)
-      .where('workersId', 'array-contains', uid);
+      .where('workersId', 'array-contains', uid)
+      .where('date', '>', new Date(time.start))
+      .where('date', '<', new Date(time.end));
   }
   if (!uid && !house) {
-    firestoreQuery = firestore()
-      .collection('checklists')
-      .where('finished', '==', false);
+    firestoreQuery = firestoreQuery
+      .where('finished', '==', false)
+      .where('date', '>', new Date(time.start))
+      .where('date', '<', new Date(time.end));
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
     idField: 'id',
   });
+
+  const filters = {
+    houses,
+    workers,
+  };
+
+  const {filteredList} = useFilters({list: values, filters});
 
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {
@@ -122,38 +126,38 @@ const ChecklistList = ({uid, house}) => {
 
     return (
       <TouchableOpacity onPress={() => handlePressIncidence()}>
-        <CheckItem item={item} />
+        <CheckItem item={item} fullWidth={isOnlyTypeFilter} />
       </TouchableOpacity>
     );
   };
 
   return (
-    <React.Fragment>
+    <View style={[Gutters.smallBMargin]}>
       <View style={{...styles.filterWrapper, ...width(80)}}>
-        {!house && (
+        {/* {!house && (
           <View style={[styles.badget, Gutters.tinyRMargin]}>
             <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-              {values?.length || 0}
+              {filteredValues?.length || 0}
             </Text>
           </View>
-        )}
+        )} */}
         <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>
           {t('checklists.title')}
         </Text>
       </View>
       {loading && <DashboardSectionSkeleton />}
-      {(!loading && !values) || values?.length === 0 ? (
+      {(!loading && !values) || filteredList?.length === 0 ? (
         <Text>{t('checklists.empty')}</Text>
       ) : (
         <FlatList
-          horizontal
+          horizontal={!isOnlyTypeFilter}
           showsHorizontalScrollIndicator={false}
-          data={values?.sort(sortByDate)}
+          data={filteredList?.sort(sortByDate)}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
       )}
-    </React.Fragment>
+    </View>
   );
 };
 

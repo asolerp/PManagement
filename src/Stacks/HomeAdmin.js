@@ -135,7 +135,7 @@ const HomeAdmin = () => {
           ),
         })}
       />
-      <Screen
+      {/* <Screen
         name={t(tabNameByScreen[CHECKLIST_SCREEN_KEY])}
         initialParams={{screenKey: CHECKLIST_SCREEN_KEY}}
         component={CheckListScreen}
@@ -185,7 +185,7 @@ const HomeAdmin = () => {
             </IconWithBadge>
           ),
         })}
-      />
+      /> */}
       <Screen
         name={t(tabNameByScreen[USERS_SCREEN_KEY])}
         initialParams={{screenKey: USERS_SCREEN_KEY}}

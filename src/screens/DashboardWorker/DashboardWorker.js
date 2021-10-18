@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import {useSelector, shallowEqual} from 'react-redux';
 import {View, Text, StyleSheet} from 'react-native';
@@ -27,6 +27,7 @@ import JobsList from '../../components/Lists/JobsList';
 import PageLayout from '../../components/PageLayout';
 import {useTheme} from '../../Theme';
 import IncidencesList from '../../components/Lists/IncidencesList';
+import {parseTimeFilter} from '../../utils/parsers';
 
 const styles = StyleSheet.create({
   container: {
@@ -61,7 +62,11 @@ const DashboardWorkerScreen = () => {
   const {Layout, Gutters} = useTheme();
   const user = useSelector(userSelector, shallowEqual);
   const {t} = useTranslation();
-
+  const [filters, setFilters] = useState({
+    time: parseTimeFilter('all'),
+    state: false,
+    type: ['jobs', 'incidences', 'checklists'],
+  });
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
 
@@ -90,9 +95,31 @@ const DashboardWorkerScreen = () => {
               <Text style={{...styles.label, ...marginBottom(20)}}>
                 {t('homeMessage')}
               </Text>
-              <ChecklistList uid={user.uid} />
-              <IncidencesList uid={user.uid} />
-              <JobsList uid={user.uid} />
+              {filters.type.some((t) => t === 'checklists') && (
+                <ChecklistList
+                  workers={filters?.workers}
+                  houses={filters?.houses}
+                  typeFilters={filters?.type}
+                  time={filters?.time}
+                />
+              )}
+              {filters.type.some((t) => t === 'incidences') && (
+                <IncidencesList
+                  workers={filters?.workers}
+                  houses={filters?.houses}
+                  state={filters?.incidenceState}
+                  typeFilters={filters.type}
+                  time={filters?.time}
+                />
+              )}
+              {filters.type.some((t) => t === 'jobs') && (
+                <JobsList
+                  workers={filters?.workers}
+                  houses={filters?.houses}
+                  typeFilters={filters.type}
+                  time={filters?.time}
+                />
+              )}
             </View>
           </View>
         </ScrollView>

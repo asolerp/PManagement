@@ -55,7 +55,7 @@ const CustomButton = ({
 
   return (
     <TouchableOpacity
-      style={containerStyle.concat([styles.container])}
+      style={[styles.container, containerStyle]}
       onPress={onPress}
       disabled={disabled}>
       <View

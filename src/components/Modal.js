@@ -5,7 +5,13 @@ import Modal from 'react-native-modal';
 import {useTheme} from '../Theme';
 import {Colors} from '../Theme/Variables';
 
-const CustomModal = ({visible, setVisible, children, size = 1}) => {
+const CustomModal = ({
+  visible,
+  setVisible,
+  children,
+  swipeDirection = ['down'],
+  size = 1,
+}) => {
   const {Layout, Gutters} = useTheme();
 
   return (
@@ -14,7 +20,7 @@ const CustomModal = ({visible, setVisible, children, size = 1}) => {
       onSwipeComplete={(event) => {
         setVisible(false);
       }}
-      swipeDirection={['down']}
+      swipeDirection={swipeDirection}
       onBackdropPress={() => {
         setVisible(false);
       }}

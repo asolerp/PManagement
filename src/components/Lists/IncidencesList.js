@@ -19,6 +19,7 @@ import {INCIDENCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import IncidenceItem from './IncidenceItem';
 import {useTheme} from '../../Theme';
 import {useTranslation} from 'react-i18next';
+import {useFilters} from './hooks/useFilters';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -73,7 +74,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: 20,
     marginBottom: 10,
   },
   badget: {
@@ -87,25 +87,42 @@ const styles = StyleSheet.create({
   },
 });
 
-const IncidencesList = ({uid}) => {
-  const {Gutters} = useTheme();
+const IncidencesList = ({uid, houses, workers, state, time, typeFilters}) => {
+  const {Fonts, Gutters} = useTheme();
   const {t} = useTranslation();
+  const isOnlyTypeFilter = typeFilters?.length === 1;
 
   let firestoreQuery;
   if (uid) {
     firestoreQuery = firestore()
       .collection('incidences')
       .where('workersId', 'array-contains', uid)
-      .where('done', '==', false);
+      .where('done', '==', false)
+      .where('date', '>', new Date(time?.start))
+      .where('date', '<', new Date(time?.end));
   }
   if (!uid) {
     firestoreQuery = firestore()
       .collection('incidences')
-      .where('done', '==', false);
+      .where('done', '==', false)
+      .where('date', '>', new Date(time?.start))
+      .where('date', '<', new Date(time?.end));
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
     idField: 'id',
+  });
+
+  const filters = {
+    houses,
+    workers,
+    state,
+  };
+
+  const {filteredList} = useFilters({
+    list: values,
+    filters,
+    type: 'incidences',
   });
 
   const renderItem = ({item}) => {
@@ -117,31 +134,31 @@ const IncidencesList = ({uid}) => {
 
     return (
       <TouchableOpacity onPress={() => handlePressIncidence()}>
-        <IncidenceItem item={item} />
+        <IncidenceItem item={item} fullWidth={isOnlyTypeFilter} />
       </TouchableOpacity>
     );
   };
 
   return (
-    <React.Fragment>
+    <View style={[Gutters.smallBMargin]}>
       <View style={{...styles.filterWrapper, ...width(80)}}>
-        <View style={[styles.badget, Gutters.tinyRMargin]}>
+        {/* <View style={[styles.badget, Gutters.tinyRMargin]}>
           <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-            {values?.filter((item) => item.id !== 'stats').length || 0}
+            {filteredValues?.filter((item) => item.id !== 'stats').length || 0}
           </Text>
-        </View>
-        <Text style={{...defaultLabel, ...marginRight(10)}}>
+        </View> */}
+        <Text style={[Fonts.textTitle, {...marginRight(10)}]}>
           {t('incidences.title')}
         </Text>
       </View>
       {loading && <DashboardSectionSkeleton />}
-      {(!loading && !values) || values?.length === 0 ? (
+      {(!loading && !filteredList) || filteredList?.length === 0 ? (
         <Text>{t('incidences.empty')}</Text>
       ) : (
         <FlatList
-          horizontal
+          horizontal={!isOnlyTypeFilter}
           showsHorizontalScrollIndicator={false}
-          data={values
+          data={filteredList
             ?.filter((item) => item.id !== 'stats')
             .sort(sortByDate)
             .sort(sortByIncidenceStatus('state'))}
@@ -149,7 +166,7 @@ const IncidencesList = ({uid}) => {
           keyExtractor={(item) => item.id}
         />
       )}
-    </React.Fragment>
+    </View>
   );
 };
 

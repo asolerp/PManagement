@@ -43,20 +43,20 @@ const SituationIncidence = ({incidence}) => {
         <Filter
           text={t('incidence.status.ini')}
           color={Colors.warning}
-          active={incidence?.state === 'iniciada'}
-          onPress={() => handleStateIncidence('iniciada')}
+          active={incidence?.state === 'initiate'}
+          onPress={() => handleStateIncidence('initiate')}
         />
         <Filter
           text={t('incidence.status.process')}
           color={Colors.leftBlue}
-          active={incidence?.state === 'tramite'}
-          onPress={() => handleStateIncidence('tramite')}
+          active={incidence?.state === 'process'}
+          onPress={() => handleStateIncidence('process')}
         />
         <Filter
           text={t('incidence.status.done')}
           color={Colors.rightGreen}
-          active={incidence?.state === 'finalizada'}
-          onPress={() => handleStateIncidence('finalizada')}
+          active={incidence?.state === 'done'}
+          onPress={() => handleStateIncidence('done')}
         />
       </View>
     </View>

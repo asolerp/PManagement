@@ -1,4 +1,3 @@
-#import <Bugsnag/Bugsnag.h>
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
@@ -30,8 +29,6 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [Bugsnag start];
-
 if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }

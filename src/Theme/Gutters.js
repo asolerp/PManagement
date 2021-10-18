@@ -25,6 +25,9 @@ export default function ({MetricsSizes}) {
           marginHorizontal: value,
         },
         /* Paddings */
+        [`${key}APadding`]: {
+          padding: value,
+        },
         [`${key}BPadding`]: {
           paddingBottom: value,
         },

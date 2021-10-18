@@ -14,7 +14,7 @@ const uploadMessagePhoto = async (collection, docId, messageImage, user) => {
       messageType: 'image',
       createdAt: firestore.FieldValue.serverTimestamp(),
       user: {
-        _id: user?.uid,
+        _id: user?.id,
         name: user?.firstName,
         avatar: user?.profileImage,
         token: user?.token,

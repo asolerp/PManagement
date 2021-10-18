@@ -116,6 +116,7 @@ export default {
   },
   jobs: {
     title: 'Jobs',
+    no_found: 'No jobs found',
   },
   newIncidence: {
     title: 'New Incidence',

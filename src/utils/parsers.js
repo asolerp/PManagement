@@ -96,9 +96,9 @@ export const parsePercentageDone = (percentage) => {
 };
 
 export const parseStateIncidecne = (state) => {
-  if (state === 'iniciada') {
+  if (state === 'initiate') {
     return Colors.warning;
-  } else if (state === 'tramite') {
+  } else if (state === 'process') {
     return Colors.leftBlue;
   } else {
     return Colors.rightGreen;

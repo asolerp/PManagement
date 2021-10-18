@@ -3,7 +3,7 @@ import React from 'react';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-import {defaultLabel, marginRight, width} from '../../styles/common';
+import {marginRight, width} from '../../styles/common';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -23,6 +23,7 @@ import JobItem from './JobItem';
 import {useTheme} from '../../Theme';
 
 import {useTranslation} from 'react-i18next';
+import {useFilters} from './hooks/useFilters';
 
 const styles = StyleSheet.create({
   incidenceWrapper: {
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: 20,
     marginBottom: 10,
   },
   badget: {
@@ -91,24 +91,38 @@ const styles = StyleSheet.create({
   },
 });
 
-const JobsList = ({uid}) => {
-  const {Gutters} = useTheme();
+const JobsList = ({uid, houses, workers, time, typeFilters}) => {
+  const {Fonts, Gutters} = useTheme();
   const {t} = useTranslation();
+  const isOnlyTypeFilter = typeFilters.length === 1;
+
   let firestoreQuery;
   if (uid) {
     firestoreQuery = firestore()
       .collection(JOBS)
       .where('workersId', 'array-contains', uid)
-      .where('done', '==', false);
+      .where('done', '==', false)
+      .where('date', '>', new Date(time.start))
+      .where('date', '<', new Date(time.end));
   }
   if (!uid) {
-    firestoreQuery = firestore().collection(JOBS).where('done', '==', false);
+    firestoreQuery = firestore()
+      .collection(JOBS)
+      .where('done', '==', false)
+      .where('date', '>', new Date(time.start))
+      .where('date', '<', new Date(time.end));
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
     idField: 'id',
   });
 
+  const filters = {
+    houses,
+    workers,
+  };
+
+  const {filteredList} = useFilters({list: values, filters});
   const renderItem = ({item}) => {
     const handlePressIncidence = () => {
       openScreenWithPush(JOB_SCREEN_KEY, {
@@ -118,38 +132,40 @@ const JobsList = ({uid}) => {
 
     return (
       <TouchableOpacity onPress={() => handlePressIncidence()}>
-        <JobItem item={item} />
+        <JobItem item={item} fullWidth={isOnlyTypeFilter} />
       </TouchableOpacity>
     );
   };
 
   return (
-    <React.Fragment>
+    <View style={[Gutters.smallBMargin]}>
       <View style={{...styles.filterWrapper, ...width(80)}}>
-        <View style={[styles.badget, Gutters.tinyRMargin]}>
+        {/* <View style={[styles.badget, Gutters.tinyRMargin]}>
           {!loading && (
             <Text style={{color: Colors.white, fontWeight: 'bold'}}>
               {values?.filter((item) => item.id !== 'stats').length || 0}
             </Text>
           )}
-        </View>
-        <Text style={{...defaultLabel, ...marginRight(10)}}>
+        </View> */}
+        <Text style={[Fonts.textTitle, {...marginRight(10)}]}>
           {t('common.jobs')}
         </Text>
       </View>
       {loading && <DashboardSectionSkeleton />}
-      {(!loading && !values) || values?.length === 0 ? (
+      {(!loading && !filteredList) || filteredList?.length === 0 ? (
         <Text>{t('job.empty')}</Text>
       ) : (
         <FlatList
-          horizontal
+          horizontal={!isOnlyTypeFilter}
           showsHorizontalScrollIndicator={false}
-          data={values?.filter((item) => item.id !== 'stats').sort(sortByDate)}
+          data={filteredList
+            ?.filter((item) => item.id !== 'stats')
+            .sort(sortByDate)}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
       )}
-    </React.Fragment>
+    </View>
   );
 };
 

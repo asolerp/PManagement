@@ -15,6 +15,7 @@ import {parsePercentageDone} from '../utils/parsers';
 import Counter from './Counter';
 import Badge from './Elements/Badge';
 import {useTranslation} from 'react-i18next';
+import EntityItem from './EntityItem';
 
 const styles = StyleSheet.create({
   bold: {
@@ -63,75 +64,85 @@ const CheckItem = ({check, onPress}) => {
   });
 
   return (
-    <React.Fragment>
-      {noReadCounter > 0 && (
-        <Counter
-          size="big"
-          count={noReadCounter}
-          customStyles={{
-            position: 'absolute',
-            zIndex: 1000,
-            right: 5,
-            top: 2,
-          }}
-        />
-      )}
-      <TouchableOpacity
-        onPress={onPress}
-        style={[Layout.fill, Gutters.smallTMargin]}>
-        <View
-          style={[
-            Layout.fill,
-            styles.checkItemWrapper,
-            {borderLeftColor: parsePercentageDone(check.done / check.total)},
-          ]}>
-          <View
-            style={[
-              Layout.fill,
-              Layout.row,
-              Layout.justifyContentSpaceBetween,
-            ]}>
-            <View>
-              <Badge
-                label={t('common.date') + ': '}
-                text={moment(check?.date?.toDate()).format('LL')}
-              />
-              <Text style={[Fonts.textInfo, Gutters.smallVMargin]}>
-                {minimizetext(check.observations, 30)}
-              </Text>
-              <Badge text={check?.house?.[0].houseName} variant="purple" />
-              <View style={[Layout.row, Gutters.smallTMargin]}>
-                {check?.workers?.map((worker, i) => (
-                  <Avatar
-                    overlap={check?.workers.length > 1}
-                    index={i}
-                    id={worker.id}
-                    key={worker.id}
-                    uri={worker.profileImage}
-                    size="medium"
-                  />
-                ))}
-              </View>
-            </View>
-            <View>
-              <AnimatedCircularProgress
-                size={50}
-                width={3}
-                fill={Math.round((check?.done / check?.total) * 100)}
-                tintColor={Colors.pm}
-                backgroundColor={Colors.lowGrey}
-                backgroundWidth={2}>
-                {() => (
-                  <Text style={{fontSize: 12}}>
-                    {Math.round((check?.done / check?.total) * 100)}%
-                  </Text>
-                )}
-              </AnimatedCircularProgress>
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </React.Fragment>
+    <EntityItem
+      check={check}
+      title="Checklist"
+      subtitle={minimizetext(check.observations, 30)}
+      date={moment(check?.date?.toDate()).format('LL')}
+      house={check?.house?.[0].houseName}
+      statusColor={parsePercentageDone(check.done / check.total)}
+      workers={check?.workers}
+      onPress={onPress}
+    />
+    // <React.Fragment>
+    //   {noReadCounter > 0 && (
+    //     <Counter
+    //       size="big"
+    //       count={noReadCounter}
+    //       customStyles={{
+    //         position: 'absolute',
+    //         zIndex: 1000,
+    //         right: 5,
+    //         top: 2,
+    //       }}
+    //     />
+    //   )}
+    //   <TouchableOpacity
+    //     onPress={onPress}
+    //     style={[Layout.fill, Gutters.smallTMargin]}>
+    //     <View
+    //       style={[
+    //         Layout.fill,
+    //         styles.checkItemWrapper,
+    //         {borderLeftColor: parsePercentageDone(check.done / check.total)},
+    //       ]}>
+    //       <View
+    //         style={[
+    //           Layout.fill,
+    //           Layout.row,
+    //           Layout.justifyContentSpaceBetween,
+    //         ]}>
+    //         <View>
+    //           <Badge
+    //             label={t('common.date') + ': '}
+    //             text={moment(check?.date?.toDate()).format('LL')}
+    //           />
+    //           <Text style={[Fonts.textInfo, Gutters.smallVMargin]}>
+    //             {minimizetext(check.observations, 30)}
+    //           </Text>
+    //           <Badge text={check?.house?.[0].houseName} variant="purple" />
+    //           <View style={[Layout.row, Gutters.smallTMargin]}>
+    //             {check?.workers?.map((worker, i) => (
+    //               <Avatar
+    //                 overlap={check?.workers.length > 1}
+    //                 index={i}
+    //                 id={worker.id}
+    //                 key={worker.id}
+    //                 uri={worker.profileImage}
+    //                 size="medium"
+    //               />
+    //             ))}
+    //           </View>
+    //         </View>
+    //         <View>
+    //           <AnimatedCircularProgress
+    //             size={50}
+    //             width={3}
+    //             fill={Math.round((check?.done / check?.total) * 100)}
+    //             tintColor={Colors.pm}
+    //             backgroundColor={Colors.lowGrey}
+    //             backgroundWidth={2}>
+    //             {() => (
+    //               <Text style={{fontSize: 12}}>
+    //                 {Math.round((check?.done / check?.total) * 100)}%
+    //               </Text>
+    //             )}
+    //           </AnimatedCircularProgress>
+    //         </View>
+    //       </View>
+    //     </View>
+    //   </TouchableOpacity>
+    // </React.Fragment>
   );
 };
 

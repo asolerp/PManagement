@@ -118,6 +118,7 @@ export default {
   },
   jobs: {
     title: 'Trabajos',
+    no_found: 'No se han encontrado trabajos',
   },
   newIncidence: {
     title: 'Nueva Incidencia',

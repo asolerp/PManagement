@@ -84,21 +84,22 @@ const ProfileScreen = ({route}) => {
   const [newImage, setNewImage] = useState();
   const [infoProfile, setInfoProfile] = useState();
   const [editLoading, setEditLoading] = useState(false);
-  const dispatch = useDispatch();
-  const {Layout} = useTheme();
-  const logOutUser = useCallback((user) => dispatch(logout()), [dispatch]);
 
-  const user = useSelector(userSelector, shallowEqual);
+  const {Layout} = useTheme();
+
+  const user = useSelector(userSelector);
   const {t} = useTranslation();
   const {updateFirebase} = useUpdateFirebase('users');
   const {upload} = useUploadCloudinaryImage();
+
+  console.log(user);
 
   const defaultImg =
     'https://res.cloudinary.com/enalbis/image/upload/v1629876203/PortManagement/varios/avatar-1577909_1280_gcinj5.png';
 
   const {document: userLoggedIn} = useGetDocFirebase(
     'users',
-    userId || user.uid,
+    userId || user.id,
   );
 
   const handleEdit = async () => {
@@ -131,7 +132,6 @@ const ProfileScreen = ({route}) => {
 
   const logOut = async () => {
     try {
-      logOutUser();
       await auth().signOut();
     } catch (err) {
       console.log(err);

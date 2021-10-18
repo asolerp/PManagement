@@ -109,7 +109,7 @@ const Chat = ({collection, docId}) => {
         showUserAvatar
         onSend={(messages) => onSendMessage(messages)}
         user={{
-          _id: user?.uid,
+          _id: user?.id,
           name: user?.firstName,
           avatar: user?.profileImage,
           token: user?.token,

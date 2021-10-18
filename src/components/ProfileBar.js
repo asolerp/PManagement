@@ -18,7 +18,7 @@ const ProfileBar = ({onPress}) => {
   useEffect(() => {
     const subscriber = firestore()
       .collection('users')
-      .doc(user?.uid)
+      .doc(user?.id)
       .onSnapshot((documentSnapshot) => {
         setUserProfile(documentSnapshot?.data());
       });

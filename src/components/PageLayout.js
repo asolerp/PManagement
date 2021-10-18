@@ -7,6 +7,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import TitlePage from './TitlePage';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import ActionButton from 'react-native-action-button';
 
 import {popScreen} from '../Router/utils/actions';
 import {Colors} from '../Theme/Variables';

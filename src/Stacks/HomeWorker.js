@@ -2,22 +2,19 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Screens
-
 import {AnimatedTabBarNavigator} from 'react-native-animated-nav-tab-bar';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {Platform} from 'react-native';
 
 import {
   DASHBOARD_WORKER_SCREEN_KEY,
-  INCIDENCES_SCREEN_KEY,
-  JOBS_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import DashboardWorkerScreen from '../Screens/DashboardWorker/DashboardWorker';
-import {IncidencesScreen} from '../Screens/Incidences';
+
 import {ProfileScreen} from '../Screens/Profile';
 import {tabNameByScreen} from '../utils/parsers';
-import JobsScreen from '../Screens/Jobs/JobsScreen';
+
 import {useTranslation} from 'react-i18next';
 
 const Tabs = AnimatedTabBarNavigator();
@@ -66,38 +63,6 @@ const HomeWorker = () => {
           tabBarIcon: ({focused, color, size}) => (
             <Icon
               name="dashboard"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
-          ),
-        })}
-      />
-      <Tabs.Screen
-        name={t(tabNameByScreen[JOBS_SCREEN_KEY])}
-        initialParams={{screenKey: JOBS_SCREEN_KEY}}
-        component={JobsScreen}
-        options={({route}) => ({
-          tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="format-list-bulleted"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
-          ),
-        })}
-      />
-      <Tabs.Screen
-        name={t(tabNameByScreen[INCIDENCES_SCREEN_KEY])}
-        initialParams={{screenKey: INCIDENCES_SCREEN_KEY}}
-        component={IncidencesScreen}
-        options={({route}) => ({
-          tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="priority-high"
               size={size ? size : 24}
               color={focused ? color : '#3E93A8'}
               focused={focused}

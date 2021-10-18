@@ -12,20 +12,34 @@ const styles = StyleSheet.create({
 });
 
 const StatusIncidence = ({onChangeFilter, state}) => {
+  const handlePressIncidenceFilter = (filter) => {
+    if (filter === state) {
+      onChangeFilter(null);
+    } else {
+      onChangeFilter(filter);
+    }
+  };
+
   const {t} = useTranslation();
   return (
     <View style={styles.container}>
       <Filter
-        text={t('common.filters.state.resolved')}
-        color={Variants.success}
-        active={state === true}
-        onPress={() => onChangeFilter(true)}
+        text={t('incidence.status.ini')}
+        color={Variants.warningFilter}
+        active={state === 'ini'}
+        onPress={() => handlePressIncidenceFilter('ini')}
       />
       <Filter
-        text={t('common.filters.state.no_resolved')}
-        color={Variants.danger}
-        active={state === false}
-        onPress={() => onChangeFilter(false)}
+        text={t('incidence.status.process')}
+        color={Variants.filter}
+        active={state === 'process'}
+        onPress={() => handlePressIncidenceFilter('process')}
+      />
+      <Filter
+        text={t('incidence.status.done')}
+        color={Variants.successFilter}
+        active={state === 'done'}
+        onPress={() => handlePressIncidenceFilter('done')}
       />
     </View>
   );

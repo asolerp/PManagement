@@ -1,20 +1,14 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React from 'react';
 
 // Redux
-import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-import {error as errorLog} from '../lib/logging';
+import {useSelector} from 'react-redux';
 
 import {View, StyleSheet, StatusBar, Dimensions} from 'react-native';
 
 import SignOutRouter from '../Router/signOutRouter';
 import Modal from '../components/Modal';
 
-//Firebase
-import auth from '@react-native-firebase/auth';
-import messaging from '@react-native-firebase/messaging';
-import {getUser} from '../firebase/getUser';
-import {useUpdateFirebase} from '../hooks/useUpdateFirebase';
-import {logUser, userSelector} from '../Store/User/userSlice';
+import {userSelector} from '../Store/User/userSlice';
 import Loading from '../components/Loading';
 import {loadingSelector} from '../Store/App/appSlice';
 import AdminRouter from '../Router/adminRouter';
@@ -22,6 +16,7 @@ import WorkerRouter from '../Router/workerRouter';
 import OwnerRouter from '../Router/ownerRouter';
 import {useRedirectNotification} from '../lib/notification/notificationHooks';
 import {useInAppNotification} from '../lib/notification/useInAppNotification';
+import {useAuth} from './hooks/useAuth';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -71,55 +66,22 @@ const getUserSignInStack = (role) => {
 const AuthRouter = () => {
   useRedirectNotification();
   useInAppNotification();
-  const [initializing, setInitializing] = useState(true);
-  const dispatch = useDispatch();
+  useAuth();
 
-  const {updateFirebase} = useUpdateFirebase('users');
-  const loading = useSelector(loadingSelector);
-  const user = useSelector(userSelector, shallowEqual);
-  const setUser = useCallback((user) => dispatch(logUser({user})), [dispatch]);
+  const user = useSelector(userSelector);
 
-  // Handle user state changes
-  const onAuthStateChanged = useCallback(
-    async (result) => {
-      try {
-        if (!result) {
-          return;
-        }
-        const usuario = await getUser(result?.uid);
-        setUser({
-          ...usuario?.data(),
-          uid: result?.uid,
-          token: (await messaging().getToken()) || null,
-        });
-        updateFirebase(`${result?.uid}`, {
-          token: await messaging().getToken(),
-        });
-      } catch (err) {
-        errorLog({
-          message: err.message,
-          track: true,
-          asToast: false,
-        });
-      } finally {
-        setInitializing(false);
-      }
-    },
-    [initializing, setUser],
-  );
+  console.log('user', user);
 
-  useEffect(() => {
-    const authSubscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return authSubscriber;
-  }, [onAuthStateChanged]);
-
-  if (initializing) {
+  if (!user) {
     return null;
   }
 
-  return user?.uid ? (
+  if (!user?.loggedIn) {
+    return <SignOutRouter />;
+  }
+
+  return (
     <React.Fragment>
-      {loading && <Loading />}
       <Modal />
       <StatusBar barStyle="light-content" />
       <View style={styles.appBackground}>
@@ -130,8 +92,6 @@ const AuthRouter = () => {
         </View>
       </View>
     </React.Fragment>
-  ) : (
-    <SignOutRouter />
   );
 };
 

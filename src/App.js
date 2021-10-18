@@ -12,7 +12,6 @@ import {Provider} from 'react-redux';
 import store from './Store';
 
 import * as RNLocalize from 'react-native-localize';
-import {init as initLogging} from './lib/logging';
 import './Translations';
 
 import {ErrorScreen} from './Screens/Error';
@@ -33,7 +32,6 @@ const App = () => {
   const {locale} = useLocales();
   useEffect(() => {
     moment.locale(locale);
-    initLogging();
   }, [locale]);
 
   useEffect(() => {

@@ -7,7 +7,7 @@ export const defaultTextTitle = {
 };
 
 export const defaultLabel = {
-  fontSize: 22,
+  fontSize: 16,
   fontWeight: 'bold',
   color: DARK_BLUE,
 };

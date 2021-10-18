@@ -27,6 +27,9 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
       case 'xxl': {
         return 150;
       }
+      case 'tiny': {
+        return 25;
+      }
       case 'small': {
         return 25;
       }
@@ -61,7 +64,7 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
           style={[
             styles.ownerImage,
             {width: parseSize(size), height: parseSize(size)},
-            {marginLeft: index > 0 && overlap ? -20 : 0},
+            {marginLeft: index > 0 && overlap ? -10 : 0},
             {marginRight: name ? 15 : 0},
           ]}
           source={{

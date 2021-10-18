@@ -2,12 +2,12 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {Colors, Variants} from '../../Theme/Variables';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useTheme} from '../../Theme';
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
     borderRadius: 5,
   },
   label: {
@@ -21,16 +21,42 @@ const styles = StyleSheet.create({
   },
 });
 
-const Badge = ({containerStyle, label, text, variant = 'pm', onPress}) => {
+const Badge = ({
+  type = 'normal',
+  containerStyle,
+  variant = 'pm',
+  iconName,
+  onPress,
+  label,
+  text,
+}) => {
+  const {Layout, Gutters} = useTheme();
   const variantSelected = Variants[variant];
+
+  const isTypeNormal = type === 'normal';
+
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View
         style={[
+          Layout.row,
+          Layout.alignItemsCenter,
           styles.container,
-          {backgroundColor: variantSelected.backgroundColor},
-          {...containerStyle},
+          {
+            paddingHorizontal: isTypeNormal && 10,
+            paddingVertical: isTypeNormal && 5,
+            backgroundColor: isTypeNormal && variantSelected.backgroundColor,
+          },
+          containerStyle,
         ]}>
+        {iconName && (
+          <Icon
+            name={iconName}
+            size={18}
+            color={variantSelected.color}
+            style={[Gutters.tinyRMargin]}
+          />
+        )}
         <Text>
           {label && <Text style={styles.label}>{label}</Text>}
           <Text style={[styles.text, {color: variantSelected.color}]}>

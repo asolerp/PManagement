@@ -2,12 +2,16 @@ import {StyleSheet} from 'react-native';
 
 export default function ({FontSize, Colors}) {
   return StyleSheet.create({
+    chip: {
+      fontSize: FontSize.tiny,
+      fontWeight: '500',
+    },
     alignCenter: {
       textAlign: 'center',
     },
     textTitle: {
       letterSpacing: 1,
-      fontSize: FontSize.regular,
+      fontSize: FontSize.small,
       fontWeight: 'bold',
       color: Colors.darkBlue,
     },
@@ -15,7 +19,6 @@ export default function ({FontSize, Colors}) {
       fontSize: FontSize.small,
       fontWeight: 'bold',
       color: Colors.darkBlue,
-      marginBottom: 10,
     },
     textInfo: {
       fontSize: FontSize.small,

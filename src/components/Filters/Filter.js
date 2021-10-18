@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     marginRight: 10,
+    borderWidth: 1,
   },
   filterText: {
     color: 'white',
@@ -17,19 +18,19 @@ const styles = StyleSheet.create({
 });
 
 const Filter = ({text, onPress, color, active}) => {
+  const {Fonts} = useTheme();
+
   return (
     <TouchableOpacity onPress={onPress}>
       <View
-        style={{
-          ...styles.filterWrapper,
-          ...{
-            backgroundColor: color.backgroundColor,
-            opacity: active ? 1 : 0.4,
+        style={[
+          styles.filterWrapper,
+          {
+            borderColor: color.borderColor,
+            backgroundColor: active ? color.backgroundColor : null,
           },
-        }}>
-        <Text style={{fontSize: 14, color: color.color, fontWeight: 'bold'}}>
-          {text}
-        </Text>
+        ]}>
+        <Text style={[Fonts.chip]}>{text}</Text>
       </View>
     </TouchableOpacity>
   );
