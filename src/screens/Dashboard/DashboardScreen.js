@@ -56,7 +56,6 @@ const DashboardScreen = () => {
       <React.Fragment>
         <ActionButton
           buttonColor={Colors.danger}
-          onPress={() => console.log('hola')}
           style={{zIndex: 10}}
           offsetX={0}>
           <ActionButton.Item
