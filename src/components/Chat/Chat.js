@@ -49,7 +49,7 @@ const Chat = ({collection, docId}) => {
   return (
     <View style={[Layout.fill, Gutters.smallTMargin]}>
       <GiftedChat
-        bottomOffset={-3}
+        bottomOffset={1}
         renderBubble={(props) => (
           <Bubble
             {...props}

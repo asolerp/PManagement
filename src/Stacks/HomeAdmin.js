@@ -5,9 +5,6 @@ import {View, Text, StyleSheet} from 'react-native';
 
 // Screens
 import {DashboardScreen} from '../Screens/Dashboard';
-import {CheckListScreen} from '../Screens/Checklists';
-import {JobsScreen} from '../Screens/Jobs';
-import {IncidencesScreen} from '../Screens/Incidences';
 import {HousesScreen} from '../Screens/Houses';
 
 import {AnimatedTabBarNavigator} from 'react-native-animated-nav-tab-bar';
@@ -20,11 +17,8 @@ import firestore from '@react-native-firebase/firestore';
 import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {tabNameByScreen} from '../utils/parsers';
 import {
-  CHECKLIST_SCREEN_KEY,
   DASHBOARD_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
-  INCIDENCES_SCREEN_KEY,
-  JOBS_SCREEN_KEY,
   USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import {UsersScreen} from '../Screens/Users';
@@ -75,9 +69,6 @@ export const IconWithBadge = ({badgeCount, children}) => {
 
 const HomeAdmin = () => {
   const {t} = useTranslation();
-  const [incidencesCounter] = useDocumentData(
-    firestore().collection('incidences').doc('stats'),
-  );
 
   const getTabBarVisible = (route) => {
     const routeName = getFocusedRouteNameFromRoute(route);
@@ -135,57 +126,6 @@ const HomeAdmin = () => {
           ),
         })}
       />
-      {/* <Screen
-        name={t(tabNameByScreen[CHECKLIST_SCREEN_KEY])}
-        initialParams={{screenKey: CHECKLIST_SCREEN_KEY}}
-        component={CheckListScreen}
-        options={({route}) => ({
-          tabBarBadge: 3,
-          tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="check"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
-          ),
-        })}
-      />
-      <Screen
-        name={t(tabNameByScreen[JOBS_SCREEN_KEY])}
-        initialParams={{screenKey: JOBS_SCREEN_KEY}}
-        component={JobsScreen}
-        options={({route}) => ({
-          tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="format-list-bulleted"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
-          ),
-        })}
-      />
-      <Screen
-        name={t(tabNameByScreen[INCIDENCES_SCREEN_KEY])}
-        initialParams={{screenKey: INCIDENCES_SCREEN_KEY}}
-        component={IncidencesScreen}
-        options={({route}) => ({
-          tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
-            <IconWithBadge badgeCount={incidencesCounter?.count}>
-              <Icon
-                name="priority-high"
-                size={size ? size : 24}
-                color={focused ? color : '#3E93A8'}
-                focused={focused}
-              />
-            </IconWithBadge>
-          ),
-        })}
-      /> */}
       <Screen
         name={t(tabNameByScreen[USERS_SCREEN_KEY])}
         initialParams={{screenKey: USERS_SCREEN_KEY}}

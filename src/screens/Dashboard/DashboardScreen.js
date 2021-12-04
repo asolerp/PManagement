@@ -57,7 +57,8 @@ const DashboardScreen = () => {
         <ActionButton
           buttonColor={Colors.danger}
           onPress={() => console.log('hola')}
-          style={{zIndex: 10}}>
+          style={{zIndex: 10}}
+          offsetX={0}>
           <ActionButton.Item
             buttonColor={Colors.rightGreen}
             onPress={() => openScreenWithPush(NEW_CHECKLIST_SCREEN)}>
