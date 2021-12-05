@@ -31,8 +31,10 @@ const ProfileBar = ({onPress}) => {
     <View style={styles.container}>
       <View style={styles.profileBar}>
         <View>
-          <Text style={styles.welcome}>{t('common.hey')}</Text>
-          <Text style={styles.userName}>{userProfile?.firstName}</Text>
+          <Image
+            style={styles.tinyLogo}
+            source={require('../assets/images/logo_pm_color.png')}
+          />
         </View>
         <View>
           <TouchableOpacity onPress={onPress}>
@@ -52,7 +54,7 @@ const ProfileBar = ({onPress}) => {
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    paddingBottom: 20,
   },
   profileBar: {
     flexDirection: 'row',
@@ -61,8 +63,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   avatar: {
-    width: 75,
-    height: 75,
+    width: 40,
+    height: 40,
     borderRadius: 100,
     borderWidth: 2,
     borderColor: 'white',
@@ -70,12 +72,14 @@ const styles = StyleSheet.create({
   },
   welcome: {
     fontSize: 30,
-    color: 'white',
   },
   userName: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: 'white',
+  },
+  tinyLogo: {
+    width: 80,
+    resizeMode: 'contain',
   },
 });
 

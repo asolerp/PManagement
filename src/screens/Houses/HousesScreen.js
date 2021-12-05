@@ -48,6 +48,8 @@ const HousesScreen = () => {
     <React.Fragment>
       <AddButton iconName="add" onPress={() => handleNewHome()} />
       <PageLayout
+        safe
+        edges={['top']}
         titleLefSide={true}
         titleProps={{
           leftSide: true,

@@ -144,6 +144,7 @@ const HouseScreen = ({route}) => {
         </ModalContent>
       </BottomModal>
       <PageLayout
+        safe
         backButton
         titleProps={{
           subPage: true,

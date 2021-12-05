@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   buttonWrapper: {
+    flex: 1,
     marginTop: 20,
   },
   errorMessage: {

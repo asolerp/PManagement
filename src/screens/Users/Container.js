@@ -103,7 +103,6 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
     borderTopColor: 'transparent',
     backgroundColor: 'white',
-    marginTop: 20,
   },
   inputContainer: {
     borderColor: 'red',

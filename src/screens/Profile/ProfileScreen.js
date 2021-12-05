@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import ImageBlurLoading from 'react-native-image-blur-loading';
 
 //Redux
-import {useSelector, shallowEqual, useDispatch} from 'react-redux';
+import {useSelector} from 'react-redux';
 
 //Firebase
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
@@ -20,7 +20,7 @@ import auth from '@react-native-firebase/auth';
 //Utils
 import {launchImage} from '../../utils/imageFunctions';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {logout, userSelector} from '../../Store/User/userSlice';
+import {userSelector} from '../../Store/User/userSlice';
 import {error} from '../../lib/logging';
 import {useTranslation} from 'react-i18next';
 import {ScrollView} from 'react-native';
@@ -92,8 +92,6 @@ const ProfileScreen = ({route}) => {
   const {updateFirebase} = useUpdateFirebase('users');
   const {upload} = useUploadCloudinaryImage();
 
-  console.log(user);
-
   const defaultImg =
     'https://res.cloudinary.com/enalbis/image/upload/v1629876203/PortManagement/varios/avatar-1577909_1280_gcinj5.png';
 
@@ -102,20 +100,22 @@ const ProfileScreen = ({route}) => {
     userId || user.id,
   );
 
+  console.log(userLoggedIn);
+
   const handleEdit = async () => {
     try {
       setEditLoading(true);
       if (newImage) {
         const uploadImage = await upload(
           newImage,
-          `/PortManagement/Users/${user.uid}/Photos`,
+          `/PortManagement/Users/${userLoggedIn.id}/Photos`,
         );
-        await updateFirebase(user.uid, {
+        await updateFirebase(userLoggedIn.id, {
           ...infoProfile,
           profileImage: uploadImage,
         });
       } else {
-        await updateFirebase(user.uid, {...infoProfile});
+        await updateFirebase(userLoggedIn.id, {...infoProfile});
       }
       setInfoProfile(null);
       setNewImage(null);

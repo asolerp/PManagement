@@ -31,10 +31,6 @@ const store = configureStore({
     const middlewares = getDefaultMiddleware({
       serializableCheck: false,
     });
-    if (__DEV__) {
-      const createDebugger = require('redux-flipper').default;
-      middlewares.push(createDebugger());
-    }
     return middlewares;
   },
 });

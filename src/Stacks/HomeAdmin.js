@@ -13,8 +13,6 @@ import {Platform} from 'react-native';
 
 import {PM_COLOR, PRIORITY_HEIGHT} from '../styles/colors';
 
-import firestore from '@react-native-firebase/firestore';
-import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {tabNameByScreen} from '../utils/parsers';
 import {
   DASHBOARD_SCREEN_KEY,

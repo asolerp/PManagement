@@ -5,9 +5,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 // UI
 import TitlePage from './TitlePage';
-import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import ActionButton from 'react-native-action-button';
 
 import {popScreen} from '../Router/utils/actions';
 import {Colors} from '../Theme/Variables';
@@ -30,7 +28,6 @@ const styles = StyleSheet.create({
   },
   pageScreen: {
     flex: 1,
-    borderTopRightRadius: 50,
   },
   bottomScreen: {
     justifyContent: 'flex-start',
@@ -58,44 +55,40 @@ const styles = StyleSheet.create({
 
 const Container = ({
   titleProps,
-  white,
   backButton,
   titleLefSide,
   titleRightSide,
   titleChildren,
+  withTitle = true,
   children,
   footer,
 }) => (
   <React.Fragment>
-    <TitlePage
-      {...titleProps}
-      leftSide={
-        backButton ? (
-          <TouchableOpacity
-            onPress={() => {
-              popScreen();
-            }}>
-            <View>
-              <Icon name="arrow-back" size={25} color={Colors.white} />
-            </View>
-          </TouchableOpacity>
-        ) : (
-          titleLefSide
-        )
-      }
-      rightSide={titleRightSide}
-      align="center">
-      {titleChildren}
-    </TitlePage>
-    <LinearGradient
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 0}}
-      colors={white ? ['#FFFFFF', '#FFFFFF'] : ['#126D9B', '#67B26F']}
-      style={styles.pageBackScreen}>
-      <View style={styles.pageWrapper}>
-        <View style={styles.pageScreen}>{children}</View>
-      </View>
-    </LinearGradient>
+    {withTitle && (
+      <TitlePage
+        {...titleProps}
+        leftSide={
+          backButton ? (
+            <TouchableOpacity
+              onPress={() => {
+                popScreen();
+              }}>
+              <View>
+                <Icon name="arrow-back" size={25} />
+              </View>
+            </TouchableOpacity>
+          ) : (
+            titleLefSide
+          )
+        }
+        rightSide={titleRightSide}
+        align="center">
+        {titleChildren}
+      </TitlePage>
+    )}
+    <View style={styles.pageWrapper}>
+      <View style={styles.pageScreen}>{children}</View>
+    </View>
     {footer && <View style={styles.bottomScreen}>{footer}</View>}
   </React.Fragment>
 );
@@ -109,7 +102,8 @@ const PageLayout = ({
   footer,
   titleLefSide,
   titleRightSide,
-  edges = ['bottom'],
+  withTitle = true,
+  edges = ['top', 'bottom'],
   safe = false,
 }) => {
   if (safe && Platform.OS === 'ios') {
@@ -117,6 +111,7 @@ const PageLayout = ({
       <SafeAreaView style={styles.container} edges={edges}>
         <Container
           white={white}
+          withTitle={withTitle}
           backButton={backButton}
           titleProps={titleProps}
           children={children}

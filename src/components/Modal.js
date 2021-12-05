@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import {View, StyleSheet, Dimensions, Text, Pressable} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Modal from 'react-native-modal';
 import {useTheme} from '../Theme';
@@ -9,6 +10,7 @@ const CustomModal = ({
   visible,
   setVisible,
   children,
+  onClose,
   swipeDirection = ['down'],
   size = 1,
 }) => {
@@ -34,6 +36,20 @@ const CustomModal = ({
         <View style={[Layout.alignItemsCenter, Gutters.smallVMargin]}>
           <View style={styles.topBar} />
         </View>
+        {!!onClose && (
+          <View
+            style={[
+              Layout.row,
+              Layout.justifyContentEnd,
+              Gutters.mediumTMargin,
+            ]}>
+            <Pressable onPress={onClose}>
+              <View>
+                <Icon name="close" size={25} />
+              </View>
+            </Pressable>
+          </View>
+        )}
         {children}
       </View>
     </Modal>

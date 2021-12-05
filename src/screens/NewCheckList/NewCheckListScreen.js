@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -30,7 +30,7 @@ const NewCheckListScreen = ({route}) => {
             popScreen();
           }}>
           <View>
-            <Icon name="close" size={25} color={Colors.white} />
+            <Icon name="close" size={25} />
           </View>
         </TouchableWithoutFeedback>
       }

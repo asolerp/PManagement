@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {BottomModal, ModalContent} from 'react-native-modals';
 
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 
 import {useSelector, shallowEqual} from 'react-redux';
 

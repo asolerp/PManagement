@@ -8,7 +8,7 @@ import {
 
 import {useSelector, useDispatch} from 'react-redux';
 
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -131,11 +131,9 @@ const NewJobScreen = ({route}) => {
         title: t('newJob.desc_title', {job: taskName.toLowerCase()}),
         subPage: true,
       }}>
-      <SafeAreaView style={styles.jobScreen}>
-        <KeyboardAwareScrollView>
-          <JobForm docId={docId} edit={edit} />
-        </KeyboardAwareScrollView>
-      </SafeAreaView>
+      <KeyboardAwareScrollView>
+        <JobForm docId={docId} edit={edit} />
+      </KeyboardAwareScrollView>
     </PageLayout>
   );
 };

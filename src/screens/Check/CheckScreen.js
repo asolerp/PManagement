@@ -59,7 +59,7 @@ const CheckScreen = ({route}) => {
                 });
               }}>
               <View>
-                <Icon name="settings" size={25} color={Colors.white} />
+                <Icon name="settings" size={25} />
               </View>
             </TouchableWithoutFeedback>
           )

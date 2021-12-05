@@ -2,9 +2,6 @@ import React from 'react';
 import {useRoute} from '@react-navigation/native';
 import {Image, View, Text, StyleSheet, Platform} from 'react-native';
 
-// UI
-import LinearGradient from 'react-native-linear-gradient';
-
 // Utils
 import {getHightByRoute} from '../utils/parsers';
 import {Colors} from '../Theme/Variables';
@@ -19,7 +16,6 @@ const TitlePage = ({
   rightSide,
   children,
   subPage = false,
-  color = 'white',
   background,
   onPress,
 }) => {
@@ -32,22 +28,21 @@ const TitlePage = ({
     <React.Fragment>
       {!children ? (
         <View
-          style={{
-            ...styles.titleWrapper,
-            ...{
+          style={[
+            styles.titleWrapper,
+            {
               justifyContent: 'center',
-              marginTop: Platform.OS === 'ios' ? 0 : 0,
             },
-          }}>
+          ]}>
           <View>
             <View style={[Layout.rowCenter]}>
               <View
-                style={{
-                  ...{
+                style={[
+                  {
                     width: 30,
-                    marginTop: Platform.OS === 'ios' ? 30 : 0,
+                    marginTop: Platform.OS === 'ios' ? 0 : 0,
                   },
-                }}>
+                ]}>
                 {leftSide}
               </View>
               <View
@@ -60,14 +55,13 @@ const TitlePage = ({
                     <Text
                       adjustsFontSizeToFit
                       numberOfLines={2}
-                      style={{
-                        ...styles.title,
-                        ...{
-                          color: color,
-                          marginTop: Platform.OS === 'ios' ? 30 : 0,
+                      style={[
+                        styles.title,
+                        {
+                          marginTop: Platform.OS === 'ios' ? 0 : 0,
                           textAlign: 'center',
                         },
-                      }}>
+                      ]}>
                       {title}
                     </Text>
                   </TouchableWithoutFeedback>
@@ -78,34 +72,26 @@ const TitlePage = ({
                         style={{
                           ...styles.logoContent,
                           ...{
-                            paddingTop: isIOS ? 35 : 0,
+                            paddingTop: isIOS ? 0 : 0,
                           },
                         }}>
                         <Image
                           style={styles.logo}
-                          source={require('../assets/images/logo_pm_servicios.png')}
+                          source={require('../assets/images/logo_pm_color.png')}
                         />
                       </View>
                     )}
                   </View>
                 )}
               </View>
-              <View
-                style={{
-                  ...{
-                    width: 30,
-                    marginTop: Platform.OS === 'ios' ? 30 : 0,
-                  },
-                }}>
-                {rightSide}
-              </View>
+              <View style={{width: 30}}>{rightSide}</View>
             </View>
             <View>
               {subtitle && !subPage && (
                 <Text
                   style={{
                     ...styles.subtitle,
-                    ...{color: color, marginLeft: 0},
+                    ...{marginLeft: 0},
                   }}>
                   {subtitle}
                 </Text>
@@ -114,7 +100,6 @@ const TitlePage = ({
                 <Text
                   style={{
                     ...{
-                      color: color,
                       textAlign: 'center',
                       fontSize: 13,
                       marginBottom: 5,
@@ -151,28 +136,21 @@ const TitlePage = ({
     );
   }
   return (
-    <LinearGradient
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 0}}
-      colors={['#4D84A0', '#55A7AE', '#67B26F']}
+    <View
       style={{
         ...styles.container,
         ...{
-          height: subPage ? 90 : getHightByRoute(screenKey),
-          paddingTop: children ? (Platform.OS === 'ios' ? 50 : 0) : 0,
+          height: subPage ? 40 : getHightByRoute(screenKey),
         },
       }}>
       <TitleWrapper />
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'flex-start',
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 50,
   },
   box: {
     flexBasis: 1,
@@ -185,15 +163,12 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   childrenWrapper: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 20,
+    justifyContent: 'flex-start',
     width: '100%',
   },
   logo: {
     width: 80,
-    height: 40,
-    margin: 0,
+    resizeMode: 'contain',
   },
   title: {
     fontSize: 20,

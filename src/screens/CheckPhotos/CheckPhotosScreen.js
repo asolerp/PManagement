@@ -147,6 +147,7 @@ const CheckPhotosScreen = ({route}) => {
 
   return (
     <PageLayout
+      safe
       backButton
       titleProps={{
         subPage: true,

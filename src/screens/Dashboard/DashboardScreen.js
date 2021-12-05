@@ -32,13 +32,15 @@ import {useTranslation} from 'react-i18next';
 import Filters from '../../components/Filters/Filters';
 import CustomModal from '../../components/Modal';
 import {parseTimeFilter} from '../../utils/parsers';
-import LinearGradient from 'react-native-linear-gradient';
 import {Colors} from '../../Theme/Variables';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
 
 const DashboardScreen = () => {
-  const {Layout, Gutters, Fonts} = useTheme();
   const {t} = useTranslation();
+  const {Layout, Gutters, Fonts} = useTheme();
   const [visibleModal, setVisibleModal] = useState();
+  const user = useSelector(userSelector);
   const [filters, setFilters] = useState({
     time: parseTimeFilter('all'),
     state: false,
@@ -48,11 +50,7 @@ const DashboardScreen = () => {
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
 
   return (
-    <PageLayout
-      titleChildren={
-        <ProfileBar onPress={() => openScreenWithPush(PROFILE_SCREEN_KEY)} />
-      }
-      titleLefSide={true}>
+    <PageLayout safe edges={['top']} withTitle={false}>
       <React.Fragment>
         <ActionButton
           buttonColor={Colors.danger}
@@ -89,53 +87,47 @@ const DashboardScreen = () => {
             />
           </ActionButton.Item>
         </ActionButton>
-        <LinearGradient
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
-          colors={[Colors.pm, Colors.rightGreen]}
-          style={[
-            Gutters.mediumTMargin,
-            Gutters.tinyBMargin,
-            Gutters.smallAPadding,
-            {
-              borderRadius: 15,
-            },
-          ]}>
-          <View
-            style={[
-              Layout.row,
-              Layout.alignItemsCenter,
-              ,
-              Layout.justifyContentSpaceBetween,
-            ]}>
-            <Text
-              style={[Fonts.textTitle, {color: Colors.white, width: '50%'}]}>
-              {t('welcome', {date: date.join(' ')})}
-            </Text>
-            <TouchableWithoutFeedback onPress={() => setVisibleModal(true)}>
-              <View style={[Layout.row, Layout.alignItemsCenter]}>
-                <Icon
-                  name="filter-alt"
-                  size={15}
-                  color={Colors.white}
-                  style={[Gutters.tinyRMargin]}
-                />
-                <Text style={[Fonts.textTitle, {color: Colors.white}]}>
-                  {t('common.filters.title')}
-                </Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </LinearGradient>
         <ScrollView
-          style={[Layout.fill, styles.container, Gutters.smallTMargin]}
+          style={[Layout.fill, styles.container]}
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}>
+          <ProfileBar onPress={() => openScreenWithPush(PROFILE_SCREEN_KEY)} />
+          <View style={[Gutters.mediumBMargin]}>
+            <View
+              style={[
+                Layout.row,
+                Layout.alignItemsCenter,
+                Layout.justifyContentSpaceBetween,
+              ]}>
+              <View>
+                <Text style={[Fonts.textRegular, {color: Colors.pm}]}>
+                  Hola {user.firstName || '' + '.'}
+                </Text>
+                <Text
+                  style={[Fonts.textRegular, {width: 200, fontWeight: '400'}]}>
+                  Estas son tus tareas en el día de hoy
+                </Text>
+              </View>
+              <TouchableWithoutFeedback onPress={() => setVisibleModal(true)}>
+                <View style={[Layout.row, Layout.alignItemsCenter]}>
+                  <Icon
+                    name="filter-alt"
+                    size={15}
+                    style={[Gutters.tinyRMargin]}
+                  />
+                  <Text style={[Fonts.textTitle]}>
+                    {t('common.filters.title')}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </View>
           <View style={styles.home}>
             <CustomModal
               visible={visibleModal}
               swipeDirection={null}
               setVisible={setVisibleModal}
+              onClose={() => setVisibleModal(false)}
               size={1}>
               <Filters
                 activeFilters={{

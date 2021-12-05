@@ -1,19 +1,19 @@
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {View, Text, Image, StyleSheet, StatusBar} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 
 // UI
 import LinearGradient from 'react-native-linear-gradient';
 import LoginForm from '../../components/Forms/Auth/LoginForm';
+import {KeyboardAvoidingView} from 'react-native';
 
 export const LOGIN_SCREEN_KEY = 'loginScreen';
 
 const LoginScreen = () => {
   const {t} = useTranslation();
   return (
-    <React.Fragment>
-      <StatusBar barStyle="light-content" />
+    <KeyboardAvoidingView style={{flex: 1}} behavior="padding">
       <View style={styles.container}>
         <LinearGradient colors={['#126D9B', '#67B26F']} style={styles.gradient}>
           <View style={styles.logoWrapper}>
@@ -26,14 +26,12 @@ const LoginScreen = () => {
             <Text style={styles.welcomeText}>{t('login.welcome')}</Text>
             <Text style={styles.welcomeTextSub}>{t('login.login')}</Text>
           </View>
-          <KeyboardAwareScrollView>
-            <View style={styles.inputsWrapper}>
-              <LoginForm />
-            </View>
-          </KeyboardAwareScrollView>
+          <View style={styles.inputsWrapper}>
+            <LoginForm />
+          </View>
         </LinearGradient>
       </View>
-    </React.Fragment>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -46,6 +44,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   logoWrapper: {
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -54,10 +53,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   welcomeWrapper: {
+    flex: 1,
     // marginBottom: '40%',
   },
   inputsWrapper: {
-    paddingTop: '50%',
+    flex: 2,
     justifyContent: 'flex-start',
     alignContent: 'flex-start',
   },

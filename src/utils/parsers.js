@@ -43,7 +43,7 @@ export const tabNameByScreen = {
 export const getHightByRoute = (route) => {
   switch (route) {
     case DASHBOARD_SCREEN_KEY:
-      return isIOS ? 140 : 120;
+      return isIOS ? 70 : 50;
     case DASHBOARD_WORKER_SCREEN_KEY:
       return isIOS ? 140 : 120;
     case HOUSE_SCREEN_KEY:
@@ -55,11 +55,11 @@ export const getHightByRoute = (route) => {
     case JOBS_SCREEN_KEY:
       return isIOS ? 80 : 60;
     case HOUSES_SCREEN_KEY:
-      return isIOS ? 80 : 60;
+      return isIOS ? 30 : 60;
     case PROFILE_SCREEN_KEY:
       return isIOS ? 80 : 60;
     default:
-      return isIOS ? 80 : 60;
+      return isIOS ? 30 : 60;
   }
 };
 
