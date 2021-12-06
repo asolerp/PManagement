@@ -43,11 +43,14 @@ import Label from '../../Elements/Label';
 
 import {CHECKLISTS} from '../../../utils/firebaseKeys';
 import {useTranslation} from 'react-i18next';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 const CheckListForm = ({edit, docId}) => {
   const dispatch = useDispatch();
   const {Layout} = useTheme();
-  const {list} = useGetFirebase('checks');
+  const [list] = useCollectionData(firestore().collection('checks'), {
+    idField: 'id',
+  });
   const {t} = useTranslation();
   const house = useSelector(houseSelector);
   const workers = useSelector(workersSelector);
@@ -77,7 +80,7 @@ const CheckListForm = ({edit, docId}) => {
     [dispatch],
   );
 
-  const allChecks = list.reduce(
+  const allChecks = list?.reduce(
     (acc, check) => ({
       ...acc,
       [check.id]: {...check, check: true, originalId: check.id},
@@ -208,6 +211,7 @@ const CheckListForm = ({edit, docId}) => {
   );
 
   const CheckItem = ({item}) => {
+    console.log(item);
     return (
       <View style={styles.checkWrapper}>
         <CheckBox
@@ -224,6 +228,8 @@ const CheckListForm = ({edit, docId}) => {
       </View>
     );
   };
+
+  console.log('list', list);
 
   return (
     <View style={[styles.newJobScreen]}>

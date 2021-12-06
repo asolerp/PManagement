@@ -11,7 +11,7 @@ import CustomButton from '../../components/Elements/CustomButton';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {Colors} from '../../Theme/Variables';
+
 import {sendOwnerChecklist} from '../../components/Alerts/checklist';
 import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
 

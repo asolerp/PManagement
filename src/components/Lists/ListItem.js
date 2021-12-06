@@ -24,10 +24,13 @@ export const ListItem = ({
   subtitle,
   dateVariant,
   statusPercentage,
+  withStatusBar = false,
   fullWidth = false,
   statusColor = Colors.pm,
 }) => {
   const {Layout, Gutters, Fonts} = useTheme();
+
+  console.log(statusPercentage);
 
   return (
     <React.Fragment>
@@ -79,12 +82,12 @@ export const ListItem = ({
             )}
           </View>
           <View style={[Layout.grow, Layout.col, Layout.justifyContentEnd]}>
-            {statusPercentage && (
+            {withStatusBar && (
               <View style={[Gutters.smallBMargin]}>
                 <Progress.Bar
                   borderColor={Colors.pm}
                   color={Colors.pm}
-                  progress={statusPercentage}
+                  progress={statusPercentage || 0}
                   width={180}
                 />
               </View>

@@ -14,6 +14,9 @@ import firestore from '@react-native-firebase/firestore';
 const useChat = ({collection, docId}) => {
   const [entity] = useDocumentData(
     firestore().collection(collection).doc(docId),
+    {
+      idField: 'id',
+    },
   );
 
   const [messages] = useCollectionData(
@@ -57,9 +60,9 @@ const useChat = ({collection, docId}) => {
 
   useEffect(() => {
     if (messages?.length > 0) {
-      setMessagesAsRead(docId, user.uid, collection);
+      setMessagesAsRead(docId, user.id, collection);
     }
-  }, [messages, docId, collection, user.uid]);
+  }, [messages, docId, collection, user.id]);
 
   return {
     messages,

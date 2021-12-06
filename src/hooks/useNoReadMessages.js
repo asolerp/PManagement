@@ -21,7 +21,7 @@ const useNoReadMessages = ({collection, docId}) => {
         QuerySnapshot.docs
           .map((doc) => ({...doc.data(), id: doc.id}))
           ?.filter((message) => !message?.received?.[user?.id])
-          ?.filter((message) => message?.user._id !== user.uid).length,
+          ?.filter((message) => message?.user._id !== user.id).length,
       );
     };
     const onError = (err) => {
@@ -34,7 +34,7 @@ const useNoReadMessages = ({collection, docId}) => {
     const messagesQuery = doc.collection('messages');
     const subscriber = messagesQuery.onSnapshot(onResult, onError);
     return () => subscriber();
-  }, [collection, docId, user.uid]);
+  }, [collection, docId, user.id]);
 
   return {
     loading,

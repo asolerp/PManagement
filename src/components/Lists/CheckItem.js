@@ -19,8 +19,11 @@ const CheckItem = ({item, fullWidth}) => {
     docId: item.id,
   });
 
+  console.log(item.done, item.total);
+
   return (
     <ListItem
+      withStatusBar
       date={t(parseDateWithText(item?.date).text, {
         numberOfDays: parseDateWithText(item?.date)?.metaData?.numberOfDays,
       })}

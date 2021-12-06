@@ -3,7 +3,7 @@ import {TouchableWithoutFeedback, View} from 'react-native';
 import PageLayout from '../../components/PageLayout';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Chat from '../../components/Chat/Chat';
-import {Colors} from '../../Theme/Variables';
+
 import {popScreen} from '../../Router/utils/actions';
 
 import Avatar from '../../components/Avatar';
@@ -35,7 +35,7 @@ const ChatScreen = ({route}) => {
             popScreen();
           }}>
           <View>
-            <Icon name="close" size={25} color={Colors.white} />
+            <Icon name="close" size={25} />
           </View>
         </TouchableWithoutFeedback>
       }

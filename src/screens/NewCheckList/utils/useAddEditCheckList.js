@@ -108,6 +108,7 @@ export const useAddEditCheckist = ({docId}) => {
         send: false,
         done: 0,
       };
+      console.log('new', newCheckListForm);
       const newCheckList = await addFirebase('checklists', newCheckListForm);
       await Promise.all(
         Object.entries(checks)
