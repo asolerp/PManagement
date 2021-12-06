@@ -45,7 +45,7 @@ export const getHightByRoute = (route) => {
     case DASHBOARD_SCREEN_KEY:
       return isIOS ? 70 : 50;
     case DASHBOARD_WORKER_SCREEN_KEY:
-      return isIOS ? 140 : 120;
+      return isIOS ? 70 : 50;
     case HOUSE_SCREEN_KEY:
       return isIOS ? 180 : 160;
     case INCIDENCES_SCREEN_KEY:

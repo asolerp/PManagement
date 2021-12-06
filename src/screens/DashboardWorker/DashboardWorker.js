@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
 import {useSelector, shallowEqual} from 'react-redux';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Pressable} from 'react-native';
 import {useTranslation} from 'react-i18next';
 
 import ProfileBar from '../../components/ProfileBar';
@@ -28,6 +28,7 @@ import PageLayout from '../../components/PageLayout';
 import {useTheme} from '../../Theme';
 import IncidencesList from '../../components/Lists/IncidencesList';
 import {parseTimeFilter} from '../../utils/parsers';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
 });
 
 const DashboardWorkerScreen = () => {
-  const {Layout, Gutters} = useTheme();
+  const {Layout, Gutters, Fonts} = useTheme();
   const user = useSelector(userSelector, shallowEqual);
   const {t} = useTranslation();
   const [filters, setFilters] = useState({
@@ -77,26 +78,34 @@ const DashboardWorkerScreen = () => {
   return (
     <React.Fragment>
       <AddButton iconName="warning" onPress={() => handleNewCheckList()} />
-      <PageLayout titleChildren={<ProfileBar />} titleLefSide={true}>
+      <PageLayout safe edges={['top']} withTitle={false}>
         <ScrollView
           style={[Layout.fill, styles.container, Gutters.smallTMargin]}
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}>
+          <ProfileBar onPress={() => openScreenWithPush(PROFILE_SCREEN_KEY)} />
+          <View style={[Gutters.mediumBMargin]}>
+            <View
+              style={[
+                Layout.row,
+                Layout.alignItemsCenter,
+                Layout.justifyContentSpaceBetween,
+              ]}>
+              <View>
+                <Text style={[Fonts.textRegular, {color: Colors.pm}]}>
+                  Hola {user.firstName || '' + '.'}
+                </Text>
+                <Text style={[Fonts.textRegular, {fontWeight: '400'}]}>
+                  Estas son tus tareas en el día de hoy
+                </Text>
+              </View>
+            </View>
+          </View>
           <View style={styles.home}>
             <View style={styles.content}>
-              <Text
-                style={{
-                  ...defaultLabel,
-                  ...marginBottom(10),
-                  ...marginTop(20),
-                }}>
-                {t('welcome', {date: date.join(' ')})}
-              </Text>
-              <Text style={{...styles.label, ...marginBottom(20)}}>
-                {t('homeMessage')}
-              </Text>
               {filters.type.some((t) => t === 'checklists') && (
                 <ChecklistList
+                  uid={user?.id}
                   workers={filters?.workers}
                   houses={filters?.houses}
                   typeFilters={filters?.type}
@@ -105,6 +114,7 @@ const DashboardWorkerScreen = () => {
               )}
               {filters.type.some((t) => t === 'incidences') && (
                 <IncidencesList
+                  uid={user?.id}
                   workers={filters?.workers}
                   houses={filters?.houses}
                   state={filters?.incidenceState}
@@ -114,6 +124,7 @@ const DashboardWorkerScreen = () => {
               )}
               {filters.type.some((t) => t === 'jobs') && (
                 <JobsList
+                  uid={user?.id}
                   workers={filters?.workers}
                   houses={filters?.houses}
                   typeFilters={filters.type}

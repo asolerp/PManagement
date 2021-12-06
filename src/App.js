@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {StatusBar, View} from 'react-native';
+import {View} from 'react-native';
 import AuthRouter from './Router/authRouter';
 import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
@@ -44,7 +44,6 @@ const App = () => {
 
   return (
     <ErrorBoundary FallbackComponent={CustomFallback}>
-      <StatusBar barStyle="default" animated={true} />
       <MenuProvider>
         <Provider store={store}>
           <AuthRouter />

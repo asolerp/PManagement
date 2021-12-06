@@ -1,7 +1,6 @@
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {View, Text, Image, StyleSheet, StatusBar} from 'react-native';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {View, Text, Image, StyleSheet} from 'react-native';
 
 // UI
 import LinearGradient from 'react-native-linear-gradient';

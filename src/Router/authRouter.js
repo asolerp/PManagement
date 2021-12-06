@@ -3,14 +3,13 @@ import React from 'react';
 // Redux
 import {useSelector} from 'react-redux';
 
-import {View, StyleSheet, StatusBar, Dimensions} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 
 import SignOutRouter from '../Router/signOutRouter';
 import Modal from '../components/Modal';
 
 import {userSelector} from '../Store/User/userSlice';
-import Loading from '../components/Loading';
-import {loadingSelector} from '../Store/App/appSlice';
+
 import AdminRouter from '../Router/adminRouter';
 import WorkerRouter from '../Router/workerRouter';
 import OwnerRouter from '../Router/ownerRouter';
@@ -83,7 +82,6 @@ const AuthRouter = () => {
   return (
     <React.Fragment>
       <Modal />
-      <StatusBar barStyle="light-content" />
       <View style={styles.appBackground}>
         <View style={styles.background}>
           <View style={styles.contentWrapper}>
