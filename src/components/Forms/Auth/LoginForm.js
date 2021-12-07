@@ -100,6 +100,7 @@ const LoginForm = () => {
 const styles = StyleSheet.create({
   formWrapper: {
     flex: 1,
+    justifyContent: 'flex-end',
   },
   forgotText: {
     color: 'white',
@@ -118,7 +119,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   buttonWrapper: {
-    flex: 1,
     marginTop: 20,
   },
   errorMessage: {

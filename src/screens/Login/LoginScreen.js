@@ -6,31 +6,36 @@ import {View, Text, Image, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import LoginForm from '../../components/Forms/Auth/LoginForm';
 import {KeyboardAvoidingView} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 export const LOGIN_SCREEN_KEY = 'loginScreen';
 
 const LoginScreen = () => {
   const {t} = useTranslation();
   return (
-    <KeyboardAvoidingView style={{flex: 1}} behavior="padding">
-      <View style={styles.container}>
-        <LinearGradient colors={['#126D9B', '#67B26F']} style={styles.gradient}>
-          <View style={styles.logoWrapper}>
-            <Image
-              style={styles.logo}
-              source={require('../../assets/images/logo_pm_servicios.png')}
-            />
-          </View>
-          <View style={styles.welcomeWrapper}>
-            <Text style={styles.welcomeText}>{t('login.welcome')}</Text>
-            <Text style={styles.welcomeTextSub}>{t('login.login')}</Text>
-          </View>
-          <View style={styles.inputsWrapper}>
+    <LinearGradient colors={['#126D9B', '#67B26F']} style={styles.gradient}>
+      <SafeAreaView style={{flex: 1}}>
+        <KeyboardAvoidingView
+          style={{flex: 1}}
+          behavior="padding"
+          keyboardVerticalOffset={15}>
+          <View style={styles.container}>
+            <View style={styles.logoWrapper}>
+              <Image
+                style={styles.logo}
+                source={require('../../assets/images/logo_pm_servicios.png')}
+              />
+            </View>
+            <View style={styles.welcomeWrapper}>
+              <Text style={styles.welcomeText}>{t('login.welcome')}</Text>
+              <Text style={styles.welcomeTextSub}>{t('login.login')}</Text>
+            </View>
             <LoginForm />
+            {/* <View style={styles.inputsWrapper} /> */}
           </View>
-        </LinearGradient>
-      </View>
-    </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -43,7 +48,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   logoWrapper: {
-    flex: 2,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -56,9 +61,8 @@ const styles = StyleSheet.create({
     // marginBottom: '40%',
   },
   inputsWrapper: {
-    flex: 2,
-    justifyContent: 'flex-start',
-    alignContent: 'flex-start',
+    backgroundColor: 'red',
+    flexGrow: 1,
   },
   welcomeText: {
     color: 'white',

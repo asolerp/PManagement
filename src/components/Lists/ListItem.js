@@ -87,7 +87,7 @@ export const ListItem = ({
                 <Progress.Bar
                   borderColor={Colors.pm}
                   color={Colors.pm}
-                  progress={statusPercentage || 0}
+                  progress={statusPercentage}
                   width={180}
                 />
               </View>

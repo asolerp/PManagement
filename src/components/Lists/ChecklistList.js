@@ -84,19 +84,17 @@ const ChecklistList = ({uid, house, houses, workers, time, typeFilters}) => {
   // let filteredValues;
   let firestoreQuery = firestore().collection('checklists');
 
+  console.log('WORKER', uid);
+
   if (house) {
     firestoreQuery = firestoreQuery
       .where('finished', '==', false)
-      .where('houseId', '==', house?.id)
-      .where('date', '>', new Date(time.start))
-      .where('date', '<', new Date(time.end));
+      .where('houseId', '==', house?.id);
   }
   if (uid) {
     firestoreQuery = firestoreQuery
       .where('finished', '==', false)
-      .where('workersId', 'array-contains', uid)
-      .where('date', '>', new Date(time.start))
-      .where('date', '<', new Date(time.end));
+      .where('workersId', 'array-contains', uid);
   }
   if (!uid && !house) {
     firestoreQuery = firestoreQuery
@@ -134,13 +132,6 @@ const ChecklistList = ({uid, house, houses, workers, time, typeFilters}) => {
   return (
     <View style={[Gutters.smallBMargin]}>
       <View style={{...styles.filterWrapper, ...width(80)}}>
-        {/* {!house && (
-          <View style={[styles.badget, Gutters.tinyRMargin]}>
-            <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-              {filteredValues?.length || 0}
-            </Text>
-          </View>
-        )} */}
         <Text style={[Fonts.textTitle, Gutters.mediumRMargin]}>
           {t('checklists.title')}
         </Text>

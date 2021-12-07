@@ -1,14 +1,11 @@
 import React, {useState} from 'react';
 
 import {useSelector, shallowEqual} from 'react-redux';
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {useTranslation} from 'react-i18next';
 
 import ProfileBar from '../../components/ProfileBar';
 import AddButton from '../../components/Elements/AddButton';
-
-// Styles
-import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
 
 // Utils
 import moment from 'moment';
@@ -62,12 +59,11 @@ const styles = StyleSheet.create({
 const DashboardWorkerScreen = () => {
   const {Layout, Gutters, Fonts} = useTheme();
   const user = useSelector(userSelector, shallowEqual);
-  const {t} = useTranslation();
-  const [filters, setFilters] = useState({
+  const filters = {
     time: parseTimeFilter('all'),
     state: false,
     type: ['jobs', 'incidences', 'checklists'],
-  });
+  };
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
 
@@ -83,7 +79,7 @@ const DashboardWorkerScreen = () => {
           style={[Layout.fill, styles.container, Gutters.smallTMargin]}
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}>
-          <ProfileBar onPress={() => openScreenWithPush(PROFILE_SCREEN_KEY)} />
+          <ProfileBar />
           <View style={[Gutters.mediumBMargin]}>
             <View
               style={[

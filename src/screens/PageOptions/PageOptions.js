@@ -55,7 +55,7 @@ const PageOptionsScreen = ({route}) => {
             popScreen();
           }}>
           <View>
-            <Icon name="close" size={25} color={Colors.white} />
+            <Icon name="close" size={25} />
           </View>
         </TouchableWithoutFeedback>
       }

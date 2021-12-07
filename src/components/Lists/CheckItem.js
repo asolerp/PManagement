@@ -4,6 +4,7 @@ import useNoReadMessages from '../../hooks/useNoReadMessages';
 
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
+import useGetChecklistStats from './hooks/useGetChecklistStats';
 
 import useAuth from '../../utils/useAuth';
 
@@ -19,7 +20,13 @@ const CheckItem = ({item, fullWidth}) => {
     docId: item.id,
   });
 
-  console.log(item.done, item.total);
+  const {completePercentage, loadingChecks} = useGetChecklistStats({
+    checkId: item.id,
+  });
+
+  if (loadingChecks) {
+    return null;
+  }
 
   return (
     <ListItem
@@ -28,8 +35,8 @@ const CheckItem = ({item, fullWidth}) => {
         numberOfDays: parseDateWithText(item?.date)?.metaData?.numberOfDays,
       })}
       dateVariant={parseDateWithText(item?.date).variant}
-      statusColor={parsePercentageDone(item?.done / item?.total)}
-      statusPercentage={item?.done / item?.total}
+      statusColor={parsePercentageDone(completePercentage)}
+      statusPercentage={completePercentage}
       title="Checklist"
       subtitle={
         isOwner ? `${t('checklists.owner_text_1')}` : item?.observations
