@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useState} from 'react';
 import {View, Text, TextInput, StyleSheet} from 'react-native';
 
 // UI
@@ -23,7 +23,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {userSelector} from '../../Store/User/userSlice';
 import {error} from '../../lib/logging';
 import {useTranslation} from 'react-i18next';
-import {ScrollView} from 'react-native';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {Button} from 'react-native';
 import {useTheme} from '../../Theme';
 import {ActivityIndicator} from 'react-native';
@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#284748',
     fontWeight: 'bold',
-    marginBottom: 30,
   },
   formContainer: {
     flex: 5,
@@ -85,7 +84,7 @@ const ProfileScreen = ({route}) => {
   const [infoProfile, setInfoProfile] = useState();
   const [editLoading, setEditLoading] = useState(false);
 
-  const {Layout} = useTheme();
+  const {Layout, Gutters} = useTheme();
 
   const user = useSelector(userSelector);
   const {t} = useTranslation();
@@ -161,49 +160,59 @@ const ProfileScreen = ({route}) => {
         title: t('profile.title'),
         subPage: true,
       }}>
-      <View style={styles.pageContainer}>
-        <View style={styles.avatarContainer}>
-          <TouchableOpacity onPress={() => launchImage(setNewImage)}>
-            {newImage && (
-              <View style={styles.iconContainer}>
-                <TouchableOpacity onPress={() => setNewImage(null)}>
-                  <Icon name="close" size={20} color="white" />
-                </TouchableOpacity>
-              </View>
-            )}
-            <ImageBlurLoading
-              withIndicator
-              thumbnailSource={{
-                uri: newImage?.fileUri || userLoggedIn?.profileImage,
-              }}
-              source={{
-                uri:
-                  newImage?.fileUri || userLoggedIn?.profileImage || defaultImg,
-              }}
-              style={styles.avatarWrapper}
-            />
-          </TouchableOpacity>
-          <Text style={styles.comonTextStyle}>
-            {userLoggedIn?.firstName} {userLoggedIn?.lastName}
-          </Text>
-        </View>
-        <View style={styles.formContainer}>
-          <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
-            <Text style={styles.titleStyle}>{t('profile.personal_data')}</Text>
-            {(infoProfile || newImage) && (
-              <React.Fragment>
-                {editLoading ? (
-                  <ActivityIndicator color={Colors.pm} size="small" />
-                ) : (
-                  <Button
-                    title={t('common.edit')}
-                    onPress={() => handleEdit()}
-                  />
-                )}
-              </React.Fragment>
-            )}
+      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.pageContainer}>
+          <View style={styles.avatarContainer}>
+            <TouchableOpacity onPress={() => launchImage(setNewImage)}>
+              {newImage && (
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity onPress={() => setNewImage(null)}>
+                    <Icon name="close" size={20} color="white" />
+                  </TouchableOpacity>
+                </View>
+              )}
+              <ImageBlurLoading
+                withIndicator
+                thumbnailSource={{
+                  uri: newImage?.fileUri || userLoggedIn?.profileImage,
+                }}
+                source={{
+                  uri:
+                    newImage?.fileUri ||
+                    userLoggedIn?.profileImage ||
+                    defaultImg,
+                }}
+                style={styles.avatarWrapper}
+              />
+            </TouchableOpacity>
+            <Text style={styles.comonTextStyle}>
+              {userLoggedIn?.firstName} {userLoggedIn?.lastName}
+            </Text>
           </View>
-          <ScrollView>
+          <View style={styles.formContainer}>
+            <View
+              style={[
+                Layout.row,
+                Layout.justifyContentSpaceBetween,
+                Layout.alignItemsCenter,
+                Gutters.mediumBMargin,
+              ]}>
+              <Text style={styles.titleStyle}>
+                {t('profile.personal_data')}
+              </Text>
+              {(infoProfile || newImage) && (
+                <React.Fragment>
+                  {editLoading ? (
+                    <ActivityIndicator color={Colors.pm} size="small" />
+                  ) : (
+                    <Button
+                      title={t('common.edit')}
+                      onPress={() => handleEdit()}
+                    />
+                  )}
+                </React.Fragment>
+              )}
+            </View>
             <Text style={styles.inputLabel}>{t('profile.name') + ': '}</Text>
             <InputGroup>
               <TextInput
@@ -254,9 +263,9 @@ const ProfileScreen = ({route}) => {
                 value={infoProfile?.email || userLoggedIn?.email}
               />
             </InputGroup>
-          </ScrollView>
+          </View>
         </View>
-      </View>
+      </KeyboardAwareScrollView>
     </PageLayout>
   );
 };

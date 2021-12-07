@@ -37,12 +37,7 @@ const CustomModal = ({
           <View style={styles.topBar} />
         </View>
         {!!onClose && (
-          <View
-            style={[
-              Layout.row,
-              Layout.justifyContentEnd,
-              Gutters.mediumTMargin,
-            ]}>
+          <View style={[Layout.row, Layout.justifyContentEnd]}>
             <Pressable onPress={onClose}>
               <View>
                 <Icon name="close" size={25} />
@@ -69,7 +64,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingBottom: 10,
+    paddingVertical: 25,
     backgroundColor: 'white',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,

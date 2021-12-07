@@ -33,8 +33,8 @@ const PhotoCameraModal = ({
       <View style={styles.content}>
         <InputGroup>
           <Button title="Abrir fotos" onPress={handleClickLibrary} />
-          <Divider />
-          <Button title="Abrir cámara" onPress={handleClickCamera} />
+          {/* <Divider />
+          <Button title="Abrir cámara" onPress={handleClickCamera} /> */}
         </InputGroup>
         <InputGroup>
           <Button title="Cancelar" onPress={() => handleVisibility(false)} />

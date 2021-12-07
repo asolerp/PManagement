@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const JobsList = ({uid, houses, workers, time, typeFilters}) => {
+const JobsList = ({uid, houses, workers, time, typeFilters, state}) => {
   const {Fonts, Gutters} = useTheme();
   const {t} = useTranslation();
   const isOnlyTypeFilter = typeFilters.length === 1;
@@ -108,7 +108,7 @@ const JobsList = ({uid, houses, workers, time, typeFilters}) => {
   if (!uid) {
     firestoreQuery = firestore()
       .collection(JOBS)
-      .where('done', '==', false)
+      .where('done', '==', state)
       .where('date', '>', new Date(time.start))
       .where('date', '<', new Date(time.end));
   }

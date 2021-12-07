@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import {useSelector} from 'react-redux';
+
 import {Filter} from '../components/Filters/StatusTaskFilter';
-import {userSelector} from '../Store/User/userSlice';
+
 import {useTheme} from '../Theme';
 
 import firestore from '@react-native-firebase/firestore';
@@ -11,15 +11,13 @@ import {error} from '../lib/logging';
 
 const SituationIncidence = ({incidence}) => {
   const {Layout, Gutters, Colors, Fonts} = useTheme();
-  const user = useSelector(userSelector);
+
   const {t} = useTranslation();
   const handleStateIncidence = async (stateIncidence) => {
     try {
-      if (user.role === 'admin' || incidence.workersId.includes(user.uid)) {
-        await firestore()
-          .doc(`incidences/${incidence.id}`)
-          .update({state: stateIncidence});
-      }
+      await firestore()
+        .doc(`incidences/${incidence.id}`)
+        .update({state: stateIncidence});
     } catch (err) {
       error({
         message: err.message,

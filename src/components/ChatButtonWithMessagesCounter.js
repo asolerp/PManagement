@@ -12,7 +12,7 @@ const ChatButtonWithMessagesCounter = ({collection, docId}) => {
     <AddButton
       badgeCount={noReadCounter}
       iconName="chat"
-      bottom={80}
+      bottom={100}
       onPress={() =>
         openScreenWithPush(CHAT_SCREEN_KEY, {
           collection: collection,

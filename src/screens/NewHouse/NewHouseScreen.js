@@ -11,6 +11,7 @@ import {popScreen} from '../../Router/utils/actions';
 const NewHouseScreen = ({navigation}) => {
   return (
     <PageLayout
+      safe
       backButton
       titleProps={{
         title: 'Nueva casa',

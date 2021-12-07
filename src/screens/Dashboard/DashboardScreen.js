@@ -168,6 +168,7 @@ const DashboardScreen = () => {
                   houses={filters?.houses}
                   typeFilters={filters.type}
                   time={filters?.time}
+                  state={filters?.state}
                 />
               )}
             </View>
