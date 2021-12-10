@@ -20,6 +20,8 @@ const sendPushNotificationNewJob = functions.firestore
 
       const listTokens = workersTokens;
 
+      const cleanListTokens = listTokens.filter((t) => t !== undefined);
+
       let notification = {
         title: 'Nuevo trabajo 💪',
         body: `Se te ha asignado un nuevo trabajo!`,
@@ -32,7 +34,7 @@ const sendPushNotificationNewJob = functions.firestore
       };
 
       await admin.messaging().sendMulticast({
-        tokens: listTokens,
+        tokens: cleanListTokens,
         notification,
         apns: {
           payload: {

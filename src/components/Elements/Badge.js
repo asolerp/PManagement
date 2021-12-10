@@ -43,8 +43,8 @@ const Badge = ({
           Layout.alignItemsCenter,
           styles.container,
           {
-            paddingHorizontal: isTypeNormal && 10,
-            paddingVertical: isTypeNormal && 5,
+            paddingHorizontal: isTypeNormal ? 10 : 0,
+            paddingVertical: isTypeNormal ? 5 : 0,
             backgroundColor: isTypeNormal && variantSelected.backgroundColor,
           },
           containerStyle,

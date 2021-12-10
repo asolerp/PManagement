@@ -5,6 +5,7 @@ import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
 import Toast from 'react-native-toast-message';
 import {MenuProvider} from 'react-native-popup-menu';
+import RNBootSplash from 'react-native-bootsplash';
 
 import ErrorBoundary from 'react-native-error-boundary';
 
@@ -19,8 +20,6 @@ import {useLocales} from './utils/useLocales';
 import moment from 'moment';
 import {useNotification} from './lib/notification/notificationHooks';
 
-import codePush from 'react-native-code-push';
-
 const CustomFallback = (props) => (
   <View style={{flex: 1}}>
     <ErrorScreen />
@@ -30,8 +29,15 @@ const CustomFallback = (props) => (
 const App = () => {
   useNotification();
   const {locale} = useLocales();
+
   useEffect(() => {
-    moment.locale(locale);
+    const init = async () => {
+      moment.locale(locale);
+    };
+    init().finally(async () => {
+      await RNBootSplash.hide({fade: true});
+      console.log('Bootsplash has been hidden successfully');
+    });
   }, [locale]);
 
   useEffect(() => {
@@ -56,4 +62,4 @@ const App = () => {
   );
 };
 
-export default codePush(App);
+export default App;

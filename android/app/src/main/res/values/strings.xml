@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">portmanagement</string>
-    <string moduleConfig="true" name="CodePushDeploymentKey">o-9QX8l32AdlL8P_tETFczM_BBNaCn_XtH8kA</string>
+    <string name="app_name">Port Management</string>
 </resources>

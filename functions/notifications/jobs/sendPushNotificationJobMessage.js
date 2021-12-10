@@ -6,7 +6,6 @@ const sendPushNotificationJobMessage = functions.firestore
   .document('jobs/{jobId}/messages/{messageId}')
   .onCreate(async (snap, context) => {
     const message = snap.data();
-
     try {
       const jobSnapshot = await admin
         .firestore()
@@ -41,6 +40,8 @@ const sendPushNotificationJobMessage = functions.firestore
         message.user.token,
       );
 
+      const cleanListTokens = listTokens.filter((t) => t !== undefined);
+
       let notification = {
         title: 'Nuevo mensaje! 📣',
         body: `${message.user.name} ha escrito en el trabajo`,
@@ -54,8 +55,13 @@ const sendPushNotificationJobMessage = functions.firestore
       };
 
       await admin.messaging().sendMulticast({
-        tokens: listTokens,
+        tokens: cleanListTokens,
         notification,
+        android: {
+          notification: {
+            sound: 'default',
+          },
+        },
         apns: {
           payload: {
             aps: {

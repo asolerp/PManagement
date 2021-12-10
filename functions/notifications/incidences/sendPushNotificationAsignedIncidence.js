@@ -10,7 +10,8 @@ const sendPushNotificationAsignedIncidence = functions.firestore
 
       if (
         JSON.stringify(updatedIncidence.workersId) !==
-        JSON.stringify(beforeIncidence.workerId)
+          JSON.stringify(beforeIncidence.workerId) &&
+        updatedIncidence.state === beforeIncidence.state
       ) {
         const asignedWorkers = updatedIncidence.workersId.filter(
           (worker) => beforeIncidence.workersId.indexOf(worker) === -1,
@@ -36,6 +37,8 @@ const sendPushNotificationAsignedIncidence = functions.firestore
         const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
         const listTokens = adminTokens.concat(workersTokens);
 
+        const cleanListTokens = listTokens.filter((t) => t !== undefined);
+
         let notification = {
           title: 'Incidencia ⚠️',
           body: `Se te ha asignado una incidencia!`,
@@ -48,7 +51,7 @@ const sendPushNotificationAsignedIncidence = functions.firestore
         };
 
         await admin.messaging().sendMulticast({
-          tokens: listTokens,
+          tokens: cleanListTokens,
           notification,
           apns: {
             payload: {

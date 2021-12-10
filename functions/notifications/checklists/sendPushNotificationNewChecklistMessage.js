@@ -39,6 +39,8 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
         message.user.token,
       );
 
+      const cleanListTokens = listTokens.filter((t) => t !== undefined);
+
       let notification = {
         title: 'Nuevo mensaje! 📣',
         body: `${message.user.name} ha escrito en el checklist`,
@@ -51,7 +53,7 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
       };
 
       await admin.messaging().sendMulticast({
-        tokens: listTokens,
+        tokens: cleanListTokens,
         notification,
         apns: {
           payload: {

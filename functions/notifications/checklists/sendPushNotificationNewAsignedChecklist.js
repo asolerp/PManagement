@@ -20,6 +20,8 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
         .filter((worker) => worker.data().token)
         .map((worker) => worker.data().token);
 
+      const cleanListTokens = workersTokens.filter((t) => t !== undefined);
+
       let notification = {
         title: 'Manos a la obra! 📝',
         body: `Se te ha asignado a un checklist! ✅`,
@@ -32,7 +34,7 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
       };
 
       await admin.messaging().sendMulticast({
-        tokens: workersTokens,
+        tokens: cleanListTokens,
         notification,
         apns: {
           payload: {

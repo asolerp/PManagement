@@ -18,6 +18,7 @@ export const useInAppNotification = () => {
   const mainStack = isAdmin ? MAIN_ADMIN_STACK_KEY : MAIN_WORKER_STACK_KEY;
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      console.log('Push notification recibida', remoteMessage);
       const {current} = routeName;
       const {data} = remoteMessage;
       const {type, collection} = data;

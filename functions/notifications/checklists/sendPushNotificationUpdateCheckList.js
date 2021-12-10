@@ -21,10 +21,12 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         .get();
 
       const workers = await Promise.all(
-        updatedIncidence.workersId.map(
-          async (workerId) =>
-            await admin.firestore().collection('users').doc(workerId).get(),
-        ),
+        checklistSnapshot
+          .data()
+          .workersId.map(
+            async (workerId) =>
+              await admin.firestore().collection('users').doc(workerId).get(),
+          ),
       );
 
       const workersTokens = workers
@@ -36,6 +38,8 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         adminTokens.concat(workersTokens),
         check.worker.token,
       );
+
+      const cleanListTokens = listTokens.filter((t) => t !== undefined);
 
       let notification = {
         title: 'Nuevo trabajo completado! 🚀',
@@ -51,7 +55,7 @@ const sendPushNotificationUpdateCheckList = functions.firestore
       };
 
       await admin.messaging().sendMulticast({
-        tokens: listTokens,
+        tokens: cleanListTokens,
         notification,
         apns: {
           payload: {

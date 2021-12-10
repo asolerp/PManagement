@@ -82,7 +82,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: true,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -203,6 +203,8 @@ dependencies {
         force = true
     }
 
+    implementation "androidx.core:core-splashscreen:1.0.0-alpha02"
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
@@ -236,4 +238,3 @@ apply from: file("../../node_modules/@react-native-community/cli-platform-androi
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 
-apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"

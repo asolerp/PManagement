@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, FlatList} from 'react-native';
+import {View, Text, FlatList, Pressable} from 'react-native';
 
 import useUploadImageCheck from '../../hooks/useUploadImage';
 
@@ -9,15 +9,24 @@ import {CHECKLISTS} from '../../utils/firebaseKeys';
 
 import {useTheme} from '../../Theme';
 import {useTranslation} from 'react-i18next';
+import Badge from '../Elements/Badge';
+import {useState} from 'react';
 
 const ListOfChecks = ({checkId, disabled, checks}) => {
   const {Layout, Fonts, Gutters} = useTheme();
+  const [noFinishFilter, setNoFinishFilter] = useState(false);
   const {t} = useTranslation();
 
   const {loading: loadingUploadImage, uploadImages} = useUploadImageCheck(
     CHECKLISTS,
     checkId,
   );
+
+  const listOfChecks = noFinishFilter ? checks?.filter((c) => !c.done) : checks;
+
+  const togleFilter = () => {
+    setNoFinishFilter(!noFinishFilter);
+  };
 
   const renderItem = ({item}) => (
     <ItemCheck
@@ -32,11 +41,24 @@ const ListOfChecks = ({checkId, disabled, checks}) => {
 
   return (
     <View style={[Layout.fill]}>
-      <Text style={[Fonts.textTitle, Gutters.smallBPadding]}>
-        {t('checklists.checkPage.jobs')}
-      </Text>
+      <View
+        style={[
+          Layout.row,
+          Layout.justifyContentSpaceBetween,
+          Gutters.smallBMargin,
+        ]}>
+        <Text style={[Fonts.textTitle, Gutters.smallBPadding]}>
+          {t('checklists.checkPage.jobs')}
+        </Text>
+        <Pressable onPress={togleFilter}>
+          <Badge
+            text={!noFinishFilter ? 'Sin completar' : 'Todo'}
+            variant={!noFinishFilter ? 'danger' : 'pm'}
+          />
+        </Pressable>
+      </View>
       <FlatList
-        data={checks}
+        data={listOfChecks}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}

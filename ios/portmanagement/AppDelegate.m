@@ -4,7 +4,9 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <Firebase.h>
-#import <CodePush/CodePush.h>
+
+
+#import "RNBootSplash.h"
 
 // #ifdef FB_SONARKIT_ENABLED
 // #import <FlipperKit/FlipperClient.h>
@@ -48,6 +50,7 @@ if ([FIRApp defaultApp] == nil) {
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  [RNBootSplash initWithStoryboard:@"BootSplash" rootView:rootView];
   return YES;
 }
 
@@ -56,7 +59,7 @@ if ([FIRApp defaultApp] == nil) {
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
-  return [CodePush bundleURL];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 }
 

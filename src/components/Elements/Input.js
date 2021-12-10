@@ -14,7 +14,7 @@ const Input = ({
   return (
     <TextInput
       placeholder={error ? 'El campo es obligatorio' : placeholder}
-      placeholderTextColor={error && '#ED7A7A'}
+      placeholderTextColor={error ? '#ED7A7A' : '#00000090'}
       autoCapitalize="none"
       value={value}
       style={

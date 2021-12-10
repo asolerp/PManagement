@@ -35,8 +35,8 @@ const CheckItem = ({item, fullWidth}) => {
         numberOfDays: parseDateWithText(item?.date)?.metaData?.numberOfDays,
       })}
       dateVariant={parseDateWithText(item?.date).variant}
-      statusColor={parsePercentageDone(completePercentage)}
-      statusPercentage={completePercentage}
+      statusColor={parsePercentageDone(completePercentage) || 0}
+      statusPercentage={completePercentage || 0}
       title="Checklist"
       subtitle={
         isOwner ? `${t('checklists.owner_text_1')}` : item?.observations

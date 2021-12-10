@@ -29,6 +29,8 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
         const listTokens = adminTokens.concat(workersTokens);
 
+        const cleanListTokens = listTokens.filter((t) => t !== undefined);
+
         let notification = {
           title: 'Actulaización 🚀',
           body: `Ha habido cambios en el estado de la incidencia!`,
@@ -41,7 +43,7 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         };
 
         await admin.messaging().sendMulticast({
-          tokens: listTokens,
+          tokens: cleanListTokens,
           notification,
           apns: {
             payload: {

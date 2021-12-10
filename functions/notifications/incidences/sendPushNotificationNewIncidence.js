@@ -21,6 +21,8 @@ const sendPushNotificationNewIncidence = functions.firestore
         incidence.user.token,
       );
 
+      const cleanListTokens = listTokens.filter((t) => t !== undefined);
+
       let notification = {
         title: 'Nueva incidencia! ⚠️',
         body: `${incidence.user.firstName} ha creado una nueva incidencia`,
@@ -33,7 +35,7 @@ const sendPushNotificationNewIncidence = functions.firestore
       };
 
       await admin.messaging().sendMulticast({
-        tokens: listTokens,
+        tokens: cleanListTokens,
         notification,
         apns: {
           payload: {
