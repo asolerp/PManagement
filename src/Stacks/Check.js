@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import CheckPhotosScreen from '../Screens/CheckPhotos/CheckPhotosScreen';
 import {
@@ -8,7 +8,7 @@ import {
 } from '../Router/utils/routerKeys';
 import {CheckScreen} from '../Screens/Check';
 
-const {Navigator, Screen} = createStackNavigator();
+const {Navigator, Screen} = createNativeStackNavigator();
 
 const Check = ({route}) => {
   const {docId} = route.params;

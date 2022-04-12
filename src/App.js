@@ -19,6 +19,7 @@ import {ErrorScreen} from './Screens/Error';
 import {useLocales} from './utils/useLocales';
 import moment from 'moment';
 import {useNotification} from './lib/notification/notificationHooks';
+import {LoadinModalProvider} from './context/loadinModalContext';
 
 const CustomFallback = (props) => (
   <View style={{flex: 1}}>
@@ -36,7 +37,6 @@ const App = () => {
     };
     init().finally(async () => {
       await RNBootSplash.hide({fade: true});
-      console.log('Bootsplash has been hidden successfully');
     });
   }, [locale]);
 
@@ -51,12 +51,14 @@ const App = () => {
   return (
     <ErrorBoundary FallbackComponent={CustomFallback}>
       <MenuProvider>
-        <Provider store={store}>
-          <StatusBar barStyle="dark-content" />
-          <AuthRouter />
-          <ModalPortal />
-          <Toast ref={(ref) => Toast.setRef(ref)} />
-        </Provider>
+        <LoadinModalProvider>
+          <Provider store={store}>
+            <StatusBar barStyle="dark-content" />
+            <AuthRouter />
+            <ModalPortal />
+            <Toast ref={(ref) => Toast.setRef(ref)} />
+          </Provider>
+        </LoadinModalProvider>
       </MenuProvider>
     </ErrorBoundary>
   );

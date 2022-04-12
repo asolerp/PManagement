@@ -1,8 +1,6 @@
 export const useFilters = ({list, filters, type}) => {
   const {houses, workers, state} = filters;
 
-  console.log(state);
-
   const commonFilters = {
     houseId: (houseId) =>
       !houses || houses.length === 0

@@ -1,5 +1,5 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {
   navigation as navigationRef,
@@ -11,7 +11,7 @@ import {MAIN_OWNER_STACK_KEY} from './utils/routerKeys';
 
 import {MainOwner} from '../Stacks/MainOwner';
 
-const {Navigator, Screen} = createStackNavigator();
+const {Navigator, Screen} = createNativeStackNavigator();
 
 const OwnerRouter = () => {
   return (

@@ -73,8 +73,8 @@ const Info = () => {
   const {document: job} = useGetDocFirebase('jobs', jobId);
 
   const taksDescByLocale = (job) =>
-    job?.task?.locales?.[locale].desc ||
-    job?.task?.locales?.en.desc ||
+    job?.task?.locales?.[locale]?.desc ||
+    job?.task?.locales?.en?.desc ||
     job?.task?.desc;
 
   return (

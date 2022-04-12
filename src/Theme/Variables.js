@@ -2,6 +2,10 @@
 export const Colors = {
   white: '#FFFFFF',
   grey: '#EAEAEA',
+  gray100: '#f7fafc',
+  gray300: '#e2e8f0',
+  gray600: '#718096',
+  gray800: '#2d3748',
   lowGrey: '#f2f2f2',
   darkGrey: '#878787',
   darkBlue: '#284748',
@@ -73,7 +77,10 @@ export const FontSize = {
   tiny: 10,
   xs: 14,
   small: 16,
+  md: 18,
   regular: 20,
+  md2: 25,
+  xl: 30,
   large: 40,
 };
 

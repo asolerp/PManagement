@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {NewJobTaskSelectorScreen} from '../Screens/NewJobTaskSelector';
 import {NewJobScreen} from '../Screens/NewJob';
@@ -8,7 +8,7 @@ import {
   NEW_JOB_TASK_SELECTOR_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 
-const {Navigator, Screen} = createStackNavigator();
+const {Navigator, Screen} = createNativeStackNavigator();
 
 const NewJob = ({route}) => {
   const {docId, edit} = route.params;

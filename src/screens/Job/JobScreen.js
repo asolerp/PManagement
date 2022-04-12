@@ -6,29 +6,25 @@ import {useDocumentData} from 'react-firebase-hooks/firestore';
 // UI
 import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessagesCounter';
 import {Info} from '../../components/Job';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import PageLayout from '../../components/PageLayout';
 import CustomButton from '../../components/Elements/CustomButton';
 import updateJobStatus from '../../Services/updateJobStatus';
 import {JOBS} from '../../utils/firebaseKeys';
-import {TouchableWithoutFeedback, View} from 'react-native';
-import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
-import {
-  JOBS_SCREEN_KEY,
-  PAGE_OPTIONS_SCREEN_KEY,
-} from '../../Router/utils/routerKeys';
-import {Colors} from '../../Theme/Variables';
+import {View} from 'react-native';
+import {popScreen} from '../../Router/utils/actions';
+import {JOBS_SCREEN_KEY} from '../../Router/utils/routerKeys';
+
 import {useTheme} from '../../Theme';
-import {useSelector} from 'react-redux';
-import {userSelector} from '../../Store/User/userSlice';
+
 import {finishJob, openJob} from '../../components/Alerts/jobs';
 import {useTranslation} from 'react-i18next';
+import {PageOptionsScreen} from '../PageOptions';
 
 const JobScreen = ({route}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
-  const user = useSelector(userSelector);
+
   const {jobId} = route.params;
   const query = useMemo(() => {
     return firestore().collection(JOBS).doc(jobId);
@@ -53,23 +49,14 @@ const JobScreen = ({route}) => {
           subPage: true,
         }}
         titleRightSide={
-          user.role === 'admin' && (
-            <TouchableWithoutFeedback
-              onPress={() => {
-                openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                  backScreen: JOBS_SCREEN_KEY,
-                  collection: JOBS,
-                  docId: jobId,
-                  edit: true,
-                  showDelete: true,
-                  duplicate: true,
-                });
-              }}>
-              <View>
-                <Icon name="settings" size={25} color={Colors.white} />
-              </View>
-            </TouchableWithoutFeedback>
-          )
+          <PageOptionsScreen
+            backScreen={JOBS_SCREEN_KEY}
+            collection={JOBS}
+            docId={jobId}
+            edit={true}
+            showDelete={true}
+            duplicate={true}
+          />
         }
         footer={
           <CustomButton

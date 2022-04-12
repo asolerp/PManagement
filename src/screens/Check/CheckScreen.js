@@ -1,5 +1,4 @@
 import React from 'react';
-import {View, TouchableWithoutFeedback} from 'react-native';
 
 import {Info} from '../../components/Check';
 import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessagesCounter';
@@ -10,21 +9,24 @@ import PageLayout from '../../components/PageLayout';
 import CustomButton from '../../components/Elements/CustomButton';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {sendOwnerChecklist} from '../../components/Alerts/checklist';
-import finishAndSendChecklist from '../../Services/finshAndSendChecklist';
 
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
-import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
+
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {useTranslation} from 'react-i18next';
+import {useCheck} from './hooks/useCheck';
+import PageOptionsScreen from '../PageOptions/PageOptions';
+import {useNotifyOwner} from '../../utils/useNotifyOwner';
 
 const CheckScreen = ({route}) => {
   const {docId} = route.params;
   const {t} = useTranslation();
+
+  const {isCheckFinished, reOpenChecklist} = useCheck({docId});
+  const {notifyOwner} = useNotifyOwner();
   const [checks, checksLoading] = useCollectionData(
     firestore().collection(CHECKLISTS).doc(docId).collection('checks'),
     {
@@ -36,9 +38,12 @@ const CheckScreen = ({route}) => {
   const areAllChecksDone =
     checks?.length === checks?.filter((check) => check.done).length;
 
-  const handleFinishAndSend = () => {
-    finishAndSendChecklist(docId);
-    popScreen();
+  const handleFinishAndSend = async () => {
+    try {
+      await notifyOwner(docId);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -48,21 +53,12 @@ const CheckScreen = ({route}) => {
         safe
         backButton
         titleRightSide={
-          user.role === 'admin' && (
-            <TouchableWithoutFeedback
-              onPress={() => {
-                openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                  collection: CHECKLISTS,
-                  docId,
-                  showDelete: true,
-                  duplicate: true,
-                });
-              }}>
-              <View>
-                <Icon name="settings" size={25} />
-              </View>
-            </TouchableWithoutFeedback>
-          )
+          <PageOptionsScreen
+            collection={CHECKLISTS}
+            docId={docId}
+            showDelete={true}
+            duplicate={true}
+          />
         }
         titleProps={{
           subPage: true,
@@ -70,7 +66,8 @@ const CheckScreen = ({route}) => {
         footer={
           areAllChecksDone &&
           user.role === 'admin' &&
-          !checksLoading && (
+          !checksLoading &&
+          !isCheckFinished && (
             <CustomButton
               styled="rounded"
               loading={false}
@@ -79,7 +76,7 @@ const CheckScreen = ({route}) => {
             />
           )
         }>
-        <Info />
+        <Info isCheckFinished={isCheckFinished} />
       </PageLayout>
     </React.Fragment>
   );

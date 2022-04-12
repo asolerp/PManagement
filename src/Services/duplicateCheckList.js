@@ -33,6 +33,7 @@ const duplicateCheckList = async (checkId) => {
       date: null,
       numberOfPhotos: 0,
       worker: null,
+      photos: null,
     }));
 
     await Promise.all(

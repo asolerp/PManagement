@@ -4,106 +4,111 @@ import {View, Text, StyleSheet} from 'react-native';
 import {useTheme} from '../../Theme';
 import {Colors, FontSize} from '../../Theme/Variables';
 
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
-
 import Avatar from '../Avatar';
-import * as Progress from 'react-native-progress';
-import Badge from '../Elements/Badge';
-import {Divider} from 'react-native-elements/dist/divider/Divider';
 
+import Badge from '../Elements/Badge';
+
+const FULL_WIDTH = '100%';
 const CARD_WIDTH = 220;
 
 export const ListItem = ({
   date,
   title,
   house,
-  header,
-  footer,
   counter,
   workers,
   subtitle,
   dateVariant,
   statusPercentage,
-  withStatusBar = false,
   fullWidth = false,
   statusColor = Colors.pm,
 }) => {
   const {Layout, Gutters, Fonts} = useTheme();
-
-  console.log(statusPercentage);
 
   return (
     <React.Fragment>
       <View
         style={[
           Layout.row,
-          Gutters.tinyBMargin,
-          Gutters.smallAPadding,
+          Gutters.smallHPadding,
+          Gutters.smallVPadding,
+          Gutters.smallBMargin,
           styles.checkWrapper,
           Gutters.mediumRMargin,
           {
-            width: fullWidth ? '100%' : CARD_WIDTH,
+            width: fullWidth ? FULL_WIDTH : CARD_WIDTH,
           },
         ]}>
         {statusColor && (
           <View
             style={[
               Gutters.smallRMargin,
+              {backgroundColor: `${Colors.pm}30`},
               styles.statusBarContainer,
-              {backgroundColor: statusColor},
-            ]}
-          />
+            ]}>
+            <View
+              style={[
+                styles.statusBarContainer,
+                {backgroundColor: statusColor},
+                {height: `${statusPercentage * 100}%`},
+              ]}
+            />
+          </View>
         )}
-        <View style={[Layout.fill]}>
+        <View style={[Layout.grow]}>
           <View
             style={[
               Layout.row,
-              Layout.alignItemsCenter,
               Layout.justifyContentSpaceBetween,
               Gutters.smallBMargin,
             ]}>
-            {title && (
-              <Text
-                style={[Fonts.titleCard]}
-                numberOfLines={2}
-                ellipsizeMode="tail">
-                {title}
-              </Text>
-            )}
+            <Badge
+              type="outline"
+              text={house}
+              variant="purple"
+              iconName="home"
+            />
+            <Badge
+              text={date}
+              variant={dateVariant}
+              type="outline"
+              iconName="schedule"
+            />
+            <Badge
+              text={counter}
+              variant={counter === 0 ? 'pm' : 'danger'}
+              type="outline"
+              iconName="message"
+              containerStyle={[Gutters.smallRMargin]}
+            />
           </View>
-          <View style={[Gutters.smallBMargin, styles.infoWrapper]}>
-            {subtitle && (
-              <Text
-                style={styles.infoStyle}
-                ellipsizeMode="tail"
-                numberOfLines={2}>
-                {subtitle}
-              </Text>
-            )}
+          <View style={[{flexShrink: 1}]}>
+            <View style={[Gutters.smallBMargin, Gutters.smallBMargin]}>
+              {title && (
+                <Text
+                  style={[Fonts.titleCard, Gutters.smallBMargin]}
+                  numberOfLines={2}
+                  ellipsizeMode="tail">
+                  {title}
+                </Text>
+              )}
+              {subtitle && (
+                <Text
+                  style={styles.infoStyle}
+                  ellipsizeMode="tail"
+                  numberOfLines={2}>
+                  {subtitle}
+                </Text>
+              )}
+            </View>
           </View>
-          <View style={[Layout.grow, Layout.col, Layout.justifyContentEnd]}>
-            {withStatusBar && (
-              <View style={[Gutters.smallBMargin]}>
-                <Progress.Bar
-                  borderColor={Colors.pm}
-                  color={Colors.pm}
-                  progress={statusPercentage}
-                  width={180}
-                />
-              </View>
-            )}
+          <View style={[Layout.justifyContentEnd]}>
             <View
               style={[
                 Layout.row,
                 Layout.alignItemsCenter,
                 Layout.justifyContentSpaceBetween,
               ]}>
-              <Badge
-                type="outline"
-                text={house}
-                variant="purple"
-                iconName="home"
-              />
               <View style={[Layout.row]}>
                 {workers?.map((worker, i) => (
                   <Avatar
@@ -117,31 +122,6 @@ export const ListItem = ({
                 ))}
               </View>
             </View>
-            <Divider
-              color={Colors.darkGrey}
-              style={[Gutters.smallTMargin, Gutters.tinyBMargin]}
-            />
-            <View
-              style={[
-                Layout.row,
-                Layout.alignItemsCenter,
-                Layout.justifyContentSpaceBetween,
-                Gutters.tinyVPadding,
-              ]}>
-              <Badge
-                text={counter}
-                variant={counter === 0 ? 'pm' : 'danger'}
-                type="outline"
-                iconName="message"
-                containerStyle={[Gutters.smallRMargin]}
-              />
-              <Badge
-                text={date}
-                variant={dateVariant}
-                type="outline"
-                iconName="schedule"
-              />
-            </View>
           </View>
         </View>
       </View>
@@ -151,11 +131,16 @@ export const ListItem = ({
 
 const styles = StyleSheet.create({
   checkWrapper: {
-    borderWidth: 1,
-    borderColor: Colors.lowGrey,
+    backgroundColor: Colors.white,
     borderRadius: 10,
-    minHeight: 165,
-    maxHeight: 185,
+    shadowColor: '#4f4f4f',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
   },
   checkDoneMask: {
     position: 'absolute',
@@ -169,7 +154,6 @@ const styles = StyleSheet.create({
   },
   statusBarContainer: {
     width: 8,
-    height: '100%',
     borderRadius: 20,
   },
   avatarWrapper: {
@@ -177,13 +161,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   infoWrapper: {
-    display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
   },
   infoStyle: {
     color: 'black',
-    maxHeight: 40,
+    paddingRight: 20,
   },
   titleWrapper: {
     flexDirection: 'row',
@@ -195,7 +178,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontWeight: '500',
     color: Colors.darkBlue,
-    height: 60,
   },
   bold: {
     fontSize: FontSize.small,

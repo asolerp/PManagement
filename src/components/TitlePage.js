@@ -1,9 +1,10 @@
 import React from 'react';
 import {useRoute} from '@react-navigation/native';
 import {Image, View, Text, StyleSheet, Platform} from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 // Utils
-import {getHightByRoute} from '../utils/parsers';
+
 import {Colors} from '../Theme/Variables';
 import {useTheme} from '../Theme';
 import {TouchableWithoutFeedback} from 'react-native';
@@ -18,6 +19,7 @@ const TitlePage = ({
   subPage = false,
   background,
   onPress,
+  containerStyles,
 }) => {
   const {
     params: {screenKey = ''},
@@ -28,87 +30,83 @@ const TitlePage = ({
     <React.Fragment>
       {!children ? (
         <View
-          style={[
-            styles.titleWrapper,
-            {
-              justifyContent: 'center',
-            },
-          ]}>
-          <View>
-            <View style={[Layout.rowCenter]}>
-              <View
-                style={[
-                  {
-                    width: 30,
-                    marginTop: Platform.OS === 'ios' ? 0 : 0,
-                  },
-                ]}>
-                {leftSide}
-              </View>
-              <View
-                style={{
-                  ...styles.box,
-                  ...{marginHorizontal: 20},
-                }}>
-                {title ? (
-                  <TouchableWithoutFeedback onPress={onPress}>
-                    <Text
-                      adjustsFontSizeToFit
-                      numberOfLines={2}
-                      style={[
-                        styles.title,
-                        {
-                          marginTop: Platform.OS === 'ios' ? 0 : 0,
-                          textAlign: 'center',
+          style={[Layout.flex, Layout.justifyContentCenter, containerStyles]}>
+          <View
+            style={[
+              Layout.row,
+              Layout.alignItemsCenter,
+              Layout.justifyContentSpaceBetween,
+            ]}>
+            <View
+              style={[
+                {
+                  width: 30,
+                },
+              ]}>
+              {leftSide}
+            </View>
+            <View style={[Layout.flexGrow]}>
+              {title ? (
+                <TouchableWithoutFeedback onPress={onPress}>
+                  <Text
+                    numberOfLines={2}
+                    style={[
+                      styles.title,
+                      {
+                        textAlign: 'center',
+                      },
+                    ]}>
+                    {title}
+                  </Text>
+                </TouchableWithoutFeedback>
+              ) : (
+                <View>
+                  {subPage && (
+                    <View
+                      style={{
+                        ...styles.logoContent,
+                        ...{
+                          paddingTop: isIOS ? 0 : 0,
                         },
-                      ]}>
-                      {title}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                ) : (
-                  <View>
-                    {subPage && (
-                      <View
-                        style={{
-                          ...styles.logoContent,
-                          ...{
-                            paddingTop: isIOS ? 0 : 0,
-                          },
-                        }}>
-                        <Image
-                          style={styles.logo}
-                          source={require('../assets/images/logo_pm_color.png')}
-                        />
-                      </View>
-                    )}
-                  </View>
-                )}
-              </View>
-              <View style={{width: 30}}>{rightSide}</View>
-            </View>
-            <View>
-              {subtitle && !subPage && (
-                <Text
-                  style={{
-                    ...styles.subtitle,
-                    ...{marginLeft: 0},
-                  }}>
-                  {subtitle}
-                </Text>
-              )}
-              {subtitle && subPage && (
-                <Text
-                  style={{
-                    ...{
-                      textAlign: 'center',
-                      fontSize: 13,
-                      marginBottom: 5,
-                    },
-                  }}>
-                  {subtitle}
-                </Text>
+                      }}>
+                      <FastImage
+                        style={styles.logo}
+                        source={{
+                          uri: 'https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png',
+                          headers: {Authorization: 'someAuthToken'},
+                          priority: FastImage.priority.normal,
+                        }}
+                        resizeMode={FastImage.resizeMode.contain}
+                      />
+                    </View>
+                  )}
+                </View>
               )}
             </View>
+            <View style={{width: 30}}>{rightSide}</View>
+          </View>
+          <View>
+            {subtitle && !subPage && (
+              <Text
+                style={{
+                  ...styles.subtitle,
+                  ...{marginLeft: 0},
+                }}>
+                {subtitle}
+              </Text>
+            )}
+            {subtitle && subPage && (
+              <Text
+                style={{
+                  ...{
+                    textAlign: 'center',
+                    fontSize: 13,
+                    marginBottom: 5,
+                  },
+                }}>
+                {subtitle}
+              </Text>
+            )}
           </View>
         </View>
       ) : (
@@ -140,7 +138,7 @@ const TitlePage = ({
       style={{
         ...styles.container,
         ...{
-          height: subPage ? 40 : getHightByRoute(screenKey),
+          // height: subPage ? 40 : getHightByRoute(screenKey),
         },
       }}>
       <TitleWrapper />
@@ -168,6 +166,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 80,
+    height: 30,
     resizeMode: 'contain',
   },
   title: {

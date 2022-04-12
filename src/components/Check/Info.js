@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Info = () => {
+const Info = ({isCheckFinished}) => {
   const route = useRoute();
   const {isOwner} = useAuth();
   const {Layout, Gutters, Fonts} = useTheme();
@@ -123,7 +123,7 @@ const Info = () => {
           ) : (
             <View>
               <EditableInput
-                value={checklist?.observations}
+                value={checklist?.observations || 'Sin observaciones'}
                 onPressAccept={(change) =>
                   updateChecklistInput(docId, {observations: change})
                 }
@@ -196,7 +196,12 @@ const Info = () => {
         <Divider />
       </View>
       {!loadingChecklist && (
-        <ListOfChecks disabled={false} checks={checks} checkId={docId} />
+        <ListOfChecks
+          disabled={false}
+          checks={checks}
+          checkId={docId}
+          isCheckFinished={isCheckFinished}
+        />
       )}
     </View>
   );

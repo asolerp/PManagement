@@ -11,7 +11,6 @@ import CheckBox from '@react-native-community/checkbox';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Avatar from '../components/Avatar';
 
-import {handleCamera, handleImagePicker} from '../utils/imageFunctions';
 import {GREY_1, PM_COLOR} from '../styles/colors';
 
 import moment from 'moment';
@@ -29,6 +28,8 @@ import {error} from '../lib/logging';
 import {useTranslation} from 'react-i18next';
 import {openScreenWithPush} from '../Router/utils/actions';
 import {CHECK_PHOTO_SCREEN_KEY} from '../Router/utils/routerKeys';
+import {LoadingModal} from './Modals/LoadingModal';
+import {getLocales} from 'react-native-localize';
 
 const styles = StyleSheet.create({
   container: {
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
+const ItemCheck = ({check, checklistId, disabled, isCheckFinished}) => {
   const {Layout, Gutters} = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {updateFirebase} = useUpdateFirebase('checklists');
@@ -103,20 +104,10 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
   return (
     <React.Fragment>
       <PhotoCameraModal
+        check={check}
+        checklistId={checklistId}
         visible={photoCameraModal}
         handleVisibility={setPhotoCameraModal}
-        handleClickCamera={() =>
-          handleCamera((imgs) => {
-            imageHandler(imgs);
-            setPhotoCameraModal(false);
-          })
-        }
-        handleClickLibrary={() =>
-          handleImagePicker((imgs) => {
-            imageHandler(imgs);
-            setPhotoCameraModal(false);
-          })
-        }
       />
       <View style={{...styles.container}}>
         <CheckBox
@@ -133,7 +124,7 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
                   openScreenWithPush(CHECK_PHOTO_SCREEN_KEY, {
                     checkId: checklistId,
                     checkItemId: check.id,
-                    title: check.title,
+                    title: check.locale[getLocales()[0].languageCode],
                     date: check.date,
                   })
               : null
@@ -144,7 +135,7 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
                 styles.name,
                 check.done && {textDecorationLine: 'line-through'},
               ]}>
-              {check.title}
+              {check?.locale?.[getLocales()[0].languageCode]}
             </Text>
             {check?.date && (
               <Text style={styles.dateStyle}>
@@ -186,7 +177,8 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
           </View>
         </TouchableOpacity>
         <View style={styles.checkboxWrapper}>
-          <TouchableOpacity onPress={() => setPhotoCameraModal(true)}>
+          <TouchableOpacity
+            onPress={() => !isCheckFinished && setPhotoCameraModal(true)}>
             <View
               style={[
                 styles.buttonStyle,
@@ -195,11 +187,7 @@ const ItemCheck = ({check, checklistId, disabled, imageHandler, loading}) => {
                     check?.photos?.length > 0 ? Colors.warning : Colors.pm,
                 },
               ]}>
-              {loading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Icon name="camera-alt" size={18} color="white" />
-              )}
+              <Icon name="camera-alt" size={18} color="white" />
             </View>
           </TouchableOpacity>
         </View>

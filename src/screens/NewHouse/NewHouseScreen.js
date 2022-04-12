@@ -1,23 +1,20 @@
 import React from 'react';
-import {View, StyleSheet, StatusBar} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 
-import {TouchableOpacity} from 'react-native-gesture-handler';
-
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import NewFormHome from '../../components/Forms/Homes/NewHomeForm';
+import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import PageLayout from '../../components/PageLayout';
-import {popScreen} from '../../Router/utils/actions';
+import {useTheme} from '../../Theme';
 
 const NewHouseScreen = ({navigation}) => {
+  const {Gutters} = useTheme();
+
   return (
-    <PageLayout
-      safe
-      backButton
-      titleProps={{
-        title: 'Nueva casa',
-        subPage: false,
-      }}>
+    <PageLayout safe backButton>
       <View style={styles.newHomeScreen}>
+        <View style={[Gutters.regularBMargin]}>
+          <ScreenHeader title="Nueva casa" />
+        </View>
         <NewFormHome />
       </View>
     </PageLayout>
@@ -26,7 +23,7 @@ const NewHouseScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   newHomeScreen: {
-    paddingTop: 20,
+    flexGrow: 1,
   },
 });
 

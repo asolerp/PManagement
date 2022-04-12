@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
-  images: [],
+  incidenceImages: [],
   incidence: {},
 };
 
@@ -16,8 +16,8 @@ const incidenceFormSlice = createSlice({
       state.incidenceImages = payload.images;
     },
     resetForm: (state) => {
-      state.incidence = {};
-      state.images = [];
+      state.incidence = null;
+      state.incidenceImages = [];
     },
   },
 });

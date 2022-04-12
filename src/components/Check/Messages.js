@@ -29,7 +29,7 @@ import {setMessagesAsRead} from '../../firebase/setMessagesAsRead';
 import {launchImage} from '../../utils/imageFunctions';
 import {cloudinaryUpload} from '../../cloudinary/index';
 import {messageIdGenerator} from '../../utils/uuid';
-import {Platform} from 'react-native';
+
 import {userSelector} from '../../Store/User/userSlice';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 

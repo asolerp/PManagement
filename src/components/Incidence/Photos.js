@@ -75,7 +75,6 @@ const Photos = () => {
   };
 
   const Photo = ({photo, index}) => {
-    console.log(photo, 'photo');
     const isSelected = deletePhotos.find((p) => p.id === photo.id);
     return (
       <TouchableOpacity

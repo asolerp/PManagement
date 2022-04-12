@@ -4,8 +4,12 @@ const firebase_tools = require('firebase-tools');
 
 const cloudinary = require('cloudinary').v2;
 
+const {createNewUser} = require('./admin/createNewUser');
+const {notifyOwner} = require('./admin/notifyOwner');
+
 // Notifications
 const {
+  sendPushNotificationFinishedChecklist,
   sendPushNotificationNewAsignedChecklist,
   sendPushNotificationNewChecklistMessage,
   sendPushNotificationUpdateCheckList,
@@ -31,9 +35,11 @@ cloudinary.config({
 
 admin.initializeApp(functions.config().firebase);
 
-exports.newUser = functions.auth.user().onCreate((user) => {
-  admin.firestore().collection('users').doc(user.uid).set({email: user.email});
-});
+/// ADMIN
+
+exports.createNewUser = createNewUser;
+exports.notifyOwner = notifyOwner;
+
 // CHECKLISTS
 
 exports.sendPushNotificationUpdateCheckList =
@@ -44,6 +50,9 @@ exports.sendPushNotificationNewChecklistMessage =
 
 exports.sendPushNotificationNewAsignedChecklist =
   sendPushNotificationNewAsignedChecklist;
+
+exports.sendPushNotificationFinishedChecklist =
+  sendPushNotificationFinishedChecklist;
 
 // INCIDENCES
 
@@ -62,6 +71,36 @@ exports.sendPushNotificationAsignedIncidence =
 
 exports.sendPushNotificationJobMessage = sendPushNotificationJobMessage;
 exports.sendPushNotificationNewJob = sendPushNotificationNewJob;
+
+exports.updateHouseOwner = functions.firestore
+  .document('users/{userId}')
+  .onUpdate(async (change, context) => {
+    console.log('Updating owner');
+    const userAfter = change.after.data();
+    const batch = admin.firestore().batch();
+
+    if (userAfter.role === 'owner') {
+      try {
+        const querySnapshot = await admin
+          .firestore()
+          .collection('houses')
+          .where('owner.id', '==', context.params.userId)
+          .get();
+        querySnapshot.forEach((doc) => {
+          const house = doc.data();
+          house.owner = {
+            ...userAfter,
+            id: context.params.userId,
+          };
+          const docRef = admin.firestore().collection('houses').doc(doc.id);
+          batch.update(docRef, job);
+        });
+        await batch.commit();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  });
 
 exports.updateProfileImage = functions.firestore
   .document('users/{userId}')

@@ -38,18 +38,13 @@ const DateSelector = ({closeModal, set, get}) => {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        width: '100%',
-      }}>
+    <>
       <DatePicker
         style={{width: 350}}
         date={dateSelected || initialTime}
         onDateChange={setDateSelected}
         locale={locale}
       />
-
       <View style={{marginTop: 'auto'}}>
         <CustomButton
           styled="rounded"
@@ -57,7 +52,7 @@ const DateSelector = ({closeModal, set, get}) => {
           onPress={handleSubmit}
         />
       </View>
-    </SafeAreaView>
+    </>
   );
 };
 

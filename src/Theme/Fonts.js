@@ -6,6 +6,30 @@ export default function ({FontSize, Colors}) {
       fontSize: FontSize.tiny,
       fontWeight: '500',
     },
+    textXs: {
+      fontSize: FontSize.xs,
+    },
+    textSm: {
+      fontSize: FontSize.small,
+    },
+    textMd: {
+      fontSize: FontSize.md,
+    },
+    textMd2: {
+      fontSize: FontSize.md2,
+    },
+    textXl: {
+      fontSize: FontSize.xl,
+    },
+    textMBold: {
+      fontWeight: '500',
+    },
+    textBold: {
+      fontWeight: 'bold',
+    },
+    textLight: {
+      fontWeight: '100',
+    },
     alignCenter: {
       textAlign: 'center',
     },

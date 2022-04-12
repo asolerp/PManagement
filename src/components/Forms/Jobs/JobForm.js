@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 
-import {BottomModal, ModalContent} from 'react-native-modals';
-
-import {useDispatch, useSelector, shallowEqual} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 import {Text, View, TextInput, StyleSheet} from 'react-native';
 
@@ -26,6 +24,7 @@ import {
 } from '../../../Store/JobForm/jobFormSlice';
 import {JOBS} from '../../../utils/firebaseKeys';
 import {useTranslation} from 'react-i18next';
+import {BottomModal} from '../../Modals/BottomModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -169,18 +168,12 @@ const JobForm = ({docId, edit}) => {
   return (
     <View style={[styles.newJobScreen]}>
       <BottomModal
-        modalStyle={{borderRadius: 30}}
-        height={modalContent === 'date' ? 0.4 : 0.9}
-        visible={modalVisible}
-        onSwipeOut={(event) => {
+        isVisible={modalVisible}
+        onClose={(event) => {
           setModalVisible(false);
         }}
-        onTouchOutside={() => {
-          setModalVisible(false);
-        }}>
-        <ModalContent style={{flex: 1, alignItems: 'center'}}>
-          {modalContent && modalSwitcher(modalContent)}
-        </ModalContent>
+        swipeDirection={null}>
+        {modalContent && modalSwitcher(modalContent)}
       </BottomModal>
       <InputGroup>
         <CustomInput

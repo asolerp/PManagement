@@ -12,6 +12,7 @@ export const JOBS_SCREEN_KEY = 'jobsScreen';
 export const NEW_CHECKLIST_SCREEN = 'newCheckListScreen';
 export const NEW_HOUSE_SCREEN_KEY = 'newHouseScreen';
 export const NEW_INCIDENCE_SCREEN_KEY = 'newIncidenceScreen';
+export const NEW_USER_SCREEN_KEY = 'newUserScreen';
 export const NEW_JOB_SCREEN_KEY = 'newJobScreen';
 export const NEW_JOB_TASK_SELECTOR_SCREEN_KEY = 'newJobTaskSelectorScreen';
 export const PROFILE_SCREEN_KEY = 'profileScreen';
@@ -20,6 +21,7 @@ export const DASHBOARD_OWNER_SCREEN_KEY = 'dashboardOwnerScreen';
 export const PAGE_OPTIONS_SCREEN_KEY = 'pageOptionsScreen';
 export const CHAT_SCREEN_KEY = 'chatScreen';
 export const USERS_SCREEN_KEY = 'usersScreen';
+export const FILTERS_SCREEN_KEY = 'filtersScreen';
 
 // STACKS
 export const CHECK_STACK_KEY = 'checkStack';

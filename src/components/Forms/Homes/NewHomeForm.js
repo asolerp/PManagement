@@ -1,14 +1,11 @@
-import React, {useCallback, useState} from 'react';
-import {BottomModal, ModalContent} from 'react-native-modals';
+import React, {useContext, useState} from 'react';
 
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
-
-import {useSelector, shallowEqual} from 'react-redux';
 
 import {useNavigation} from '@react-navigation/native';
 import {useForm, Controller} from 'react-hook-form';
 
-import {StyleSheet, Text, Alert, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 // UI
 import ImageLoader from '../../Elements/ImageLoader';
@@ -22,38 +19,52 @@ import CustomButton from '../../Elements/CustomButton';
 import {newHouse} from '../../../firebase/uploadNewHouse';
 
 // Utils
-import {launchImage} from '../../../utils/imageFunctions';
-import Toast from 'react-native-toast-message';
+
 import {error} from '../../../lib/logging';
+import {LoadingModalContext} from '../../../context/loadinModalContext';
+import {BottomModal} from '../../Modals/BottomModal';
+import {useCameraOrLibrary} from '../../../hooks/useCamerOrLibrary';
+import {imageActions} from '../../../utils/imageActions';
+
+const LIBRARY_ACTION = 'library';
 
 const NewFormHome = () => {
   const navigation = useNavigation();
 
-  const {users} = useSelector(
-    ({houseForm: {users}}) => ({users}),
-    shallowEqual,
-  );
-
   const [owner, setOwner] = useState([]);
 
   const [modalVisible, setModalVisible] = useState(false);
+  const {setVisible} = useContext(LoadingModalContext);
 
   const {control, handleSubmit, errors, reset} = useForm();
   const [houseImage, setHouseImage] = useState();
   const [loading, setLoading] = useState(false);
 
+  const {onImagePress} = useCameraOrLibrary();
+
+  const handlePress = (type) => {
+    onImagePress({
+      type,
+      options: {...imageActions[type], selectionLimit: 1},
+      callback: async (imgs) => {
+        setHouseImage(
+          imgs.map((image, i) => ({
+            fileName: image?.fileName || `image-${i}`,
+            fileUri: image?.uri,
+            fileType: image?.type,
+          })),
+        );
+      },
+    });
+  };
+
   const onSubmit = async (data) => {
     setLoading(true);
+    setVisible(true);
     try {
-      await newHouse({...data, owner: owner[0]}, houseImage);
+      await newHouse({...data, owner: owner[0]}, houseImage?.[0]);
       reset();
       setHouseImage(null);
-      Toast.show({
-        type: 'success',
-        position: 'bottom',
-        text1: 'Nueva casa ✅',
-        text2: 'Se ha creado una nueva casa',
-      });
     } catch (err) {
       error({
         message: err.message,
@@ -62,6 +73,7 @@ const NewFormHome = () => {
       });
     } finally {
       setLoading(false);
+      setVisible(false);
       navigation.goBack();
     }
   };
@@ -69,39 +81,33 @@ const NewFormHome = () => {
   return (
     <React.Fragment>
       <BottomModal
-        modalStyle={{borderRadius: 30}}
-        height={0.9}
-        visible={modalVisible}
-        onSwipeOut={(event) => {
-          setModalVisible(false);
-        }}
-        onTouchOutside={() => {
+        isVisible={modalVisible}
+        swipeDirection={null}
+        onClose={() => {
           setModalVisible(false);
         }}>
-        <ModalContent style={{flex: 1, alignItems: 'center'}}>
-          <DynamicSelectorList
-            collection="users"
-            where={[
-              {
-                label: 'role',
-                operator: '==',
-                condition: 'owner',
-              },
-            ]}
-            store="jobForm"
-            searchBy="firstName"
-            schema={{img: 'profileImage', name: 'firstName'}}
-            get={owner}
-            set={(owners) => {
-              setOwner(owners);
-            }}
-            closeModal={() => setModalVisible(false)}
-          />
-        </ModalContent>
+        <DynamicSelectorList
+          collection="users"
+          where={[
+            {
+              label: 'role',
+              operator: '==',
+              condition: 'owner',
+            },
+          ]}
+          store="jobForm"
+          searchBy="firstName"
+          schema={{img: 'profileImage', name: 'firstName'}}
+          get={owner}
+          set={(owners) => {
+            setOwner(owners);
+          }}
+          closeModal={() => setModalVisible(false)}
+        />
       </BottomModal>
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView contentContainerStyle={{flexGrow: 1}}>
         <ImageLoader
-          onPress={() => launchImage(setHouseImage)}
+          onPress={() => handlePress(LIBRARY_ACTION)}
           image={houseImage}
         />
         <Controller
@@ -200,7 +206,7 @@ const NewFormHome = () => {
             />
           </View>
         </View>
-        <Text style={styles.titleStyle}>🔑 Propietario</Text>
+        <Text style={styles.titleStyle}>Propietario</Text>
         <InputGroup>
           <CustomInput
             title="Propietario"
@@ -217,12 +223,18 @@ const NewFormHome = () => {
             onPress={() => setModalVisible(true)}
           />
         </InputGroup>
+      </KeyboardAwareScrollView>
+      <View
+        style={{
+          flexGrow: 1,
+          justifyContent: 'flex-end',
+        }}>
         <CustomButton
           loading={loading}
           title="Crear casa"
           onPress={handleSubmit(onSubmit)}
         />
-      </KeyboardAwareScrollView>
+      </View>
     </React.Fragment>
   );
 };

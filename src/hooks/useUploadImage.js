@@ -11,12 +11,14 @@ const useUploadImageCheck = (collection, docId) => {
   const {uploadPhotos, loading} = usePhotos();
 
   const uploadImages = async (imgs, item) => {
-    setIdCheckLoading(item.id);
+    console.log(imgs);
     try {
+      setIdCheckLoading(item.id);
+
       if (imgs?.length > 0) {
         if (collection === 'checklists') {
           const mappedImages = parseImages(imgs);
-          uploadPhotos(mappedImages, {
+          await uploadPhotos(mappedImages, {
             collectionRef: firestore()
               .collection(collection)
               .doc(docId)
@@ -28,6 +30,7 @@ const useUploadImageCheck = (collection, docId) => {
         }
       }
     } catch (err) {
+      console.log(err);
       errorLog({
         message: err.message,
         track: true,

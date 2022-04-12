@@ -1,35 +1,35 @@
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 
-import {openScreenWithPush} from '../Router/utils/actions';
+import {openStackWithReplace} from '../Router/utils/actions';
 import {
   HOME_ADMIN_STACK_KEY,
   MAIN_ADMIN_STACK_KEY,
 } from '../Router/utils/routerKeys';
 import {firebase} from '@react-native-firebase/firestore';
 import {error} from '../lib/logging';
+import {LoadingModalContext} from '../context/loadinModalContext';
 
 const useRecursiveDelete = ({path, collection, docId, backScreen}) => {
   const [loading, setLoading] = useState(false);
+  const {setVisible} = useContext(LoadingModalContext);
   const recursiveDelete = async () => {
     const deleteFn = firebase.functions().httpsCallable('recursiveDelete');
     try {
       setLoading(true);
+      setVisible(true);
       await deleteFn({
         path: path,
         docId,
         collection: collection,
-      });
-      openScreenWithPush(HOME_ADMIN_STACK_KEY, {
-        screen: backScreen || MAIN_ADMIN_STACK_KEY,
-      });
+      }).then(() => setVisible(false));
+      openStackWithReplace(HOME_ADMIN_STACK_KEY, MAIN_ADMIN_STACK_KEY);
     } catch (err) {
       error({
         message: err.message,
         track: true,
         asToast: true,
       });
-    } finally {
-      setLoading(false);
+      setVisible(false);
     }
   };
   return {

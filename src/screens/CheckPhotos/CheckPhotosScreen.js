@@ -5,6 +5,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Dimensions,
+  Pressable,
 } from 'react-native';
 import ImageView from 'react-native-image-viewing';
 
@@ -23,6 +24,7 @@ import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {usePhotos} from '../../utils/usePhotos';
 import {parseRef} from './utils/parseRef';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
+import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,7 +38,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 30,
     bottom: 20,
-    zIndex: 5,
+    zIndex: 100,
   },
   photo: {
     position: 'relative',
@@ -146,15 +148,9 @@ const CheckPhotosScreen = ({route}) => {
   };
 
   return (
-    <PageLayout
-      safe
-      backButton
-      titleProps={{
-        subPage: true,
-        title: title,
-        color: 'white',
-      }}>
+    <PageLayout safe backButton>
       <React.Fragment>
+        <ScreenHeader title={title} />
         <ImageView
           visible={modal}
           imageIndex={imageIndex}
@@ -164,9 +160,12 @@ const CheckPhotosScreen = ({route}) => {
         <View style={{flex: 1}}>
           {photosSelected.length > 0 && (
             <View style={styles.deletePhotos}>
-              <TouchableOpacity onPress={() => setDeleteModal(true)}>
-                <AddButton iconName="delete" backColor={PM_COLOR} />
-              </TouchableOpacity>
+              <AddButton
+                iconName="delete"
+                backColor={PM_COLOR}
+                containerStyle={{right: 0, zIndex: 10}}
+                onPress={() => setDeleteModal(true)}
+              />
             </View>
           )}
           <DeleteModal

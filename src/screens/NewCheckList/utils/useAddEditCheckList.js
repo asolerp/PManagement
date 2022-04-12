@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useAddFirebase} from '../../../hooks/useAddFirebase';
 import {useUpdateFirebase} from '../../../hooks/useUpdateFirebase';
@@ -15,12 +15,14 @@ import useRecursiveDelete from '../../../utils/useRecursiveDelete';
 import Toast from 'react-native-toast-message';
 import {popScreen} from '../../../Router/utils/actions';
 import {error as errorLog} from '../../../lib/logging';
+import firestore from '@react-native-firebase/firestore';
+import {useContext} from 'react';
+import {LoadingModalContext} from '../../../context/loadinModalContext';
 
-export const useAddEditCheckist = ({docId}) => {
-  const dispatch = useDispatch({id: docId});
-
+export const useAddEditCheckist = ({docId, edit}) => {
+  const dispatch = useDispatch();
   const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
-
+  const {setVisible} = useContext(LoadingModalContext);
   const cleanForm = () => {
     resetFormAction();
   };
@@ -41,9 +43,20 @@ export const useAddEditCheckist = ({docId}) => {
     collection: CHECKLISTS,
   });
 
+  const setAllChecks = useCallback(
+    (checks) => {
+      dispatch(setAllChecks({checks}));
+    },
+    [dispatch],
+  );
+
+  const hasFilledForm =
+    !!date && Object.keys(checks).length > 0 && Object.keys(house).length;
+
   const handleEdit = async () => {
     try {
       setLoading(true);
+      setVisible(true);
       const editCheckListForm = {
         observations: observations,
         date: date?._i || date,
@@ -58,20 +71,28 @@ export const useAddEditCheckist = ({docId}) => {
       };
       await updateFirebase(docId, editCheckListForm);
       await recursiveDelete();
+
+      const newChecks = Object.entries(checks)
+        .filter(([key, value]) => value.check)
+        .map(([key, value]) => ({
+          title: value.title,
+          originalId: value.originalId,
+          photos: value.photos || null,
+          done: value.done || false,
+          worker: null,
+          date: null,
+        }));
+
       await Promise.all(
-        Object.entries(checks)
-          .filter(([key, value]) => value.check)
-          .map(([key, value]) =>
-            addFirebase(`checklists/${docId}/checks`, {
-              title: value.title,
-              originalId: value.originalId,
-              photos: value.photos,
-              done: value.done,
-              worker: null,
-              date: null,
-            }),
-          ),
+        newChecks.map((c) =>
+          firestore()
+            .collection('checklists')
+            .doc(docId)
+            .collection('checks')
+            .add(c),
+        ),
       );
+
       Toast.show({
         type: 'success',
         position: 'bottom',
@@ -87,19 +108,22 @@ export const useAddEditCheckist = ({docId}) => {
       });
     } finally {
       setLoading(false);
+      setVisible(false);
       cleanForm();
       popScreen();
     }
   };
 
   const handleAdd = async () => {
+    console.log('HOLA', house?.value);
     try {
       setLoading(true);
+      setVisible(true);
       const newCheckListForm = {
-        observations: observations || 'Sin observaciones',
+        observations: observations || '',
         date: date?._i,
-        workers: workers?.value,
-        workersId: workers?.value?.map((worker) => worker.id),
+        workers: workers?.value || null,
+        workersId: workers?.value?.map((worker) => worker.id) || null,
         houseId: house?.value[0].id,
         house: house?.value,
         total: Object.entries(checks).filter(([key, value]) => value.check)
@@ -108,14 +132,13 @@ export const useAddEditCheckist = ({docId}) => {
         send: false,
         done: 0,
       };
-      console.log('new', newCheckListForm);
       const newCheckList = await addFirebase('checklists', newCheckListForm);
       await Promise.all(
         Object.entries(checks)
           .filter(([key, value]) => value.check)
           .map(([key, value]) =>
             addFirebase(`checklists/${newCheckList.id}/checks`, {
-              title: value.title,
+              locale: value.locale,
               originalId: value.id,
               numberOfPhotos: 0,
               done: false,
@@ -124,12 +147,6 @@ export const useAddEditCheckist = ({docId}) => {
             }),
           ),
       );
-      Toast.show({
-        type: 'success',
-        position: 'bottom',
-        text1: 'Checklist ✅',
-        text2: 'El checklist se creó correctamente',
-      });
     } catch (err) {
       setError(true);
       Toast.show({
@@ -140,15 +157,21 @@ export const useAddEditCheckist = ({docId}) => {
       });
     } finally {
       setLoading(false);
+      setVisible(false);
       cleanForm();
       popScreen();
     }
   };
 
+  useEffect(() => {
+    !edit && cleanForm();
+  }, [edit]);
+
   return {
-    loading,
     error,
-    handleEdit,
+    loading,
     handleAdd,
+    handleEdit,
+    hasFilledForm,
   };
 };

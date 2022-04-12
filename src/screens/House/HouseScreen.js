@@ -13,7 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import CustomInput from '../../components/Elements/CustomInput';
 import InputGroup from '../../components/Elements/InputGroup';
 import PageLayout from '../../components/PageLayout';
-import {BottomModal, ModalContent} from 'react-native-modals';
+
 import DynamicSelectorList from '../../components/DynamicSelectorList';
 import CustomButton from '../../components/Elements/CustomButton';
 
@@ -23,17 +23,21 @@ import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 
 //Utils
-import {launchImage} from '../../utils/imageFunctions';
-import {ScrollView} from 'react-native';
-import {useSelector} from 'react-redux';
-import {userSelector} from '../../Store/User/userSlice';
+
 import useAuth from '../../utils/useAuth';
 import {useTranslation} from 'react-i18next';
 import {error} from '../../lib/logging';
+import {BottomModal} from '../../components/Modals/BottomModal';
+import {useCameraOrLibrary} from '../../hooks/useCamerOrLibrary';
+import {imageActions} from '../../utils/imageActions';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {ScreenHeader} from '../../components/Layout/ScreenHeader';
+import {useTheme} from '../../Theme';
+import PageOptionsScreen from '../PageOptions/PageOptions';
 
 const styles = StyleSheet.create({
   pageWrapper: {
-    marginTop: 20,
+    marginTop: 0,
   },
   infoWrapper: {
     marginVertical: 20,
@@ -76,6 +80,7 @@ const styles = StyleSheet.create({
 });
 
 const HouseScreen = ({route}) => {
+  const {Gutters} = useTheme();
   const [infoHouse, setInfoHouse] = useState();
   const [newImage, setNewImage] = useState();
   const {isAdmin} = useAuth();
@@ -86,6 +91,23 @@ const HouseScreen = ({route}) => {
   const {upload} = useUploadCloudinaryImage();
   // Modal State
   const [modalVisible, setModalVisible] = useState(false);
+  const {onImagePress} = useCameraOrLibrary();
+
+  const handlePressImage = (type) => {
+    onImagePress({
+      type,
+      options: {...imageActions[type], selectionLimit: 1},
+      callback: async (imgs) => {
+        setNewImage(
+          imgs.map((image, i) => ({
+            fileName: image?.fileName || `image-${i}`,
+            fileUri: image?.uri,
+            fileType: image?.type,
+          })),
+        );
+      },
+    });
+  };
 
   const handleEdit = async () => {
     try {
@@ -115,48 +137,49 @@ const HouseScreen = ({route}) => {
   return (
     <React.Fragment>
       <BottomModal
-        modalStyle={{borderRadius: 30}}
-        height={0.5}
-        visible={modalVisible}
-        onSwipeOut={(event) => {
+        isVisible={modalVisible}
+        onClose={(event) => {
           setModalVisible(false);
         }}
-        onTouchOutside={() => {
-          setModalVisible(false);
-        }}>
-        <ModalContent style={{flex: 1, alignItems: 'center'}}>
-          <DynamicSelectorList
-            collection="users"
-            where={[
-              {
-                label: 'role',
-                operator: '==',
-                condition: 'owner',
-              },
-            ]}
-            store="jobForm"
-            searchBy="firstName"
-            schema={{img: 'profileImage', name: 'firstName'}}
-            get={[infoHouse?.owner || house?.owner]}
-            set={(owners) => setInfoHouse({...infoHouse, owner: owners[0]})}
-            closeModal={() => setModalVisible(false)}
-          />
-        </ModalContent>
+        swipeDirection={null}>
+        <DynamicSelectorList
+          collection="users"
+          where={[
+            {
+              label: 'role',
+              operator: '==',
+              condition: 'owner',
+            },
+          ]}
+          store="jobForm"
+          searchBy="firstName"
+          schema={{img: 'profileImage', name: 'firstName'}}
+          get={[infoHouse?.owner || house?.owner]}
+          set={(owners) => setInfoHouse({...infoHouse, owner: owners[0]})}
+          closeModal={() => setModalVisible(false)}
+        />
       </BottomModal>
       <PageLayout
         safe
         backButton
-        titleProps={{
-          subPage: true,
-          title: house?.houseName,
-          color: 'white',
-        }}>
+        titleRightSide={
+          <PageOptionsScreen
+            editable={false}
+            collection={'houses'}
+            docId={houseId}
+            showDelete={true}
+            duplicate={false}
+          />
+        }>
         {house ? (
-          <ScrollView
+          <KeyboardAwareScrollView
             style={styles.pageWrapper}
             showsVerticalScrollIndicator={false}>
+            <View style={[Gutters.regularBMargin]}>
+              <ScreenHeader title={house?.houseName} />
+            </View>
             <TouchableOpacity
-              onPress={() => isAdmin && launchImage(setNewImage)}>
+              onPress={() => isAdmin && handlePressImage('library')}>
               {newImage && (
                 <View style={styles.iconContainer}>
                   <TouchableOpacity onPress={() => setNewImage(null)}>
@@ -165,8 +188,8 @@ const HouseScreen = ({route}) => {
                 </View>
               )}
               <ImageBackground
-                source={{uri: newImage?.fileUri || house?.houseImage}}
-                imageStyle={{borderRadius: 10, borderTopRightRadius: 40}}
+                source={{uri: newImage?.[0]?.fileUri || house?.houseImage}}
+                imageStyle={{borderRadius: 10}}
                 style={styles.houseImage}
               />
             </TouchableOpacity>
@@ -261,7 +284,7 @@ const HouseScreen = ({route}) => {
                 </View>
               )}
             </View>
-          </ScrollView>
+          </KeyboardAwareScrollView>
         ) : (
           <View />
         )}

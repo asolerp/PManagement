@@ -3,7 +3,6 @@ import moment from 'moment';
 import React, {useState} from 'react';
 import {StyleSheet, View, Text, TouchableWithoutFeedback} from 'react-native';
 import {useTheme} from '../../Theme';
-import {BottomModal, ModalContent} from 'react-native-modals';
 
 // UI
 import Avatar from '../Avatar';
@@ -20,6 +19,7 @@ import Badge from '../Elements/Badge';
 import DynamicSelectorList from '../DynamicSelectorList';
 import {asignWorkerToIncidence} from '../../Services/asignWorkerToIncidence';
 import {useTranslation} from 'react-i18next';
+import {BottomModal} from '../Modals/BottomModal';
 
 const styles = StyleSheet.create({
   asignerContainer: {
@@ -65,35 +65,29 @@ const Info = () => {
   return (
     <React.Fragment>
       <BottomModal
-        modalStyle={{borderRadius: 30}}
-        height={0.9}
-        visible={modalVisible}
-        onSwipeOut={(event) => {
+        isVisible={modalVisible}
+        onClose={() => {
           setModalVisible(false);
         }}
-        onTouchOutside={() => {
-          setModalVisible(false);
-        }}>
-        <ModalContent style={{flex: 1, alignItems: 'center'}}>
-          <DynamicSelectorList
-            collection="users"
-            store="jobForm"
-            where={[
-              {
-                label: 'role',
-                operator: '==',
-                condition: 'worker',
-              },
-            ]}
-            searchBy="firstName"
-            schema={{img: 'profileImage', name: 'firstName'}}
-            get={asignedUsers}
-            set={(workers) => setWorkers(workers)}
-            onSave={handleAsignWorker}
-            multiple={true}
-            closeModal={() => setModalVisible(false)}
-          />
-        </ModalContent>
+        swipeDirection={null}>
+        <DynamicSelectorList
+          collection="users"
+          store="jobForm"
+          where={[
+            {
+              label: 'role',
+              operator: '==',
+              condition: 'worker',
+            },
+          ]}
+          searchBy="firstName"
+          schema={{img: 'profileImage', name: 'firstName'}}
+          get={asignedUsers}
+          set={(workers) => setWorkers(workers)}
+          onSave={handleAsignWorker}
+          multiple={true}
+          closeModal={() => setModalVisible(false)}
+        />
       </BottomModal>
       <View style={[Layout.row, Gutters.smallBMargin]}>
         {(!value?.data()?.workers || value?.data()?.workers.length === 0) && (

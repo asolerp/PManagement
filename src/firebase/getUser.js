@@ -5,7 +5,8 @@ import {error} from '../lib/logging';
 
 export const getUser = async (uuid) => {
   try {
-    return await firestore().collection('users').doc(uuid).get();
+    const userRef = await firestore().collection('users').doc(uuid).get();
+    return userRef;
   } catch (err) {
     error({
       message: err.message,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ProfileScreen} from '../Screens/Profile';
 import {JobScreen} from '../Screens/Job';
 import {IncidenceScreen} from '../Screens/Incidence';
@@ -8,6 +8,7 @@ import Check from './Check';
 import {HouseScreen} from '../Screens/House';
 import {
   CHECK_STACK_KEY,
+  FILTERS_SCREEN_KEY,
   HOME_ADMIN_STACK_KEY,
   HOUSE_SCREEN_KEY,
   INCIDENCE_SCREEN_KEY,
@@ -15,8 +16,9 @@ import {
   PROFILE_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import HomeAdmin from './HomeAdmin';
+import {FiltersScreen} from '../Screens/Filters';
 
-const {Navigator, Screen} = createStackNavigator();
+const {Navigator, Screen, Group} = createNativeStackNavigator();
 
 export const MainAdmin = ({route}) => {
   return (
@@ -49,6 +51,9 @@ export const MainAdmin = ({route}) => {
         }}
       />
       <Screen name={HOUSE_SCREEN_KEY} component={HouseScreen} />
+      <Group screenOptions={{presentation: 'modal'}}>
+        <Screen name={FILTERS_SCREEN_KEY} component={FiltersScreen} />
+      </Group>
     </Navigator>
   );
 };

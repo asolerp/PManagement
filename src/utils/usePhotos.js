@@ -21,13 +21,10 @@ export const usePhotos = () => {
     );
 
     const photoIds = imgs.map((photo) => {
-      console.log(photo.ref);
       const id = photo.ref.split('.')[0];
 
       return id;
     });
-
-    console.log(photoIds, 'photos');
 
     try {
       setLoading(true);
@@ -51,11 +48,11 @@ export const usePhotos = () => {
   };
 
   const uploadPhotos = async (imgs, fbRoute) => {
-    const {docId, collectionRef, cloudinaryFolder} = fbRoute;
+    const {collectionRef, cloudinaryFolder} = fbRoute;
     try {
       setLoading(true);
-      const uploadImagesCloudinary = imgs.map((file) =>
-        upload(file, cloudinaryFolder),
+      const uploadImagesCloudinary = imgs.map(
+        async (file) => await upload(file, cloudinaryFolder),
       );
       const imagesURLs = await Promise.all(uploadImagesCloudinary);
 

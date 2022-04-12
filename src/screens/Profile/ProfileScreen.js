@@ -1,11 +1,17 @@
-import React, {useState} from 'react';
-import {View, Text, TextInput, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 
 // UI
 import PageLayout from '../../components/PageLayout';
 import InputGroup from '../../components/Elements/InputGroup';
 import CustomButton from '../../components/Elements/CustomButton';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import ImageBlurLoading from 'react-native-image-blur-loading';
 
 //Redux
@@ -13,32 +19,34 @@ import {useSelector} from 'react-redux';
 
 //Firebase
 import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
+
 import auth from '@react-native-firebase/auth';
 
 //Utils
-import {launchImage} from '../../utils/imageFunctions';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {userSelector} from '../../Store/User/userSlice';
 import {error} from '../../lib/logging';
 import {useTranslation} from 'react-i18next';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
-import {Button} from 'react-native';
+import {useProfileForm} from './hooks/useProfileForm';
 import {useTheme} from '../../Theme';
-import {ActivityIndicator} from 'react-native';
-import {Colors} from '../../Theme/Variables';
+
+import PageOptionsScreen from '../PageOptions/PageOptions';
+import {USERS} from '../../utils/firebaseKeys';
+
+import {
+  genderOptions,
+  languageOptions,
+  roleOptions,
+} from '../../components/Forms/User/NewUserForm';
+import {CustomPicker} from '../../components/CustomPicker';
+import {useChoseImage} from '../../hooks/useChoseImage';
 
 const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-  },
   avatarContainer: {
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 40,
   },
   avatarWrapper: {
     width: 150,
@@ -80,54 +88,34 @@ const styles = StyleSheet.create({
 
 const ProfileScreen = ({route}) => {
   const {userId} = route.params;
-  const [newImage, setNewImage] = useState();
-  const [infoProfile, setInfoProfile] = useState();
-  const [editLoading, setEditLoading] = useState(false);
+
+  const [isPickerVisibleRole, setIsPickerVisibleRole] = useState(false);
+  const [isPickerVisibleGender, setIsPickerVisibleGender] = useState(false);
+  const [isPickerVisibleLanguage, setIsPickerVisibleLanguage] = useState(false);
+
+  const {
+    changePassword,
+    loading,
+    newImage,
+    setNewImage,
+    setInfoProfile,
+    infoProfile,
+    handleEdit,
+  } = useProfileForm();
 
   const {Layout, Gutters} = useTheme();
 
+  const {handlePressImage} = useChoseImage(setNewImage);
   const user = useSelector(userSelector);
   const {t} = useTranslation();
-  const {updateFirebase} = useUpdateFirebase('users');
-  const {upload} = useUploadCloudinaryImage();
 
   const defaultImg =
-    'https://res.cloudinary.com/enalbis/image/upload/v1629876203/PortManagement/varios/avatar-1577909_1280_gcinj5.png';
+    'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
 
   const {document: userLoggedIn} = useGetDocFirebase(
     'users',
     userId || user.id,
   );
-
-  console.log(userLoggedIn);
-
-  const handleEdit = async () => {
-    try {
-      setEditLoading(true);
-      if (newImage) {
-        const uploadImage = await upload(
-          newImage,
-          `/PortManagement/Users/${userLoggedIn.id}/Photos`,
-        );
-        await updateFirebase(userLoggedIn.id, {
-          ...infoProfile,
-          profileImage: uploadImage,
-        });
-      } else {
-        await updateFirebase(userLoggedIn.id, {...infoProfile});
-      }
-      setInfoProfile(null);
-      setNewImage(null);
-    } catch (err) {
-      error({
-        message: err.message,
-        track: true,
-        asToast: true,
-      });
-    } finally {
-      setEditLoading(false);
-    }
-  };
 
   const logOut = async () => {
     try {
@@ -142,28 +130,76 @@ const ProfileScreen = ({route}) => {
     }
   };
 
+  useEffect(() => {
+    if (userLoggedIn) {
+      setInfoProfile(userLoggedIn);
+    }
+  }, [userLoggedIn, setInfoProfile]);
+
   return (
     <PageLayout
       safe
+      titleRightSide={
+        <PageOptionsScreen
+          editable={false}
+          collection={USERS}
+          docId={userId || user?.id}
+          showDelete={true}
+          duplicate={false}
+        />
+      }
       footer={
-        (userId === user.uid || !userId) && (
-          <CustomButton
-            styled="rounded"
-            title={t('profile.logout')}
-            onPress={() => logOut()}
-          />
-        )
+        <>
+          {userId === user.id && (
+            <CustomButton
+              type="clear"
+              styled="rounded"
+              title={t('profile.logout')}
+              onPress={() => logOut()}
+            />
+          )}
+          <View style={[Gutters.smallTMargin]}>
+            <CustomButton
+              styled="rounded"
+              title={t('profile.edit')}
+              onPress={() => handleEdit(userId)}
+            />
+          </View>
+        </>
       }
       titleLefSide={true}
-      backButton={user?.role === 'admin'}
-      titleProps={{
-        title: t('profile.title'),
-        subPage: true,
-      }}>
+      backButton={user?.role === 'admin'}>
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+        <CustomPicker
+          isPickerVisible={isPickerVisibleRole}
+          closePicker={() => setIsPickerVisibleRole(false)}
+          value={user?.role}
+          setValue={(role) => {
+            setInfoProfile({...infoProfile, role: role});
+          }}
+          options={roleOptions}
+        />
+        <CustomPicker
+          isPickerVisible={isPickerVisibleGender}
+          closePicker={() => setIsPickerVisibleGender(false)}
+          value={user?.gender}
+          setValue={(gender) => {
+            setInfoProfile({...infoProfile, gender: gender});
+          }}
+          options={genderOptions}
+        />
+        <CustomPicker
+          isPickerVisible={isPickerVisibleLanguage}
+          closePicker={() => setIsPickerVisibleLanguage(false)}
+          value={user?.language}
+          setValue={(language) => {
+            setInfoProfile({...infoProfile, language: language});
+          }}
+          options={languageOptions}
+        />
         <View style={styles.pageContainer}>
           <View style={styles.avatarContainer}>
-            <TouchableOpacity onPress={() => launchImage(setNewImage)}>
+            <TouchableOpacity onPress={() => handlePressImage('library')}>
               {newImage && (
                 <View style={styles.iconContainer}>
                   <TouchableOpacity onPress={() => setNewImage(null)}>
@@ -174,20 +210,17 @@ const ProfileScreen = ({route}) => {
               <ImageBlurLoading
                 withIndicator
                 thumbnailSource={{
-                  uri: newImage?.fileUri || userLoggedIn?.profileImage,
+                  uri: newImage?.[0]?.fileUri || infoProfile?.profileImage,
                 }}
                 source={{
                   uri:
-                    newImage?.fileUri ||
-                    userLoggedIn?.profileImage ||
+                    newImage?.[0]?.fileUri ||
+                    infoProfile?.profileImage ||
                     defaultImg,
                 }}
                 style={styles.avatarWrapper}
               />
             </TouchableOpacity>
-            <Text style={styles.comonTextStyle}>
-              {userLoggedIn?.firstName} {userLoggedIn?.lastName}
-            </Text>
           </View>
           <View style={styles.formContainer}>
             <View
@@ -196,33 +229,17 @@ const ProfileScreen = ({route}) => {
                 Layout.justifyContentSpaceBetween,
                 Layout.alignItemsCenter,
                 Gutters.mediumBMargin,
-              ]}>
-              <Text style={styles.titleStyle}>
-                {t('profile.personal_data')}
-              </Text>
-              {(infoProfile || newImage) && (
-                <React.Fragment>
-                  {editLoading ? (
-                    <ActivityIndicator color={Colors.pm} size="small" />
-                  ) : (
-                    <Button
-                      title={t('common.edit')}
-                      onPress={() => handleEdit()}
-                    />
-                  )}
-                </React.Fragment>
-              )}
-            </View>
+              ]}
+            />
             <Text style={styles.inputLabel}>{t('profile.name') + ': '}</Text>
             <InputGroup>
               <TextInput
-                editable={userId ? userId === user.uid : true}
                 style={{height: 40}}
                 placeholder={t('profile.name')}
                 onChangeText={(text) =>
                   setInfoProfile({...infoProfile, firstName: text})
                 }
-                value={infoProfile?.firstName || userLoggedIn?.firstName}
+                value={infoProfile?.firstName}
               />
             </InputGroup>
             <Text style={styles.inputLabel}>
@@ -230,40 +247,118 @@ const ProfileScreen = ({route}) => {
             </Text>
             <InputGroup>
               <TextInput
-                editable={userId ? userId === user.uid : true}
                 style={{height: 40}}
                 placeholder={t('profile.last_name')}
                 onChangeText={(text) =>
                   setInfoProfile({...infoProfile, lastName: text})
                 }
-                value={infoProfile?.lastName || userLoggedIn?.lastName}
+                value={infoProfile?.lastName}
               />
             </InputGroup>
             <Text style={styles.inputLabel}>{t('profile.phone') + ': '}</Text>
             <InputGroup>
               <TextInput
-                editable={userId ? userId === user.uid : true}
                 style={{height: 40}}
                 placeholder={t('profile.phone')}
                 onChangeText={(text) =>
                   setInfoProfile({...infoProfile, phone: text})
                 }
-                value={infoProfile?.phone || userLoggedIn?.phone}
+                value={infoProfile?.phone}
               />
             </InputGroup>
             <Text style={styles.inputLabel}>{t('profile.email') + ': '}</Text>
             <InputGroup>
               <TextInput
-                editable={userId ? userId === user.uid : true}
                 style={{height: 40}}
                 placeholder={t('profile.email')}
                 onChangeText={(text) =>
                   setInfoProfile({...infoProfile, email: text})
                 }
-                value={infoProfile?.email || userLoggedIn?.email}
+                value={infoProfile?.email}
               />
             </InputGroup>
+            <Text style={styles.inputLabel}>{t('profile.gender') + ': '}</Text>
+            <InputGroup>
+              <TextInput
+                editable={false}
+                style={{height: 40}}
+                placeholder={t('profile.gender')}
+                onPressIn={() => setIsPickerVisibleGender(true)}
+                value={
+                  genderOptions?.find((g) => g.value === infoProfile?.gender)
+                    ?.label || ''
+                }
+              />
+            </InputGroup>
+            <Text style={styles.inputLabel}>
+              {t('profile.language') + ': '}
+            </Text>
+            <InputGroup>
+              <TextInput
+                editable={false}
+                style={{height: 40}}
+                placeholder={t('profile.language')}
+                onPressIn={() => setIsPickerVisibleLanguage(true)}
+                value={
+                  languageOptions.find((g) => g.value === infoProfile?.language)
+                    ?.label || ''
+                }
+              />
+            </InputGroup>
+            {/* <Text style={styles.inputLabel}>{t('profile.role') + ': '}</Text>
+            <InputGroup>
+              <TextInput
+                editable={false}
+                style={{height: 40}}
+                placeholder={t('profile.role')}
+                onPressIn={() => setIsPickerVisibleRole(true)}
+                value={
+                  roleOptions.find((g) => g.value === infoProfile?.role)
+                    ?.label || ''
+                }
+              />
+            </InputGroup> */}
           </View>
+          {userId === user?.id && (
+            <View>
+              <Text style={[styles.titleStyle, Gutters.mediumBMargin]}>
+                Contraseña
+              </Text>
+              <Text style={styles.inputLabel}>Contraseña antigua:</Text>
+              <InputGroup>
+                <TextInput
+                  style={{height: 40}}
+                  placeholder="Contraseña antigua"
+                  onChangeText={(text) =>
+                    setInfoProfile({...infoProfile, oldPassword: text})
+                  }
+                  value={infoProfile?.oldPassword}
+                />
+              </InputGroup>
+              <Text style={styles.inputLabel}>Nueva contraseña:</Text>
+              <InputGroup>
+                <TextInput
+                  style={{height: 40}}
+                  placeholder="Nueva contraseña"
+                  onChangeText={(text) =>
+                    setInfoProfile({...infoProfile, newPassword: text})
+                  }
+                  value={infoProfile?.newPassword}
+                />
+              </InputGroup>
+              <CustomButton
+                loading={loading}
+                type="clear"
+                title="Cambiar contraseña"
+                onPress={() => {
+                  changePassword(
+                    infoProfile?.oldPassword,
+                    infoProfile?.newPassword,
+                  );
+                }}
+              />
+            </View>
+          )}
         </View>
       </KeyboardAwareScrollView>
     </PageLayout>

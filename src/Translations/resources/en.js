@@ -17,6 +17,7 @@ export default {
     profile: 'Profile',
   },
   common: {
+    apply: 'Apply',
     hey: 'Hello!',
     create: 'Create',
     all: 'All',
@@ -45,6 +46,7 @@ export default {
     range_time: {
       today: 'Today',
       next: 'In {{numberOfDays}} days',
+      past: '{{numberOfDays}} days ago',
       week: 'This week',
       more_week: 'More than a week',
     },
@@ -62,6 +64,10 @@ export default {
         resolved: 'Resolved',
         no_resolved: 'No resolved',
       },
+      checklistState: {
+        resolved: 'Finished',
+        no_resolved: 'Unfinished',
+      },
     },
   },
   welcome: 'Today is {{date}} ☀️',
@@ -73,6 +79,9 @@ export default {
   new_checklist: {
     title: 'New checklist',
     check_list: 'List of checks',
+  },
+  edit_checklist: {
+    title: 'Edit checklist',
   },
   checklists: {
     title: 'Checklists',
@@ -128,6 +137,21 @@ export default {
       create: 'Create incidence',
     },
   },
+  newUser: {
+    title: 'New user',
+    edit: 'Edit user',
+    form: {
+      name: 'Name',
+      surname: 'Surname',
+      email: 'Email',
+      phone: 'Phone',
+      role: 'User role',
+      gender: 'Gender',
+      language: 'Language',
+      create: 'Create user',
+      edit: 'Edit user',
+    },
+  },
   users: {
     title: 'Users',
   },
@@ -145,6 +169,7 @@ export default {
     title: 'Photos',
   },
   profile: {
+    edit: 'Edit',
     personal_data: 'Personal data',
     title: 'Profile',
     phone: 'Phone',
@@ -152,6 +177,9 @@ export default {
     logout: 'Logout',
     name: 'Name',
     last_name: 'Surname',
+    gender: 'Gender',
+    role: 'Role',
+    language: 'Language',
   },
   options: {
     title: 'Options',

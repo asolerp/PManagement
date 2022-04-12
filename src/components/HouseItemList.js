@@ -1,5 +1,4 @@
 import React from 'react';
-import {ImageBackground} from 'react-native';
 
 import {View, Text, Image, StyleSheet} from 'react-native';
 import ImageBlurLoading from 'react-native-image-blur-loading';

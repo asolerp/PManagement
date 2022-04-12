@@ -13,6 +13,7 @@ import {
   DASHBOARD_OWNER_SCREEN_KEY,
   DASHBOARD_SCREEN_KEY,
   DASHBOARD_WORKER_SCREEN_KEY,
+  FILTERS_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
   HOUSE_SCREEN_KEY,
   INCIDENCES_SCREEN_KEY,
@@ -21,6 +22,7 @@ import {
   USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import {isIOS} from './platform';
+import {differenceInDays, format, isSameDay, subDays} from 'date-fns';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
   return text?.length > numberOfCharts
@@ -58,6 +60,8 @@ export const getHightByRoute = (route) => {
       return isIOS ? 30 : 20;
     case PROFILE_SCREEN_KEY:
       return isIOS ? 80 : 20;
+    case FILTERS_SCREEN_KEY:
+      return isIOS ? 50 : 30;
     default:
       return isIOS ? 30 : 20;
   }
@@ -155,28 +159,32 @@ export const parseTimeFilter = (time) => {
 };
 
 export const parseDateWithText = (date) => {
-  const eventDay = moment(date.toDate()).format('MM/DD/YYYY');
-  const today = moment(new Date()).format('MM/DD/YYYY');
-  const inOneWeek = moment(new Date()).subtract(7, 'days').format('MM/DD/YYYY');
+  const inOneWeek = format(subDays(new Date(), 7), 'dd/MM/yyyy');
+  const diff = differenceInDays(date.toDate(), new Date());
 
-  const diff = moment(date.toDate())
-    .add(1, 'day')
-    .diff(moment(new Date()), 'days');
-
-  if (eventDay === today) {
+  if (isSameDay(date.toDate(), new Date())) {
     return {
       text: 'common.range_time.today',
       variant: 'pm',
     };
   }
-  if (eventDay > today) {
+
+  if (date.toDate() < new Date()) {
+    return {
+      text: 'common.range_time.past',
+      metaData: {numberOfDays: diff * -1},
+      variant: 'danger',
+    };
+  }
+
+  if (date.toDate() > new Date()) {
     return {
       text: 'common.range_time.next',
       metaData: {numberOfDays: diff},
       variant: 'pm',
     };
   }
-  if (eventDay < today && eventDay > inOneWeek) {
+  if (date.toDate() < new Date() && date.toDate() > inOneWeek) {
     return {
       text: 'common.range_time.week',
       variant: 'warning',

@@ -6,15 +6,25 @@ import {useSelector} from 'react-redux';
 // Firebase
 import firestore from '@react-native-firebase/firestore';
 import {userSelector} from '../Store/User/userSlice';
-import {useTranslation} from 'react-i18next';
 
-const ProfileBar = ({onPress}) => {
+import {useTheme} from '../Theme';
+import {Colors} from '../Theme/Variables';
+import {format} from 'date-fns';
+import {es} from 'date-fns/locale';
+import {capitalizeText} from '../utils/capitalize';
+import {openScreenWithPush} from '../Router/utils/actions';
+import {PROFILE_SCREEN_KEY} from '../Router/utils/routerKeys';
+
+const ProfileBar = () => {
+  const {Fonts} = useTheme();
   const defaultImg =
-    'https://res.cloudinary.com/enalbis/image/upload/v1629876203/PortManagement/varios/avatar-1577909_1280_gcinj5.png';
+    'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
 
   const user = useSelector(userSelector);
   const [userProfile, setUserProfile] = useState();
-  const {t} = useTranslation();
+
+  const today = format(new Date(), 'iii d MMMM yyyy', {locale: es});
+
   useEffect(() => {
     const subscriber = firestore()
       .collection('users')
@@ -22,7 +32,6 @@ const ProfileBar = ({onPress}) => {
       .onSnapshot((documentSnapshot) => {
         setUserProfile(documentSnapshot?.data());
       });
-
     // Stop listening for updates when no longer required
     return () => subscriber();
   }, [user]);
@@ -31,13 +40,21 @@ const ProfileBar = ({onPress}) => {
     <View style={styles.container}>
       <View style={styles.profileBar}>
         <View>
-          <Image
-            style={styles.tinyLogo}
-            source={require('../assets/images/logo_pm_color.png')}
-          />
+          <Text style={[Fonts.textXl, Fonts.textBold, {color: Colors.white}]}>
+            Hola {user.firstName || ''}
+          </Text>
+          <Text style={[Fonts.textXs, {color: Colors.gray300}]}>
+            {capitalizeText(today)}
+          </Text>
         </View>
+
         <View>
-          <TouchableOpacity onPress={onPress}>
+          <TouchableOpacity
+            onPress={() =>
+              openScreenWithPush(PROFILE_SCREEN_KEY, {
+                userId: user?.id,
+              })
+            }>
             <Image
               style={styles.avatar}
               source={{
@@ -55,6 +72,9 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    height: 200,
   },
   profileBar: {
     flexDirection: 'row',
@@ -63,8 +83,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   avatar: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     borderRadius: 100,
     borderWidth: 2,
     borderColor: 'white',
@@ -84,3 +104,30 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileBar;
+
+{
+  /* <View style={[Gutters.mediumBMargin]}>
+  <View
+    style={[
+      Layout.row,
+      Layout.alignItemsCenter,
+      Layout.justifyContentSpaceBetween,
+    ]}>
+    <View>
+      <Text style={[Fonts.textRegular, {color: Colors.pm}]}>
+        Hola {user.firstName || '' + '.'}
+      </Text>
+      <Text style={[Fonts.textRegular, {width: 200, fontWeight: '400'}]}>
+        Estas son tus tareas en el día de hoy
+      </Text>
+    </View>
+    <TouchableWithoutFeedback
+      onPress={() => openScreenWithPush(FILTERS_SCREEN_KEY)}>
+      <View style={[Layout.row, Layout.alignItemsCenter]}>
+        <Icon name="filter-alt" size={15} style={[Gutters.tinyRMargin]} />
+        <Text style={[Fonts.textTitle]}>{t('common.filters.title')}</Text>
+      </View>
+    </TouchableWithoutFeedback>
+  </View>
+</View>; */
+}

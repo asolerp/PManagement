@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import {View, Text, StyleSheet} from 'react-native';
 
@@ -7,9 +7,8 @@ import {View, Text, StyleSheet} from 'react-native';
 import {DashboardScreen} from '../Screens/Dashboard';
 import {HousesScreen} from '../Screens/Houses';
 
-import {AnimatedTabBarNavigator} from 'react-native-animated-nav-tab-bar';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
-import {Platform} from 'react-native';
 
 import {PM_COLOR, PRIORITY_HEIGHT} from '../styles/colors';
 
@@ -22,8 +21,9 @@ import {
 import {UsersScreen} from '../Screens/Users';
 import {useTranslation} from 'react-i18next';
 import {isIOS} from '../utils/platform';
+import {Colors} from '../Theme/Variables';
 
-const {Navigator, Screen} = AnimatedTabBarNavigator();
+const {Navigator, Screen} = createBottomTabNavigator();
 
 const styles = StyleSheet.create({
   container: {
@@ -88,39 +88,25 @@ const HomeAdmin = () => {
     <Navigator
       options={{headerShown: false}}
       screenOptions={{
+        tabBarShowLabel: false,
         headerShown: false,
-      }}
-      tabBarOptions={{
-        activeTintColor: 'white',
-        inactiveTintColor: 'white',
-        activeBackgroundColor: PM_COLOR,
-        tabStyle: {
-          marginTop: 0,
-          paddingBottom: Platform.OS === 'ios' ? 20 : 0,
-          borderTopWidth: 1,
-          borderBottomWidth: 0,
-          borderTopColor: '#dbdbdb',
-        },
-      }}
-      appearence={{
-        floating: false,
-        shadow: true,
-        tabBarBackground: 'white',
       }}>
       <Screen
         name={t(tabNameByScreen[DASHBOARD_SCREEN_KEY])}
         initialParams={{screenKey: DASHBOARD_SCREEN_KEY}}
         component={DashboardScreen}
         options={({route}) => ({
-          tabBarBadge: 5,
           tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="dashboard"
-              size={size ? size : 24}
-              color={focused ? color : PM_COLOR}
-              focused={focused}
-            />
+            <>
+              <Icon
+                name={focused ? 'ios-speedometer' : 'ios-speedometer-outline'}
+                size={25}
+                focused={focused}
+                color={Colors.pm}
+              />
+              {/* <Text style={[]}>Panel principal</Text> */}
+            </>
           ),
         })}
       />
@@ -131,12 +117,15 @@ const HomeAdmin = () => {
         options={({route}) => ({
           tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="person"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
+            <>
+              <Icon
+                name={focused ? 'ios-person' : 'ios-person-outline'}
+                size={25}
+                focused={focused}
+                color={Colors.pm}
+              />
+              {/* <Text style={[]}>Jugadores</Text> */}
+            </>
           ),
         })}
       />
@@ -147,12 +136,15 @@ const HomeAdmin = () => {
         options={({route}) => ({
           tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name="home"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
-              focused={focused}
-            />
+            <>
+              <Icon
+                name={focused ? 'ios-home' : 'ios-home-outline'}
+                size={25}
+                focused={focused}
+                color={Colors.pm}
+              />
+              {/* <Text style={[]}>Casas</Text> */}
+            </>
           ),
         })}
       />

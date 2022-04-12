@@ -5,7 +5,7 @@ import {useTranslation} from 'react-i18next';
 import InputGroup from '../../../components/Elements/InputGroup';
 import DynamicSelectorList from '../../../components/DynamicSelectorList';
 import CustomInput from '../../Elements/CustomInput';
-import {BottomModal, ModalContent} from 'react-native-modals';
+import {BottomModal} from '../../Modals/BottomModal';
 
 // Redux
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
@@ -40,18 +40,12 @@ const NewIncidenceForm = () => {
   return (
     <View>
       <BottomModal
-        modalStyle={{borderRadius: 30}}
-        height={0.9}
-        visible={modalVisible}
-        onSwipeOut={(event) => {
-          setModalVisible(false);
-        }}
-        onTouchOutside={() => {
+        isVisible={modalVisible}
+        swipeDirection={null}
+        onClose={() => {
           setModalVisible(false);
         }}>
-        <ModalContent style={{flex: 1, alignItems: 'center'}}>
-          {modalContent}
-        </ModalContent>
+        {modalContent}
       </BottomModal>
       <InputGroup>
         <TextInput

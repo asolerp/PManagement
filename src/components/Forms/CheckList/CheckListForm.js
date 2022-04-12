@@ -1,6 +1,5 @@
 import React, {useState, useCallback, useEffect} from 'react';
 
-import {BottomModal, ModalContent} from 'react-native-modals';
 import {Text, View, TextInput, StyleSheet} from 'react-native';
 
 // Redux
@@ -23,7 +22,7 @@ import {defaultLabel} from '../../../styles/common';
 
 // Firebase
 import firestore from '@react-native-firebase/firestore';
-import {useGetFirebase} from '../../../hooks/useGetFirebase';
+
 import {DARK_BLUE, PM_COLOR} from '../../../styles/colors';
 import {
   houseSelector,
@@ -38,12 +37,15 @@ import {
   dateSelector,
 } from '../../../Store/CheckList/checkListSlice';
 import {Colors} from '../../../Theme/Variables';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import Label from '../../Elements/Label';
 
 import {CHECKLISTS} from '../../../utils/firebaseKeys';
 import {useTranslation} from 'react-i18next';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {BottomModal} from '../../Modals/BottomModal';
+
+import {getLocales} from 'react-native-localize';
 
 const CheckListForm = ({edit, docId}) => {
   const dispatch = useDispatch();
@@ -118,7 +120,7 @@ const CheckListForm = ({edit, docId}) => {
           check: true,
           done: check.done,
           id: check.id,
-          title: check.title,
+          locale: check.locale,
           photos: check.photos,
         }))
         .reduce((acc, checkDoc) => {
@@ -210,42 +212,36 @@ const CheckListForm = ({edit, docId}) => {
     />
   );
 
-  const CheckItem = ({item}) => {
-    console.log(item);
-    return (
-      <View style={styles.checkWrapper}>
-        <CheckBox
-          onTintColor={Colors.leftBlue}
-          onCheckColor={Colors.leftBlue}
-          disabled={false}
-          value={checks?.[item.id]?.check || false}
-          boxType="square"
-          onValueChange={(newValue) =>
-            setToggleCheckBox({...item, originalId: item.id}, newValue)
-          }
-        />
-        <Text style={styles.checkStyle}>{item.title}</Text>
-      </View>
-    );
-  };
-
-  console.log('list', list);
+  const CheckItem = useCallback(
+    ({item}) => {
+      return (
+        <View style={styles.checkWrapper}>
+          <CheckBox
+            onTintColor={Colors.leftBlue}
+            onCheckColor={Colors.leftBlue}
+            disabled={false}
+            value={checks?.[item.id]?.check || false}
+            boxType="square"
+            onValueChange={(newValue) =>
+              setToggleCheckBox({...item, originalId: item.id}, newValue)
+            }
+          />
+          <Text style={styles.checkStyle}>
+            {item?.locale?.[getLocales()[0].languageCode] || item?.locale?.en}
+          </Text>
+        </View>
+      );
+    },
+    [checks, setToggleCheckBox],
+  );
 
   return (
     <View style={[styles.newJobScreen]}>
       <BottomModal
-        modalStyle={{borderRadius: 30}}
-        height={modalContent === 'date' ? 0.4 : 0.9}
-        visible={modalVisible}
-        onSwipeOut={(event) => {
-          setModalVisible(false);
-        }}
-        onTouchOutside={() => {
-          setModalVisible(false);
-        }}>
-        <ModalContent style={{flex: 1, alignItems: 'center'}}>
-          {modalContent && modalSwitcher(modalContent)}
-        </ModalContent>
+        swipeDirection={null}
+        onClose={() => setModalVisible(false)}
+        isVisible={modalVisible}>
+        {modalContent && modalSwitcher(modalContent)}
       </BottomModal>
       <InputGroup>
         <CustomInput
@@ -342,11 +338,11 @@ const CheckListForm = ({edit, docId}) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.checkListWrapper}>
+      <ScrollView style={styles.checkListWrapper}>
         {list?.map((check) => (
           <CheckItem item={check} key={check.id} />
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 };

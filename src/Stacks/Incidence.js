@@ -1,10 +1,10 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import IncidenceScreen,  from '../Screens/IncidenceScreen';
-import { INCIDENCE_SCREEN_KEY } from '../Router/utils/routerKeys';
+import IncidenceScreen from '../Screens/IncidenceScreen';
+import {INCIDENCE_SCREEN_KEY} from '../Router/utils/routerKeys';
 
-const {Navigator, Screen} = createStackNavigator();
+const {Navigator, Screen} = createNativeStackNavigator();
 
 const Incidence = () => {
   return (

@@ -35,6 +35,7 @@ export const checkListSlice = createSlice({
       state.checks = payload.checks;
     },
     resetForm: (state) => {
+      state.date = null;
       state.house = {};
       state.workers = {};
       state.checks = {};

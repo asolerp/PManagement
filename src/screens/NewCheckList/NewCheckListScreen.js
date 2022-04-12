@@ -1,9 +1,7 @@
 import React from 'react';
-import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
-
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import CheckListForm from '../../components/Forms/CheckList/CheckListForm';
 
@@ -11,46 +9,43 @@ import CheckListForm from '../../components/Forms/CheckList/CheckListForm';
 import CustomButton from '../../components/Elements/CustomButton';
 import PageLayout from '../../components/PageLayout';
 
-import {popScreen} from '../../Router/utils/actions';
-import {Colors} from '../../Theme/Variables';
 import {useAddEditCheckist} from './utils/useAddEditCheckList';
 import {useTranslation} from 'react-i18next';
 
+import {ScreenHeader} from '../../components/Layout/ScreenHeader';
+
 const NewCheckListScreen = ({route}) => {
-  const {docId, edit} = route.params;
-  const {loading, handleEdit, handleAdd} = useAddEditCheckist({docId});
+  const docId = route?.params?.docId;
+  const edit = route?.params?.edit;
+  const {loading, handleEdit, handleAdd, hasFilledForm} = useAddEditCheckist({
+    docId,
+    edit,
+  });
   const {t} = useTranslation();
 
   return (
     <PageLayout
       safe
-      titleRightSide={
-        <TouchableWithoutFeedback
-          onPress={() => {
-            popScreen();
-          }}>
-          <View>
-            <Icon name="close" size={25} />
-          </View>
-        </TouchableWithoutFeedback>
-      }
+      backButton
       footer={
         <CustomButton
+          disabled={!hasFilledForm}
           loading={loading}
           styled="rounded"
           title={edit ? t('common.edit') : t('common.create')}
           onPress={() => (edit ? handleEdit() : handleAdd())}
         />
-      }
-      titleProps={{
-        title: t('new_checklist.title'),
-        subPage: true,
-      }}>
-      <View style={styles.jobScreen}>
-        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-          <CheckListForm edit={edit} docId={docId} />
-        </KeyboardAwareScrollView>
-      </View>
+      }>
+      <>
+        <ScreenHeader
+          title={edit ? t('edit_checklist.title') : t('new_checklist.title')}
+        />
+        <View style={styles.jobScreen}>
+          <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+            <CheckListForm edit={edit} docId={docId} />
+          </KeyboardAwareScrollView>
+        </View>
+      </>
     </PageLayout>
   );
 };

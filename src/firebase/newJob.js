@@ -7,8 +7,9 @@ export const newJob = async (job) => {
   try {
     await firestore().collection('jobs').add(job);
   } catch (err) {
+    console.log(err);
     error({
-      message: err.message,
+      message: 'Algo salió mal, lo sentimos...',
       track: true,
       asToast: true,
     });

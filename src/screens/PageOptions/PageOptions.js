@@ -1,37 +1,40 @@
-import React from 'react';
-import {
-  ActivityIndicator,
-  TouchableWithoutFeedback,
-  View,
-  Text,
-} from 'react-native';
-import PageLayout from '../../components/PageLayout';
-import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
+import React, {useState} from 'react';
+import {TouchableWithoutFeedback, View} from 'react-native';
+
+import {openScreenWithPush} from '../../Router/utils/actions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {Colors} from '../../Theme/Variables';
+
 import Container from './Container';
 import useRecursiveDelete from '../../utils/useRecursiveDelete';
 import duplicateCheckList from '../../Services/duplicateCheckList';
-import {CHECKLISTS, JOBS} from '../../utils/firebaseKeys';
+import {CHECKLISTS, JOBS, USERS} from '../../utils/firebaseKeys';
 import duplicateJob from '../../Services/duplicateJob';
 import {
   HOME_ADMIN_STACK_KEY,
   NEW_CHECKLIST_SCREEN,
   NEW_JOB_STACK_KEY,
+  NEW_USER_SCREEN_KEY,
 } from '../../Router/utils/routerKeys';
-import {useTheme} from '../../Theme';
-import {useTranslation} from 'react-i18next';
 
-const PageOptionsScreen = ({route}) => {
-  const {t} = useTranslation();
-  const {Layout} = useTheme();
-  const {editable, showDelete, duplicate, collection, docId, backScreen} =
-    route.params;
-  const {loading, recursiveDelete} = useRecursiveDelete({
+import {BottomModal} from '../../components/Modals/BottomModal';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
+import {timeout} from '../../utils/timeout';
+
+const PageOptionsScreen = ({
+  docId,
+  editable,
+  showDelete,
+  duplicate,
+  collection,
+  backScreen,
+}) => {
+  const [isVisible, setIsVisible] = useState();
+  const user = useSelector(userSelector);
+  const {recursiveDelete} = useRecursiveDelete({
     path: `${collection}/${docId}`,
     docId,
-    collection,
-    backScreen,
+    collection: collection,
   });
 
   const handleDuplicate = async () => {
@@ -44,43 +47,29 @@ const PageOptionsScreen = ({route}) => {
   const parseScreenByCollection = {
     [CHECKLISTS]: NEW_CHECKLIST_SCREEN,
     [JOBS]: NEW_JOB_STACK_KEY,
+    [USERS]: NEW_USER_SCREEN_KEY,
   };
 
   return (
-    <PageLayout
-      safe
-      titleRightSide={
-        <TouchableWithoutFeedback
-          onPress={() => {
-            popScreen();
-          }}>
-          <View>
-            <Icon name="close" size={25} />
-          </View>
-        </TouchableWithoutFeedback>
-      }
-      titleProps={{
-        title: t('options.title'),
-        subPage: true,
-      }}>
-      {loading ? (
-        <View style={[Layout.fill, Layout.colCenter]}>
-          <Text>{t('options.removing')}</Text>
-          <ActivityIndicator color={Colors.pm} size={40} />
-        </View>
-      ) : (
+    <>
+      <BottomModal isVisible={isVisible} onClose={() => setIsVisible(false)}>
         <Container
           collection={collection}
           docId={docId}
           editable={editable}
           showDelete={showDelete}
           onEdit={() => {
+            setIsVisible(false);
             openScreenWithPush(parseScreenByCollection[collection], {
               edit: true,
               docId,
             });
           }}
-          onDelete={recursiveDelete}
+          onDelete={async () => {
+            setIsVisible(false);
+            await timeout(400);
+            await recursiveDelete();
+          }}
           duplicate={duplicate}
           onDuplicate={async () => {
             await handleDuplicate();
@@ -89,8 +78,18 @@ const PageOptionsScreen = ({route}) => {
             });
           }}
         />
+      </BottomModal>
+      {user?.role === 'admin' && (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setIsVisible(true);
+          }}>
+          <View>
+            <Icon name="settings" size={25} />
+          </View>
+        </TouchableWithoutFeedback>
       )}
-    </PageLayout>
+    </>
   );
 };
 export default PageOptionsScreen;

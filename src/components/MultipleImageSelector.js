@@ -1,16 +1,15 @@
-import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-  ImageBackground,
-} from 'react-native';
+import React, {useState} from 'react';
+import {ImageBackground} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useCameraOrLibrary} from '../hooks/useCamerOrLibrary';
+import {imageActions} from '../utils/imageActions';
+import {IncidencesCameraModal} from './Modals/IncidenceCameraModal';
+
+const LIBRARY_ACTION = 'library';
 
 // Utils
-import {handleImagePicker} from '../utils/imageFunctions';
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -58,21 +57,11 @@ const styles = StyleSheet.create({
 });
 
 const MultipleImageSelector = ({images, setImages}) => {
+  const [isVisible, setIsVisible] = useState(false);
+
   const ImagePickerView = () => {
     return (
-      <TouchableOpacity
-        onPress={() =>
-          handleImagePicker((imgs) => {
-            setImages(
-              imgs.map((image, i) => ({
-                fileName: image.filename || `image-${i}`,
-                fileUri:
-                  Platform.OS === 'android' ? image.path : image.sourceURL,
-                fileType: image.mime,
-              })),
-            );
-          })
-        }>
+      <TouchableOpacity onPress={() => setIsVisible(true)}>
         <View style={styles.imagePicker}>
           <Icon name="add" size={30} color={'white'} />
         </View>
@@ -82,6 +71,11 @@ const MultipleImageSelector = ({images, setImages}) => {
 
   return (
     <View style={styles.container}>
+      <IncidencesCameraModal
+        isVisible={isVisible}
+        setIsVisible={setIsVisible}
+        setImages={setImages}
+      />
       <ImagePickerView />
       {images?.length > 0 &&
         images?.map((photo, i) => (

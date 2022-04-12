@@ -1,23 +1,22 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
 // UI
-import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import {View, Text, StyleSheet} from 'react-native';
 
 // Firebase
 import firestore from '@react-native-firebase/firestore';
 
 import TaskItem from '../../components/Elements/TaskItem';
 import PageLayout from '../../components/PageLayout';
-import {setTask} from '../../Store/JobForm/jobFormSlice';
-import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
+import {resetForm, setTask} from '../../Store/JobForm/jobFormSlice';
+import {openScreenWithPush} from '../../Router/utils/actions';
 import {NEW_JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
-import {Colors} from '../../Theme/Variables';
 
 import {useTranslation} from 'react-i18next';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {useLocales} from '../../utils/useLocales';
+import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -70,7 +69,7 @@ const NewJobTaskSelectorScreen = ({route}) => {
   );
 
   const taskName = (task) =>
-    task?.locales?.[locale].name || task?.locales?.en.name || task.name;
+    task?.locales?.[locale]?.name || task?.locales?.en?.name || task?.name;
 
   const handlerTaskClick = (task) => {
     setTaskAction(task);
@@ -84,49 +83,47 @@ const NewJobTaskSelectorScreen = ({route}) => {
     name: taskName(task),
   }));
 
+  const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
+
+  const cleanForm = () => {
+    resetFormAction();
+  };
+
+  useEffect(() => {
+    cleanForm();
+  }, []);
+
   return (
-    <PageLayout
-      safe
-      titleRightSide={
-        <TouchableWithoutFeedback
-          onPress={() => {
-            popScreen();
-          }}>
-          <View>
-            <Icon name="close" size={25} />
-          </View>
-        </TouchableWithoutFeedback>
-      }
-      titleProps={{
-        title: t('newJob.title'),
-        subPage: true,
-      }}>
+    <PageLayout safe backButton>
       {loadingTasks ? (
         <View style={styles.taskSelectorScreen}>
           <Text>Cargando tareas..</Text>
         </View>
       ) : (
-        <View style={styles.taskSelectorScreen}>
-          {tasksByLocale
-            .sort(function (a, b) {
-              if (a.name > b.name) {
-                return 1;
-              }
-              if (a.name < b.name) {
-                return -1;
-              }
-              return 0;
-            })
-            .map((task) => (
-              <TaskItem
-                key={task.id}
-                icon={task?.icon}
-                name={task?.name}
-                active={job?.task?.name === task?.name}
-                onPress={() => handlerTaskClick(task)}
-              />
-            ))}
-        </View>
+        <>
+          <ScreenHeader title={t('newJob.title')} />
+          <View style={styles.taskSelectorScreen}>
+            {tasksByLocale
+              .sort(function (a, b) {
+                if (a.name > b.name) {
+                  return 1;
+                }
+                if (a.name < b.name) {
+                  return -1;
+                }
+                return 0;
+              })
+              .map((task) => (
+                <TaskItem
+                  key={task.id}
+                  icon={task?.icon}
+                  name={task?.name}
+                  active={job?.task?.name === task?.name}
+                  onPress={() => handlerTaskClick(task)}
+                />
+              ))}
+          </View>
+        </>
       )}
     </PageLayout>
   );

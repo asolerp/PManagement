@@ -72,9 +72,7 @@ export const useConfigChatByNotification = ({
   return {
     header: notification
       ? header || headerChat()
-      : `${parseEntities[collection]} chat ${
-          chat?.house?.houseName || chat?.house[0]?.houseName
-        }`,
+      : `${parseEntities[collection]} chat`,
     onPressHeader: handlerOnPressByNotification(),
     chat,
   };

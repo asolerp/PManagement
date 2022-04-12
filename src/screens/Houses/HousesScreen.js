@@ -13,6 +13,7 @@ import {
 
 import AddButton from '../../components/Elements/AddButton';
 import HouseItemList from '../../components/HouseItemList';
+import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import PageLayout from '../../components/PageLayout';
 
 import {useGetFirebase} from '../../hooks/useGetFirebase';
@@ -21,10 +22,12 @@ import {
   HOUSE_SCREEN_KEY,
   NEW_HOUSE_SCREEN_KEY,
 } from '../../Router/utils/routerKeys';
+import {useTheme} from '../../Theme';
 
 const HousesScreen = () => {
   const {t} = useTranslation();
   const {list: houses} = useGetFirebase('houses');
+  const {Gutters, Layout} = useTheme();
 
   const handleNewHome = () => {
     openScreenWithPush(NEW_HOUSE_SCREEN_KEY);
@@ -46,31 +49,28 @@ const HousesScreen = () => {
 
   return (
     <React.Fragment>
-      <AddButton iconName="add" onPress={() => handleNewHome()} />
-      <PageLayout
-        safe
-        edges={['top']}
-        titleLefSide={true}
-        titleProps={{
-          leftSide: true,
-          title: t('houses.title'),
-          subPage: false,
-        }}>
+      <PageLayout safe titleLefSide={true}>
+        <AddButton
+          iconName="add"
+          onPress={() => handleNewHome()}
+          containerStyle={{right: 0, bottom: 35}}
+        />
         <View style={styles.container}>
+          <ScreenHeader title={t('houses.title')} />
           <View style={styles.homesScreen}>
             {houses ? (
-              <SafeAreaView style={{alignSelf: 'stretch'}}>
+              <>
                 <FlatList
                   data={houses}
                   renderItem={renderItem}
                   keyExtractor={(item) => item.id}
                   showsVerticalScrollIndicator={false}
-                  contentContainerStyle={{
-                    flexGrow: 1,
-                    alignItems: 'center',
-                  }}
+                  contentContainerStyle={[
+                    Layout.flexGrow,
+                    Layout.alignItemsCenter,
+                  ]}
                 />
-              </SafeAreaView>
+              </>
             ) : (
               <Text>{t('houses.no_found')}</Text>
             )}

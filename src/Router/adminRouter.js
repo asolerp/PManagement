@@ -1,5 +1,5 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {
   navigation as navigationRef,
@@ -20,12 +20,15 @@ import {
   NEW_HOUSE_SCREEN_KEY,
   NEW_INCIDENCE_SCREEN_KEY,
   NEW_JOB_STACK_KEY,
+  NEW_USER_SCREEN_KEY,
   PAGE_OPTIONS_SCREEN_KEY,
 } from './utils/routerKeys';
 import {PageOptionsScreen} from '../Screens/PageOptions';
 import {ChatScreen} from '../Screens/Chat';
+import {NewUserScreen} from '../Screens/NewUser';
+import {FiltersProvider} from '../context/FiltersContext';
 
-const {Navigator, Screen} = createStackNavigator();
+const {Navigator, Screen} = createNativeStackNavigator();
 
 const AdminRouter = () => {
   return (
@@ -34,12 +37,14 @@ const AdminRouter = () => {
       onReady={onNavigatorReady}
       onStateChange={onNavigatorStateChange}
       options={{headerShown: false}}>
-      <Navigator mode="modal" options={{headerShown: false}}>
-        <Screen
-          name={MAIN_ADMIN_STACK_KEY}
-          component={MainAdmin}
-          options={{headerShown: false}}
-        />
+      <Navigator options={{headerShown: false}}>
+        <Screen options={{headerShown: false}} name={MAIN_ADMIN_STACK_KEY}>
+          {() => (
+            <FiltersProvider>
+              <MainAdmin />
+            </FiltersProvider>
+          )}
+        </Screen>
         <Screen
           name={NEW_CHECKLIST_SCREEN}
           component={NewCheckListScreen}
@@ -53,6 +58,11 @@ const AdminRouter = () => {
         <Screen
           name={NEW_INCIDENCE_SCREEN_KEY}
           component={NewIncidenceScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={NEW_USER_SCREEN_KEY}
+          component={NewUserScreen}
           options={{headerShown: false}}
         />
         <Screen

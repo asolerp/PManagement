@@ -1,6 +1,5 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {StyleSheet, Pressable} from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {IconWithBadge} from '../../Stacks/HomeAdmin';
@@ -11,21 +10,25 @@ const AddButton = ({
   iconName,
   bottom = 30,
   backColor = Colors.pm,
+  containerStyle,
   onPress,
 }) => {
   return (
-    <View
-      style={{...styles.container, ...{backgroundColor: backColor, bottom}}}>
-      <TouchableWithoutFeedback onPress={onPress}>
-        {badgeCount ? (
-          <IconWithBadge badgeCount={badgeCount}>
-            <Icon name={iconName} size={30} color={'white'} />
-          </IconWithBadge>
-        ) : (
+    <Pressable
+      onPress={onPress}
+      style={[
+        styles.container,
+        {backgroundColor: backColor, bottom},
+        containerStyle,
+      ]}>
+      {badgeCount ? (
+        <IconWithBadge badgeCount={badgeCount}>
           <Icon name={iconName} size={30} color={'white'} />
-        )}
-      </TouchableWithoutFeedback>
-    </View>
+        </IconWithBadge>
+      ) : (
+        <Icon name={iconName} size={20} color={'white'} />
+      )}
+    </Pressable>
   );
 };
 
@@ -33,12 +36,20 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     right: 30,
-    width: 50,
-    height: 50,
+    width: 55,
+    height: 55,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 100,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
 

@@ -17,6 +17,7 @@ export default {
     profile: 'Perfil',
   },
   common: {
+    apply: 'Aplicar',
     hey: 'Hola!',
     create: 'Crear',
     all: 'Todos',
@@ -54,6 +55,10 @@ export default {
       state: {
         resolved: 'Resueltas',
         no_resolved: 'Sin resolver',
+      },
+      checklistState: {
+        resolved: 'Terminadas',
+        no_resolved: 'Sin terminar',
       },
       time: {
         day: 'Hoy',
@@ -130,6 +135,20 @@ export default {
       create: 'Crear incidencia',
     },
   },
+  newUser: {
+    title: 'Nuevo usuario',
+    edit: 'Editar usuario',
+    form: {
+      name: 'Nombre',
+      surname: 'Apellido',
+      email: 'Email',
+      phone: 'Teléfono',
+      role: 'Rol usuario',
+      gender: 'Género',
+      create: 'Crear usuario',
+      language: 'Idioma',
+    },
+  },
   users: {
     title: 'Usuarios',
   },
@@ -147,6 +166,7 @@ export default {
     title: 'Fotos',
   },
   profile: {
+    edit: 'Editar',
     personal_data: 'Datos personales',
     title: 'Perfil',
     phone: 'Teléfono',
@@ -154,6 +174,9 @@ export default {
     logout: 'Desconectarse',
     name: 'Nombre',
     last_name: 'Apellido',
+    gender: 'Género',
+    role: 'Rol',
+    language: 'Idioma',
   },
   options: {
     title: 'Opciones',

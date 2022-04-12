@@ -4,6 +4,7 @@ import {useSelector} from 'react-redux';
 import HouseFilter from './HouseFilter';
 import StatusJob from './StatusJob';
 import StatusIncidence from './StatusIncidence';
+import StatusChecklist from './StatusChecklist';
 import TimeFilter from './TimeFilter';
 import WorkersFilter from './WorkeresFilter';
 
@@ -22,6 +23,7 @@ const Filters = ({
   onSaveFilters,
   initialFilters,
   activeFilters = {
+    checklistState: true,
     houses: true,
     workers: true,
     state: true,
@@ -37,6 +39,9 @@ const Filters = ({
   const [jobType, setJobType] = useState(initialFilters.type);
   const [filterHouses, setFilterHouses] = useState(initialFilters.houses);
   const [state, setState] = useState(initialFilters.state);
+  const [checklistState, setChecklistState] = useState(
+    initialFilters.checklistState,
+  );
   const [incidenceState, setIncidenceState] = useState(
     initialFilters.incidenceState,
   );
@@ -48,6 +53,7 @@ const Filters = ({
     setState(false);
     setJobType(['jobs', 'incidences', 'checklists']);
     setIncidenceState(null);
+    setChecklistState(false);
   };
 
   return (
@@ -107,6 +113,17 @@ const Filters = ({
               <StatusJob onChangeFilter={setState} state={state} />
             </View>
           )}
+          {jobType.some((t) => t === 'checklists') && (
+            <View style={[Gutters.mediumBMargin]}>
+              <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>
+                Estado del checklist
+              </Text>
+              <StatusChecklist
+                onChangeFilter={setChecklistState}
+                checklistState={checklistState}
+              />
+            </View>
+          )}
           {jobType.some((t) => t === 'incidences') && (
             <View style={[Gutters.mediumBMargin]}>
               <Text style={[Fonts.textTitle, Gutters.mediumBMargin]}>
@@ -142,6 +159,7 @@ const Filters = ({
                 workers: filterWorkers,
                 time: timeFilter,
                 houses: filterHouses,
+                checklistState,
                 incidenceState,
                 state,
               });

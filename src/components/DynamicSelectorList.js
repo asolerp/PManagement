@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-import {View, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList, StyleSheet, KeyboardAvoidingView} from 'react-native';
 
 // Firebase
 import {useGetFirebase} from '../hooks/useGetFirebase';
@@ -10,6 +10,7 @@ import {SearchBar} from 'react-native-elements';
 import ItemList from './ItemList';
 import CustomButton from './Elements/CustomButton';
 import {useTranslation} from 'react-i18next';
+import {useTheme} from '../Theme';
 
 const DynamicSelectorList = ({
   collection,
@@ -28,6 +29,7 @@ const DynamicSelectorList = ({
   const {list} = useGetFirebase(collection, order, where);
   const [selected, setSelected] = useState(get);
   const [loadingOnSave, setLoadingOnSave] = useState(false);
+  const {Gutters} = useTheme();
 
   const fList = search
     ? list.filter((item) =>
@@ -89,7 +91,7 @@ const DynamicSelectorList = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <View style={styles.userListSelectorScreen}>
         <SearchBar
           placeholder={t('common.search_name')}
@@ -100,19 +102,21 @@ const DynamicSelectorList = ({
           containerStyle={{padding: 0}}
           inputStyle={{fontSize: 14, padding: 0}}
         />
-        <View style={{flex: 1, alignSelf: 'stretch'}}>
+        <View style={[Gutters.regularVPadding]}>
           <FlatList
             data={fList}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
           />
         </View>
-        <CustomButton
-          loading={loadingOnSave}
-          styled="rounded"
-          title={t('common.save')}
-          onPress={onSubmit}
-        />
+        <KeyboardAvoidingView behavior="padding">
+          <CustomButton
+            loading={loadingOnSave}
+            styled="rounded"
+            title={t('common.save')}
+            onPress={onSubmit}
+          />
+        </KeyboardAvoidingView>
       </View>
     </View>
   );

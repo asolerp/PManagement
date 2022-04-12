@@ -13,6 +13,8 @@ export default function useGetChecklistStats({checkId}) {
   const doneChecks = checks?.filter((c) => c.done === true).length;
 
   return {
+    done: doneChecks,
+    total,
     loadingChecks,
     completePercentage: doneChecks / total,
   };

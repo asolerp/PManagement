@@ -1,46 +1,62 @@
-import React from 'react';
-import {Button} from 'react-native';
-import {View, StyleSheet} from 'react-native';
-import {Divider} from 'react-native-elements';
+import React, {useContext} from 'react';
 
-import Modal from 'react-native-modal';
-import InputGroup from '../Elements/InputGroup';
+import {MenuItem} from '../UI/MenuItem';
+import {imageActions} from '../../utils/imageActions';
+import {useCameraOrLibrary} from '../../hooks/useCamerOrLibrary';
+import {LoadingModalContext} from '../../context/loadinModalContext';
 
-const styles = StyleSheet.create({
-  view: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  content: {
-    padding: 22,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-  },
-});
+import useUploadImageCheck from '../../hooks/useUploadImage';
+import {CHECKLISTS} from '../../utils/firebaseKeys';
+import {BottomModal} from './BottomModal';
+import {timeout} from '../../utils/timeout';
 
-const PhotoCameraModal = ({
-  visible,
-  handleVisibility,
-  handleClickCamera,
-  handleClickLibrary,
-}) => {
+const CAPTURE_ACTION = 'capture';
+const LIBRARY_ACTION = 'library';
+
+const PhotoCameraModal = ({visible, check, checklistId, handleVisibility}) => {
+  const {onImagePress} = useCameraOrLibrary();
+
+  const {uploadImages} = useUploadImageCheck(CHECKLISTS, checklistId);
+  const {setVisible} = useContext(LoadingModalContext);
+
+  const handlePress = (type) => {
+    onImagePress({
+      type,
+      options: {...imageActions[type], selectionLimit: 0},
+      callback: async (imgs) => {
+        try {
+          handleVisibility(false);
+          await timeout(400);
+          setVisible(true);
+          await uploadImages(imgs, check);
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setVisible(false);
+        }
+      },
+    });
+  };
+
   return (
-    <Modal
-      onBackdropPress={() => handleVisibility(false)}
+    <BottomModal
       isVisible={visible}
-      style={styles.view}>
-      <View style={styles.content}>
-        <InputGroup>
-          <Button title="Abrir fotos" onPress={handleClickLibrary} />
-          {/* <Divider />
-          <Button title="Abrir cámara" onPress={handleClickCamera} /> */}
-        </InputGroup>
-        <InputGroup>
-          <Button title="Cancelar" onPress={() => handleVisibility(false)} />
-        </InputGroup>
-      </View>
-    </Modal>
+      swipeDirection={null}
+      onClose={() => {
+        handleVisibility(false);
+      }}>
+      <MenuItem
+        iconName="ios-camera"
+        title="Usar cámara"
+        onPress={() => handlePress(CAPTURE_ACTION)}
+      />
+
+      <MenuItem
+        iconName="ios-folder"
+        title="Acceder a fotos"
+        onPress={() => handlePress(LIBRARY_ACTION)}
+      />
+    </BottomModal>
   );
 };
 

@@ -12,15 +12,10 @@ import {useTranslation} from 'react-i18next';
 import Badge from '../Elements/Badge';
 import {useState} from 'react';
 
-const ListOfChecks = ({checkId, disabled, checks}) => {
+const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
   const {Layout, Fonts, Gutters} = useTheme();
   const [noFinishFilter, setNoFinishFilter] = useState(false);
   const {t} = useTranslation();
-
-  const {loading: loadingUploadImage, uploadImages} = useUploadImageCheck(
-    CHECKLISTS,
-    checkId,
-  );
 
   const listOfChecks = noFinishFilter ? checks?.filter((c) => !c.done) : checks;
 
@@ -34,8 +29,7 @@ const ListOfChecks = ({checkId, disabled, checks}) => {
       key={item.id}
       check={item}
       checklistId={checkId}
-      imageHandler={(imgs) => uploadImages(imgs, item)}
-      loading={loadingUploadImage}
+      isCheckFinished={isCheckFinished}
     />
   );
 

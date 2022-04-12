@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+
 import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
 
@@ -11,6 +11,7 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import Avatar from '../../components/Avatar';
 import {parseRoleName} from './utils/parsers';
 import {useTranslation} from 'react-i18next';
+import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 
 const Container = () => {
   const {Layout, Gutters, Fonts} = useTheme();
@@ -45,7 +46,8 @@ const Container = () => {
       );
 
   return (
-    <View>
+    <>
+      <ScreenHeader title={t('users.title')} />
       <SearchBar
         round={true}
         containerStyle={styles.searchBarContainer}
@@ -54,7 +56,7 @@ const Container = () => {
         onChangeText={setSearch}
         value={search}
       />
-      <View>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={[Gutters.tinyTMargin]}>
           {users &&
             Object.entries(groupedUsersByRole).map(([key, users]) => (
@@ -69,15 +71,14 @@ const Container = () => {
                     {t(parseRoleName(key))}
                   </Text>
                 </View>
-                <ScrollView
-                  horizontal
-                  style={[Layout.row, Layout.wrap, Gutters.smallVMargin]}>
+                <View style={[Layout.row, Layout.wrap, Gutters.smallVMargin]}>
                   {users?.map((user) => (
                     <View
                       key={user.id}
                       style={[
                         Layout.colCenter,
                         Gutters.tinyRMargin,
+                        Gutters.tinyBMargin,
                         styles.userContainer,
                       ]}>
                       <Avatar
@@ -89,12 +90,12 @@ const Container = () => {
                       <Text>{user.firstName}</Text>
                     </View>
                   ))}
-                </ScrollView>
+                </View>
               </View>
             ))}
         </View>
-      </View>
-    </View>
+      </ScrollView>
+    </>
   );
 };
 

@@ -62,8 +62,10 @@ const CustomButton = ({
         style={[
           Layout.rowCenter,
           {
-            backgroundColor: Variants.pm.color,
+            backgroundColor: type === 'clear' ? 'white' : Variants.pm.color,
             borderRadius: parseStyled(),
+            borderColor: Colors.pm,
+            borderWidth: 1,
           },
           disabled
             ? {...styles[parseTypeStyle(type)], ...{opacity: 0.5}}

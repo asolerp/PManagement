@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {
   CHECK_STACK_KEY,
@@ -8,7 +8,7 @@ import {
 import HomeOwner from './HomeOwner';
 import Check from './Check';
 
-const {Navigator, Screen} = createStackNavigator();
+const {Navigator, Screen} = createNativeStackNavigator();
 
 export const MainOwner = () => (
   <Navigator

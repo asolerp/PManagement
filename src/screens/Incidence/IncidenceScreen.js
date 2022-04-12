@@ -30,6 +30,7 @@ import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import {useTranslation} from 'react-i18next';
 import {error} from '../../lib/logging';
+import PageOptionsScreen from '../PageOptions/PageOptions';
 
 const IncidenceScreen = () => {
   const navigation = useNavigation();
@@ -72,22 +73,13 @@ const IncidenceScreen = () => {
         safe
         backButton
         titleRightSide={
-          user.role === 'admin' && (
-            <TouchableOpacity
-              onPress={() => {
-                openScreenWithPush(PAGE_OPTIONS_SCREEN_KEY, {
-                  collection: INCIDENCES,
-                  docId: incidenceId,
-                  editable: false,
-                  showDelete: true,
-                  duplicate: false,
-                });
-              }}>
-              <View>
-                <Icon name="settings" size={25} />
-              </View>
-            </TouchableOpacity>
-          )
+          <PageOptionsScreen
+            collection={INCIDENCES}
+            docId={incidenceId}
+            editable={false}
+            showDelete={true}
+            duplicate={false}
+          />
         }
         footer={
           user.role === 'admin' && (

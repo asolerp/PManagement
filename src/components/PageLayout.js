@@ -19,9 +19,6 @@ const styles = StyleSheet.create({
   },
   pageWrapper: {
     flex: 1,
-    backgroundColor: Colors.white,
-    borderTopRightRadius: 50,
-    paddingHorizontal: 20,
   },
   pageBackScreen: {
     flex: 1,
@@ -60,38 +57,42 @@ const Container = ({
   titleRightSide,
   titleChildren,
   withTitle = true,
+  withPadding = true,
   children,
   footer,
-}) => (
-  <React.Fragment>
-    {withTitle && (
-      <TitlePage
-        {...titleProps}
-        leftSide={
-          backButton ? (
-            <TouchableOpacity
-              onPress={() => {
-                popScreen();
-              }}>
-              <View>
-                <Icon name="arrow-back" size={25} />
-              </View>
-            </TouchableOpacity>
-          ) : (
-            titleLefSide
-          )
-        }
-        rightSide={titleRightSide}
-        align="center">
-        {titleChildren}
-      </TitlePage>
-    )}
-    <View style={styles.pageWrapper}>
-      <View style={styles.pageScreen}>{children}</View>
-    </View>
-    {footer && <View style={styles.bottomScreen}>{footer}</View>}
-  </React.Fragment>
-);
+}) => {
+  return (
+    <React.Fragment>
+      {withTitle && (
+        <TitlePage
+          {...titleProps}
+          leftSide={
+            backButton ? (
+              <TouchableOpacity
+                onPress={() => {
+                  popScreen();
+                }}>
+                <View>
+                  <Icon name="arrow-back" size={25} />
+                </View>
+              </TouchableOpacity>
+            ) : (
+              titleLefSide
+            )
+          }
+          rightSide={titleRightSide}
+          align="center">
+          {titleChildren}
+        </TitlePage>
+      )}
+      <View
+        style={[styles.pageWrapper, {paddingHorizontal: withPadding ? 20 : 0}]}>
+        <View style={[styles.pageScreen]}>{children}</View>
+      </View>
+      {footer && <View style={styles.bottomScreen}>{footer}</View>}
+    </React.Fragment>
+  );
+};
 
 const PageLayout = ({
   white,
@@ -102,15 +103,18 @@ const PageLayout = ({
   footer,
   titleLefSide,
   titleRightSide,
+  containerStyles,
+  withPadding,
   withTitle = true,
   edges = ['top', 'bottom'],
   safe = false,
 }) => {
   if (safe && Platform.OS === 'ios') {
     return (
-      <SafeAreaView style={styles.container} edges={edges}>
+      <SafeAreaView style={[styles.container, containerStyles]} edges={edges}>
         <Container
           white={white}
+          withPadding={withPadding}
           withTitle={withTitle}
           backButton={backButton}
           titleProps={titleProps}
@@ -125,9 +129,10 @@ const PageLayout = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyles]}>
       <Container
         white={white}
+        withPadding={withPadding}
         backButton={backButton}
         titleProps={titleProps}
         children={children}

@@ -20,9 +20,11 @@ const CheckItem = ({item, fullWidth}) => {
     docId: item.id,
   });
 
-  const {completePercentage, loadingChecks} = useGetChecklistStats({
-    checkId: item.id,
-  });
+  const {completePercentage, loadingChecks, done, total} = useGetChecklistStats(
+    {
+      checkId: item.id,
+    },
+  );
 
   if (loadingChecks) {
     return null;
@@ -37,9 +39,10 @@ const CheckItem = ({item, fullWidth}) => {
       dateVariant={parseDateWithText(item?.date).variant}
       statusColor={parsePercentageDone(completePercentage) || 0}
       statusPercentage={completePercentage || 0}
-      title="Checklist"
       subtitle={
-        isOwner ? `${t('checklists.owner_text_1')}` : item?.observations
+        isOwner
+          ? `${t('checklists.owner_text_1')}`
+          : item?.observations || 'Sin observaciones'
       }
       fullWidth={fullWidth}
       counter={noReadCounter}

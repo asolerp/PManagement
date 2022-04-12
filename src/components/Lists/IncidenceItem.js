@@ -23,6 +23,7 @@ const IncidenceItem = ({item, fullWidth}) => {
       fullWidth={fullWidth}
       dateVariant={parseDateWithText(item?.date).variant}
       statusColor={parseStateIncidecne(item?.state)}
+      statusPercentage={1}
       title={item?.title}
       subtitle={item?.incidence}
       counter={noReadCounter}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 
 // Redux
 import {useSelector} from 'react-redux';
@@ -16,6 +16,8 @@ import OwnerRouter from '../Router/ownerRouter';
 import {useRedirectNotification} from '../lib/notification/notificationHooks';
 import {useInAppNotification} from '../lib/notification/useInAppNotification';
 import {useAuth} from './hooks/useAuth';
+import {LoadingModal} from '../components/Modals/LoadingModal';
+import {LoadingModalContext} from '../context/loadinModalContext';
 
 const styles = StyleSheet.create({
   appBackground: {
@@ -67,9 +69,8 @@ const AuthRouter = () => {
   useInAppNotification();
   useAuth();
 
+  const {visible} = useContext(LoadingModalContext);
   const user = useSelector(userSelector);
-
-  console.log('user', user);
 
   if (!user) {
     return null;
@@ -82,6 +83,7 @@ const AuthRouter = () => {
   return (
     <React.Fragment>
       <Modal />
+      <LoadingModal visible={visible} />
       <View style={styles.appBackground}>
         <View style={styles.background}>
           <View style={styles.contentWrapper}>
