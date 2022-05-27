@@ -4,8 +4,6 @@ import {initReactI18next} from 'react-i18next';
 import * as resources from './resources';
 import {getLocales} from 'react-native-localize';
 
-console.log(getLocales()[0].languageCode);
-
 i18n.use(initReactI18next).init({
   lng: getLocales()[0].languageCode,
   fallbackLng: 'en',

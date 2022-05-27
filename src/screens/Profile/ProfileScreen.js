@@ -140,13 +140,15 @@ const ProfileScreen = ({route}) => {
     <PageLayout
       safe
       titleRightSide={
-        <PageOptionsScreen
-          editable={false}
-          collection={USERS}
-          docId={userId || user?.id}
-          showDelete={true}
-          duplicate={false}
-        />
+        userId !== user?.id && (
+          <PageOptionsScreen
+            editable={false}
+            collection={USERS}
+            docId={userId || user?.id}
+            showDelete={userId !== user?.id}
+            duplicate={false}
+          />
+        )
       }
       footer={
         <>

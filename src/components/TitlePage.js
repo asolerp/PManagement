@@ -24,7 +24,7 @@ const TitlePage = ({
   const {
     params: {screenKey = ''},
   } = useRoute();
-  const {Layout} = useTheme();
+  const {Layout, Gutters} = useTheme();
 
   const TitleWrapper = () => (
     <React.Fragment>
@@ -36,6 +36,7 @@ const TitlePage = ({
               Layout.row,
               Layout.alignItemsCenter,
               Layout.justifyContentSpaceBetween,
+              !isIOS && Gutters.regularTPadding,
             ]}>
             <View
               style={[

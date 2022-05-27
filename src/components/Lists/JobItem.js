@@ -29,6 +29,7 @@ const JobItem = ({item, fullWidth}) => {
       })}
       dateVariant={parseDateWithText(item?.date).variant}
       statusColor={Colors.pm}
+      statusPercentage={1}
       title={taksDescByLocale}
       subtitle={item?.observations}
       counter={noReadCounter}

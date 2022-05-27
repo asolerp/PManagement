@@ -1,138 +1,142 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
+import {View, StyleSheet, Text, useWindowDimensions} from 'react-native';
 
-import {useSelector, shallowEqual} from 'react-redux';
-import {View, Text, StyleSheet} from 'react-native';
-import {useTranslation} from 'react-i18next';
-
+// Components
 import ProfileBar from '../../components/ProfileBar';
-import AddButton from '../../components/Elements/AddButton';
+
+// UI
+import PageLayout from '../../components/PageLayout';
 
 // Utils
 import moment from 'moment';
-
-import {ScrollView} from 'react-native';
-
-import {DARK_BLUE} from '../../styles/colors';
-import {userSelector} from '../../Store/User/userSlice';
-import ChecklistList from '../../components/Lists/ChecklistList';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {
-  NEW_INCIDENCE_SCREEN_KEY,
-  PROFILE_SCREEN_KEY,
-} from '../../Router/utils/routerKeys';
-import JobsList from '../../components/Lists/JobsList';
-import PageLayout from '../../components/PageLayout';
 import {useTheme} from '../../Theme';
-import IncidencesList from '../../components/Lists/IncidencesList';
-import {parseTimeFilter} from '../../utils/parsers';
+
+import {TabView, TabBar} from 'react-native-tab-view';
+
+import {FiltersContext} from '../../context/FiltersContext';
+import {ActionButtons} from '../../components/Dashboard/ActionButtons';
+import {ChecklistsTab} from '../../components/Dashboard/Tabs/ChecklistsTab';
+import {IncidencesTab} from '../../components/Dashboard/Tabs/IncidencesTab';
+import {JobsTab} from '../../components/Dashboard/Tabs/JobsTab';
 import {Colors} from '../../Theme/Variables';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  addButton: {
-    position: 'absolute',
-    right: 30,
-    bottom: 20,
-    zIndex: 10,
-  },
-  homeBackScreen: {
-    flex: 1,
-  },
-  home: {
-    borderTopRightRadius: 50,
-    flex: 5,
-  },
-
-  label: {
-    fontSize: 20,
-    width: '90%',
-    color: DARK_BLUE,
-    fontWeight: '500',
-  },
-  checksWrapper: {
-    marginBottom: 20,
-  },
-});
+import {GlobalStats} from '../../components/Dashboard/GlobalStats';
+import {HousesFilter} from '../../components/Dashboard/HousesFilter';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
 
 const DashboardWorkerScreen = () => {
-  const {Layout, Gutters, Fonts} = useTheme();
-  const user = useSelector(userSelector, shallowEqual);
-  const filters = {
-    time: parseTimeFilter('all'),
-    state: false,
-    type: ['jobs', 'incidences', 'checklists'],
-  };
+  const [index, setIndex] = useState(0);
+  const {filters, setFilters} = useContext(FiltersContext);
+  const [routes] = useState([
+    {key: 'checklists', title: 'Checklists'},
+    {key: 'incidences', title: 'Incidencias'},
+    {key: 'jobs', title: 'Trabajos'},
+  ]);
+  const {Layout} = useTheme();
+  const user = useSelector(userSelector);
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
 
-  const handleNewCheckList = () => {
-    openScreenWithPush(NEW_INCIDENCE_SCREEN_KEY);
+  const layout = useWindowDimensions();
+
+  const renderScene = ({route}) => {
+    switch (route.key) {
+      case 'checklists':
+        return <ChecklistsTab filters={filters} />;
+      case 'incidences':
+        return <IncidencesTab filters={filters} />;
+      case 'jobs':
+        return <JobsTab filters={filters} />;
+      default:
+        return null;
+    }
   };
 
   return (
-    <React.Fragment>
-      <AddButton iconName="warning" onPress={() => handleNewCheckList()} />
-      <PageLayout safe edges={['top']} withTitle={false}>
-        <ScrollView
-          style={[Layout.fill, styles.container, Gutters.smallTMargin]}
-          nestedScrollEnabled
-          showsVerticalScrollIndicator={false}>
-          <ProfileBar />
-          <View style={[Gutters.mediumBMargin]}>
-            <View
-              style={[
-                Layout.row,
-                Layout.alignItemsCenter,
-                Layout.justifyContentSpaceBetween,
-              ]}>
-              <View>
-                <Text style={[Fonts.textRegular, {color: Colors.pm}]}>
-                  Hola {user.firstName || '' + '.'}
-                </Text>
-                <Text style={[Fonts.textRegular, {fontWeight: '400'}]}>
-                  Estas son tus tareas en el día de hoy
-                </Text>
-              </View>
-            </View>
+    <>
+      <PageLayout
+        statusBar="light-content"
+        withTitle={false}
+        withPadding={false}
+        containerStyles={{backgroundColor: Colors.gray100}}>
+        <ActionButtons />
+        <View style={[Layout.grow]}>
+          <View style={[styles.profileBarContainerStyle]}>
+            <ProfileBar />
           </View>
-          <View style={styles.home}>
-            <View style={styles.content}>
-              {filters.type.some((t) => t === 'checklists') && (
-                <ChecklistList
-                  uid={user?.id}
-                  workers={filters?.workers}
-                  houses={filters?.houses}
-                  typeFilters={filters?.type}
-                  time={filters?.time}
-                />
-              )}
-              {filters.type.some((t) => t === 'incidences') && (
-                <IncidencesList
-                  uid={user?.id}
-                  workers={filters?.workers}
-                  houses={filters?.houses}
-                  state={filters?.incidenceState}
-                  typeFilters={filters.type}
-                  time={filters?.time}
-                />
-              )}
-              {filters.type.some((t) => t === 'jobs') && (
-                <JobsList
-                  uid={user?.id}
-                  workers={filters?.workers}
-                  houses={filters?.houses}
-                  typeFilters={filters.type}
-                  time={filters?.time}
-                />
-              )}
+
+          {/* <TouchableWithoutFeedback
+            onPress={() => openScreenWithPush(FILTERS_SCREEN_KEY)}>
+            <View style={[Layout.row, Layout.alignItemsCenter]}>
+              <Icon name="filter-alt" size={15} style={[Gutters.tinyRMargin]} />
+              <Text style={[Fonts.textTitle]}>{t('common.filters.title')}</Text>
             </View>
+          </TouchableWithoutFeedback> */}
+
+          <View style={[Layout.grow, styles.container]}>
+            <GlobalStats onPressStat={setIndex} uid={user?.id} />
+            <HousesFilter
+              houses={filters.houses}
+              onClickHouse={(houses) => {
+                setFilters((oldFilters) => ({
+                  ...oldFilters,
+                  houses,
+                }));
+              }}
+            />
+            <TabView
+              renderTabBar={(props) => (
+                <TabBar
+                  {...props}
+                  style={styles.tabBarContainerStyle}
+                  indicatorStyle={styles.indicatorStyle}
+                  renderLabel={({route, focused}) => {
+                    return (
+                      <Text
+                        style={[
+                          {color: focused ? Colors.pm : Colors.gray800},
+                          styles.tabTextStyle,
+                        ]}>
+                        {route.title}
+                      </Text>
+                    );
+                  }}
+                />
+              )}
+              navigationState={{index, routes}}
+              renderScene={renderScene}
+              onIndexChange={setIndex}
+              initialLayout={{width: layout.width}}
+              style={[Layout.fill]}
+            />
           </View>
-        </ScrollView>
+        </View>
       </PageLayout>
-    </React.Fragment>
+    </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+    flex: 1,
+  },
+  profileBarContainerStyle: {
+    backgroundColor: Colors.pm,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 30,
+  },
+  tabBarContainerStyle: {
+    backgroundColor: null,
+  },
+  indicatorStyle: {
+    backgroundColor: Colors.pm,
+    height: 5,
+    borderRadius: 5,
+  },
+  tabTextStyle: {
+    fontWeight: '500',
+  },
+});
 
 export default DashboardWorkerScreen;

@@ -1,8 +1,8 @@
-app_identifier("com.portmanagement") # The bundle identifier of your app
-apple_id("alberto.solerpalau@gmail.com") # Your Apple email address
+app_identifier("com.port.management") # The bundle identifier of your app
+apple_id("albertosolpal@gmail.com") # Your Apple email address
 
-itc_team_id("118892119") # App Store Connect Team ID
-team_id("57TZK38UJV") # Developer Portal Team ID
+itc_team_id("123709016") # App Store Connect Team ID
+team_id("Y86MT47MC7") # Developer Portal Team ID
 
 # For more information about the Appfile, see:
 #     https://docs.fastlane.tools/advanced/#appfile

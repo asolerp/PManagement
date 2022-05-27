@@ -1,26 +1,16 @@
 import React, {useContext, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  useWindowDimensions,
-  StatusBar,
-} from 'react-native';
+import {View, StyleSheet, Text, useWindowDimensions} from 'react-native';
 
 // Components
 import ProfileBar from '../../components/ProfileBar';
 
 // UI
 import PageLayout from '../../components/PageLayout';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Utils
 import moment from 'moment';
 import {useTheme} from '../../Theme';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {FILTERS_SCREEN_KEY} from '../../Router/utils/routerKeys';
-import {useTranslation} from 'react-i18next';
+
 import {TabView, TabBar} from 'react-native-tab-view';
 
 import {FiltersContext} from '../../context/FiltersContext';
@@ -29,18 +19,20 @@ import {ChecklistsTab} from '../../components/Dashboard/Tabs/ChecklistsTab';
 import {IncidencesTab} from '../../components/Dashboard/Tabs/IncidencesTab';
 import {JobsTab} from '../../components/Dashboard/Tabs/JobsTab';
 import {Colors} from '../../Theme/Variables';
+import {GlobalStats} from '../../components/Dashboard/GlobalStats';
+import {HousesFilter} from '../../components/Dashboard/HousesFilter';
 
 const DashboardScreen = () => {
   const [index, setIndex] = useState(0);
-  const {t} = useTranslation();
+  const {filters, setFilters} = useContext(FiltersContext);
+
   const [routes] = useState([
     {key: 'checklists', title: 'Checklists'},
     {key: 'incidences', title: 'Incidencias'},
     {key: 'jobs', title: 'Trabajos'},
   ]);
-  const {Layout, Gutters, Fonts} = useTheme();
+  const {Layout} = useTheme();
 
-  const {filters} = useContext(FiltersContext);
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
 
@@ -61,8 +53,8 @@ const DashboardScreen = () => {
 
   return (
     <>
-      <StatusBar barStyle="light-content" />
       <PageLayout
+        statusBar="light-content"
         withTitle={false}
         withPadding={false}
         containerStyles={{backgroundColor: Colors.gray100}}>
@@ -81,7 +73,16 @@ const DashboardScreen = () => {
           </TouchableWithoutFeedback> */}
 
           <View style={[Layout.grow, styles.container]}>
-            <View style={[styles.statsContainerStyle]} />
+            <GlobalStats onPressStat={setIndex} />
+            <HousesFilter
+              houses={filters.houses}
+              onClickHouse={(houses) => {
+                setFilters((oldFilters) => ({
+                  ...oldFilters,
+                  houses,
+                }));
+              }}
+            />
             <TabView
               renderTabBar={(props) => (
                 <TabBar
@@ -118,22 +119,6 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     flex: 1,
-  },
-  statsContainerStyle: {
-    marginTop: -30,
-    marginBottom: 10,
-    height: 70,
-    width: '100%',
-    backgroundColor: Colors.white,
-    borderRadius: 10,
-    shadowColor: '#4f4f4f',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   profileBarContainerStyle: {
     backgroundColor: Colors.pm,

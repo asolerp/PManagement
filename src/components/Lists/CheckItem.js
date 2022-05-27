@@ -20,11 +20,9 @@ const CheckItem = ({item, fullWidth}) => {
     docId: item.id,
   });
 
-  const {completePercentage, loadingChecks, done, total} = useGetChecklistStats(
-    {
-      checkId: item.id,
-    },
-  );
+  const {completePercentage, loadingChecks} = useGetChecklistStats({
+    checkId: item.id,
+  });
 
   if (loadingChecks) {
     return null;

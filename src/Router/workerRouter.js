@@ -23,6 +23,7 @@ import {CheckScreen} from '../Screens/Check';
 import {PageOptionsScreen} from '../Screens/PageOptions';
 import {NewCheckListScreen} from '../Screens/NewCheckList';
 import {HouseScreen} from '../Screens/House';
+import {FiltersProvider} from '../context/FiltersContext';
 
 const {Navigator, Screen} = createNativeStackNavigator();
 
@@ -34,11 +35,13 @@ const WorkerRouter = () => {
       onStateChange={onNavigatorStateChange}
       options={{headerShown: false}}>
       <Navigator mode="modal" options={{headerShown: false}}>
-        <Screen
-          name={MAIN_WORKER_STACK_KEY}
-          component={MainWorker}
-          options={{headerShown: false}}
-        />
+        <Screen options={{headerShown: false}} name={MAIN_WORKER_STACK_KEY}>
+          {() => (
+            <FiltersProvider>
+              <MainWorker />
+            </FiltersProvider>
+          )}
+        </Screen>
         <Screen
           name={NEW_INCIDENCE_SCREEN_KEY}
           component={NewIncidenceScreen}

@@ -16,7 +16,7 @@ const UsersScreen = () => {
       <PageLayout safe>
         <AddButton
           iconName="add"
-          containerStyle={{right: 0, bottom: 0}}
+          containerStyle={{right: 0, bottom: 30}}
           onPress={() => openScreenWithPush(NEW_USER_SCREEN_KEY)}
         />
         <Container />

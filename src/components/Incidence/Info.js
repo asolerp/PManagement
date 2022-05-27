@@ -89,18 +89,35 @@ const Info = () => {
           closeModal={() => setModalVisible(false)}
         />
       </BottomModal>
-      <View style={[Layout.row, Gutters.smallBMargin]}>
+      <View
+        style={[
+          Layout.row,
+          Layout.justifyContentSpaceBetween,
+          Gutters.mediumBMargin,
+        ]}>
+        <View>
+          <Badge
+            text={value?.data()?.house?.houseName}
+            variant="purple"
+            containerStyle={Gutters.smallVMargin}
+          />
+          <Badge
+            label={t('common.date') + ': '}
+            text={moment(value?.data()?.date?.toDate()).format('LL')}
+          />
+        </View>
         {(!value?.data()?.workers || value?.data()?.workers.length === 0) && (
           <Badge
             text={t('common.no_assigned')}
             variant={'danger'}
-            containerStyle={Gutters.tinyRMargin}
+            containerStyle={Gutters.smallVMargin}
           />
         )}
         <Badge
           text={
             value?.data()?.done ? t('common.resolved') : t('common.no_resolved')
           }
+          containerStyle={Gutters.smallVMargin}
           variant={value?.data()?.done ? 'success' : 'danger'}
         />
       </View>
@@ -113,21 +130,16 @@ const Info = () => {
         ]}>
         <Text style={[Fonts.textTitle]}>{value?.data()?.title}</Text>
       </View>
+      <Text style={[Gutters.smallVMargin, Fonts.textTitle]}>
+        {t('checklists.comments')}
+      </Text>
       <EditableInput
         value={value?.data()?.incidence}
         onPressAccept={(change) =>
           updateIncidenceInput(incidenceId, {incidence: change})
         }
       />
-      <Badge
-        text={value?.data()?.house?.houseName}
-        variant="purple"
-        containerStyle={Gutters.smallVMargin}
-      />
-      <Badge
-        label={t('common.date') + ': '}
-        text={moment(value?.data()?.date?.toDate()).format('LL')}
-      />
+
       <SituationIncidence incidence={{...value?.data(), id: value?.id}} />
       <View style={[Layout.row]}>
         <View

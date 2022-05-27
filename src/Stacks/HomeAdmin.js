@@ -10,7 +10,7 @@ import {HousesScreen} from '../Screens/Houses';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
-import {PM_COLOR, PRIORITY_HEIGHT} from '../styles/colors';
+import {PRIORITY_HEIGHT} from '../styles/colors';
 
 import {tabNameByScreen} from '../utils/parsers';
 import {
@@ -105,7 +105,6 @@ const HomeAdmin = () => {
                 focused={focused}
                 color={Colors.pm}
               />
-              {/* <Text style={[]}>Panel principal</Text> */}
             </>
           ),
         })}
@@ -124,7 +123,6 @@ const HomeAdmin = () => {
                 focused={focused}
                 color={Colors.pm}
               />
-              {/* <Text style={[]}>Jugadores</Text> */}
             </>
           ),
         })}
@@ -143,7 +141,6 @@ const HomeAdmin = () => {
                 focused={focused}
                 color={Colors.pm}
               />
-              {/* <Text style={[]}>Casas</Text> */}
             </>
           ),
         })}

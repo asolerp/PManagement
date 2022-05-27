@@ -1,6 +1,5 @@
 import React from 'react';
-import {View, Text, FlatList} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Text, FlatList, Pressable} from 'react-native';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -29,6 +28,8 @@ const ChecklistList = ({
 }) => {
   const {Layout, Gutters} = useTheme();
   const {t} = useTranslation();
+
+  console.log('HOUSES', houses);
 
   // let filteredValues;
   let firestoreQuery;
@@ -73,11 +74,11 @@ const ChecklistList = ({
     };
 
     return (
-      <TouchableOpacity
+      <Pressable
         onPress={() => handlePressIncidence()}
         style={[Layout.fill, Gutters.tinyHMargin]}>
         <CheckItem item={item} fullWidth />
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 

@@ -35,11 +35,11 @@ import {openScreenWithPush} from '../../Router/utils/actions';
 import {HOUSE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import useAuth from '../../utils/useAuth';
 import {useTranslation} from 'react-i18next';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   checklistContainer: {
     flex: 1,
-    borderTopRightRadius: 50,
     marginTop: 10,
   },
   container: {
@@ -105,31 +105,14 @@ const Info = ({isCheckFinished}) => {
   const doneCounter = checks?.filter((check) => check.done).length;
 
   return (
-    <View style={styles.checklistContainer}>
-      <View style={{marginBottom: 20}}>
+    <ScrollView
+      style={styles.checklistContainer}
+      showsVerticalScrollIndicator={false}>
+      <View style={{marginBottom: 10}}>
         {checklist?.finished && (
           <Badge text={t('checklists.checkPage.done')} variant={'success'} />
         )}
         <View style={[Gutters.smallBMargin]}>
-          {isOwner ? (
-            <View style={[Gutters.smallBMargin, {width: '90%'}]}>
-              <Text style={[Gutters.regularTMargin, Gutters.tinyBMargin]}>
-                Our team is working hard to keep your house clean and safe! 🚀🚀
-              </Text>
-              <Text>
-                Here you will see the update of the jobs made in your house
-              </Text>
-            </View>
-          ) : (
-            <View>
-              <EditableInput
-                value={checklist?.observations || 'Sin observaciones'}
-                onPressAccept={(change) =>
-                  updateChecklistInput(docId, {observations: change})
-                }
-              />
-            </View>
-          )}
           <View
             style={[
               Layout.row,
@@ -171,29 +154,57 @@ const Info = ({isCheckFinished}) => {
             )}
           </View>
         </View>
-        <Divider />
-        <View style={[Layout.col, Gutters.smallVMargin]}>
-          <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
-            <Text style={[Gutters.smallBMargin, Fonts.textTitle]}>
-              {isOwner
-                ? t('checklists.checkPage.workers')
-                : t('common.asigned_workers')}
-            </Text>
-          </View>
-          <View style={[Layout.row]}>
-            {checklist?.workers?.map((worker, i) => (
-              <Avatar
-                overlap={checklist?.workers?.length > 1}
-                index={i}
-                id={worker.id}
-                key={worker.id}
-                uri={worker.profileImage}
-                size="big"
+
+        <View style={[Gutters.smallBMargin]}>
+          <Text style={[Gutters.smallVMargin, Fonts.textTitle]}>
+            {t('checklists.comments')}
+          </Text>
+          {isOwner ? (
+            <View style={[Gutters.smallBMargin, {width: '90%'}]}>
+              <Text style={[Gutters.regularTMargin, Gutters.tinyBMargin]}>
+                Our team is working hard to keep your house clean and safe! 🚀🚀
+              </Text>
+              <Text>
+                Here you will see the update of the jobs made in your house
+              </Text>
+            </View>
+          ) : (
+            <View>
+              <EditableInput
+                value={checklist?.observations || 'Sin observaciones'}
+                onPressAccept={(change) =>
+                  updateChecklistInput(docId, {observations: change})
+                }
               />
-            ))}
-          </View>
+            </View>
+          )}
         </View>
-        <Divider />
+
+        {checklist?.workers?.length && (
+          <>
+            <View style={[Layout.col, Gutters.smallVMargin]}>
+              <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
+                <Text style={[Gutters.smallBMargin, Fonts.textTitle]}>
+                  {isOwner
+                    ? t('checklists.checkPage.workers')
+                    : t('common.asigned_workers')}
+                </Text>
+              </View>
+              <View style={[Layout.row]}>
+                {checklist?.workers?.map((worker, i) => (
+                  <Avatar
+                    overlap={checklist?.workers?.length > 1}
+                    index={i}
+                    id={worker.id}
+                    key={worker.id}
+                    uri={worker.profileImage}
+                    size="big"
+                  />
+                ))}
+              </View>
+            </View>
+          </>
+        )}
       </View>
       {!loadingChecklist && (
         <ListOfChecks
@@ -203,7 +214,7 @@ const Info = ({isCheckFinished}) => {
           isCheckFinished={isCheckFinished}
         />
       )}
-    </View>
+    </ScrollView>
   );
 };
 

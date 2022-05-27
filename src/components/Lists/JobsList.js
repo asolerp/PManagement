@@ -1,7 +1,6 @@
 import React from 'react';
 
-import {View, Text, FlatList} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Pressable, Text, FlatList} from 'react-native';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -59,11 +58,9 @@ const JobsList = ({uid, houses, workers, time, state}) => {
     };
 
     return (
-      <TouchableOpacity
-        style={[Layout.fill]}
-        onPress={() => handlePressIncidence()}>
+      <Pressable style={[Layout.fill]} onPress={() => handlePressIncidence()}>
         <JobItem item={item} fullWidth />
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 

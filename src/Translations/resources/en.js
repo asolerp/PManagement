@@ -89,6 +89,7 @@ export default {
     no_found: 'No checklist found',
     owner_text_1: 'Our team is working to keep your house clean and safe! 🚀🚀',
     owner_text_2: 'Here you will see the update of the jobs made in your house',
+    comments: 'Comments',
     checkPage: {
       done: 'Finished!',
       workers: 'Working in your hosue',

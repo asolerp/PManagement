@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, StatusBar} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 // UI
@@ -101,6 +101,7 @@ const PageLayout = ({
   titleProps,
   children,
   footer,
+  statusBar = 'dark-content',
   titleLefSide,
   titleRightSide,
   containerStyles,
@@ -112,6 +113,7 @@ const PageLayout = ({
   if (safe && Platform.OS === 'ios') {
     return (
       <SafeAreaView style={[styles.container, containerStyles]} edges={edges}>
+        <StatusBar barStyle={statusBar} />
         <Container
           white={white}
           withPadding={withPadding}
@@ -130,8 +132,10 @@ const PageLayout = ({
 
   return (
     <View style={[styles.container, containerStyles]}>
+      <StatusBar barStyle={statusBar} />
       <Container
         white={white}
+        withTitle={withTitle}
         withPadding={withPadding}
         backButton={backButton}
         titleProps={titleProps}

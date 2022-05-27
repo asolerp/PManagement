@@ -1,7 +1,6 @@
 import React from 'react';
 
-import {View, Text, FlatList} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Pressable, Text, FlatList} from 'react-native';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -61,11 +60,9 @@ const IncidencesList = ({uid, houses, workers, state, time, typeFilters}) => {
     };
 
     return (
-      <TouchableOpacity
-        style={[Layout.fill]}
-        onPress={() => handlePressIncidence()}>
+      <Pressable style={[Layout.fill]} onPress={() => handlePressIncidence()}>
         <IncidenceItem item={item} fullWidth />
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
@@ -75,7 +72,7 @@ const IncidencesList = ({uid, houses, workers, state, time, typeFilters}) => {
       <FlatList
         nestedScrollEnabled
         ListEmptyComponent={<Text>{t('incidences.empty')}</Text>}
-        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         data={filteredList
           ?.filter((item) => item.id !== 'stats')
           .sort(sortByIncidenceStatus('state'))

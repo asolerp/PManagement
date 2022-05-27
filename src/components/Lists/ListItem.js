@@ -26,106 +26,98 @@ export const ListItem = ({
   const {Layout, Gutters, Fonts} = useTheme();
 
   return (
-    <React.Fragment>
-      <View
-        style={[
-          Layout.row,
-          Gutters.smallHPadding,
-          Gutters.smallVPadding,
-          Gutters.smallBMargin,
-          styles.checkWrapper,
-          Gutters.mediumRMargin,
-          {
-            width: fullWidth ? FULL_WIDTH : CARD_WIDTH,
-          },
-        ]}>
-        {statusColor && (
+    <View
+      style={[
+        Layout.row,
+        Gutters.smallHPadding,
+        Gutters.smallVPadding,
+        Gutters.smallBMargin,
+        styles.checkWrapper,
+        Gutters.mediumRMargin,
+        {
+          width: fullWidth ? FULL_WIDTH : CARD_WIDTH,
+        },
+      ]}>
+      {statusColor && (
+        <View
+          style={[
+            Gutters.smallRMargin,
+            {backgroundColor: `${Colors.pm}30`},
+            styles.statusBarContainer,
+          ]}>
           <View
             style={[
-              Gutters.smallRMargin,
-              {backgroundColor: `${Colors.pm}30`},
               styles.statusBarContainer,
-            ]}>
-            <View
-              style={[
-                styles.statusBarContainer,
-                {backgroundColor: statusColor},
-                {height: `${statusPercentage * 100}%`},
-              ]}
-            />
-          </View>
-        )}
+              {backgroundColor: statusColor},
+              {height: `${statusPercentage * 100}%`},
+            ]}
+          />
+        </View>
+      )}
+      <View style={[Layout.grow]}>
+        <View
+          style={[
+            Layout.row,
+            Layout.justifyContentSpaceBetween,
+            Gutters.smallBMargin,
+          ]}>
+          <Badge
+            type="outline"
+            text={house}
+            variant="purple"
+            iconName="home"
+            containerStyle={{width: 100}}
+          />
+          <Badge
+            text={date}
+            variant={dateVariant}
+            type="outline"
+            iconName="schedule"
+          />
+          <Badge
+            text={counter}
+            variant={counter === 0 ? 'pm' : 'danger'}
+            type="outline"
+            iconName="message"
+            containerStyle={[Gutters.smallRMargin]}
+          />
+        </View>
         <View style={[Layout.grow]}>
+          <View style={[Gutters.smallBMargin, Gutters.smallBMargin]}>
+            {title && (
+              <Text
+                style={[Fonts.titleCard, Gutters.smallBMargin]}
+                numberOfLines={2}
+                ellipsizeMode="tail">
+                {title}
+              </Text>
+            )}
+            {subtitle && <Text style={styles.infoStyle}>{subtitle}</Text>}
+          </View>
+        </View>
+        <View style={[Layout.justifyContentEnd]}>
           <View
             style={[
               Layout.row,
+              Layout.alignItemsCenter,
               Layout.justifyContentSpaceBetween,
-              Gutters.smallBMargin,
             ]}>
-            <Badge
-              type="outline"
-              text={house}
-              variant="purple"
-              iconName="home"
-            />
-            <Badge
-              text={date}
-              variant={dateVariant}
-              type="outline"
-              iconName="schedule"
-            />
-            <Badge
-              text={counter}
-              variant={counter === 0 ? 'pm' : 'danger'}
-              type="outline"
-              iconName="message"
-              containerStyle={[Gutters.smallRMargin]}
-            />
-          </View>
-          <View style={[{flexShrink: 1}]}>
-            <View style={[Gutters.smallBMargin, Gutters.smallBMargin]}>
-              {title && (
-                <Text
-                  style={[Fonts.titleCard, Gutters.smallBMargin]}
-                  numberOfLines={2}
-                  ellipsizeMode="tail">
-                  {title}
-                </Text>
-              )}
-              {subtitle && (
-                <Text
-                  style={styles.infoStyle}
-                  ellipsizeMode="tail"
-                  numberOfLines={2}>
-                  {subtitle}
-                </Text>
-              )}
-            </View>
-          </View>
-          <View style={[Layout.justifyContentEnd]}>
-            <View
-              style={[
-                Layout.row,
-                Layout.alignItemsCenter,
-                Layout.justifyContentSpaceBetween,
-              ]}>
-              <View style={[Layout.row]}>
-                {workers?.map((worker, i) => (
-                  <Avatar
-                    overlap={workers?.length > 1}
-                    index={i}
-                    id={worker.id}
-                    key={worker.id}
-                    uri={worker.profileImage}
-                    size="tiny"
-                  />
-                ))}
-              </View>
+            <View style={[Layout.row]}>
+              {workers?.map((worker, i) => (
+                <Avatar
+                  overlap={workers?.length > 1}
+                  index={i}
+                  id={worker.id}
+                  key={worker.id}
+                  uri={worker.profileImage}
+                  size="tiny"
+                />
+              ))}
             </View>
           </View>
         </View>
       </View>
-    </React.Fragment>
+    </View>
   );
 };
 

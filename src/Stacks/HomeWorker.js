@@ -1,8 +1,8 @@
 import React from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 // Screens
-import {AnimatedTabBarNavigator} from 'react-native-animated-nav-tab-bar';
+
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {Platform} from 'react-native';
 
@@ -16,11 +16,16 @@ import {ProfileScreen} from '../Screens/Profile';
 import {tabNameByScreen} from '../utils/parsers';
 
 import {useTranslation} from 'react-i18next';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Colors} from '../Theme/Variables';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../Store/User/userSlice';
 
-const Tabs = AnimatedTabBarNavigator();
+const {Navigator, Screen} = createBottomTabNavigator();
 
 const HomeWorker = () => {
   const {t} = useTranslation();
+  const user = useSelector(userSelector);
   const getTabBarVisible = (route) => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (
@@ -36,25 +41,13 @@ const HomeWorker = () => {
   };
 
   return (
-    <Tabs.Navigator
-      tabBarOptions={{
-        activeTintColor: 'white',
-        inactiveTintColor: 'white',
-        activeBackgroundColor: '#3E93A8',
-        tabStyle: {
-          marginTop: 0,
-          paddingBottom: Platform.OS === 'ios' ? 20 : 0,
-          borderTopWidth: 1,
-          borderBottomWidth: 0,
-          borderTopColor: '#dbdbdb',
-        },
-      }}
-      appearence={{
-        floating: false,
-        shadow: true,
-        tabBarBackground: 'white',
+    <Navigator
+      options={{headerShown: false}}
+      screenOptions={{
+        tabBarShowLabel: false,
+        headerShown: false,
       }}>
-      <Tabs.Screen
+      <Screen
         name={t(tabNameByScreen[DASHBOARD_WORKER_SCREEN_KEY])}
         initialParams={{screenKey: DASHBOARD_WORKER_SCREEN_KEY}}
         component={DashboardWorkerScreen}
@@ -62,30 +55,30 @@ const HomeWorker = () => {
           tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({focused, color, size}) => (
             <Icon
-              name="dashboard"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
+              name={focused ? 'ios-speedometer' : 'ios-speedometer-outline'}
+              size={25}
               focused={focused}
+              color={Colors.pm}
             />
           ),
         })}
       />
-      <Tabs.Screen
+      <Screen
         name={t(tabNameByScreen[PROFILE_SCREEN_KEY])}
-        initialParams={{screenKey: PROFILE_SCREEN_KEY}}
+        initialParams={{screenKey: PROFILE_SCREEN_KEY, userId: user?.id}}
         component={ProfileScreen}
         options={{
           tabBarIcon: ({focused, color, size}) => (
             <Icon
-              name="person"
-              size={size ? size : 24}
-              color={focused ? color : '#3E93A8'}
+              name={focused ? 'ios-person' : 'ios-person-outline'}
+              size={25}
               focused={focused}
+              color={Colors.pm}
             />
           ),
         }}
       />
-    </Tabs.Navigator>
+    </Navigator>
   );
 };
 

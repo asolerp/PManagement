@@ -80,6 +80,8 @@ const AuthRouter = () => {
     return <SignOutRouter />;
   }
 
+  console.log('USER', user?.role);
+
   return (
     <React.Fragment>
       <Modal />

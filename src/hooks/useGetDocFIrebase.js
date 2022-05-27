@@ -3,8 +3,6 @@ import firestore from '@react-native-firebase/firestore';
 import {useState, useEffect} from 'react';
 
 export const useGetDocFirebase = (coll, doc) => {
-  console.log('doc', doc);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
   const [document, setDocument] = useState([]);

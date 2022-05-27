@@ -13,11 +13,15 @@ import {
 import {CHECKLISTS} from '../../../utils/firebaseKeys';
 import useRecursiveDelete from '../../../utils/useRecursiveDelete';
 import Toast from 'react-native-toast-message';
-import {popScreen} from '../../../Router/utils/actions';
-import {error as errorLog} from '../../../lib/logging';
+import {openScreenWithPush, popScreen} from '../../../Router/utils/actions';
+
 import firestore from '@react-native-firebase/firestore';
 import {useContext} from 'react';
 import {LoadingModalContext} from '../../../context/loadinModalContext';
+import {
+  DASHBOARD_SCREEN_KEY,
+  MAIN_ADMIN_STACK_KEY,
+} from '../../../Router/utils/routerKeys';
 
 export const useAddEditCheckist = ({docId, edit}) => {
   const dispatch = useDispatch();
@@ -61,7 +65,7 @@ export const useAddEditCheckist = ({docId, edit}) => {
         observations: observations,
         date: date?._i || date,
         workers: workers?.value,
-        workersId: workers?.value?.map((worker) => worker.id),
+        workersId: workers?.value?.map((worker) => worker.id) || null,
         houseId: house?.value[0].id,
         house: house?.value,
         total: Object.entries(checks).filter(([key, value]) => value.check)
@@ -69,19 +73,25 @@ export const useAddEditCheckist = ({docId, edit}) => {
         finished: false,
         done: 0,
       };
+
+      console.log('CHECK', editCheckListForm);
+
       await updateFirebase(docId, editCheckListForm);
       await recursiveDelete();
 
       const newChecks = Object.entries(checks)
         .filter(([key, value]) => value.check)
         .map(([key, value]) => ({
-          title: value.title,
-          originalId: value.originalId,
-          photos: value.photos || null,
-          done: value.done || false,
+          locale: value?.locale,
+          originalId: value?.originalId,
+          photos: value?.photos || null,
+          numberOfPhotos: value?.photos?.length || 0,
+          done: false,
           worker: null,
           date: null,
         }));
+
+      console.log('NEW CHECKS', newChecks);
 
       await Promise.all(
         newChecks.map((c) =>
@@ -100,22 +110,16 @@ export const useAddEditCheckist = ({docId, edit}) => {
         text2: 'El checklist se actualizó correctamente',
       });
     } catch (err) {
-      setError(true);
-      errorLog({
-        message: err.message,
-        track: true,
-        asToast: true,
-      });
+      console.log('ERROR', err);
     } finally {
       setLoading(false);
       setVisible(false);
       cleanForm();
-      popScreen();
+      openScreenWithPush(MAIN_ADMIN_STACK_KEY);
     }
   };
 
   const handleAdd = async () => {
-    console.log('HOLA', house?.value);
     try {
       setLoading(true);
       setVisible(true);

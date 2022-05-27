@@ -51,6 +51,7 @@ const ProfileBar = () => {
         <View>
           <TouchableOpacity
             onPress={() =>
+              user?.role === 'admin' &&
               openScreenWithPush(PROFILE_SCREEN_KEY, {
                 userId: user?.id,
               })

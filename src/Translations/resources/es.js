@@ -83,6 +83,7 @@ export default {
     title: 'Checklists',
     empty: 'No se ha encontrado ningún checklist activo',
     no_found: 'No se ha encontrado ningún checklist',
+    comments: 'Comentarios',
     owner_text_1:
       'Nuestro equipo esta trabajando para tener su casa siempre perfecta! 🚀🚀',
     owner_text_2:

@@ -81,11 +81,29 @@ const Info = () => {
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={[styles.container]}>
         <View>
-          <Badge
-            text={job?.done ? t('job.finished') : t('job.not_finished')}
-            variant={job?.done ? 'success' : 'danger'}
-            containerStyle={Gutters.smallBMargin}
-          />
+          <View
+            style={[
+              Layout.row,
+              Layout.justifyContentSpaceBetween,
+              Gutters.mediumBMargin,
+            ]}>
+            <View>
+              <Badge
+                text={job?.house?.[0].houseName}
+                variant="purple"
+                containerStyle={Gutters.smallVMargin}
+              />
+              <Badge
+                label={t('common.date') + ': '}
+                text={moment(job?.date?.toDate()).format('LLL')}
+              />
+            </View>
+            <Badge
+              text={job?.done ? t('job.finished') : t('job.not_finished')}
+              variant={job?.done ? 'success' : 'danger'}
+              containerStyle={Gutters.smallBMargin}
+            />
+          </View>
           <View
             style={[
               Layout.fill,
@@ -96,20 +114,14 @@ const Info = () => {
               {taksDescByLocale(job)}
             </Text>
           </View>
+          <Text style={[Gutters.smallVMargin, Fonts.textTitle]}>
+            {t('checklists.comments')}
+          </Text>
           <EditableInput
             value={job?.observations}
             onPressAccept={(change) =>
               updateDocument('jobs', jobId, {observations: change})
             }
-          />
-          <Badge
-            text={job?.house?.[0].houseName}
-            variant="purple"
-            containerStyle={Gutters.smallVMargin}
-          />
-          <Badge
-            label={t('common.date') + ': '}
-            text={moment(job?.date?.toDate()).format('LLL')}
           />
           <View style={[Layout.grouw, Gutters.mediumTMargin]}>
             <Text style={{...defaultLabel, ...marginBottom(10)}}>

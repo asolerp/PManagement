@@ -11,7 +11,6 @@ const useUploadImageCheck = (collection, docId) => {
   const {uploadPhotos, loading} = usePhotos();
 
   const uploadImages = async (imgs, item) => {
-    console.log(imgs);
     try {
       setIdCheckLoading(item.id);
 

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -34,6 +34,7 @@ import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scrol
 import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import {useTheme} from '../../Theme';
 import PageOptionsScreen from '../PageOptions/PageOptions';
+import {LoadingModalContext} from '../../context/loadinModalContext';
 
 const styles = StyleSheet.create({
   pageWrapper: {
@@ -42,10 +43,21 @@ const styles = StyleSheet.create({
   infoWrapper: {
     marginVertical: 20,
   },
+  houseImageContainer: {
+    height: 170,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
+  },
   iconContainer: {
     position: 'absolute',
     right: 0,
-    top: 0,
+    top: -10,
     backgroundColor: '#ED7A7A',
     borderRadius: 100,
     justifyContent: 'center',
@@ -55,7 +67,7 @@ const styles = StyleSheet.create({
   },
   houseImage: {
     width: '100%',
-    height: 150,
+    height: 170,
   },
   titleStyle: {
     fontSize: 20,
@@ -86,6 +98,7 @@ const HouseScreen = ({route}) => {
   const {isAdmin} = useAuth();
   const {t} = useTranslation();
   const {houseId} = route.params;
+  const {setVisible} = useContext(LoadingModalContext);
   const {document: house} = useGetDocFirebase('houses', houseId);
   const {updateFirebase} = useUpdateFirebase('houses');
   const {upload} = useUploadCloudinaryImage();
@@ -110,29 +123,39 @@ const HouseScreen = ({route}) => {
   };
 
   const handleEdit = async () => {
+    setVisible(true);
     try {
+      if (infoHouse) {
+        await updateFirebase(houseId, {
+          ...infoHouse,
+        });
+      }
       if (newImage) {
         const uploadImage = await upload(
-          newImage,
+          newImage[0],
           `/PortManagement/Houses/${houseId}/Photos`,
         );
         await updateFirebase(houseId, {
-          ...infoHouse,
-          profileImage: uploadImage,
+          houseImage: uploadImage,
         });
-      } else {
-        await updateFirebase(houseId, {...infoHouse});
       }
-      setInfoHouse(null);
-      setNewImage(null);
     } catch (err) {
       error({
         message: err.message,
         track: true,
         asToast: true,
       });
+    } finally {
+      setNewImage(null);
+      setVisible(false);
     }
   };
+
+  useEffect(() => {
+    if (house) {
+      setInfoHouse(house);
+    }
+  }, [house]);
 
   return (
     <React.Fragment>
@@ -187,11 +210,22 @@ const HouseScreen = ({route}) => {
                   </TouchableOpacity>
                 </View>
               )}
-              <ImageBackground
-                source={{uri: newImage?.[0]?.fileUri || house?.houseImage}}
-                imageStyle={{borderRadius: 10}}
-                style={styles.houseImage}
-              />
+              <View style={styles.houseImageContainer}>
+                {!newImage?.[0]?.fileUri && !infoHouse?.houseImage ? (
+                  <React.Fragment>
+                    <Icon name="home" size={40} color="black" />
+                    <Text>Selecciona una foto</Text>
+                  </React.Fragment>
+                ) : (
+                  <ImageBackground
+                    source={{
+                      uri: newImage?.[0]?.fileUri || infoHouse?.houseImage,
+                    }}
+                    imageStyle={{borderRadius: 10}}
+                    style={styles.houseImage}
+                  />
+                )}
+              </View>
             </TouchableOpacity>
 
             <View style={styles.infoWrapper}>
@@ -205,9 +239,9 @@ const HouseScreen = ({route}) => {
                   style={{height: 40}}
                   placeholder={t('houses.house_name')}
                   onChangeText={(text) =>
-                    setInfoHouse({...infoHouse, phone: text})
+                    setInfoHouse({...infoHouse, houseName: text})
                   }
-                  value={infoHouse?.houseName || house?.houseName}
+                  value={infoHouse?.houseName}
                 />
               </InputGroup>
               <Text style={styles.inputLabel}>
@@ -221,7 +255,7 @@ const HouseScreen = ({route}) => {
                   onChangeText={(text) =>
                     setInfoHouse({...infoHouse, street: text})
                   }
-                  value={infoHouse?.street || house?.street}
+                  value={infoHouse?.street}
                 />
               </InputGroup>
               <Text style={styles.inputLabel}>
@@ -235,7 +269,7 @@ const HouseScreen = ({route}) => {
                   onChangeText={(text) =>
                     setInfoHouse({...infoHouse, municipio: text})
                   }
-                  value={infoHouse?.municipio || house?.municipio}
+                  value={infoHouse?.municipio}
                 />
               </InputGroup>
               <View>
@@ -266,14 +300,12 @@ const HouseScreen = ({route}) => {
                   {t('houses.owner_name') + ':'}
                 </Text>
                 <Text style={styles.infoStyle}>
-                  {infoHouse?.owner?.firstName || house?.owner?.firstName}
+                  {infoHouse?.owner?.firstName}
                 </Text>
                 <Text style={styles.inputLabel}>
                   {t('houses.owner_phone') + ':'}
                 </Text>
-                <Text style={styles.infoStyle}>
-                  {infoHouse?.owner?.phone || house?.owner?.phone}
-                </Text>
+                <Text style={styles.infoStyle}>{infoHouse?.owner?.phone}</Text>
               </View>
               {(infoHouse || newImage) && (
                 <View style={{flex: 1}}>

@@ -53,7 +53,7 @@ const HousesScreen = () => {
         <AddButton
           iconName="add"
           onPress={() => handleNewHome()}
-          containerStyle={{right: 0, bottom: 35}}
+          containerStyle={{right: 0, bottom: 30}}
         />
         <View style={styles.container}>
           <ScreenHeader title={t('houses.title')} />
@@ -93,7 +93,6 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   homesScreen: {
-    flex: 10,
     paddingTop: 20,
   },
   scrollWrapper: {

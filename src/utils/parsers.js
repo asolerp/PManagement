@@ -172,7 +172,7 @@ export const parseDateWithText = (date) => {
   if (date.toDate() < new Date()) {
     return {
       text: 'common.range_time.past',
-      metaData: {numberOfDays: diff * -1},
+      metaData: {numberOfDays: diff * -1 + 1},
       variant: 'danger',
     };
   }
@@ -180,7 +180,7 @@ export const parseDateWithText = (date) => {
   if (date.toDate() > new Date()) {
     return {
       text: 'common.range_time.next',
-      metaData: {numberOfDays: diff},
+      metaData: {numberOfDays: diff + 1},
       variant: 'pm',
     };
   }
