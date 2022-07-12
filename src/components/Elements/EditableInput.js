@@ -60,12 +60,12 @@ const EditableInput = ({value, onPressAccept}) => {
           <TouchableOpacity
             style={[styles.acceptButton, Gutters.tinyRMargin]}
             onPress={() => onPressAccept(text)}>
-            <Icon name="check" size={25} color={'white'} style={{}} />
+            <Icon name="check" size={15} color={'white'} style={{}} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => onChangeText(value)}>
-            <Icon name="close" size={25} color={'white'} style={{}} />
+            <Icon name="close" size={15} color={'white'} style={{}} />
           </TouchableOpacity>
         </View>
       )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, FlatList, Pressable} from 'react-native';
+import {Text, FlatList, Pressable, View, ScrollView} from 'react-native';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -9,7 +9,7 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import CheckItem from './CheckItem';
 
 import {useTheme} from '../../Theme';
-
+import theme from '../../Theme/Theme';
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import {sortByDate} from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
@@ -29,10 +29,10 @@ const ChecklistList = ({
   const {Layout, Gutters} = useTheme();
   const {t} = useTranslation();
 
-  console.log('HOUSES', houses);
-
   // let filteredValues;
   let firestoreQuery;
+
+  console.log('HOUSE', house);
 
   if (house) {
     firestoreQuery = firestore()
@@ -49,7 +49,6 @@ const ChecklistList = ({
   if (!uid && !house) {
     firestoreQuery = firestore()
       .collection('checklists')
-      .where('finished', '==', state)
       .where('date', '>', new Date(time.start))
       .where('date', '<', new Date(time.end));
   }
@@ -76,24 +75,47 @@ const ChecklistList = ({
     return (
       <Pressable
         onPress={() => handlePressIncidence()}
-        style={[Layout.fill, Gutters.tinyHMargin]}>
+        style={[Gutters.tinyHMargin]}>
         <CheckItem item={item} fullWidth />
       </Pressable>
     );
   };
 
   return (
-    <>
+    <View style={[theme.flex1]}>
       {loading && <DashboardSectionSkeleton />}
       <FlatList
+        ListHeaderComponent={
+          <View style={[theme.mT5, theme.mB2]}>
+            <Text style={[theme.fontSansBold, theme.text2xl]}>Activos</Text>
+          </View>
+        }
         ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
-        showsHorizontalScrollIndicator={false}
-        data={filteredList?.sort(sortByDate)}
+        showsVerticalScrollIndicator={false}
+        contentInset={{bottom: 5}}
+        data={filteredList?.filter((item) => !item.finished).sort(sortByDate)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        style={[Gutters.regularTMargin]}
+        style={[theme.mT3]}
+        ListFooterComponent={
+          <>
+            <View style={[theme.mT5]}>
+              <Text style={[theme.fontSansBold, theme.text2xl]}>Histórico</Text>
+            </View>
+            <FlatList
+              ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
+              showsHorizontalScrollIndicator={false}
+              data={filteredList
+                ?.filter((item) => item.finished)
+                .sort(sortByDate)}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              style={[theme.mT3]}
+            />
+          </>
+        }
       />
-    </>
+    </View>
   );
 };
 

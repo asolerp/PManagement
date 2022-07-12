@@ -23,6 +23,7 @@ export const Colors = {
   purpleLow: 'rgb(243, 240, 250)',
   purple: 'rgb(136, 112, 213)',
   black: 'black',
+  greenLight: '#77C5A2',
 };
 
 export const Variants = {

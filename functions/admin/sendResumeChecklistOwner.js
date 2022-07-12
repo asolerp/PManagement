@@ -1,17 +1,48 @@
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
+const {google} = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail', //smtp.gmail.com  //in place of service use host...
-  secure: false, //true
-  port: 587, //465
-  auth: {
-    user: functions.config().gmail.account,
-    pass: functions.config().gmail.password,
-  },
-});
+const EMAIL = functions.config().email;
+const CLIENT_ID = functions.config().client_id;
+const CLIENT_SECRET = functions.config().client_secret;
+const REFRESH_TOKEN = functions.config().refresh_token;
 
-const sendResumeChecklistOwner = ({checklist, checks}) => {
+const REDIRECT_URL = 'https://developers.google.com/oauthplayground';
+
+const createTransporter = async () => {
+  const oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
+
+  oauth2Client.setCredentials({
+    refresh_token: REFRESH_TOKEN,
+  });
+
+  const accessToken = await new Promise((resolve, reject) => {
+    oauth2Client.getAccessToken((err, token) => {
+      if (err) {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject('Failed to create access token :(');
+      }
+      resolve(token);
+    });
+  });
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      type: 'OAuth2',
+      user: EMAIL,
+      accessToken,
+      clientId: CLIENT_ID,
+      clientSecret: CLIENT_SECRET,
+      refreshToken: REFRESH_TOKEN,
+    },
+  });
+
+  return transporter;
+};
+
+const sendResumeChecklistOwner = async ({checklist, checks}) => {
   const {observations} = checklist;
   const {street, owner} = checklist.house[0];
   const {lastName, email, gender, language} = owner;
@@ -32,9 +63,9 @@ const sendResumeChecklistOwner = ({checklist, checks}) => {
       }
       checksHtml += `
       <div>
-        <li><p>${
+        <li><p><br>${
           check.locale[language] ? check.locale[language] : check.locale.en
-        }</p></li>
+        }</br></p></li>
         <div style="display: flex; flex-direction: "row"; flex-wrap: wrap;>
           ${checkImages}
         </div>
@@ -44,33 +75,64 @@ const sendResumeChecklistOwner = ({checklist, checks}) => {
     return checksHtml;
   };
 
+  const generateEnglishEmail = () => {
+    return `
+      <p><br>Dear ${generateTitle()} ${lastName}</br></p>
+      <p>We checked the functioning and state of your villa located in <b>${street}</b>.
+      </p>
+      <p>
+      We have checked:
+      </p>
+      <ol>
+        ${generateChecks()}
+      </ol>
+      ${
+        observations &&
+        `<p><b>Observations:</b></p>
+        <p>
+          ${observations}
+        </p>`
+      }
+      <p>Thank you very much</p>
+      <p>Regards</p>
+      <img src="https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png" alt="Port Management" >
+      `;
+  };
+
+  const generateSpanishEmail = () => {
+    return `
+      <p><br>${generateTitle()} ${lastName}</br></p>
+      <p>Hemos comprobado las funcionalidades y estado de su villa en <b>${street}</b>.
+      </p>
+      <p>
+      Hemos comprobado:
+      </p>
+      <ol>
+        ${generateChecks()}
+      </ol>
+      ${
+        observations &&
+        `<p><b>Observaciones:</b></p>
+        <p>
+          ${observations}
+        </p>`
+      }
+      <p>Muchas gracias</p>
+      <p>Reciba un cordial saludo</p>
+      <img src="https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png" alt="Port Management" width="120" >
+      `;
+  };
+
   const mailOptions = {
     from: functions.config().gmail.account,
     to: email,
     subject: `CHECK LIST ${street}`,
-    html: `
-        <p><br>Dear ${generateTitle()} ${lastName}</br></p>
-        <p>We checked the operation and condition of your villa located in <b>${street}</b>.
-        </p>
-        <p>
-        We verified:
-        </p>
-        <ol>
-          ${generateChecks()}
-        </ol>
-        ${
-          observations &&
-          `    <p><b>We found:</b></p>
-          <p>
-            ${observations}
-          </p>`
-        }
-        <p>Thank you very much</p>
-        <p>Regards</p>
-        <img src="https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png" alt="Girl in a jacket" width="100">
-        `,
+    html: language === 'en' ? generateEnglishEmail() : generateSpanishEmail(),
   };
-  return transporter.sendMail(mailOptions, (error, data) => {
+
+  let emailTransporter = await createTransporter();
+
+  return emailTransporter.sendMail(mailOptions, (error, data) => {
     if (error) {
       console.log(error);
       return;

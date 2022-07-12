@@ -8,10 +8,13 @@ import JobsList from '../../Lists/JobsList';
 export const JobsTab = ({filters}) => {
   const {Layout} = useTheme();
   const user = useSelector(userSelector);
+
+  const isAdmin = user?.role === 'admin';
+
   return (
     <View style={[Layout.fill]}>
       <JobsList
-        uid={user?.id}
+        uid={!isAdmin && user?.id}
         workers={filters?.workers}
         houses={filters?.houses}
         typeFilters={filters?.type}

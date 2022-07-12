@@ -36,6 +36,8 @@ export const ListItem = ({
         Gutters.mediumRMargin,
         {
           width: fullWidth ? FULL_WIDTH : CARD_WIDTH,
+          minHeight: 50,
+          maxHeight: 150,
         },
       ]}>
       {statusColor && (

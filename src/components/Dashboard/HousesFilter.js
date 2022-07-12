@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {useTheme} from '../../Theme';
+import theme from '../../Theme/Theme';
+
 import {Colors} from '../../Theme/Variables';
 
 export const HousesFilter = ({houses, onClickHouse}) => {
@@ -52,7 +54,7 @@ export const HousesFilter = ({houses, onClickHouse}) => {
   };
 
   return (
-    <View style={[Gutters.tinyTMargin]}>
+    <View style={[theme.mT2]}>
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}

@@ -1,3 +1,4 @@
+import {format} from 'date-fns';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 
@@ -5,6 +6,7 @@ import useNoReadMessages from '../../hooks/useNoReadMessages';
 
 import {INCIDENCES} from '../../utils/firebaseKeys';
 import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
+import {FinishedListItem} from './FinishedListItem';
 
 import {ListItem} from './ListItem';
 
@@ -14,6 +16,22 @@ const IncidenceItem = ({item, fullWidth}) => {
     collection: INCIDENCES,
     docId: item.id,
   });
+
+  if (item.done) {
+    return (
+      <FinishedListItem
+        withStatusBar
+        date={format(item?.date.toDate(), 'dd/MM/yyyy')}
+        statusColor={parseStateIncidecne(item?.state)}
+        statusPercentage={1}
+        title={item?.title}
+        subtitle={item?.incidence}
+        counter={noReadCounter}
+        house={item?.house?.houseName}
+        workers={item?.workers}
+      />
+    );
+  }
 
   return (
     <ListItem

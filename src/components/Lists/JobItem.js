@@ -8,6 +8,8 @@ import {parseDateWithText} from '../../utils/parsers';
 import {useTranslation} from 'react-i18next';
 import {useLocales} from '../../utils/useLocales';
 import {ListItem} from './ListItem';
+import {FinishedListItem} from './FinishedListItem';
+import {format} from 'date-fns';
 
 const JobItem = ({item, fullWidth}) => {
   const {t} = useTranslation();
@@ -21,6 +23,21 @@ const JobItem = ({item, fullWidth}) => {
     item?.task?.locales?.[locale]?.desc ||
     item?.task?.locales?.en.desc ||
     item?.task?.desc;
+
+  if (item.done) {
+    return (
+      <FinishedListItem
+        withStatusBar
+        date={format(item?.date.toDate(), 'dd/MM/yyyy')}
+        statusColor={Colors.pm}
+        title={taksDescByLocale}
+        subtitle={item?.observations}
+        counter={noReadCounter}
+        house={item?.house?.[0].houseName}
+        workers={item?.workers}
+      />
+    );
+  }
 
   return (
     <ListItem

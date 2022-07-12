@@ -26,7 +26,7 @@ import ListOfChecks from './ListOfChecks';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {useTheme} from '../../Theme';
 import Avatar from '../Avatar';
-import {Divider} from 'react-native-elements';
+
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
 import Badge from '../Elements/Badge';
@@ -36,6 +36,7 @@ import {HOUSE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import useAuth from '../../utils/useAuth';
 import {useTranslation} from 'react-i18next';
 import {ScrollView} from 'react-native-gesture-handler';
+import theme from '../../Theme/Theme';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -169,7 +170,13 @@ const Info = ({isCheckFinished}) => {
               </Text>
             </View>
           ) : (
-            <View>
+            <View
+              style={[
+                {borderWidth: 1},
+                theme.borderGray500,
+                theme.roundedSm,
+                theme.p4,
+              ]}>
               <EditableInput
                 value={checklist?.observations || 'Sin observaciones'}
                 onPressAccept={(change) =>

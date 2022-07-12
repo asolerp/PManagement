@@ -21,6 +21,7 @@ import {JobsTab} from '../../components/Dashboard/Tabs/JobsTab';
 import {Colors} from '../../Theme/Variables';
 import {GlobalStats} from '../../components/Dashboard/GlobalStats';
 import {HousesFilter} from '../../components/Dashboard/HousesFilter';
+import theme from '../../Theme/Theme';
 
 const DashboardScreen = () => {
   const [index, setIndex] = useState(0);
@@ -31,7 +32,6 @@ const DashboardScreen = () => {
     {key: 'incidences', title: 'Incidencias'},
     {key: 'jobs', title: 'Trabajos'},
   ]);
-  const {Layout} = useTheme();
 
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
@@ -57,9 +57,10 @@ const DashboardScreen = () => {
         statusBar="light-content"
         withTitle={false}
         withPadding={false}
+        edges={['top']}
         containerStyles={{backgroundColor: Colors.gray100}}>
         <ActionButtons />
-        <View style={[Layout.grow]}>
+        <View style={[[theme.flex1]]}>
           <View style={[styles.profileBarContainerStyle]}>
             <ProfileBar />
           </View>
@@ -72,7 +73,7 @@ const DashboardScreen = () => {
             </View>
           </TouchableWithoutFeedback> */}
 
-          <View style={[Layout.grow, styles.container]}>
+          <View style={[[theme.flex1], styles.container]}>
             <GlobalStats onPressStat={setIndex} />
             <HousesFilter
               houses={filters.houses}
@@ -105,8 +106,8 @@ const DashboardScreen = () => {
               navigationState={{index, routes}}
               renderScene={renderScene}
               onIndexChange={setIndex}
-              initialLayout={{width: layout.width}}
-              style={[Layout.fill]}
+              initialLayout={{width: layout.width, height: layout.height}}
+              sceneContainerStyle={{flex: 1}}
             />
           </View>
         </View>
@@ -118,10 +119,9 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
-    flex: 1,
   },
   profileBarContainerStyle: {
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.greenLight,
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
   },

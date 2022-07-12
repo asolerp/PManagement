@@ -105,30 +105,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileBar;
-
-{
-  /* <View style={[Gutters.mediumBMargin]}>
-  <View
-    style={[
-      Layout.row,
-      Layout.alignItemsCenter,
-      Layout.justifyContentSpaceBetween,
-    ]}>
-    <View>
-      <Text style={[Fonts.textRegular, {color: Colors.pm}]}>
-        Hola {user.firstName || '' + '.'}
-      </Text>
-      <Text style={[Fonts.textRegular, {width: 200, fontWeight: '400'}]}>
-        Estas son tus tareas en el día de hoy
-      </Text>
-    </View>
-    <TouchableWithoutFeedback
-      onPress={() => openScreenWithPush(FILTERS_SCREEN_KEY)}>
-      <View style={[Layout.row, Layout.alignItemsCenter]}>
-        <Icon name="filter-alt" size={15} style={[Gutters.tinyRMargin]} />
-        <Text style={[Fonts.textTitle]}>{t('common.filters.title')}</Text>
-      </View>
-    </TouchableWithoutFeedback>
-  </View>
-</View>; */
-}

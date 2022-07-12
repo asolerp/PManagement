@@ -7054,10 +7054,10 @@ react-native-communications@^2.2.1:
   resolved "https://registry.yarnpkg.com/react-native-communications/-/react-native-communications-2.2.1.tgz#7883b56b20a002eeb790c113f8616ea8692ca795"
   integrity sha1-eIO1ayCgAu63kMET+GFuqGksp5U=
 
-react-native-config@^1.4.3:
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.4.5.tgz#6fe5895410b75e44fe4f4bf00caaf894a0981f3a"
-  integrity sha512-5oiAsoW88SOYDg/0cleJ2vJDqv98FJUbFQYEnH4sdMtEn3AAT3lb7BkTGW8HO/t3Vk9VOruwxUUnO4tzuxzCsw==
+react-native-config@^1.4.6:
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.4.6.tgz#2aefebf4d9cf02831e64bbc1307596bd212f6d42"
+  integrity sha512-cSLdOfva2IPCxh6HjHN1IDVW9ratAvNnnAUx6ar2Byvr8KQU7++ysdFYPaoNVuJURuYoAKgvjab8ZcnwGZIO6Q==
 
 react-native-date-picker@^3.3.1:
   version "3.4.3"
@@ -7201,10 +7201,10 @@ react-native-modals@^0.22.3:
     babel-plugin-flow-react-proptypes "^9.1.1"
     prop-types "^15.6.0"
 
-react-native-pager-view@^5.4.15:
-  version "5.4.15"
-  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-5.4.15.tgz#075fef5ae4ba6ecc37e49b6c4a24770131a2a3cc"
-  integrity sha512-5NssD840wFCuOL4B1ZRiRADvt+Vx2Dgify4SmAUqHXCx03yiGPnRWmFjYXyQeK6gq/8VY+gPGE4bTy9ahzBbDw==
+react-native-pager-view@^5.4.25:
+  version "5.4.25"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-5.4.25.tgz#cd639d5387a7f3d5581b55a33c5faa1cbc200f97"
+  integrity sha512-3drrYwaLat2fYszymZe3nHMPASJ4aJMaxiejfA1V5SK3OygYmdtmV2u5prX7TnjueJzGSyyaCYEr2JlrRt4YPg==
 
 react-native-parsed-text@0.0.22:
   version "0.0.22"
@@ -7340,6 +7340,11 @@ react-native-vector-icons@^7.1.0:
     lodash.template "^4.5.0"
     prop-types "^15.7.2"
     yargs "^15.0.2"
+
+react-native-whirlwind@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-whirlwind/-/react-native-whirlwind-0.3.0.tgz#0c1de212bdeb20701d6330ee06915b82b36518d8"
+  integrity sha512-Y7BK33vuKUBMuDF4LDY4P+QvxIxYSF7p2siWT6e/7WLwLGYWDiFzFuF6d/IWnG82Tlk3vlmxReVGoe8Kh2/xqA==
 
 react-native@0.66.3:
   version "0.66.3"
