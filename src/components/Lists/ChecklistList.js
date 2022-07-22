@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, FlatList, Pressable, View, ScrollView} from 'react-native';
+import {Text, FlatList, Pressable, View} from 'react-native';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -17,16 +17,8 @@ import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
 
-const ChecklistList = ({
-  uid,
-  house,
-  houses,
-  workers,
-  time,
-  state,
-  typeFilters,
-}) => {
-  const {Layout, Gutters} = useTheme();
+const ChecklistList = ({uid, house, houses, workers, time}) => {
+  const {Gutters} = useTheme();
   const {t} = useTranslation();
 
   // let filteredValues;
@@ -87,7 +79,9 @@ const ChecklistList = ({
       <FlatList
         ListHeaderComponent={
           <View style={[theme.mT5, theme.mB2]}>
-            <Text style={[theme.fontSansBold, theme.text2xl]}>Activos</Text>
+            <Text style={[theme.fontSansBold, theme.textXl, theme.textGray900]}>
+              Activos
+            </Text>
           </View>
         }
         ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
@@ -100,14 +94,17 @@ const ChecklistList = ({
         ListFooterComponent={
           <>
             <View style={[theme.mT5]}>
-              <Text style={[theme.fontSansBold, theme.text2xl]}>Histórico</Text>
+              <Text
+                style={[theme.fontSansBold, theme.textXl, theme.textGray900]}>
+                Histórico
+              </Text>
             </View>
             <FlatList
               ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
               showsHorizontalScrollIndicator={false}
               data={filteredList
                 ?.filter((item) => item.finished)
-                .sort(sortByDate)}
+                .sort((a, b) => sortByDate(a, b, 'desc'))}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               style={[theme.mT3]}

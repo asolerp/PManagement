@@ -24,6 +24,7 @@ export const useProfileForm = () => {
   };
 
   const handleEdit = async (userId) => {
+    console.log(userId);
     try {
       setVisible(true);
       if (newImage) {

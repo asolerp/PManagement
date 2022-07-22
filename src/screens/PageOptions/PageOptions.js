@@ -20,9 +20,11 @@ import {BottomModal} from '../../components/Modals/BottomModal';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import {timeout} from '../../utils/timeout';
+import {deleteGeneric} from '../../components/Alerts/deleteGeneric';
 
 const PageOptionsScreen = ({
   docId,
+  ownerId,
   editable,
   showDelete,
   duplicate,
@@ -68,7 +70,13 @@ const PageOptionsScreen = ({
           onDelete={async () => {
             setIsVisible(false);
             await timeout(400);
-            await recursiveDelete();
+            deleteGeneric(async () => {
+              try {
+                await recursiveDelete();
+              } catch (err) {
+                console.log('ERROR', err);
+              }
+            });
           }}
           duplicate={duplicate}
           onDuplicate={async () => {
@@ -79,7 +87,7 @@ const PageOptionsScreen = ({
           }}
         />
       </BottomModal>
-      {user?.role === 'admin' && (
+      {(user?.role === 'admin' || user?.id === ownerId) && (
         <TouchableWithoutFeedback
           onPress={() => {
             setIsVisible(true);

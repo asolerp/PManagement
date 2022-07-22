@@ -22,18 +22,14 @@ const IncidencesList = ({uid, houses, workers, state, time, typeFilters}) => {
   const {t} = useTranslation();
 
   let firestoreQuery;
+  console.log('UID', uid);
   if (uid) {
     firestoreQuery = firestore()
       .collection('incidences')
-      .where('workersId', 'array-contains', uid)
-      .where('date', '>', new Date(time?.start))
-      .where('date', '<', new Date(time?.end));
+      .where('workersId', 'array-contains', uid);
   }
   if (!uid) {
-    firestoreQuery = firestore()
-      .collection('incidences')
-      .where('date', '>', new Date(time?.start))
-      .where('date', '<', new Date(time?.end));
+    firestoreQuery = firestore().collection('incidences');
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
@@ -75,7 +71,9 @@ const IncidencesList = ({uid, houses, workers, state, time, typeFilters}) => {
         nestedScrollEnabled
         ListHeaderComponent={
           <View style={[theme.mB2]}>
-            <Text style={[theme.fontSansBold, theme.text2xl]}>Activos</Text>
+            <Text style={[theme.fontSansBold, theme.textXl, theme.textGray900]}>
+              Activos
+            </Text>
           </View>
         }
         ListEmptyComponent={<Text>{t('incidences.empty')}</Text>}
@@ -91,12 +89,17 @@ const IncidencesList = ({uid, houses, workers, state, time, typeFilters}) => {
         ListFooterComponent={
           <>
             <View style={[theme.mT5]}>
-              <Text style={[theme.fontSansBold, theme.text2xl]}>Histórico</Text>
+              <Text
+                style={[theme.fontSansBold, theme.textXl, theme.textGray900]}>
+                Histórico
+              </Text>
             </View>
             <FlatList
               ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
               showsHorizontalScrollIndicator={false}
-              data={filteredList?.filter((item) => item.done).sort(sortByDate)}
+              data={filteredList
+                ?.filter((item) => item.done)
+                .sort((a, b) => sortByDate(a, b, 'desc'))}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               style={[theme.mT3]}

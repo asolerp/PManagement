@@ -3,14 +3,13 @@ import React, {useContext, useState} from 'react';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 
 import {useNavigation} from '@react-navigation/native';
-import {useForm, Controller} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 
 import {StyleSheet, Text, View} from 'react-native';
 
 // UI
 import ImageLoader from '../../Elements/ImageLoader';
-import Input from '../../Elements/Input';
-import InputGroup from '../../Elements/InputGroup';
+import {Spacer} from '../../Elements/Spacer';
 import CustomInput from '../../Elements/CustomInput';
 import DynamicSelectorList from '../../DynamicSelectorList';
 import CustomButton from '../../Elements/CustomButton';
@@ -25,6 +24,7 @@ import {LoadingModalContext} from '../../../context/loadinModalContext';
 import {BottomModal} from '../../Modals/BottomModal';
 import {useCameraOrLibrary} from '../../../hooks/useCamerOrLibrary';
 import {imageActions} from '../../../utils/imageActions';
+import {TextInputController} from '../TextInputController';
 
 const LIBRARY_ACTION = 'library';
 
@@ -36,7 +36,16 @@ const NewFormHome = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const {setVisible} = useContext(LoadingModalContext);
 
-  const {control, handleSubmit, errors, reset} = useForm();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: {errors},
+  } = useForm({
+    defaultValues: {
+      houseName: '',
+    },
+  });
   const [houseImage, setHouseImage] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -110,119 +119,61 @@ const NewFormHome = () => {
           onPress={() => handlePress(LIBRARY_ACTION)}
           image={houseImage}
         />
-        <Controller
+        <TextInputController
           control={control}
-          render={({onChange, onBlur, value}) => (
-            <Input
-              onBlur={onBlur}
-              onChangeText={(v) => onChange(v)}
-              value={value}
-              placeholder="Nombre de la casa"
-              name="houseName"
-              inputStyles={styles.newHomeInput}
-              labelStyle={styles.newHomeLabel}
-              error={errors.houseName}
-            />
-          )}
+          errors={errors}
           name="houseName"
-          rules={{required: true}}
-          defaultValue=""
+          placeholder="Nombre de la casa"
         />
-        <Controller
+        <Spacer space={4} />
+        <TextInputController
           control={control}
-          render={({onChange, onBlur, value}) => (
-            <Input
-              onBlur={onBlur}
-              onChangeText={(v) => onChange(v)}
-              value={value}
-              placeholder="Dirección"
-              name="street"
-              inputStyles={styles.newHomeInput}
-              labelStyle={styles.newHomeLabel}
-              error={errors.street}
-            />
-          )}
+          errors={errors}
           name="street"
-          rules={{required: true}}
-          defaultValue=""
+          placeholder="Dirección"
         />
-        <Controller
+        <Spacer space={4} />
+        <TextInputController
           control={control}
-          render={({onChange, onBlur, value}) => (
-            <Input
-              onBlur={onBlur}
-              onChangeText={(v) => onChange(v)}
-              value={value}
-              placeholder="Municipio"
-              name="municipio"
-              inputStyles={styles.newHomeInput}
-              labelStyle={styles.newHomeLabel}
-              error={errors.municipio}
-            />
-          )}
+          errors={errors}
           name="municipio"
-          rules={{required: true}}
-          defaultValue=""
+          placeholder="Municipio"
         />
+        <Spacer space={4} />
         <View style={styles.multipleLineInputs}>
           <View style={styles.multiLineElementLeft}>
-            <Controller
+            <TextInputController
               control={control}
-              render={({onChange, onBlur, value}) => (
-                <Input
-                  onBlur={onBlur}
-                  onChangeText={(v) => onChange(v)}
-                  value={value}
-                  placeholder="Código postal"
-                  name="cp"
-                  inputStyles={styles.newHomeInput}
-                  labelStyle={styles.newHomeLabel}
-                  error={errors.cp}
-                />
-              )}
+              errors={errors}
               name="cp"
-              rules={{required: true}}
-              defaultValue=""
+              placeholder="Código postal"
             />
           </View>
           <View style={styles.multiLineElementRight}>
-            <Controller
+            <TextInputController
               control={control}
-              render={({onChange, onBlur, value}) => (
-                <Input
-                  onBlur={onBlur}
-                  onChangeText={(v) => onChange(v)}
-                  value={value}
-                  placeholder="Teléfono"
-                  name="phone"
-                  inputStyles={styles.newHomeInput}
-                  labelStyle={styles.newHomeLabel}
-                  error={errors.phone}
-                />
-              )}
+              errors={errors}
               name="phone"
-              rules={{required: true}}
-              defaultValue=""
+              placeholder="Teléfono"
             />
           </View>
         </View>
+        <Spacer space={4} />
         <Text style={styles.titleStyle}>Propietario</Text>
-        <InputGroup>
-          <CustomInput
-            title="Propietario"
-            subtitle={
-              owner?.length > 0 && (
+        <CustomInput
+          title="Propietario"
+          subtitle={
+            owner?.length > 0 && (
+              <View style={{flexDirection: 'row'}}>
                 <View style={{flexDirection: 'row'}}>
-                  <View style={{flexDirection: 'row'}}>
-                    <Text style={styles.subtitle}>{owner[0]?.firstName}</Text>
-                  </View>
+                  <Text style={styles.subtitle}>{owner[0]?.firstName}</Text>
                 </View>
-              )
-            }
-            iconProps={{name: 'person', color: '#55A5AD'}}
-            onPress={() => setModalVisible(true)}
-          />
-        </InputGroup>
+              </View>
+            )
+          }
+          iconProps={{name: 'person', color: '#55A5AD'}}
+          onPress={() => setModalVisible(true)}
+        />
       </KeyboardAwareScrollView>
       <View
         style={{

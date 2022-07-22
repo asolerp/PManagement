@@ -26,7 +26,7 @@ export const CustomSelect = ({
   const {Layout, Gutters, Fonts} = useTheme();
 
   return (
-    <View style={[Gutters.mediumBMargin, styles.container]}>
+    <View style={[styles.container]}>
       {label && (
         <Text style={[Gutters.smallBMargin, {color: Colors.white}]}>
           {label}

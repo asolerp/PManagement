@@ -133,7 +133,7 @@ export default {
     subtitle: 'Info',
     form: {
       title: 'Title',
-      incidence: 'Incidence',
+      incidence: 'Description',
       photos: 'Photos',
       create: 'Create incidence',
     },
@@ -194,7 +194,7 @@ export default {
     cancel: 'Cancel',
     accept: 'Accept',
     incidence: {
-      resolve: 'Are yuu sure you wanto to resolve the incidence?',
+      resolve: 'Are you sure you want to resolve the incidence?',
       remove: 'Are you sure you want to delete the incidence?',
       open: 'Are you sure you want to open the incidence?',
     },

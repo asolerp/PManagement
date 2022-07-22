@@ -54,17 +54,19 @@ const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
           <Badge text={'Descompletar'} variant={'warning'} />
         </Pressable>
       </View>
-      {listOfChecks?.map((item) => {
-        return (
-          <ItemCheck
-            disabled={disabled}
-            key={item.id}
-            check={item}
-            checklistId={checkId}
-            isCheckFinished={isCheckFinished}
-          />
-        );
-      })}
+      {listOfChecks
+        ?.sort((a, b) => a.locale.es.localeCompare(b.locale.es))
+        ?.map((item) => {
+          return (
+            <ItemCheck
+              disabled={disabled}
+              key={item.id}
+              check={item}
+              checklistId={checkId}
+              isCheckFinished={isCheckFinished}
+            />
+          );
+        })}
     </View>
   );
 };

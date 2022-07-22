@@ -8,6 +8,7 @@ import {BottomModal} from './BottomModal';
 export const CustomPicker = ({
   isPickerVisible,
   closePicker,
+  register,
   value,
   setValue,
   options,
@@ -25,6 +26,7 @@ export const CustomPicker = ({
       }}>
       <View style={styles.pickerContainer}>
         <Picker
+          {...register}
           selectedValue={localValue}
           onValueChange={(itemValue, itemIndex) => setLocalValue(itemValue)}>
           {options?.map((option) => (

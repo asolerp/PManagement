@@ -17,6 +17,7 @@ import {defaultLabel, marginBottom} from '../../styles/common';
 import EditableInput from '../Elements/EditableInput';
 import updateDocument from '../../Services/updateDocument';
 import {useTheme} from '../../Theme';
+import theme from '../../Theme/Theme';
 import {useTranslation} from 'react-i18next';
 import {useLocales} from '../../utils/useLocales';
 
@@ -117,12 +118,20 @@ const Info = () => {
           <Text style={[Gutters.smallVMargin, Fonts.textTitle]}>
             {t('checklists.comments')}
           </Text>
-          <EditableInput
-            value={job?.observations}
-            onPressAccept={(change) =>
-              updateDocument('jobs', jobId, {observations: change})
-            }
-          />
+          <View
+            style={[
+              {borderWidth: 1},
+              theme.borderGray500,
+              theme.roundedSm,
+              theme.p4,
+            ]}>
+            <EditableInput
+              value={job?.observations}
+              onPressAccept={(change) =>
+                updateDocument('jobs', jobId, {observations: change})
+              }
+            />
+          </View>
           <View style={[Layout.grouw, Gutters.mediumTMargin]}>
             <Text style={{...defaultLabel, ...marginBottom(10)}}>
               {t('common.asigned_to')}

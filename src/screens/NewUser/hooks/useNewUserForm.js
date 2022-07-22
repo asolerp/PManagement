@@ -1,8 +1,8 @@
 import {useContext, useEffect, useState} from 'react';
 import {LoadingModalContext} from '../../../context/loadinModalContext';
 import {getUser} from '../../../firebase/getUser';
+import {firebase} from '@react-native-firebase/firestore';
 
-import {useAddFirebase} from '../../../hooks/useAddFirebase';
 import {useUpdateFirebase} from '../../../hooks/useUpdateFirebase';
 import {useUploadCloudinaryImage} from '../../../hooks/useUploadCloudinaryImage';
 import {error} from '../../../lib/logging';
@@ -14,11 +14,13 @@ const DEFAULT_PHOTO_URL =
 export const useNewUserForm = (docId) => {
   const [user, setUser] = useState({});
   const [newImage, setNewImage] = useState();
-  const {addFirebase} = useAddFirebase();
+
   const [loading, setLoading] = useState(false);
   const {setVisible} = useContext(LoadingModalContext);
   const {updateFirebase} = useUpdateFirebase('users');
   const {upload} = useUploadCloudinaryImage();
+
+  const createNewUser = firebase.functions().httpsCallable('createNewUser');
 
   const isAllfilled =
     user?.firstName &&
@@ -28,22 +30,29 @@ export const useNewUserForm = (docId) => {
     user?.role &&
     user?.gender;
 
-  const createUser = async () => {
+  const createUser = async (form) => {
+    console.log('FORM', form);
     try {
+      setVisible(true);
       setLoading(true);
-      addFirebase('users', {
-        ...user,
-        profileImage: DEFAULT_PHOTO_URL,
+      await createNewUser({
+        name: form?.name,
+        surname: form?.surname,
+        gender: form?.gender,
+        email: form?.email,
+        phone: form?.phone,
+        role: form?.role,
       });
     } catch (err) {
       console.log(err);
     } finally {
       setLoading(false);
+      setVisible(false);
       popScreen();
     }
   };
 
-  const editUser = async (userId) => {
+  const editUser = async ({userId, form}) => {
     try {
       setVisible(true);
       setLoading(true);
@@ -53,7 +62,7 @@ export const useNewUserForm = (docId) => {
           `/PortManagement/Users/${userId}/Photos`,
         );
         await updateFirebase(userId, {
-          ...user,
+          ...form,
           profileImage: uploadImage,
         });
       } else {

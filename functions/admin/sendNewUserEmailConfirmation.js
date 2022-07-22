@@ -1,20 +1,9 @@
-const functions = require('firebase-functions');
-const nodemailer = require('nodemailer');
+const {createTransporter} = require('../utils/email/config');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail', //smtp.gmail.com  //in place of service use host...
-  secure: false, //true
-  port: 25, //465
-  auth: {
-    user: functions.config().gmail.account,
-    pass: functions.config().gmail.password,
-  },
-});
-
-const sendNewUserConfirmationEmail = ({email, password}) => {
+const sendNewUserConfirmationEmail = async ({email, password}) => {
   const mailOptions = {
-    from: functions.config().gmail.account,
-    to: functions.config().gmail.account,
+    from: process.env.EMAIL,
+    to: email,
     subject: 'Bienvenido a la app de Port Management',
     html: `
         <h1>Bienvenido!!</h1>
@@ -29,7 +18,10 @@ const sendNewUserConfirmationEmail = ({email, password}) => {
         <p>Un saludo del equipo de Port Management</p>
         `,
   };
-  return transporter.sendMail(mailOptions, (error, data) => {
+
+  let emailTransporter = await createTransporter();
+
+  return emailTransporter.sendMail(mailOptions, (error, data) => {
     if (error) {
       console.log(error);
       return;

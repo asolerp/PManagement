@@ -65,7 +65,7 @@ const CheckScreen = ({route}) => {
         }}
         footer={
           areAllChecksDone &&
-          user.role === 'admin' &&
+          (user.role === 'admin' || user.role === 'worker') &&
           !checksLoading &&
           !isCheckFinished && (
             <CustomButton

@@ -3,6 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import {CHECKLISTS, INCIDENCES, JOBS} from '../../../utils/firebaseKeys';
 
 export const useGetGlobalStats = ({uid}) => {
+  console.log(uid);
   const checkListsQuery = uid
     ? firestore()
         .collection(CHECKLISTS)

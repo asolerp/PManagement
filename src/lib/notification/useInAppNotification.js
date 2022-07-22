@@ -1,5 +1,5 @@
-import {useEffect} from 'react';
-
+import {useEffect, useRef, useState} from 'react';
+import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 
 import {info} from '../logging';
@@ -11,24 +11,41 @@ import {
 } from '../../Router/utils/routerKeys';
 
 import {routeName} from '../../Router/utils/actions';
+import {AppState} from 'react-native';
 
 export const useInAppNotification = () => {
   const {isAdmin} = useAuth();
 
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
   const mainStack = isAdmin ? MAIN_ADMIN_STACK_KEY : MAIN_WORKER_STACK_KEY;
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      console.log('Push notification recibida', remoteMessage);
-      const {current} = routeName;
-      const {data} = remoteMessage;
-      const {type, collection} = data;
-      current !== 'chatScreen' &&
-        info({
-          message: remoteMessage?.notification?.body,
-          asToast: true,
-          onPress: () =>
-            notificationRouteHandler({type, data, collection, mainStack}),
-        });
+    const unsubscribe = messaging().onMessage(async () => {});
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        notifee.setBadgeCount(0);
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = messaging().setBackgroundMessageHandler(async () => {
+      await notifee.incrementBadgeCount();
     });
 
     return unsubscribe;

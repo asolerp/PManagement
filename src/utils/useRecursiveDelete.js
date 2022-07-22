@@ -1,10 +1,7 @@
 import {useContext, useState} from 'react';
 
-import {openStackWithReplace} from '../Router/utils/actions';
-import {
-  HOME_ADMIN_STACK_KEY,
-  MAIN_ADMIN_STACK_KEY,
-} from '../Router/utils/routerKeys';
+import {popScreen} from '../Router/utils/actions';
+
 import {firebase} from '@react-native-firebase/firestore';
 import {error} from '../lib/logging';
 import {LoadingModalContext} from '../context/loadinModalContext';
@@ -22,7 +19,7 @@ const useRecursiveDelete = ({path, collection, docId, backScreen}) => {
         docId,
         collection: collection,
       }).then(() => setVisible(false));
-      openStackWithReplace(HOME_ADMIN_STACK_KEY, MAIN_ADMIN_STACK_KEY);
+      popScreen();
     } catch (err) {
       error({
         message: err.message,

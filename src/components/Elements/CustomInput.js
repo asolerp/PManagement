@@ -24,7 +24,11 @@ const CustomInput = ({title, subtitle, iconProps, switcher, onPress}) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 5,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    paddingVertical: 5,
+    borderColor: '#EAEAEA',
   },
   title: {
     fontSize: 14,

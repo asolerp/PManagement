@@ -131,7 +131,7 @@ export default {
     subtitle: 'Info',
     form: {
       title: 'Título',
-      incidence: 'Incidencia',
+      incidence: 'Descripción',
       photos: 'Fotos',
       create: 'Crear incidencia',
     },

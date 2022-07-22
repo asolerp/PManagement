@@ -26,6 +26,7 @@ import {usePhotos} from '../../utils/usePhotos';
 import {parseImages} from './utils/parserImages';
 import {useTranslation} from 'react-i18next';
 import {parseRef} from '../../Screens/CheckPhotos/utils/parseRef';
+import {useCameraOrLibrary} from '../../hooks/useCamerOrLibrary';
 
 const styles = StyleSheet.create({
   container: {
@@ -60,6 +61,8 @@ const Photos = () => {
   const [imageIndex, setImageIndex] = useState(0);
   const {uploadPhotos, removePhotos, loading} = usePhotos();
   const [deletePhotos, setDeletePhotos] = useState([]);
+
+  const {onImagePress} = useCameraOrLibrary();
 
   const handlePressPhoto = (i) => {
     setImageIndex(i);
@@ -141,15 +144,18 @@ const Photos = () => {
                 collectionRef: incidenceQuery,
               });
             }
-            return handleImagePicker((imgs) => {
-              const mappedImages = parseImages(imgs);
-              uploadPhotos(mappedImages, {
-                collectionRef: firestore()
-                  .collection(INCIDENCES)
-                  .doc(incidenceId),
-                cloudinaryFolder: `/PortManagement/${INCIDENCES}/${incidenceId}/Photos`,
-                docId: incidenceId,
-              });
+            return onImagePress({
+              type: 'library',
+              callback: (imgs) => {
+                const mappedImages = parseImages(imgs);
+                uploadPhotos(mappedImages, {
+                  collectionRef: firestore()
+                    .collection(INCIDENCES)
+                    .doc(incidenceId),
+                  cloudinaryFolder: `/PortManagement/${INCIDENCES}/${incidenceId}/Photos`,
+                  docId: incidenceId,
+                });
+              },
             });
           }}>
           <View
@@ -165,7 +171,7 @@ const Photos = () => {
               <ActivityIndicator color={Colors.white} size="small" />
             ) : (
               <Icon
-                name={deletePhotos.length > 0 ? 'delete' : 'add'}
+                name={deletePhotos.length > 0 ? 'delete' : 'add-a-photo'}
                 color={Colors.white}
                 size={25}
               />

@@ -1,15 +1,12 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const {genPassword} = require('../utils');
+const {
+  sendNewUserConfirmationEmail,
+} = require('./sendNewUserEmailConfirmation');
 
 const DEFAULT_PHOTO_URL =
   'https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png';
-
-const roles = {
-  w: 'worker',
-  o: 'owner',
-  a: 'admin',
-};
 
 const createNewUser = functions
   .runWith({
@@ -34,11 +31,12 @@ const createNewUser = functions
         firstName: name,
         lastName: surname,
         phone,
+        gender,
         profileImage: DEFAULT_PHOTO_URL,
-        role: roles[role],
+        role,
         email,
       });
-      // sendNewUserConfirmationEmail({email, password});
+      sendNewUserConfirmationEmail({email, password});
     } catch (err) {
       console.log(err);
     }

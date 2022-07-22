@@ -9,7 +9,7 @@ import {
 
 // UI
 import PageLayout from '../../components/PageLayout';
-import InputGroup from '../../components/Elements/InputGroup';
+
 import CustomButton from '../../components/Elements/CustomButton';
 
 import ImageBlurLoading from 'react-native-image-blur-loading';
@@ -41,8 +41,17 @@ import {
 } from '../../components/Forms/User/NewUserForm';
 import {CustomPicker} from '../../components/CustomPicker';
 import {useChoseImage} from '../../hooks/useChoseImage';
+import {Colors} from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
+  input: {
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    borderColor: '#EAEAEA',
+    marginBottom: 10,
+  },
   avatarContainer: {
     flex: 2,
     justifyContent: 'center',
@@ -87,7 +96,7 @@ const styles = StyleSheet.create({
 });
 
 const ProfileScreen = ({route}) => {
-  const {userId} = route.params;
+  const {userId, mode} = route.params;
 
   const [isPickerVisibleRole, setIsPickerVisibleRole] = useState(false);
   const [isPickerVisibleGender, setIsPickerVisibleGender] = useState(false);
@@ -108,6 +117,8 @@ const ProfileScreen = ({route}) => {
   const {handlePressImage} = useChoseImage(setNewImage);
   const user = useSelector(userSelector);
   const {t} = useTranslation();
+
+  const isModeAdmin = mode === 'admin';
 
   const defaultImg =
     'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
@@ -140,15 +151,13 @@ const ProfileScreen = ({route}) => {
     <PageLayout
       safe
       titleRightSide={
-        userId !== user?.id && (
-          <PageOptionsScreen
-            editable={false}
-            collection={USERS}
-            docId={userId || user?.id}
-            showDelete={userId !== user?.id}
-            duplicate={false}
-          />
-        )
+        <PageOptionsScreen
+          editable={false}
+          collection={USERS}
+          docId={userId || user?.id}
+          showDelete={userId !== user?.id}
+          duplicate={false}
+        />
       }
       footer={
         <>
@@ -234,84 +243,85 @@ const ProfileScreen = ({route}) => {
               ]}
             />
             <Text style={styles.inputLabel}>{t('profile.name') + ': '}</Text>
-            <InputGroup>
-              <TextInput
-                style={{height: 40}}
-                placeholder={t('profile.name')}
-                onChangeText={(text) =>
-                  setInfoProfile({...infoProfile, firstName: text})
-                }
-                value={infoProfile?.firstName}
-              />
-            </InputGroup>
+
+            <TextInput
+              style={[styles.input]}
+              placeholder={t('profile.name')}
+              onChangeText={(text) =>
+                setInfoProfile({...infoProfile, firstName: text})
+              }
+              value={infoProfile?.firstName}
+            />
+
             <Text style={styles.inputLabel}>
               {t('profile.last_name') + ': '}
             </Text>
-            <InputGroup>
-              <TextInput
-                style={{height: 40}}
-                placeholder={t('profile.last_name')}
-                onChangeText={(text) =>
-                  setInfoProfile({...infoProfile, lastName: text})
-                }
-                value={infoProfile?.lastName}
-              />
-            </InputGroup>
+
+            <TextInput
+              style={[styles.input]}
+              placeholder={t('profile.last_name')}
+              placeholderTextColor={Colors.gray600}
+              onChangeText={(text) =>
+                setInfoProfile({...infoProfile, lastName: text})
+              }
+              value={infoProfile?.lastName}
+            />
+
             <Text style={styles.inputLabel}>{t('profile.phone') + ': '}</Text>
-            <InputGroup>
-              <TextInput
-                style={{height: 40}}
-                placeholder={t('profile.phone')}
-                onChangeText={(text) =>
-                  setInfoProfile({...infoProfile, phone: text})
-                }
-                value={infoProfile?.phone}
-              />
-            </InputGroup>
+
+            <TextInput
+              style={[styles.input]}
+              placeholder={t('profile.phone')}
+              onChangeText={(text) =>
+                setInfoProfile({...infoProfile, phone: text})
+              }
+              value={infoProfile?.phone}
+            />
+
             <Text style={styles.inputLabel}>{t('profile.email') + ': '}</Text>
-            <InputGroup>
-              <TextInput
-                style={{height: 40}}
-                placeholder={t('profile.email')}
-                onChangeText={(text) =>
-                  setInfoProfile({...infoProfile, email: text})
-                }
-                value={infoProfile?.email}
-              />
-            </InputGroup>
+
+            <TextInput
+              style={[styles.input]}
+              placeholder={t('profile.email')}
+              onChangeText={(text) =>
+                setInfoProfile({...infoProfile, email: text})
+              }
+              value={infoProfile?.email}
+            />
+
             <Text style={styles.inputLabel}>{t('profile.gender') + ': '}</Text>
-            <InputGroup>
-              <TextInput
-                editable={false}
-                style={{height: 40}}
-                placeholder={t('profile.gender')}
-                onPressIn={() => setIsPickerVisibleGender(true)}
-                value={
-                  genderOptions?.find((g) => g.value === infoProfile?.gender)
-                    ?.label || ''
-                }
-              />
-            </InputGroup>
+
+            <TextInput
+              editable={false}
+              style={[styles.input]}
+              placeholder={t('profile.gender')}
+              onPressIn={() => setIsPickerVisibleGender(true)}
+              value={
+                genderOptions?.find((g) => g.value === infoProfile?.gender)
+                  ?.label || ''
+              }
+            />
+
             <Text style={styles.inputLabel}>
               {t('profile.language') + ': '}
             </Text>
-            <InputGroup>
-              <TextInput
-                editable={false}
-                style={{height: 40}}
-                placeholder={t('profile.language')}
-                onPressIn={() => setIsPickerVisibleLanguage(true)}
-                value={
-                  languageOptions.find((g) => g.value === infoProfile?.language)
-                    ?.label || ''
-                }
-              />
-            </InputGroup>
+
+            <TextInput
+              editable={false}
+              style={[styles.input]}
+              placeholder={t('profile.language')}
+              onPressIn={() => setIsPickerVisibleLanguage(true)}
+              value={
+                languageOptions.find((g) => g.value === infoProfile?.language)
+                  ?.label || ''
+              }
+            />
+
             {/* <Text style={styles.inputLabel}>{t('profile.role') + ': '}</Text>
             <InputGroup>
               <TextInput
                 editable={false}
-                style={{height: 40}}
+                style={[styles.input]}
                 placeholder={t('profile.role')}
                 onPressIn={() => setIsPickerVisibleRole(true)}
                 value={
@@ -327,27 +337,27 @@ const ProfileScreen = ({route}) => {
                 Contraseña
               </Text>
               <Text style={styles.inputLabel}>Contraseña antigua:</Text>
-              <InputGroup>
-                <TextInput
-                  style={{height: 40}}
-                  placeholder="Contraseña antigua"
-                  onChangeText={(text) =>
-                    setInfoProfile({...infoProfile, oldPassword: text})
-                  }
-                  value={infoProfile?.oldPassword}
-                />
-              </InputGroup>
+
+              <TextInput
+                style={[styles.input]}
+                placeholder="Contraseña antigua"
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, oldPassword: text})
+                }
+                value={infoProfile?.oldPassword}
+              />
+
               <Text style={styles.inputLabel}>Nueva contraseña:</Text>
-              <InputGroup>
-                <TextInput
-                  style={{height: 40}}
-                  placeholder="Nueva contraseña"
-                  onChangeText={(text) =>
-                    setInfoProfile({...infoProfile, newPassword: text})
-                  }
-                  value={infoProfile?.newPassword}
-                />
-              </InputGroup>
+
+              <TextInput
+                style={[styles.input]}
+                placeholder="Nueva contraseña"
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, newPassword: text})
+                }
+                value={infoProfile?.newPassword}
+              />
+
               <CustomButton
                 loading={loading}
                 type="clear"

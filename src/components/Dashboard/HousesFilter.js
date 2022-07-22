@@ -1,22 +1,21 @@
 import React from 'react';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {
-  View,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import {View, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {useTheme} from '../../Theme';
 import theme from '../../Theme/Theme';
 
 import {Colors} from '../../Theme/Variables';
+import FastImage from 'react-native-fast-image';
+import {HousesSkeleton} from './HousesSkeleton';
 
 export const HousesFilter = ({houses, onClickHouse}) => {
-  const [values] = useCollectionData(firestore().collection('houses'), {
-    idField: 'id',
-  });
+  const [values, loading] = useCollectionData(
+    firestore().collection('houses'),
+    {
+      idField: 'id',
+    },
+  );
   const {Gutters} = useTheme();
 
   const isInArray = (id) => {
@@ -43,11 +42,14 @@ export const HousesFilter = ({houses, onClickHouse}) => {
           isInArray(item.id) && styles.activeFilter,
           Gutters.tinyHMargin,
         ]}>
-        <Image
+        <FastImage
           style={[{width: 60, height: 60, borderRadius: 100}]}
           source={{
             uri: item.houseImage,
+            headers: {Authorization: 'someAuthToken'},
+            priority: FastImage.priority.normal,
           }}
+          resizeMode={FastImage.resizeMode.cover}
         />
       </TouchableOpacity>
     );
@@ -55,13 +57,18 @@ export const HousesFilter = ({houses, onClickHouse}) => {
 
   return (
     <View style={[theme.mT2]}>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={values}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      {loading ? (
+        <HousesSkeleton />
+      ) : (
+        <FlatList
+          lo
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={values}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </View>
   );
 };

@@ -13,9 +13,15 @@ import {TextInput} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native';
 import {info} from '../../../lib/logging';
 import {useTranslation} from 'react-i18next';
+import {TextInputController} from '../TextInputController';
 
 const LoginForm = () => {
-  const {control, handleSubmit, getValues} = useForm();
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    formState: {errors},
+  } = useForm();
   const {t} = useTranslation();
   const [loadingLogin, setLoadingLogin] = useState(false);
 
@@ -46,42 +52,34 @@ const LoginForm = () => {
 
   return (
     <View style={styles.formWrapper}>
-      <Controller
+      <TextInputController
+        placeholder={'Email'}
+        rules={{
+          required: true,
+        }}
         control={control}
-        render={({onChange, onBlur, value}) => (
-          <TextInput
-            value={value}
-            onChangeText={(v) => onChange(v)}
-            onBlur={onBlur}
-            placeholder="Email"
-            autoCapitalize="none"
-            name="username"
-            style={styles.input}
-            placeholderTextColor="white"
-          />
-        )}
+        errors={errors}
         name="username"
-        rules={{required: true}}
-        defaultValue=""
+        style={styles.input}
+        inputProps={{
+          autoCapitalize: 'none',
+          placeholderTextColor: 'white',
+        }}
       />
-      <Controller
+      <TextInputController
+        placeholder={'Contraseña'}
+        rules={{
+          required: true,
+        }}
         control={control}
-        render={({onChange, onBlur, value}) => (
-          <TextInput
-            value={value}
-            onChangeText={(v) => onChange(v)}
-            onBlur={onBlur}
-            placeholder="Password"
-            name="password"
-            autoCapitalize="none"
-            secureTextEntry
-            style={styles.input}
-            placeholderTextColor="white"
-          />
-        )}
+        errors={errors}
         name="password"
-        rules={{required: true}}
-        defaultValue=""
+        style={styles.input}
+        inputProps={{
+          autoCapitalize: 'none',
+          secureTextEntry: true,
+          placeholderTextColor: 'white',
+        }}
       />
       <TouchableWithoutFeedback onPress={() => resetPassword()}>
         <Text style={styles.forgotText}>{t('login.forgot')}</Text>

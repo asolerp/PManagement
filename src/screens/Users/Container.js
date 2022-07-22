@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, Pressable} from 'react-native';
 
 import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
@@ -12,6 +12,8 @@ import Avatar from '../../components/Avatar';
 import {parseRoleName} from './utils/parsers';
 import {useTranslation} from 'react-i18next';
 import {ScreenHeader} from '../../components/Layout/ScreenHeader';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {PROFILE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 
 const Container = () => {
   const {Layout, Gutters, Fonts} = useTheme();
@@ -73,22 +75,29 @@ const Container = () => {
                 </View>
                 <View style={[Layout.row, Layout.wrap, Gutters.smallVMargin]}>
                   {users?.map((user) => (
-                    <View
+                    <Pressable
                       key={user.id}
-                      style={[
-                        Layout.colCenter,
-                        Gutters.tinyRMargin,
-                        Gutters.tinyBMargin,
-                        styles.userContainer,
-                      ]}>
-                      <Avatar
-                        id={user.id}
-                        key={user.id}
-                        uri={user.profileImage}
-                        size="big"
-                      />
-                      <Text>{user.firstName}</Text>
-                    </View>
+                      onPress={() => {
+                        openScreenWithPush(PROFILE_SCREEN_KEY, {
+                          userId: user.id,
+                          mode: 'admin',
+                        });
+                      }}>
+                      <View
+                        style={[
+                          Layout.colCenter,
+                          Gutters.tinyRMargin,
+                          Gutters.tinyBMargin,
+                          styles.userContainer,
+                        ]}>
+                        <Avatar
+                          key={user.id}
+                          uri={user.profileImage}
+                          size="big"
+                        />
+                        <Text>{user.firstName}</Text>
+                      </View>
+                    </Pressable>
                   ))}
                 </View>
               </View>

@@ -4,7 +4,7 @@ import i18n from '../../Translations/index';
 export const finishIncidence = (action) =>
   Alert.alert(
     `🚨 ${i18n.t('alerts.attention')} 🚨`,
-    i18n.t('alerts.incidence.finish'),
+    i18n.t('alerts.incidence.resolve'),
     [
       {
         text: i18n.t('alerts.cancel'),

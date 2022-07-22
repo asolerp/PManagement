@@ -22,7 +22,7 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
 
         let notification = {
           title: `Checklist finalizado en ${street}`,
-          body: `Se te ha enviado el resumen del checklist al propietario`,
+          body: `Se ha enviado el resumen del checklist al propietario`,
         };
 
         let data = {
@@ -37,6 +37,8 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
           apns: {
             payload: {
               aps: {
+                'content-available': 1,
+                mutableContent: 1,
                 sound: 'default',
               },
             },

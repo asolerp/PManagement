@@ -1,46 +1,4 @@
-const functions = require('firebase-functions');
-const nodemailer = require('nodemailer');
-const {google} = require('googleapis');
-const OAuth2 = google.auth.OAuth2;
-
-const EMAIL = functions.config().email;
-const CLIENT_ID = functions.config().client_id;
-const CLIENT_SECRET = functions.config().client_secret;
-const REFRESH_TOKEN = functions.config().refresh_token;
-
-const REDIRECT_URL = 'https://developers.google.com/oauthplayground';
-
-const createTransporter = async () => {
-  const oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
-
-  oauth2Client.setCredentials({
-    refresh_token: REFRESH_TOKEN,
-  });
-
-  const accessToken = await new Promise((resolve, reject) => {
-    oauth2Client.getAccessToken((err, token) => {
-      if (err) {
-        // eslint-disable-next-line prefer-promise-reject-errors
-        reject('Failed to create access token :(');
-      }
-      resolve(token);
-    });
-  });
-
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      type: 'OAuth2',
-      user: EMAIL,
-      accessToken,
-      clientId: CLIENT_ID,
-      clientSecret: CLIENT_SECRET,
-      refreshToken: REFRESH_TOKEN,
-    },
-  });
-
-  return transporter;
-};
+const {createTransporter} = require('../utils/email/config');
 
 const sendResumeChecklistOwner = async ({checklist, checks}) => {
   const {observations} = checklist;
@@ -63,9 +21,9 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
       }
       checksHtml += `
       <div>
-        <li><p><br>${
-          check.locale[language] ? check.locale[language] : check.locale.en
-        }</br></p></li>
+       <p>${
+         check.locale[language] ? check.locale[language] : check.locale.en
+       } ✅</p>
         <div style="display: flex; flex-direction: "row"; flex-wrap: wrap;>
           ${checkImages}
         </div>
@@ -88,7 +46,7 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
       </ol>
       ${
         observations &&
-        `<p><b>Observations:</b></p>
+        `<p><b>👓 Observations:</b></p>
         <p>
           ${observations}
         </p>`
@@ -102,17 +60,17 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
   const generateSpanishEmail = () => {
     return `
       <p><br>${generateTitle()} ${lastName}</br></p>
-      <p>Hemos comprobado las funcionalidades y estado de su villa en <b>${street}</b>.
+      <p>Hemos comprobado las funcionalidades y el estado de su villa en <b>${street}</b>.
       </p>
       <p>
       Hemos comprobado:
       </p>
-      <ol>
+      <div>
         ${generateChecks()}
-      </ol>
+      </div>
       ${
         observations &&
-        `<p><b>Observaciones:</b></p>
+        `<p><b>👓 Observaciones:</b></p>
         <p>
           ${observations}
         </p>`
@@ -124,9 +82,9 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
   };
 
   const mailOptions = {
-    from: functions.config().gmail.account,
+    from: process.env.EMAIL,
     to: email,
-    subject: `CHECK LIST ${street}`,
+    subject: `🏡 CHECK LIST ${street}`,
     html: language === 'en' ? generateEnglishEmail() : generateSpanishEmail(),
   };
 

@@ -74,6 +74,8 @@ const sendPushNotificationUpdateCheckList = functions.firestore
           apns: {
             payload: {
               aps: {
+                'content-available': 1,
+                mutableContent: 1,
                 sound: 'default',
               },
             },

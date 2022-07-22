@@ -46,6 +46,7 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {BottomModal} from '../../Modals/BottomModal';
 
 import {getLocales} from 'react-native-localize';
+import {Spacer} from '../../Elements/Spacer';
 
 const CheckListForm = ({edit, docId}) => {
   const dispatch = useDispatch();
@@ -243,75 +244,71 @@ const CheckListForm = ({edit, docId}) => {
         isVisible={modalVisible}>
         {modalContent && modalSwitcher(modalContent)}
       </BottomModal>
-      <InputGroup>
-        <CustomInput
-          title={t('common.date')}
-          subtitle={
-            date && (
-              <Text style={styles.subtitle}>{moment(date).format('LLL')}</Text>
-            )
-          }
-          iconProps={{name: 'alarm', color: '#55A5AD'}}
-          onPress={() => {
-            setModalContent('date');
-            setModalVisible(true);
-          }}
-        />
-      </InputGroup>
-      <InputGroup>
-        <CustomInput
-          title={t('common.house')}
-          subtitle={
-            <View style={{flexDirection: 'row'}}>
-              {house?.value?.map((house, i) => (
-                <View key={house.id}>
-                  <Text style={styles.subtitle}>{house.houseName}</Text>
-                  {house?.value?.length > 1 && (
-                    <Text style={styles.subtitle}> & </Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          }
-          iconProps={{name: 'house', color: '#55A5AD'}}
-          onPress={() => {
-            setModalContent('houses');
-            setModalVisible(true);
-          }}
-        />
-      </InputGroup>
-      <InputGroup>
-        <CustomInput
-          title={t('common.worker')}
-          subtitle={
-            <View style={{flexDirection: 'row'}}>
-              {workers?.value?.map((worker, i) => (
-                <View key={worker.id} style={[Layout.row]}>
-                  <Text style={styles.subtitle}>{worker.firstName}</Text>
-                  {workers?.value?.length - 1 !== i && (
-                    <Text style={styles.subtitle}> & </Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          }
-          iconProps={{name: 'people', color: '#55A5AD'}}
-          onPress={() => {
-            setModalContent('worker');
-            setModalVisible(true);
-          }}
-        />
-      </InputGroup>
-      <InputGroup>
-        <TextInput
-          multiline
-          numberOfLines={10}
-          style={{height: 120}}
-          placeholder={t('common.observations')}
-          onChangeText={(text) => setInputFormAction('observations', text)}
-          value={observations}
-        />
-      </InputGroup>
+
+      <CustomInput
+        title={t('common.date')}
+        subtitle={
+          date && (
+            <Text style={styles.subtitle}>{moment(date).format('LLL')}</Text>
+          )
+        }
+        iconProps={{name: 'alarm', color: '#55A5AD'}}
+        onPress={() => {
+          setModalContent('date');
+          setModalVisible(true);
+        }}
+      />
+      <Spacer space={4} />
+      <CustomInput
+        title={t('common.house')}
+        subtitle={
+          <View style={{flexDirection: 'row'}}>
+            {house?.value?.map((house, i) => (
+              <View key={house.id}>
+                <Text style={styles.subtitle}>{house.houseName}</Text>
+                {house?.value?.length > 1 && (
+                  <Text style={styles.subtitle}> & </Text>
+                )}
+              </View>
+            ))}
+          </View>
+        }
+        iconProps={{name: 'house', color: '#55A5AD'}}
+        onPress={() => {
+          setModalContent('houses');
+          setModalVisible(true);
+        }}
+      />
+      <Spacer space={4} />
+      <CustomInput
+        title={t('common.worker')}
+        subtitle={
+          <View style={{flexDirection: 'row'}}>
+            {workers?.value?.map((worker, i) => (
+              <View key={worker.id} style={[Layout.row]}>
+                <Text style={styles.subtitle}>{worker.firstName}</Text>
+                {workers?.value?.length - 1 !== i && (
+                  <Text style={styles.subtitle}> & </Text>
+                )}
+              </View>
+            ))}
+          </View>
+        }
+        iconProps={{name: 'people', color: '#55A5AD'}}
+        onPress={() => {
+          setModalContent('worker');
+          setModalVisible(true);
+        }}
+      />
+      <Spacer space={4} />
+      <TextInput
+        multiline
+        numberOfLines={10}
+        style={{height: 120}}
+        placeholder={t('common.observations')}
+        onChangeText={(text) => setInputFormAction('observations', text)}
+        value={observations}
+      />
       <View
         style={[
           Layout.fill,

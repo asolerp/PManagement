@@ -6,6 +6,7 @@ const cloudinary = require('cloudinary').v2;
 
 const {createNewUser} = require('./admin/createNewUser');
 const {notifyOwner} = require('./admin/notifyOwner');
+const {deleteUser} = require('./admin/deleteUser');
 
 // Notifications
 const {
@@ -39,6 +40,7 @@ admin.initializeApp(functions.config().firebase);
 
 exports.createNewUser = createNewUser;
 exports.notifyOwner = notifyOwner;
+exports.deleteUser = deleteUser;
 
 // CHECKLISTS
 
@@ -198,7 +200,8 @@ exports.recursiveDelete = functions
       project: process.env.GCLOUD_PROJECT,
       recursive: true,
       yes: true,
-      token: functions.config().fb.token,
+      force: true,
+      token: process.env.FB_TOKEN,
     });
 
     await cloudinary.api.delete_resources_by_prefix(

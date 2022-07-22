@@ -1,10 +1,9 @@
 import React from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {View, TouchableOpacity, ScrollView} from 'react-native';
+import {View, ScrollView} from 'react-native';
 
 // UI
 import CustomButton from '../../components/Elements/CustomButton';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessagesCounter';
 import {Info, Photos} from '../../components/Incidence';
 
@@ -21,9 +20,6 @@ import {
   openIncidence,
 } from '../../components/Alerts/incidences';
 
-import {Colors} from '../../Theme/Variables';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {PAGE_OPTIONS_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {INCIDENCES} from '../../utils/firebaseKeys';
 
 import {useSelector} from 'react-redux';
@@ -75,6 +71,7 @@ const IncidenceScreen = () => {
         titleRightSide={
           <PageOptionsScreen
             collection={INCIDENCES}
+            ownerId={incidence?.user?.id}
             docId={incidenceId}
             editable={false}
             showDelete={true}

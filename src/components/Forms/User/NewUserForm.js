@@ -1,23 +1,24 @@
 import React, {useEffect, useState} from 'react';
 import {
-  TextInput,
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
   StyleSheet,
   View,
+  Text,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
 import Icon from 'react-native-vector-icons/Ionicons';
-import InputGroup from '../../Elements/InputGroup';
-
+import theme from '../../../Theme/Theme';
 // Redux
-import {Colors} from '../../../Theme/Variables';
+
 import {CustomSelect} from '../../CustomSelect';
 import {CustomPicker} from '../../CustomPicker';
 import {useTheme} from '../../../Theme';
 import ImageBlurLoading from 'react-native-image-blur-loading';
 import {useNewUser} from './hooks/useNewUser';
+import {TextInputController} from '../TextInputController';
+import {Spacer} from '../../Elements/Spacer';
 
 export const roleOptions = [
   {label: '', value: ''},
@@ -41,43 +42,62 @@ export const genderOptions = [
 const defaultImg =
   'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
 
-const NewUserForm = ({user, setUser, newImage, setNewImage}) => {
+const NewUserForm = ({
+  user,
+  watch,
+  errors,
+  control,
+  register,
+  newImage,
+  setValue,
+  setNewImage,
+}) => {
   const {Gutters, Layout} = useTheme();
   const {t} = useTranslation();
   const [isPickerVisibleRole, setIsPickerVisibleRole] = useState(false);
   const [isPickerVisibleGender, setIsPickerVisibleGender] = useState(false);
   const [isPickerVisibleLanguage, setIsPickerVisibleLanguage] = useState(false);
 
+  const [watches, setWatches] = useState({});
+
   const {handlePressImage} = useNewUser(setNewImage);
+
+  useEffect(() => {
+    const subscription = watch((value) => setWatches(value));
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   return (
     <KeyboardAvoidingView
       style={[Gutters.mediumTMargin]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <CustomPicker
+        register={register('role', {required: true})}
         isPickerVisible={isPickerVisibleRole}
         closePicker={() => setIsPickerVisibleRole(false)}
         value={user?.role}
         setValue={(role) => {
-          setUser({...user, role: role});
+          setValue('role', role, {shouldValidate: true});
         }}
         options={roleOptions}
       />
       <CustomPicker
+        register={register('gender', {required: true})}
         isPickerVisible={isPickerVisibleGender}
         closePicker={() => setIsPickerVisibleGender(false)}
         value={user?.gender}
         setValue={(gender) => {
-          setUser({...user, gender: gender});
+          setValue('gender', gender, {shouldValidate: true});
         }}
         options={genderOptions}
       />
       <CustomPicker
+        register={register('language', {required: true})}
         isPickerVisible={isPickerVisibleLanguage}
         closePicker={() => setIsPickerVisibleLanguage(false)}
         value={user?.language}
         setValue={(language) => {
-          setUser({...user, language: language});
+          setValue('language', language, {shouldValidate: true});
         }}
         options={languageOptions}
       />
@@ -105,67 +125,87 @@ const NewUserForm = ({user, setUser, newImage, setNewImage}) => {
           />
         </TouchableOpacity>
       </View>
-      <InputGroup>
-        <TextInput
-          style={{height: 40}}
-          placeholder={t('newUser.form.name')}
-          placeholderTextColor={Colors.darkGrey}
-          onChangeText={(text) => setUser({...user, firstName: text})}
-          value={user?.firstName}
-        />
-      </InputGroup>
-      <InputGroup>
-        <TextInput
-          style={{height: 40}}
-          placeholder={t('newUser.form.surname')}
-          placeholderTextColor={Colors.darkGrey}
-          onChangeText={(text) => setUser({...user, lastName: text})}
-          value={user?.lastName}
-        />
-      </InputGroup>
-      <InputGroup>
-        <TextInput
-          autoCapitalize={false}
-          style={{height: 40}}
-          placeholder={t('newUser.form.email')}
-          placeholderTextColor={Colors.darkGrey}
-          onChangeText={(text) => setUser({...user, email: text})}
-          value={user?.email}
-        />
-      </InputGroup>
-      <InputGroup>
-        <TextInput
-          keyboardType="numeric"
-          style={{height: 40}}
-          placeholder={t('newUser.form.phone')}
-          placeholderTextColor={Colors.darkGrey}
-          onChangeText={(text) => setUser({...user, phone: text})}
-          value={user?.phone}
-        />
-      </InputGroup>
+      <TextInputController
+        placeholder={t('newUser.form.name')}
+        rules={{
+          required: true,
+        }}
+        control={control}
+        errors={errors}
+        name="name"
+      />
+      <Spacer space={2} />
+      <TextInputController
+        placeholder={t('newUser.form.surname')}
+        rules={{
+          required: true,
+        }}
+        control={control}
+        errors={errors}
+        name="surname"
+      />
+      <Spacer space={2} />
+      <TextInputController
+        placeholder={t('newUser.form.email')}
+        rules={{
+          required: true,
+        }}
+        control={control}
+        errors={errors}
+        name="email"
+      />
+      <Spacer space={2} />
+      <TextInputController
+        placeholder={t('newUser.form.phone')}
+        rules={{
+          required: true,
+        }}
+        control={control}
+        errors={errors}
+        name="phone"
+      />
+      <Spacer space={2} />
       <CustomSelect
         placeHolder={t('newUser.form.role')}
         value={
-          user?.role && roleOptions?.find((r) => r.value === user.role).label
+          watches?.role &&
+          roleOptions?.find((r) => r.value === watches?.role).label
         }
         onPress={() => setIsPickerVisibleRole(true)}
       />
+      {errors.role && (
+        <Text style={[theme.mY2, theme.textErrorDark]}>
+          El campo es requerido.
+        </Text>
+      )}
+      <Spacer space={2} />
       <CustomSelect
         placeHolder={t('newUser.form.gender')}
         value={
-          user?.gender &&
-          genderOptions?.find((r) => r.value === user.gender).label
+          watches?.gender &&
+          genderOptions?.find((r) => r.value === watches?.gender).label
         }
         onPress={() => setIsPickerVisibleGender(true)}
       />
+      {errors.gender && (
+        <Text style={[theme.mY2, theme.textErrorDark]}>
+          El campo es requerido.
+        </Text>
+      )}
+      <Spacer space={2} />
       <CustomSelect
         placeHolder={t('newUser.form.language')}
         value={
-          user?.language &&
-          languageOptions?.find((r) => r.value === user.language).label
+          watches?.language &&
+          languageOptions?.find((r) => r.value === watches?.language).label
         }
         onPress={() => setIsPickerVisibleLanguage(true)}
       />
+      {errors.language && (
+        <Text style={[theme.mY2, theme.textErrorDark]}>
+          El campo es requerido.
+        </Text>
+      )}
     </KeyboardAvoidingView>
   );
 };

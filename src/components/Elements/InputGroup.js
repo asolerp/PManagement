@@ -4,7 +4,6 @@ import {GREY_1} from '../../styles/colors';
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
     backgroundColor: 'white',
     borderRadius: 10,
     paddingTop: 5,

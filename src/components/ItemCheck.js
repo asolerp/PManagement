@@ -28,7 +28,7 @@ import {error} from '../lib/logging';
 import {useTranslation} from 'react-i18next';
 import {openScreenWithPush} from '../Router/utils/actions';
 import {CHECK_PHOTO_SCREEN_KEY} from '../Router/utils/routerKeys';
-import {LoadingModal} from './Modals/LoadingModal';
+
 import {getLocales} from 'react-native-localize';
 
 const styles = StyleSheet.create({

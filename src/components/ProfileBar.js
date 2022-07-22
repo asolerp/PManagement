@@ -1,11 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo} from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
-
-import {useSelector} from 'react-redux';
 
 // Firebase
 import firestore from '@react-native-firebase/firestore';
-import {userSelector} from '../Store/User/userSlice';
 
 import {useTheme} from '../Theme';
 import {Colors} from '../Theme/Variables';
@@ -14,34 +11,34 @@ import {es} from 'date-fns/locale';
 import {capitalizeText} from '../utils/capitalize';
 import {openScreenWithPush} from '../Router/utils/actions';
 import {PROFILE_SCREEN_KEY} from '../Router/utils/routerKeys';
+import {useDocumentData} from 'react-firebase-hooks/firestore';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../Store/User/userSlice';
 
 const ProfileBar = () => {
   const {Fonts} = useTheme();
   const defaultImg =
     'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
-
   const user = useSelector(userSelector);
-  const [userProfile, setUserProfile] = useState();
-
   const today = format(new Date(), 'iii d MMMM yyyy', {locale: es});
 
-  useEffect(() => {
-    const subscriber = firestore()
-      .collection('users')
-      .doc(user?.id)
-      .onSnapshot((documentSnapshot) => {
-        setUserProfile(documentSnapshot?.data());
-      });
-    // Stop listening for updates when no longer required
-    return () => subscriber();
-  }, [user]);
+  const firestoreQuery = useMemo(
+    () => firestore().collection('users').doc(user?.id),
+    [user?.id],
+  );
+
+  const [userProfile] = useDocumentData(firestoreQuery, {
+    idField: 'id',
+  });
+
+  console.log('profile', user);
 
   return (
     <View style={styles.container}>
       <View style={styles.profileBar}>
         <View>
           <Text style={[Fonts.textXl, Fonts.textBold, {color: Colors.white}]}>
-            Hola {user.firstName || ''}
+            Hola {userProfile?.firstName || ''}
           </Text>
           <Text style={[Fonts.textXs, {color: Colors.gray300}]}>
             {capitalizeText(today)}
@@ -51,9 +48,9 @@ const ProfileBar = () => {
         <View>
           <TouchableOpacity
             onPress={() =>
-              user?.role === 'admin' &&
+              userProfile?.role === 'admin' &&
               openScreenWithPush(PROFILE_SCREEN_KEY, {
-                userId: user?.id,
+                userId: userProfile?.id,
               })
             }>
             <Image

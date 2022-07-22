@@ -1,7 +1,8 @@
 import React from 'react';
 import {TouchableOpacity} from 'react-native';
-import {View, Text, Image, StyleSheet} from 'react-native';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {Text, StyleSheet} from 'react-native';
+import FastImage from 'react-native-fast-image';
+
 import {openScreenWithPush} from '../Router/utils/actions';
 import {PROFILE_SCREEN_KEY} from '../Router/utils/routerKeys';
 
@@ -44,23 +45,11 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
       }
     }
   };
-  return (
-    <TouchableOpacity
-      key={id}
-      onPress={() =>
-        id &&
-        openScreenWithPush(PROFILE_SCREEN_KEY, {
-          userId: id,
-        })
-      }
-      style={[
-        styles.ownerWrapper,
-        {backgroundColor: 'transparent'},
-        {flexDirection: name ? 'column' : 'row', zIndex: position},
-      ]}>
+
+  const ProfileContainer = () => {
+    return (
       <React.Fragment>
-        <Image
-          resizeMode={'cover'}
+        <FastImage
           style={[
             styles.ownerImage,
             {width: parseSize(size), height: parseSize(size)},
@@ -69,12 +58,36 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
           ]}
           source={{
             uri: uri,
+
+            priority: FastImage.priority.normal,
           }}
+          resizeMode={FastImage.resizeMode.cover}
         />
         {name && <Text>{name}</Text>}
       </React.Fragment>
-    </TouchableOpacity>
-  );
+    );
+  };
+
+  if (id) {
+    return (
+      <TouchableOpacity
+        key={id}
+        onPress={() =>
+          openScreenWithPush(PROFILE_SCREEN_KEY, {
+            userId: id,
+          })
+        }
+        style={[
+          styles.ownerWrapper,
+          {backgroundColor: 'transparent'},
+          {flexDirection: name ? 'column' : 'row', zIndex: position},
+        ]}>
+        <ProfileContainer />
+      </TouchableOpacity>
+    );
+  }
+
+  return <ProfileContainer />;
 };
 
 export default Avatar;

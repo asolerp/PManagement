@@ -19,7 +19,7 @@ import theme from '../../Theme/Theme';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
 
-const JobsList = ({uid, houses, workers, time, state}) => {
+const JobsList = ({uid, houses, workers}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
 
@@ -27,15 +27,10 @@ const JobsList = ({uid, houses, workers, time, state}) => {
   if (uid) {
     firestoreQuery = firestore()
       .collection(JOBS)
-      .where('workersId', 'array-contains', uid)
-      .where('date', '>', new Date(time.start))
-      .where('date', '<', new Date(time.end));
+      .where('workersId', 'array-contains', uid);
   }
   if (!uid) {
-    firestoreQuery = firestore()
-      .collection(JOBS)
-      .where('date', '>', new Date(time.start))
-      .where('date', '<', new Date(time.end));
+    firestoreQuery = firestore().collection(JOBS);
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
@@ -68,21 +63,29 @@ const JobsList = ({uid, houses, workers, time, state}) => {
     <>
       {loading && <DashboardSectionSkeleton />}
       <FlatList
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={[theme.mT5, theme.mB2]}>
-            <Text style={[theme.fontSansBold, theme.text2xl]}>Activos</Text>
+            <Text style={[theme.fontSansBold, theme.textXl, theme.textGray900]}>
+              Activos
+            </Text>
           </View>
         }
         ListEmptyComponent={<Text>{t('job.empty')}</Text>}
         ListFooterComponent={
           <>
             <View style={[theme.mT5]}>
-              <Text style={[theme.fontSansBold, theme.text2xl]}>Histórico</Text>
+              <Text
+                style={[theme.fontSansBold, theme.textXl, theme.textGray900]}>
+                Histórico
+              </Text>
             </View>
             <FlatList
               ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
               showsHorizontalScrollIndicator={false}
-              data={filteredList?.filter((item) => item.done).sort(sortByDate)}
+              data={filteredList
+                ?.filter((item) => item.done)
+                .sort((a, b) => sortByDate(a, b, 'desc'))}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               style={[theme.mT3]}
