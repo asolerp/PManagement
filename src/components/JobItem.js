@@ -158,7 +158,7 @@ const JobItem = ({job, onPress}) => {
                   <Avatar
                     key={worker.id || i}
                     index={i}
-                    uri={worker.profileImage}
+                    uri={worker.profileImage?.small}
                     overlap={job?.workers?.length > 1}
                     size="medium"
                   />

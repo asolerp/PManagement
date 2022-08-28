@@ -8,6 +8,11 @@ const {createNewUser} = require('./admin/createNewUser');
 const {notifyOwner} = require('./admin/notifyOwner');
 const {deleteUser} = require('./admin/deleteUser');
 
+// Cloudinary
+
+const {uploadHousePhoto} = require('./cloudinary/uploadHousePhoto');
+const {uploadProfilePhoto} = require('./cloudinary/uploadProfilePhoto');
+
 // Notifications
 const {
   sendPushNotificationFinishedChecklist,
@@ -29,12 +34,17 @@ const {
 } = require('./notifications/jobs');
 
 cloudinary.config({
-  cloud_name: 'enalbis',
-  api_key: '152722439921117',
-  api_secret: '2vw8GysZv9EUsv9qEToqrZueaa4',
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 admin.initializeApp(functions.config().firebase);
+
+/// CLOUDINARY
+
+exports.uploadHousePhoto = uploadHousePhoto;
+exports.uploadProfilePhoto = uploadProfilePhoto;
 
 /// ADMIN
 

@@ -8,9 +8,6 @@ import {useUploadCloudinaryImage} from '../../../hooks/useUploadCloudinaryImage'
 import {error} from '../../../lib/logging';
 import {popScreen} from '../../../Router/utils/actions';
 
-const DEFAULT_PHOTO_URL =
-  'https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png';
-
 export const useNewUserForm = (docId) => {
   const [user, setUser] = useState({});
   const [newImage, setNewImage] = useState();
@@ -31,7 +28,6 @@ export const useNewUserForm = (docId) => {
     user?.gender;
 
   const createUser = async (form) => {
-    console.log('FORM', form);
     try {
       setVisible(true);
       setLoading(true);
@@ -44,7 +40,11 @@ export const useNewUserForm = (docId) => {
         role: form?.role,
       });
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     } finally {
       setLoading(false);
       setVisible(false);

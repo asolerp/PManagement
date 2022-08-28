@@ -56,6 +56,8 @@ export const usePhotos = () => {
       );
       const imagesURLs = await Promise.all(uploadImagesCloudinary);
 
+      console.log('URLS', imagesURLs);
+
       const uploadImageFirebase = imagesURLs.map((image) =>
         collectionRef.update({
           photos: firestore.FieldValue.arrayUnion(image),

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -30,6 +30,10 @@ import {openScreenWithPush} from '../Router/utils/actions';
 import {CHECK_PHOTO_SCREEN_KEY} from '../Router/utils/routerKeys';
 
 import {getLocales} from 'react-native-localize';
+import useUploadImageCheck from '../hooks/useUploadImage';
+import {CHECKLISTS} from '../utils/firebaseKeys';
+import {LoadingModalContext} from '../context/loadinModalContext';
+import {timeout} from '../utils/timeout';
 
 const styles = StyleSheet.create({
   container: {
@@ -74,7 +78,23 @@ const styles = StyleSheet.create({
 const ItemCheck = ({check, checklistId, disabled, isCheckFinished}) => {
   const {Layout, Gutters} = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
-  const {updateFirebase} = useUpdateFirebase('checklists');
+  const {updateFirebase} = useUpdateFirebase(CHECKLISTS);
+
+  const {uploadImages} = useUploadImageCheck(CHECKLISTS, checklistId);
+  const {setVisible} = useContext(LoadingModalContext);
+
+  const handleSelectImage = async (imgs) => {
+    try {
+      setPhotoCameraModal(false);
+      await timeout(400);
+      setVisible(true);
+      await uploadImages(imgs, check);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setVisible(false);
+    }
+  };
 
   const {t} = useTranslation();
   const user = useSelector(userSelector);
@@ -104,10 +124,9 @@ const ItemCheck = ({check, checklistId, disabled, isCheckFinished}) => {
   return (
     <React.Fragment>
       <PhotoCameraModal
-        check={check}
-        checklistId={checklistId}
         visible={photoCameraModal}
         handleVisibility={setPhotoCameraModal}
+        onSelectImage={(imgs) => handleSelectImage(imgs)}
       />
       <View style={{...styles.container}}>
         <CheckBox
@@ -152,7 +171,7 @@ const ItemCheck = ({check, checklistId, disabled, isCheckFinished}) => {
                 <View style={[Gutters.tinyRMargin]}>
                   <Avatar
                     key={check?.worker?.uid}
-                    uri={check?.worker?.profileImage}
+                    uri={check?.worker?.profileImage?.small}
                     size="small"
                   />
                 </View>

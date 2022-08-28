@@ -1,13 +1,7 @@
 import React from 'react';
+import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {useTranslation} from 'react-i18next';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  SafeAreaView,
-} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 
 // Firebase
 
@@ -15,19 +9,24 @@ import AddButton from '../../components/Elements/AddButton';
 import HouseItemList from '../../components/HouseItemList';
 import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import PageLayout from '../../components/PageLayout';
+import firestore from '@react-native-firebase/firestore';
 
-import {useGetFirebase} from '../../hooks/useGetFirebase';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {
   HOUSE_SCREEN_KEY,
   NEW_HOUSE_SCREEN_KEY,
 } from '../../Router/utils/routerKeys';
 import {useTheme} from '../../Theme';
+import theme from '../../Theme/Theme';
+
+const HOUSES_QUERY = firestore().collection('houses');
 
 const HousesScreen = () => {
   const {t} = useTranslation();
-  const {list: houses} = useGetFirebase('houses');
-  const {Gutters, Layout} = useTheme();
+  const [houses] = useCollectionData(HOUSES_QUERY, {
+    idField: 'id',
+  });
+  const {Layout} = useTheme();
 
   const handleNewHome = () => {
     openScreenWithPush(NEW_HOUSE_SCREEN_KEY);
@@ -36,7 +35,7 @@ const HousesScreen = () => {
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
-        style={{width: '100%'}}
+        style={[theme.wFull]}
         onPress={() =>
           openScreenWithPush(HOUSE_SCREEN_KEY, {
             houseId: item.id,

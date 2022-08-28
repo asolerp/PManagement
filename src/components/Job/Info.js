@@ -20,6 +20,7 @@ import {useTheme} from '../../Theme';
 import theme from '../../Theme/Theme';
 import {useTranslation} from 'react-i18next';
 import {useLocales} from '../../utils/useLocales';
+import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   container: {
@@ -143,16 +144,17 @@ const Info = () => {
                   index={i}
                   id={worker.id}
                   key={worker.id}
-                  uri={worker.profileImage}
+                  uri={worker.profileImage?.small}
                   size="big"
                 />
               ))}
             </View>
           </View>
-          <Image
+          <FastImage
             style={styles.houseImage}
             source={{
-              uri: job?.house && job?.house[0]?.houseImage,
+              uri: job?.house && job?.house[0]?.houseImage?.original,
+              priority: FastImage.priority.normal,
             }}
           />
           <Badge

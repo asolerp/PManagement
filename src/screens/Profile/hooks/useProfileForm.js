@@ -1,11 +1,13 @@
 import {useContext, useState} from 'react';
 import auth from '@react-native-firebase/auth';
 import {popScreen} from '../../../Router/utils/actions';
-import {success, error} from '../../../lib/logging';
+import {error, success} from '../../../lib/logging';
 import {LoadingModalContext} from '../../../context/loadinModalContext';
-import {useUploadCloudinaryImage} from '../../../hooks/useUploadCloudinaryImage';
+
 import {useUpdateFirebase} from '../../../hooks/useUpdateFirebase';
 import {timeout} from '../../../utils/timeout';
+
+import {firebase} from '@react-native-firebase/firestore';
 
 export const useProfileForm = () => {
   const [loading, setLoading] = useState(false);
@@ -13,8 +15,9 @@ export const useProfileForm = () => {
   const [newImage, setNewImage] = useState();
 
   const {setVisible} = useContext(LoadingModalContext);
-  const {upload} = useUploadCloudinaryImage();
-
+  const uploadProfilePhoto = firebase
+    .functions()
+    .httpsCallable('uploadProfilePhoto');
   const {updateFirebase} = useUpdateFirebase('users');
 
   const reauthenticate = (currentPassword) => {
@@ -24,23 +27,20 @@ export const useProfileForm = () => {
   };
 
   const handleEdit = async (userId) => {
-    console.log(userId);
     try {
       setVisible(true);
       if (newImage) {
-        const uploadImage = await upload(
-          newImage?.[0],
-          `/PortManagement/Users/${userId}/Photos`,
-        );
-        await updateFirebase(userId, {
-          ...infoProfile,
-          profileImage: uploadImage,
+        await uploadProfilePhoto({
+          user: {
+            id: userId,
+            ...infoProfile,
+          },
+          imageBase64: newImage?.[0],
         });
       } else {
         await timeout(1500);
         await updateFirebase(userId, {...infoProfile});
       }
-      // setInfoProfile(null);
       setNewImage(null);
     } catch (err) {
       error({

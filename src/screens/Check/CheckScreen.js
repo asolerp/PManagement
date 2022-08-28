@@ -20,6 +20,7 @@ import {useTranslation} from 'react-i18next';
 import {useCheck} from './hooks/useCheck';
 import PageOptionsScreen from '../PageOptions/PageOptions';
 import {useNotifyOwner} from '../../utils/useNotifyOwner';
+import {error} from '../../lib/logging';
 
 const CheckScreen = ({route}) => {
   const {docId} = route.params;
@@ -42,7 +43,11 @@ const CheckScreen = ({route}) => {
     try {
       await notifyOwner(docId);
     } catch (err) {
-      console.log(err);
+      error({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
     }
   };
 
@@ -54,6 +59,7 @@ const CheckScreen = ({route}) => {
         backButton
         titleRightSide={
           <PageOptionsScreen
+            editable={!isCheckFinished}
             collection={CHECKLISTS}
             docId={docId}
             showDelete={true}

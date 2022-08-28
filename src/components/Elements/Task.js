@@ -129,7 +129,7 @@ const Task = ({onSelect, onItemClick, onDelete, job, task, index}) => {
               {workers?.map((worker, i) => (
                 <Avatar
                   key={i}
-                  uri={worker?.profileImage}
+                  uri={worker?.profileImage?.small}
                   overlap
                   size="medium"
                 />

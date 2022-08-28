@@ -147,6 +147,9 @@ const Photos = () => {
             return onImagePress({
               type: 'library',
               callback: (imgs) => {
+                if (!imgs) {
+                  return;
+                }
                 const mappedImages = parseImages(imgs);
                 uploadPhotos(mappedImages, {
                   collectionRef: firestore()

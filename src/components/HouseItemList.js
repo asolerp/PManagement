@@ -1,7 +1,8 @@
 import React from 'react';
 
 import {View, Text, Image, StyleSheet} from 'react-native';
-import ImageBlurLoading from 'react-native-image-blur-loading';
+import FastImage from 'react-native-fast-image';
+import {DEFAULT_IMAGE} from '../constants/general';
 
 const Owner = ({owner}) => {
   return (
@@ -9,7 +10,7 @@ const Owner = ({owner}) => {
       <Image
         style={styles.ownerImage}
         source={{
-          uri: owner?.profileImage,
+          uri: owner?.profileImage?.small || DEFAULT_IMAGE,
         }}
       />
     </View>
@@ -20,11 +21,12 @@ const HouseItemList = ({house}) => {
   return (
     <View style={styles.container}>
       <View style={{flex: 1, flexDirection: 'row'}}>
-        <ImageBlurLoading
-          withIndicator
-          thumbnailSource={{uri: house?.thumbail}}
-          source={{uri: house?.houseImage}}
+        <FastImage
           style={styles.avatarWrapper}
+          source={{
+            uri: house?.houseImage?.original || DEFAULT_IMAGE,
+            priority: FastImage.priority.normal,
+          }}
         />
         <View style={styles.leftTop}>
           <Text style={styles.name}>{house?.houseName}</Text>
@@ -43,13 +45,22 @@ const HouseItemList = ({house}) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: '99%',
     height: 180,
     flexDirection: 'row',
     backgroundColor: 'white',
     alignSelf: 'stretch',
     marginTop: 10,
     marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderRadius: 20,
   },
   avatarWrapper: {
     flexDirection: 'row',

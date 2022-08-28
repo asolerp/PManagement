@@ -1,0 +1,57 @@
+const cloudinary = require('cloudinary').v2;
+
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+
+const base64Header = 'data:image/png;base64,';
+const userImageFolder = '/PortManagement/Checklists';
+
+const uploadCheckPhoto = functions
+  .runWith({
+    timeoutSeconds: 540,
+    memory: '2GB',
+  })
+  .https.onCall(async (data) => {
+    try {
+      const {
+        imageBase64: {fileBase64},
+        checklistId,
+        checkId,
+      } = data;
+
+      const options = {
+        use_filename: true,
+        unique_filename: true,
+        overwrite: true,
+      };
+
+      const result = await cloudinary.uploader.upload(
+        base64Header + fileBase64,
+        {
+          ...options,
+          folder:
+            userImageFolder + checklistId + '/Check/' + checkId + '/Photos',
+          eager: [{aspect_ratio: '1.0', height: 200, crop: 'lfill'}],
+          eager_async: true,
+        },
+      );
+
+      await admin
+        .firestore()
+        .collection('users')
+        .doc(user.id)
+        .update({
+          user,
+          profileImage: {
+            original: result.url,
+            small: result.eager[0].url,
+          },
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+module.exports = {
+  uploadProfilePhoto,
+};

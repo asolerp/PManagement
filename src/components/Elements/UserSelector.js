@@ -15,7 +15,7 @@ const UserSelector = ({label, onPress, user}) => {
                 <Image
                   style={styles.avatar}
                   source={{
-                    uri: user?.profileImage,
+                    uri: user?.profileImage?.small,
                   }}
                 />
               </View>

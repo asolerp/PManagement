@@ -24,8 +24,6 @@ const ChecklistList = ({uid, house, houses, workers, time}) => {
   // let filteredValues;
   let firestoreQuery;
 
-  console.log('HOUSE', house);
-
   if (house) {
     firestoreQuery = firestore()
       .collection('checklists')

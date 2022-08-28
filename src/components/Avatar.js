@@ -22,7 +22,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
+const Avatar = ({
+  id,
+  uri,
+  name,
+  overlap,
+  position,
+  size = 'small',
+  index,
+  style,
+}) => {
   const parseSize = (sizeImage) => {
     switch (sizeImage) {
       case 'xxl': {
@@ -58,7 +67,6 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
           ]}
           source={{
             uri: uri,
-
             priority: FastImage.priority.normal,
           }}
           resizeMode={FastImage.resizeMode.cover}
@@ -81,6 +89,7 @@ const Avatar = ({id, uri, name, overlap, position, size = 'small', index}) => {
           styles.ownerWrapper,
           {backgroundColor: 'transparent'},
           {flexDirection: name ? 'column' : 'row', zIndex: position},
+          style,
         ]}>
         <ProfileContainer />
       </TouchableOpacity>

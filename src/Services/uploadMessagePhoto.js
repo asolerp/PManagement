@@ -16,7 +16,7 @@ const uploadMessagePhoto = async (collection, docId, messageImage, user) => {
       user: {
         _id: user?.id,
         name: user?.firstName,
-        avatar: user?.profileImage,
+        avatar: user?.profileImage?.small,
         token: user?.token,
         role: user?.role,
       },

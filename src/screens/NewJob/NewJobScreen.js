@@ -59,7 +59,6 @@ const NewJobScreen = ({route}) => {
       };
       await newJob(newJobForm);
     } catch (err) {
-      console.log(err);
       error({
         message: 'Algo ha salido mal, lo sentimos',
         track: true,

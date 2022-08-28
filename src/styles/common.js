@@ -31,3 +31,15 @@ export const marginLeft = (number) => ({
 export const width = (number) => ({
   width: `${number}%`,
 });
+
+export const normalShadow = {
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
+  borderRadius: 20,
+};

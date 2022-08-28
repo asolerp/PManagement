@@ -25,6 +25,7 @@ import updateChecklistInput from '../../Services/updateChecklistInput';
 import ListOfChecks from './ListOfChecks';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {useTheme} from '../../Theme';
+
 import Avatar from '../Avatar';
 
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
@@ -37,6 +38,8 @@ import useAuth from '../../utils/useAuth';
 import {useTranslation} from 'react-i18next';
 import {ScrollView} from 'react-native-gesture-handler';
 import theme from '../../Theme/Theme';
+import {DEFAULT_IMAGE} from '../../constants/general';
+import {normalShadow} from '../../styles/common';
 
 const styles = StyleSheet.create({
   checklistContainer: {
@@ -108,6 +111,7 @@ const Info = ({isCheckFinished}) => {
   return (
     <ScrollView
       style={styles.checklistContainer}
+      contentContainerStyle={{paddingBottom: 50}}
       showsVerticalScrollIndicator={false}>
       <View style={{marginBottom: 10}}>
         {checklist?.finished && (
@@ -197,16 +201,30 @@ const Info = ({isCheckFinished}) => {
                     : t('common.asigned_workers')}
                 </Text>
               </View>
-              <View style={[Layout.row]}>
+              <View style={[Layout.row, theme.mL1]}>
                 {checklist?.workers?.map((worker, i) => (
-                  <Avatar
-                    overlap={checklist?.workers?.length > 1}
-                    index={i}
-                    id={worker.id}
-                    key={worker.id}
-                    uri={worker.profileImage}
-                    size="big"
-                  />
+                  <View style={[theme.justifyCenter, theme.itemsCenter]}>
+                    <Avatar
+                      overlap={checklist?.workers?.length > 1}
+                      index={i}
+                      id={worker.id}
+                      key={worker.id}
+                      uri={worker.profileImage?.small || DEFAULT_IMAGE}
+                      size="big"
+                      style={[normalShadow, theme.mB2]}
+                    />
+                    <Text
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      style={[
+                        theme.textXs,
+                        theme.textGray600,
+                        theme.textCenter,
+                        theme.w12,
+                      ]}>
+                      {worker.firstName}
+                    </Text>
+                  </View>
                 ))}
               </View>
             </View>

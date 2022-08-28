@@ -87,7 +87,7 @@ const PageOptionsScreen = ({
           }}
         />
       </BottomModal>
-      {(user?.role === 'admin' || user?.id === ownerId) && (
+      {user?.id !== docId && (user?.role === 'admin' || user?.id === ownerId) && (
         <TouchableWithoutFeedback
           onPress={() => {
             setIsVisible(true);

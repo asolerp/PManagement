@@ -1,17 +1,19 @@
 import React from 'react';
 
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
+import {DEFAULT_IMAGE} from '../constants/general';
 
 //Ui
 import Avatar from './Avatar';
 
 const ItemList = ({item, schema, handleChange, active}) => {
+  console.log(schema, item);
   return (
     <View style={styles.container}>
-      <Avatar uri={item[schema?.img]} size="big" />
+      <Avatar uri={item?.[schema?.img]?.small || DEFAULT_IMAGE} size="big" />
       <View style={styles.infoWrapper}>
-        <Text style={styles.name}>{item[schema.name]}</Text>
+        <Text style={styles.name}>{item?.[schema.name]}</Text>
       </View>
       <View style={styles.checkboxWrapper}>
         <CheckBox

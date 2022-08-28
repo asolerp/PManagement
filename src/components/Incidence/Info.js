@@ -153,7 +153,7 @@ const Info = () => {
           <Text style={[Fonts.textTitle, Gutters.smallBMargin]}>
             {t('common.informer')}
           </Text>
-          <Avatar uri={value?.data()?.user?.profileImage} size="big" />
+          <Avatar uri={value?.data()?.user?.profileImage?.small} size="big" />
         </View>
         <View
           style={[
@@ -182,7 +182,7 @@ const Info = () => {
                   overlap={asignedUsers?.length > 1}
                   index={i}
                   id={worker.id}
-                  uri={worker.profileImage}
+                  uri={worker.profileImage?.small}
                   size="big"
                 />
               </React.Fragment>

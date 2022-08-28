@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: Dimensions.get('window').height * 0.9,
+    maxHeight: Dimensions.get('window').height * 1,
   },
   topSlider: {
     width: 50,

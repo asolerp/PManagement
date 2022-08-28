@@ -25,7 +25,6 @@ const useNotification = () => {
             'Notification caused app to open from quit state:',
             remoteMessage.notification,
           );
-          setInitialRoute(remoteMessage.data.screen); // e.g. "Settings"
         }
       });
   }, []);

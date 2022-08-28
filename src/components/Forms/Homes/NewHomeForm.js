@@ -58,6 +58,7 @@ const NewFormHome = () => {
       callback: async (imgs) => {
         setHouseImage(
           imgs.map((image, i) => ({
+            fileBase64: image?.base64,
             fileName: image?.fileName || `image-${i}`,
             fileUri: image?.uri,
             fileType: image?.type,

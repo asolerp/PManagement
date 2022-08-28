@@ -66,7 +66,6 @@ export const useListOfChecks = ({list, checkId, isCheckFinished}) => {
   };
 
   useEffect(() => {
-    console.log('FINISH', isCheckFinished);
     if (isCheckFinished) {
       setAllChecked(false);
     } else {

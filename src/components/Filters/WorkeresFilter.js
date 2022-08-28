@@ -126,7 +126,7 @@ const WorkersFilter = ({workers, onClickWorker}) => {
                 {width: 55, height: 55, borderRadius: 100},
               ]}
               source={{
-                uri: item.profileImage,
+                uri: item.profileImage?.small,
               }}
             />
           </View>

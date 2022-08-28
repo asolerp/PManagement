@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
+import {DEFAULT_IMAGE} from '../../constants/general';
 
 import {useTheme} from '../../Theme';
 import {Colors, FontSize} from '../../Theme/Variables';
@@ -111,7 +112,7 @@ export const ListItem = ({
                   index={i}
                   id={worker.id}
                   key={worker.id}
-                  uri={worker.profileImage}
+                  uri={worker.profileImage?.small || DEFAULT_IMAGE}
                   size="tiny"
                 />
               ))}

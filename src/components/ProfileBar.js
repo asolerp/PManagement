@@ -31,8 +31,6 @@ const ProfileBar = () => {
     idField: 'id',
   });
 
-  console.log('profile', user);
-
   return (
     <View style={styles.container}>
       <View style={styles.profileBar}>
@@ -56,7 +54,7 @@ const ProfileBar = () => {
             <Image
               style={styles.avatar}
               source={{
-                uri: userProfile?.profileImage || defaultImg,
+                uri: userProfile?.profileImage?.original || defaultImg,
               }}
             />
           </TouchableOpacity>

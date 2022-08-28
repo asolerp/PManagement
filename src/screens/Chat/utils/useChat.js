@@ -10,6 +10,7 @@ import uploadMessagePhoto from '../../../Services/uploadMessagePhoto';
 import {userSelector} from '../../../Store/User/userSlice';
 import {launchImage} from '../../../utils/imageFunctions';
 import firestore from '@react-native-firebase/firestore';
+import {useCameraOrLibrary} from '../../../hooks/useCamerOrLibrary';
 
 const useChat = ({collection, docId}) => {
   const [entity] = useDocumentData(
@@ -31,13 +32,10 @@ const useChat = ({collection, docId}) => {
   );
 
   const user = useSelector(userSelector);
-
   const {addFirebase: addMessage} = useAddFirebase();
 
-  const onSendImage = () => {
-    launchImage((messageImage) =>
-      uploadMessagePhoto(collection, docId, messageImage, user),
-    );
+  const onSendImage = async (messageImage) => {
+    await uploadMessagePhoto(collection, docId, messageImage, user);
   };
 
   const onSend = useCallback(

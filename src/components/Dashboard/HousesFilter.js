@@ -1,6 +1,6 @@
 import React from 'react';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {View, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, FlatList, TouchableOpacity, StyleSheet, Text} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {useTheme} from '../../Theme';
 import theme from '../../Theme/Theme';
@@ -8,6 +8,7 @@ import theme from '../../Theme/Theme';
 import {Colors} from '../../Theme/Variables';
 import FastImage from 'react-native-fast-image';
 import {HousesSkeleton} from './HousesSkeleton';
+import {DEFAULT_IMAGE} from '../../constants/general';
 
 export const HousesFilter = ({houses, onClickHouse}) => {
   const [values, loading] = useCollectionData(
@@ -35,23 +36,30 @@ export const HousesFilter = ({houses, onClickHouse}) => {
 
   const renderItem = ({item}) => {
     return (
-      <TouchableOpacity
-        key={item.id}
-        onPress={() => handleSetHouse(item)}
-        style={[
-          isInArray(item.id) && styles.activeFilter,
-          Gutters.tinyHMargin,
-        ]}>
-        <FastImage
-          style={[{width: 60, height: 60, borderRadius: 100}]}
-          source={{
-            uri: item.houseImage,
-            headers: {Authorization: 'someAuthToken'},
-            priority: FastImage.priority.normal,
-          }}
-          resizeMode={FastImage.resizeMode.cover}
-        />
-      </TouchableOpacity>
+      <View style={[theme.itemsCenter]}>
+        <TouchableOpacity
+          key={item.id}
+          onPress={() => handleSetHouse(item)}
+          style={[
+            isInArray(item.id) && styles.activeFilter,
+            Gutters.tinyHMargin,
+          ]}>
+          <FastImage
+            style={[{width: 70, height: 70, borderRadius: 100}]}
+            source={{
+              uri: item?.houseImage?.small || DEFAULT_IMAGE,
+              priority: FastImage.priority.normal,
+            }}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+        </TouchableOpacity>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[theme.maxW16, theme.textXs, theme.textGray700, theme.mT2]}>
+          {item?.houseName}
+        </Text>
+      </View>
     );
   };
 
@@ -61,12 +69,12 @@ export const HousesFilter = ({houses, onClickHouse}) => {
         <HousesSkeleton />
       ) : (
         <FlatList
-          lo
           horizontal
           showsHorizontalScrollIndicator={false}
           data={values}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
+          contentContainerStyle={[theme.pX4]}
         />
       )}
     </View>

@@ -74,8 +74,6 @@ export const useAddEditCheckist = ({docId, edit}) => {
         done: 0,
       };
 
-      console.log('CHECK', editCheckListForm);
-
       await updateFirebase(docId, editCheckListForm);
       await recursiveDelete();
 
@@ -90,8 +88,6 @@ export const useAddEditCheckist = ({docId, edit}) => {
           worker: null,
           date: null,
         }));
-
-      console.log('NEW CHECKS', newChecks);
 
       await Promise.all(
         newChecks.map((c) =>
@@ -110,7 +106,6 @@ export const useAddEditCheckist = ({docId, edit}) => {
         text2: 'El checklist se actualizó correctamente',
       });
     } catch (err) {
-      console.log('ERROR', err);
     } finally {
       setLoading(false);
       setVisible(false);

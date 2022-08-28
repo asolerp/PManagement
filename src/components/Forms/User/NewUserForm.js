@@ -116,10 +116,13 @@ const NewUserForm = ({
           <ImageBlurLoading
             withIndicator
             thumbnailSource={{
-              uri: newImage?.[0]?.fileUri || user?.profileImage,
+              uri: newImage?.[0]?.fileUri || user?.profileImage?.small,
             }}
             source={{
-              uri: newImage?.[0]?.fileUri || user?.profileImage || defaultImg,
+              uri:
+                newImage?.[0]?.fileUri ||
+                user?.profileImage?.small ||
+                defaultImg,
             }}
             style={styles.avatarWrapper}
           />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import {View, ActivityIndicator, Text, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -16,6 +16,7 @@ import {useTheme} from '../../Theme';
 import moment from 'moment';
 import {Colors} from '../../Theme/Variables';
 import useChat from '../../Screens/Chat/utils/useChat';
+import PhotoCameraModal from '../Modals/PhotoCameraModal';
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -44,10 +45,29 @@ const styles = StyleSheet.create({
 const Chat = ({collection, docId}) => {
   const user = useSelector(userSelector);
   const {messages, onSendMessage, onSendImage} = useChat({collection, docId});
-
+  const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {Gutters, Layout} = useTheme();
   return (
     <View style={[Layout.fill, Gutters.smallTMargin]}>
+      <PhotoCameraModal
+        visible={photoCameraModal}
+        handleVisibility={setPhotoCameraModal}
+        onSelectImage={async (imgs) => {
+          try {
+            const mappedImages = imgs.map((image, i) => ({
+              fileBase64: image?.base64,
+              fileName: image?.fileName || `image-${i}`,
+              fileUri: image?.uri,
+              fileType: image?.type,
+            }));
+            await onSendImage(mappedImages[0]);
+          } catch (err) {
+            console.log(err);
+          } finally {
+            setPhotoCameraModal(false);
+          }
+        }}
+      />
       <GiftedChat
         bottomOffset={1}
         renderBubble={(props) => (
@@ -71,7 +91,7 @@ const Chat = ({collection, docId}) => {
         renderInputToolbar={(props) => (
           <InputToolbar
             {...props}
-            onPressActionButton={() => onSendImage()}
+            onPressActionButton={() => setPhotoCameraModal(true)}
             containerStyle={styles.inputContainer}
           />
         )}
@@ -111,7 +131,7 @@ const Chat = ({collection, docId}) => {
         user={{
           _id: user?.id,
           name: user?.firstName,
-          avatar: user?.profileImage,
+          avatar: user?.profileImage?.small,
           token: user?.token,
           role: user?.role,
         }}

@@ -126,7 +126,7 @@ const EntityItem = ({
                       index={i}
                       id={worker.id}
                       key={worker.id}
-                      uri={worker.profileImage}
+                      uri={worker.profileImage?.small}
                       size="tiny"
                     />
                   ))}

@@ -22,6 +22,7 @@ import {Colors} from '../../Theme/Variables';
 import {GlobalStats} from '../../components/Dashboard/GlobalStats';
 import {HousesFilter} from '../../components/Dashboard/HousesFilter';
 import theme from '../../Theme/Theme';
+import {HDivider} from '../../components/UI/HDivider';
 
 const DashboardScreen = () => {
   const [index, setIndex] = useState(0);
@@ -64,17 +65,10 @@ const DashboardScreen = () => {
           <View style={[styles.profileBarContainerStyle]}>
             <ProfileBar />
           </View>
-
-          {/* <TouchableWithoutFeedback
-            onPress={() => openScreenWithPush(FILTERS_SCREEN_KEY)}>
-            <View style={[Layout.row, Layout.alignItemsCenter]}>
-              <Icon name="filter-alt" size={15} style={[Gutters.tinyRMargin]} />
-              <Text style={[Fonts.textTitle]}>{t('common.filters.title')}</Text>
-            </View>
-          </TouchableWithoutFeedback> */}
-
           <View style={[[theme.flex1], styles.container]}>
-            <GlobalStats onPressStat={setIndex} />
+            <View style={[theme.pX4]}>
+              <GlobalStats onPressStat={setIndex} />
+            </View>
             <HousesFilter
               houses={filters.houses}
               onClickHouse={(houses) => {
@@ -84,31 +78,34 @@ const DashboardScreen = () => {
                 }));
               }}
             />
-            <TabView
-              renderTabBar={(props) => (
-                <TabBar
-                  {...props}
-                  style={styles.tabBarContainerStyle}
-                  indicatorStyle={styles.indicatorStyle}
-                  renderLabel={({route, focused}) => {
-                    return (
-                      <Text
-                        style={[
-                          {color: focused ? Colors.pm : Colors.gray800},
-                          styles.tabTextStyle,
-                        ]}>
-                        {route.title}
-                      </Text>
-                    );
-                  }}
-                />
-              )}
-              navigationState={{index, routes}}
-              renderScene={renderScene}
-              onIndexChange={setIndex}
-              initialLayout={{width: layout.width, height: layout.height}}
-              sceneContainerStyle={{flex: 1}}
-            />
+            <HDivider style={[theme.mY4]} />
+            <View style={[theme.flex1, theme.pX4]}>
+              <TabView
+                renderTabBar={(props) => (
+                  <TabBar
+                    {...props}
+                    style={styles.tabBarContainerStyle}
+                    indicatorStyle={styles.indicatorStyle}
+                    renderLabel={({route, focused}) => {
+                      return (
+                        <Text
+                          style={[
+                            {color: focused ? Colors.pm : Colors.gray800},
+                            styles.tabTextStyle,
+                          ]}>
+                          {route.title}
+                        </Text>
+                      );
+                    }}
+                  />
+                )}
+                navigationState={{index, routes}}
+                renderScene={renderScene}
+                onIndexChange={setIndex}
+                initialLayout={{width: layout.width, height: layout.height}}
+                sceneContainerStyle={{flex: 1}}
+              />
+            </View>
           </View>
         </View>
       </PageLayout>
@@ -118,7 +115,7 @@ const DashboardScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
   },
   profileBarContainerStyle: {
     backgroundColor: Colors.greenLight,

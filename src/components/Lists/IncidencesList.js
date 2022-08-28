@@ -17,12 +17,12 @@ import theme from '../../Theme/Theme';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
 
-const IncidencesList = ({uid, houses, workers, state, time, typeFilters}) => {
-  const {Layout, Gutters} = useTheme();
+const IncidencesList = ({uid, houses, workers, state}) => {
+  const {Gutters} = useTheme();
   const {t} = useTranslation();
 
   let firestoreQuery;
-  console.log('UID', uid);
+
   if (uid) {
     firestoreQuery = firestore()
       .collection('incidences')

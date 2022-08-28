@@ -27,15 +27,19 @@ const createNewUser = functions
         disabled: false,
       });
 
-      await admin.firestore().collection('users').doc(newUser.uid).set({
-        firstName: name,
-        lastName: surname,
-        phone,
-        gender,
-        profileImage: DEFAULT_PHOTO_URL,
-        role,
-        email,
-      });
+      await admin
+        .firestore()
+        .collection('users')
+        .doc(newUser.uid)
+        .set({
+          firstName: name,
+          lastName: surname,
+          phone,
+          gender,
+          profileImage: {original: DEFAULT_PHOTO_URL, small: DEFAULT_PHOTO_URL},
+          role,
+          email,
+        });
       sendNewUserConfirmationEmail({email, password});
     } catch (err) {
       console.log(err);

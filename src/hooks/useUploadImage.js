@@ -29,7 +29,6 @@ const useUploadImageCheck = (collection, docId) => {
         }
       }
     } catch (err) {
-      console.log(err);
       errorLog({
         message: err.message,
         track: true,

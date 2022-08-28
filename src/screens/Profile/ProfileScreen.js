@@ -12,8 +12,6 @@ import PageLayout from '../../components/PageLayout';
 
 import CustomButton from '../../components/Elements/CustomButton';
 
-import ImageBlurLoading from 'react-native-image-blur-loading';
-
 //Redux
 import {useSelector} from 'react-redux';
 
@@ -42,6 +40,8 @@ import {
 import {CustomPicker} from '../../components/CustomPicker';
 import {useChoseImage} from '../../hooks/useChoseImage';
 import {Colors} from '../../Theme/Variables';
+
+import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   input: {
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 });
 
 const ProfileScreen = ({route}) => {
-  const {userId, mode} = route.params;
+  const {userId} = route.params;
 
   const [isPickerVisibleRole, setIsPickerVisibleRole] = useState(false);
   const [isPickerVisibleGender, setIsPickerVisibleGender] = useState(false);
@@ -118,8 +118,6 @@ const ProfileScreen = ({route}) => {
   const user = useSelector(userSelector);
   const {t} = useTranslation();
 
-  const isModeAdmin = mode === 'admin';
-
   const defaultImg =
     'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
 
@@ -132,7 +130,6 @@ const ProfileScreen = ({route}) => {
     try {
       await auth().signOut();
     } catch (err) {
-      console.log(err);
       error({
         message: err.message,
         track: true,
@@ -218,16 +215,13 @@ const ProfileScreen = ({route}) => {
                   </TouchableOpacity>
                 </View>
               )}
-              <ImageBlurLoading
-                withIndicator
-                thumbnailSource={{
-                  uri: newImage?.[0]?.fileUri || infoProfile?.profileImage,
-                }}
+              <FastImage
                 source={{
                   uri:
                     newImage?.[0]?.fileUri ||
-                    infoProfile?.profileImage ||
+                    infoProfile?.profileImage?.original ||
                     defaultImg,
+                  priority: FastImage.priority.normal,
                 }}
                 style={styles.avatarWrapper}
               />
@@ -317,19 +311,17 @@ const ProfileScreen = ({route}) => {
               }
             />
 
-            {/* <Text style={styles.inputLabel}>{t('profile.role') + ': '}</Text>
-            <InputGroup>
-              <TextInput
-                editable={false}
-                style={[styles.input]}
-                placeholder={t('profile.role')}
-                onPressIn={() => setIsPickerVisibleRole(true)}
-                value={
-                  roleOptions.find((g) => g.value === infoProfile?.role)
-                    ?.label || ''
-                }
-              />
-            </InputGroup> */}
+            <Text style={styles.inputLabel}>{t('profile.role') + ': '}</Text>
+            <TextInput
+              editable={false}
+              style={[styles.input]}
+              placeholder={t('profile.role')}
+              onPressIn={() => setIsPickerVisibleRole(true)}
+              value={
+                roleOptions.find((g) => g.value === infoProfile?.role)?.label ||
+                ''
+              }
+            />
           </View>
           {userId === user?.id && (
             <View>

@@ -98,7 +98,7 @@ const Messages = () => {
         user: {
           _id: userLoggedIn?.id,
           name: userLoggedIn?.firstName,
-          avatar: userLoggedIn?.profileImage,
+          avatar: userLoggedIn?.profileImage?.small,
           token: userLoggedIn?.token,
           role: userLoggedIn?.role,
         },
@@ -216,7 +216,7 @@ const Messages = () => {
         user={{
           _id: userLoggedIn?.id,
           name: userLoggedIn?.firstName,
-          avatar: userLoggedIn?.profileImage,
+          avatar: userLoggedIn?.profileImage?.small,
           token: userLoggedIn?.token,
           role: userLoggedIn?.role,
         }}

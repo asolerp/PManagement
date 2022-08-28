@@ -6,9 +6,10 @@ export const useChoseImage = (setNewImage) => {
   const handlePressImage = (type) => {
     onImagePress({
       type,
-      options: {...imageActions[type], selectionLimit: 1},
+      options: {...imageActions[type]},
       callback: async (imgs) => {
         const images = imgs.map((image, i) => ({
+          fileBase64: image?.base64,
           fileName: image?.fileName || `image-${i}`,
           fileUri: image?.uri,
           fileType: image?.type,

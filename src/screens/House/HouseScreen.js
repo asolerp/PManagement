@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Text,
-  ImageBackground,
   TextInput,
   TouchableOpacity,
 } from 'react-native';
@@ -18,9 +17,8 @@ import DynamicSelectorList from '../../components/DynamicSelectorList';
 import CustomButton from '../../components/Elements/CustomButton';
 
 // Firebase
-import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
+import firestore from '@react-native-firebase/firestore';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
 
 //Utils
 
@@ -35,6 +33,11 @@ import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import {useTheme} from '../../Theme';
 import PageOptionsScreen from '../PageOptions/PageOptions';
 import {LoadingModalContext} from '../../context/loadinModalContext';
+import {Spacer} from '../../components/Elements/Spacer';
+import {useDocumentData} from 'react-firebase-hooks/firestore';
+import {DEFAULT_IMAGE} from '../../constants/general';
+import FastImage from 'react-native-fast-image';
+import {firebase} from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
   pageWrapper: {
@@ -68,6 +71,7 @@ const styles = StyleSheet.create({
   houseImage: {
     width: '100%',
     height: 170,
+    borderRadius: 10,
   },
   titleStyle: {
     fontSize: 20,
@@ -98,13 +102,19 @@ const HouseScreen = ({route}) => {
   const {isAdmin} = useAuth();
   const {t} = useTranslation();
   const {houseId} = route.params;
+
+  const houseQuery = firestore().collection('houses').doc(houseId);
+
   const {setVisible} = useContext(LoadingModalContext);
-  const {document: house} = useGetDocFirebase('houses', houseId);
+  const [house] = useDocumentData(houseQuery, {idField: 'id'});
   const {updateFirebase} = useUpdateFirebase('houses');
-  const {upload} = useUploadCloudinaryImage();
+
   // Modal State
   const [modalVisible, setModalVisible] = useState(false);
   const {onImagePress} = useCameraOrLibrary();
+  const uploadHousePhoto = firebase
+    .functions()
+    .httpsCallable('uploadHousePhoto');
 
   const handlePressImage = (type) => {
     onImagePress({
@@ -113,6 +123,7 @@ const HouseScreen = ({route}) => {
       callback: async (imgs) => {
         setNewImage(
           imgs.map((image, i) => ({
+            fileBase64: image?.base64,
             fileName: image?.fileName || `image-${i}`,
             fileUri: image?.uri,
             fileType: image?.type,
@@ -131,12 +142,9 @@ const HouseScreen = ({route}) => {
         });
       }
       if (newImage) {
-        const uploadImage = await upload(
-          newImage[0],
-          `/PortManagement/Houses/${houseId}/Photos`,
-        );
-        await updateFirebase(houseId, {
-          houseImage: uploadImage,
+        await uploadHousePhoto({
+          houseId,
+          imageBase64: newImage[0],
         });
       }
     } catch (err) {
@@ -211,18 +219,21 @@ const HouseScreen = ({route}) => {
                 </View>
               )}
               <View style={styles.houseImageContainer}>
-                {!newImage?.[0]?.fileUri && !infoHouse?.houseImage ? (
+                {!newImage?.[0]?.fileUri && !infoHouse?.houseImage?.original ? (
                   <React.Fragment>
                     <Icon name="home" size={40} color="black" />
                     <Text>Selecciona una foto</Text>
                   </React.Fragment>
                 ) : (
-                  <ImageBackground
-                    source={{
-                      uri: newImage?.[0]?.fileUri || infoHouse?.houseImage,
-                    }}
-                    imageStyle={{borderRadius: 10}}
+                  <FastImage
                     style={styles.houseImage}
+                    source={{
+                      uri:
+                        newImage?.[0]?.fileUri ||
+                        infoHouse?.houseImage?.original ||
+                        DEFAULT_IMAGE,
+                      priority: FastImage.priority.normal,
+                    }}
                   />
                 )}
               </View>
@@ -244,6 +255,7 @@ const HouseScreen = ({route}) => {
                   value={infoHouse?.houseName}
                 />
               </InputGroup>
+              <Spacer space={4} />
               <Text style={styles.inputLabel}>
                 {t('houses.house_address') + ':'}
               </Text>
@@ -258,6 +270,7 @@ const HouseScreen = ({route}) => {
                   value={infoHouse?.street}
                 />
               </InputGroup>
+              <Spacer space={4} />
               <Text style={styles.inputLabel}>
                 {t('houses.house_municipality') + ':'}
               </Text>
@@ -272,30 +285,31 @@ const HouseScreen = ({route}) => {
                   value={infoHouse?.municipio}
                 />
               </InputGroup>
+              <Spacer space={4} />
               <View>
                 <Text style={styles.titleStyle}>{t('common.owner')}</Text>
-                <InputGroup>
-                  <CustomInput
-                    title="Propietario"
-                    subtitle={
-                      <View style={{flexDirection: 'row'}}>
-                        {[infoHouse?.owner || house?.owner].map((owner, i) => (
-                          <View
-                            key={owner?.id || i}
-                            style={{flexDirection: 'row'}}>
-                            <Text style={styles.subtitle}>
-                              {owner?.firstName}
-                            </Text>
-                          </View>
-                        ))}
-                      </View>
-                    }
-                    iconProps={{name: 'person', color: '#55A5AD'}}
-                    onPress={() => {
-                      isAdmin && setModalVisible(true);
-                    }}
-                  />
-                </InputGroup>
+
+                <CustomInput
+                  title="Propietario"
+                  subtitle={
+                    <View style={{flexDirection: 'row'}}>
+                      {[infoHouse?.owner || house?.owner].map((owner, i) => (
+                        <View
+                          key={owner?.id || i}
+                          style={{flexDirection: 'row'}}>
+                          <Text style={styles.subtitle}>
+                            {owner?.firstName}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  }
+                  iconProps={{name: 'person', color: '#55A5AD'}}
+                  onPress={() => {
+                    isAdmin && setModalVisible(true);
+                  }}
+                />
+                <Spacer space={4} />
                 <Text style={styles.inputLabel}>
                   {t('houses.owner_name') + ':'}
                 </Text>
