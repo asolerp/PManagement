@@ -2,6 +2,7 @@
 export const CHECK_SCREEN_KEY = 'checkScreen';
 export const CHECKLIST_SCREEN_KEY = 'checklistScreen';
 export const CHECK_PHOTO_SCREEN_KEY = 'checkPhotoScreen';
+export const QUADRANT_SCREEN_KEY = 'cuadranteScreen';
 export const DASHBOARD_SCREEN_KEY = 'dashboardScreen';
 export const HOUSE_SCREEN_KEY = 'houseScreen';
 export const HOUSES_SCREEN_KEY = 'housesScreen';

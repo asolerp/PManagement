@@ -53,8 +53,6 @@ const styles = StyleSheet.create({
 });
 
 const DashboardOwner = () => {
-  const {t} = useTranslation();
-
   const user = useSelector(userSelector, shallowEqual);
   const {Fonts, Layout, Gutters} = useTheme();
   const [houseOwner] = useCollectionData(

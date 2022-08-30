@@ -11,7 +11,9 @@ const CustomInput = ({title, subtitle, iconProps, switcher, onPress}) => {
           <View style={styles.iconContainer}>
             <IconCircle name={iconProps?.name} color={iconProps?.color} />
             <View style={styles.infoContainer}>
-              <Text style={[styles.title, styles.font]}>{title}</Text>
+              {!subtitle && (
+                <Text style={[styles.title, styles.font]}>{title}</Text>
+              )}
               {subtitle && subtitle}
             </View>
           </View>

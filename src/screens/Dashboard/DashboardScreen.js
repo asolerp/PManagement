@@ -9,7 +9,6 @@ import PageLayout from '../../components/PageLayout';
 
 // Utils
 import moment from 'moment';
-import {useTheme} from '../../Theme';
 
 import {TabView, TabBar} from 'react-native-tab-view';
 

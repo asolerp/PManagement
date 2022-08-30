@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, SafeAreaView, NativeModules} from 'react-native';
+import {View} from 'react-native';
 
 //UI
 import DatePicker from 'react-native-date-picker';
@@ -11,7 +11,7 @@ import moment from 'moment';
 import {useLocales} from '../../../utils/useLocales';
 import {useTranslation} from 'react-i18next';
 
-const DateSelector = ({closeModal, set, get}) => {
+const DateSelector = ({closeModal, set, get, mode = 'date'}) => {
   const today = new Date();
   const initialTime = new Date(
     today.getFullYear(),
@@ -40,6 +40,7 @@ const DateSelector = ({closeModal, set, get}) => {
   return (
     <>
       <DatePicker
+        mode={mode}
         style={{width: 350}}
         date={dateSelected || initialTime}
         onDateChange={setDateSelected}

@@ -16,12 +16,14 @@ import {tabNameByScreen} from '../utils/parsers';
 import {
   DASHBOARD_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
+  QUADRANT_SCREEN_KEY,
   USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import {UsersScreen} from '../Screens/Users';
 import {useTranslation} from 'react-i18next';
 import {isIOS} from '../utils/platform';
 import {Colors} from '../Theme/Variables';
+import {QuadrantScreen} from '../Screens/Quadrant';
 
 const {Navigator, Screen} = createBottomTabNavigator();
 
@@ -101,6 +103,24 @@ const HomeAdmin = () => {
             <>
               <Icon
                 name={focused ? 'ios-speedometer' : 'ios-speedometer-outline'}
+                size={25}
+                focused={focused}
+                color={Colors.pm}
+              />
+            </>
+          ),
+        })}
+      />
+      <Screen
+        name={t(tabNameByScreen[QUADRANT_SCREEN_KEY])}
+        initialParams={{screenKey: QUADRANT_SCREEN_KEY}}
+        component={QuadrantScreen}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisible(route),
+          tabBarIcon: ({focused, color, size}) => (
+            <>
+              <Icon
+                name={focused ? 'grid' : 'grid-outline'}
                 size={25}
                 focused={focused}
                 color={Colors.pm}

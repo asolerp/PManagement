@@ -10,6 +10,7 @@ import {Colors} from '../Theme/Variables';
 
 import {
   CHECKLIST_SCREEN_KEY,
+  CUADRANTE_SCREEN_KEY,
   DASHBOARD_OWNER_SCREEN_KEY,
   DASHBOARD_SCREEN_KEY,
   DASHBOARD_WORKER_SCREEN_KEY,
@@ -19,6 +20,7 @@ import {
   INCIDENCES_SCREEN_KEY,
   JOBS_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
+  QUADRANT_SCREEN_KEY,
   USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import {isIOS} from './platform';
@@ -34,6 +36,7 @@ export const tabNameByScreen = {
   [DASHBOARD_SCREEN_KEY]: 'tabs.dashboard',
   [USERS_SCREEN_KEY]: 'tabs.users',
   [DASHBOARD_WORKER_SCREEN_KEY]: 'tabs.dashboard',
+  [QUADRANT_SCREEN_KEY]: 'tabs.quadrant',
   [DASHBOARD_OWNER_SCREEN_KEY]: 'tabs.dashboard',
   [CHECKLIST_SCREEN_KEY]: 'tabs.checks',
   [INCIDENCES_SCREEN_KEY]: 'tabs.incidences',

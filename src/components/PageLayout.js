@@ -18,13 +18,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   pageWrapper: {
-    flex: 1,
+    flexGrow: 1,
   },
   pageBackScreen: {
     flex: 1,
   },
   pageScreen: {
-    flex: 1,
+    flexGrow: 1,
   },
   bottomScreen: {
     justifyContent: 'flex-start',
