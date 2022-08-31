@@ -1,11 +1,13 @@
-import React, {createRef, useState} from 'react';
+import React from 'react';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import theme from '../../Theme/Theme';
 import IconCircle from './IconCirlce';
 
-const CustomInput = ({title, subtitle, iconProps, switcher, onPress}) => {
+const CustomInput = ({title, label, subtitle, iconProps, onPress, style}) => {
   return (
-    <React.Fragment>
+    <View style={[style]}>
+      {label && <Text style={[theme.mB2, theme.fontSans]}>{label}</Text>}
       <TouchableOpacity style={styles.container} onPress={onPress}>
         <View style={styles.accordianContainer}>
           <View style={styles.iconContainer}>
@@ -20,7 +22,7 @@ const CustomInput = ({title, subtitle, iconProps, switcher, onPress}) => {
           <Icon name="keyboard-arrow-right" size={35} color="black" />
         </View>
       </TouchableOpacity>
-    </React.Fragment>
+    </View>
   );
 };
 
@@ -55,7 +57,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   infoContainer: {
-    width: 200,
+    maxWidth: 200,
   },
   separator: {
     borderBottomColor: '#EAEAEA',

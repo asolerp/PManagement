@@ -11,6 +11,7 @@ import {popScreen} from '../Router/utils/actions';
 import {Colors} from '../Theme/Variables';
 import {Platform} from 'react-native';
 import {isIOS} from '../utils/platform';
+import theme from '../Theme/Theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,6 +25,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   pageScreen: {
+    flex: 1,
     flexGrow: 1,
   },
   bottomScreen: {
@@ -69,6 +71,7 @@ const Container = ({
           leftSide={
             backButton ? (
               <TouchableOpacity
+                style={[theme.mB4]}
                 onPress={() => {
                   popScreen();
                 }}>

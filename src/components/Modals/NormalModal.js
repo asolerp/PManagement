@@ -1,7 +1,7 @@
 import React from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import Modal from 'react-native-modal';
-import {SafeAreaView} from 'react-native-safe-area-context';
+
 import {Colors} from '../../Theme/Variables';
 
 export const NormalModal = ({

@@ -57,8 +57,7 @@ const DashboardScreen = () => {
         statusBar="light-content"
         withTitle={false}
         withPadding={false}
-        edges={['top']}
-        containerStyles={{backgroundColor: Colors.gray100}}>
+        edges={['top']}>
         <ActionButtons />
         <View style={[[theme.flex1]]}>
           <View style={[styles.profileBarContainerStyle]}>

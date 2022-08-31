@@ -29,6 +29,8 @@ import {NewUserScreen} from '../Screens/NewUser';
 import {FiltersProvider} from '../context/FiltersContext';
 import {NewQuadrantScreen} from '../Screens/NewQuadrant/NewQuadrantScreen';
 import {NEW_QUADRANT_SCREEN_KEY} from '../Screens/NewQuadrant';
+import {NEW_JOB_QUADRANT_SCREEN_KEY} from '../Screens/NewJobQuadrant';
+import {NewJobQuadrantScreen} from '../Screens/NewJobQuadrant/NewJobQuadrantScreen';
 
 const {Navigator, Screen} = createNativeStackNavigator();
 
@@ -60,6 +62,11 @@ const AdminRouter = () => {
         <Screen
           name={NEW_QUADRANT_SCREEN_KEY}
           component={NewQuadrantScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={NEW_JOB_QUADRANT_SCREEN_KEY}
+          component={NewJobQuadrantScreen}
           options={{headerShown: false}}
         />
         <Screen

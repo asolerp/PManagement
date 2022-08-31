@@ -4,6 +4,7 @@ import {View, StyleSheet} from 'react-native';
 import {useTheme} from '../Theme';
 import {Colors} from '../Theme/Variables';
 import CustomButton from './Elements/CustomButton';
+import theme from '../Theme/Theme';
 
 export const BottomModal = ({
   isVisible,
@@ -24,7 +25,7 @@ export const BottomModal = ({
         <View style={[Gutters.smallHPadding, styles.pickerContainer]}>
           {children}
           {onCTA && (
-            <View style={[Layout.row, Gutters.regularBMargin]}>
+            <View style={[Layout.row]}>
               <CustomButton
                 title={ctaText}
                 onPress={onCTA}
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopRightRadius: 35,
     borderTopLeftRadius: 35,
+    paddingBottom: 30,
   },
   closeContainer: {
     position: 'absolute',

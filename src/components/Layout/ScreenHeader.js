@@ -5,16 +5,10 @@ import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
 
 export const ScreenHeader = ({title, subtitle}) => {
-  const {Gutters, Fonts} = useTheme();
+  const {Fonts} = useTheme();
   return (
     <>
-      <Text
-        style={[
-          Fonts.textXl,
-          Fonts.textBold,
-          Gutters.regularTMargin,
-          {colors: Colors.darkBlue},
-        ]}>
+      <Text style={[Fonts.textXl, Fonts.textBold, {colors: Colors.darkBlue}]}>
         {title}
       </Text>
       {subtitle && (

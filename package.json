@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios --simulator='Alberto'",
+    "ios": "react-native run-ios --port 9988 --simulator='Enalbis' && npx react-native start --port 9988",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
