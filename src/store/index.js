@@ -8,6 +8,7 @@ import {incidenceFormReducer} from './IncidenceForm';
 import {checkListReducer} from './CheckList';
 import {houseFormReducer} from './HouseForm';
 import {jobFormReducer} from './JobForm';
+import {quadrantFormReducer} from './QuadrantForm';
 import {userReducer} from './User';
 import {appReducer} from './App';
 
@@ -23,6 +24,7 @@ const reducers = combineReducers({
   incidenceForm: incidenceFormReducer,
   user: userReducer,
   houseForm: houseFormReducer,
+  quadrantForm: quadrantFormReducer,
 });
 
 const store = configureStore({

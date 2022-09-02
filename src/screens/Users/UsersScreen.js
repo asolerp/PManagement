@@ -11,7 +11,7 @@ import {NEW_USER_SCREEN_KEY} from '../../Router/utils/routerKeys';
 const UsersScreen = () => {
   return (
     <React.Fragment>
-      <PageLayout safe>
+      <PageLayout safe edges={['top']}>
         <AddButton
           iconName="add"
           containerStyle={{right: 0, bottom: 30}}

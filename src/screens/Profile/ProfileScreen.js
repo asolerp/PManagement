@@ -144,9 +144,12 @@ const ProfileScreen = ({route}) => {
     }
   }, [userLoggedIn, setInfoProfile]);
 
+  console.log('lOGEDIN', userLoggedIn);
+
   return (
     <PageLayout
       safe
+      edges={userLoggedIn.role === 'worker' ? ['top'] : ['top', 'bottom']}
       titleRightSide={
         <PageOptionsScreen
           editable={false}
@@ -289,7 +292,7 @@ const ProfileScreen = ({route}) => {
               editable={false}
               style={[styles.input]}
               placeholder={t('profile.gender')}
-              onPressIn={() => setIsPickerVisibleGender(true)}
+              onPressOut={() => setIsPickerVisibleGender(true)}
               value={
                 genderOptions?.find((g) => g.value === infoProfile?.gender)
                   ?.label || ''
@@ -304,24 +307,29 @@ const ProfileScreen = ({route}) => {
               editable={false}
               style={[styles.input]}
               placeholder={t('profile.language')}
-              onPressIn={() => setIsPickerVisibleLanguage(true)}
+              onPressOut={() => setIsPickerVisibleLanguage(true)}
               value={
                 languageOptions.find((g) => g.value === infoProfile?.language)
                   ?.label || ''
               }
             />
-
-            <Text style={styles.inputLabel}>{t('profile.role') + ': '}</Text>
-            <TextInput
-              editable={false}
-              style={[styles.input]}
-              placeholder={t('profile.role')}
-              onPressIn={() => setIsPickerVisibleRole(true)}
-              value={
-                roleOptions.find((g) => g.value === infoProfile?.role)?.label ||
-                ''
-              }
-            />
+            {userLoggedIn.role === 'admin' && (
+              <>
+                <Text style={styles.inputLabel}>
+                  {t('profile.role') + ': '}
+                </Text>
+                <TextInput
+                  editable={false}
+                  style={[styles.input]}
+                  placeholder={t('profile.role')}
+                  onPressOut={() => setIsPickerVisibleRole(true)}
+                  value={
+                    roleOptions.find((g) => g.value === infoProfile?.role)
+                      ?.label || ''
+                  }
+                />
+              </>
+            )}
           </View>
           {userId === user?.id && (
             <View>

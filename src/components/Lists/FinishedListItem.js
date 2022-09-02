@@ -2,6 +2,7 @@ import React from 'react';
 
 import {Text, View, StyleSheet} from 'react-native';
 import {useTheme} from '../../Theme';
+import theme from '../../Theme/Theme';
 import {Colors} from '../../Theme/Variables';
 import Badge from '../Elements/Badge';
 
@@ -12,6 +13,8 @@ export const FinishedListItem = ({
   counter,
   workers,
   subtitle,
+  startHour,
+  endHour,
   dateVariant,
   statusPercentage,
   fullWidth = true,
@@ -67,6 +70,13 @@ export const FinishedListItem = ({
               </Text>
             )}
           </View>
+          {startHour && endHour && (
+            <View style={[theme.flexRow]}>
+              <Badge text={startHour} />
+              <View style={[theme.mL2]} />
+              <Badge variant="danger" text={endHour} />
+            </View>
+          )}
         </View>
         <View style={[Layout.justifyContentEnd]}>
           <View
@@ -85,7 +95,7 @@ export const FinishedListItem = ({
 const styles = StyleSheet.create({
   checkWrapper: {
     minHeight: 50,
-    maxHeight: 100,
+    maxHeight: 120,
     width: '100%',
     backgroundColor: Colors.white,
     borderRadius: 10,

@@ -196,7 +196,8 @@ export default {
       open: '¿Seguro que quieres volver a abrir la incidencia?',
     },
     job: {
-      finish: '¿Seguro que quieres finalizar el trabajo?',
+      finish:
+        '¿Seguro que quieres finalizar el trabajo? Haz una foto a la casa para que se guarde tu hora de salida',
       open: '¿Seguro que quieres abrir el trabajo?',
     },
     checklist: {

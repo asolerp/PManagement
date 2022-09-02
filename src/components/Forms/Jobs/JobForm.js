@@ -195,16 +195,18 @@ const JobForm = ({docId, edit}) => {
       <CustomInput
         title={t('common.asigned_to')}
         subtitle={
-          <View style={{flexDirection: 'row'}}>
-            {workers?.value?.map((worker, i) => (
-              <View key={worker.id} style={{flexDirection: 'row'}}>
-                <Text style={styles.subtitle}>{worker.firstName}</Text>
-                {workers?.value?.length - 1 !== i && (
-                  <Text style={styles.subtitle}> & </Text>
-                )}
-              </View>
-            ))}
-          </View>
+          workers && (
+            <View style={{flexDirection: 'row'}}>
+              {workers?.value?.map((worker, i) => (
+                <View key={worker.id} style={{flexDirection: 'row'}}>
+                  <Text style={styles.subtitle}>{worker.firstName}</Text>
+                  {workers?.value?.length - 1 !== i && (
+                    <Text style={styles.subtitle}> & </Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          )
         }
         iconProps={{name: 'alarm', color: '#55A5AD'}}
         onPress={() => {
@@ -217,13 +219,15 @@ const JobForm = ({docId, edit}) => {
       <CustomInput
         title={t('common.house')}
         subtitle={
-          <View style={{flexDirection: 'row'}}>
-            {house?.value?.map((house, i) => (
-              <View key={house.id}>
-                <Text style={styles.subtitle}>{house.houseName}</Text>
-              </View>
-            ))}
-          </View>
+          house && (
+            <View style={{flexDirection: 'row'}}>
+              {house?.value?.map((house, i) => (
+                <View key={house.id}>
+                  <Text style={styles.subtitle}>{house.houseName}</Text>
+                </View>
+              ))}
+            </View>
+          )
         }
         iconProps={{name: 'house', color: '#55A5AD'}}
         onPress={() => {

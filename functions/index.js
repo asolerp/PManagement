@@ -33,6 +33,8 @@ const {
   sendPushNotificationNewJob,
 } = require('./notifications/jobs');
 
+const {createJobsForQuadrant} = require('./admin/createJobsForQuadrant');
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -83,6 +85,7 @@ exports.sendPushNotificationAsignedIncidence =
 
 exports.sendPushNotificationJobMessage = sendPushNotificationJobMessage;
 exports.sendPushNotificationNewJob = sendPushNotificationNewJob;
+exports.createJobsForQuadrant = createJobsForQuadrant;
 
 exports.updateHouseOwner = functions.firestore
   .document('users/{userId}')

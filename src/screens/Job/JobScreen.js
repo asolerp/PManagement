@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useContext, useMemo} from 'react';
 
 import firestore from '@react-native-firebase/firestore';
 import {useDocumentData} from 'react-firebase-hooks/firestore';
@@ -20,11 +20,21 @@ import {useTheme} from '../../Theme';
 import {finishJob, openJob} from '../../components/Alerts/jobs';
 import {useTranslation} from 'react-i18next';
 import {PageOptionsScreen} from '../PageOptions';
+import theme from '../../Theme/Theme';
+import {useCameraOrLibrary} from '../../hooks/useCamerOrLibrary';
+import {imageActions} from '../../utils/imageActions';
+import {useUploadFinishPhoto} from './hooks/useUploadFinishPhoto';
+import {LoadingModalContext} from '../../context/loadinModalContext';
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
 
 const JobScreen = ({route}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
-
+  const user = useSelector(userSelector);
+  const {onImagePress} = useCameraOrLibrary();
+  const {setVisible} = useContext(LoadingModalContext);
+  const type = 'capture';
   const {jobId} = route.params;
   const query = useMemo(() => {
     return firestore().collection(JOBS).doc(jobId);
@@ -34,9 +44,37 @@ const JobScreen = ({route}) => {
     idField: 'id',
   });
 
+  const {uploadFinishPhoto} = useUploadFinishPhoto();
+
   const onSubmit = () => {
-    updateJobStatus(jobId, {done: !job?.done});
-    popScreen();
+    if (user.role === 'admin') {
+      return updateJobStatus(jobId, {done: !job?.done});
+    }
+    onImagePress({
+      type,
+      options: {...imageActions[type], selectionLimit: 1},
+      callback: async (imgs) => {
+        try {
+          setVisible(true);
+          const images = imgs.map((image, i) => ({
+            fileName: image?.fileName || `image-${i}`,
+            fileUri: image?.uri,
+            fileType: image?.type,
+          }));
+          await uploadFinishPhoto(images[0], {
+            collectionRef: firestore().collection(JOBS).doc(jobId),
+            cloudinaryFolder: `/PortManagement/${JOBS}/${jobId}/Photos`,
+            docId: jobId,
+          });
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setVisible(false);
+          popScreen();
+        }
+      },
+    });
+    //
   };
 
   return (
@@ -59,16 +97,18 @@ const JobScreen = ({route}) => {
           />
         }
         footer={
-          <CustomButton
-            styled="rounded"
-            loading={false}
-            title={job?.done ? t('job.done') : t('job.no_done')}
-            onPress={() =>
-              job?.done ? openJob(onSubmit) : finishJob(onSubmit)
-            }
-          />
+          (user.role === 'admin' || !job?.done) && (
+            <CustomButton
+              styled="rounded"
+              loading={false}
+              title={job?.done ? t('job.done') : t('job.no_done')}
+              onPress={() =>
+                job?.done ? openJob(onSubmit) : finishJob(onSubmit)
+              }
+            />
+          )
         }>
-        <View style={[Gutters.smallTMargin]}>
+        <View style={[Gutters.smallTMargin, theme.flexGrow]}>
           <Info />
         </View>
       </PageLayout>

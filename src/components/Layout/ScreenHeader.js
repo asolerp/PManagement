@@ -8,7 +8,7 @@ export const ScreenHeader = ({title, subtitle}) => {
   const {Fonts} = useTheme();
   return (
     <>
-      <Text style={[Fonts.textXl, Fonts.textBold, {colors: Colors.darkBlue}]}>
+      <Text style={[Fonts.textXl, Fonts.textBold, {color: Colors.darkBlue}]}>
         {title}
       </Text>
       {subtitle && (

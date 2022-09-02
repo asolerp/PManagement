@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+
 import {Colors, Variants} from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useTheme} from '../../Theme';
@@ -36,7 +36,7 @@ const Badge = ({
   const isTypeNormal = type === 'normal';
 
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableOpacity onPress={onPress}>
       <View
         style={[
           Layout.row,
@@ -64,7 +64,7 @@ const Badge = ({
           </Text>
         </Text>
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 };
 

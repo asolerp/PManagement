@@ -10,6 +10,7 @@ import {useLocales} from '../../utils/useLocales';
 import {ListItem} from './ListItem';
 import {FinishedListItem} from './FinishedListItem';
 import {format} from 'date-fns';
+import moment from 'moment';
 
 const JobItem = ({item, fullWidth}) => {
   const {t} = useTranslation();
@@ -24,16 +25,20 @@ const JobItem = ({item, fullWidth}) => {
     item?.task?.locales?.en.desc ||
     item?.task?.desc;
 
+  console.log('[[ITEM]]', item);
+
   if (item.done) {
     return (
       <FinishedListItem
         withStatusBar
         date={format(item?.date.toDate(), 'dd/MM/yyyy')}
+        startHour={moment(item?.quadrantStartHour?.toDate()).format('LT')}
+        endHour={moment(item?.quadrantEndHour?.toDate()).format('LT')}
         statusColor={Colors.pm}
         title={taksDescByLocale}
         subtitle={item?.observations}
         counter={noReadCounter}
-        house={item?.house?.[0].houseName}
+        house={item?.house?.houseName}
         workers={item?.workers}
       />
     );
@@ -44,13 +49,15 @@ const JobItem = ({item, fullWidth}) => {
       date={t(parseDateWithText(item?.date).text, {
         numberOfDays: parseDateWithText(item?.date)?.metaData?.numberOfDays,
       })}
+      startHour={moment(item?.quadrantStartHour?.toDate()).format('LT')}
+      endHour={moment(item?.quadrantEndHour?.toDate()).format('LT')}
       dateVariant={parseDateWithText(item?.date).variant}
       statusColor={Colors.pm}
       statusPercentage={1}
       title={taksDescByLocale}
       subtitle={item?.observations}
       counter={noReadCounter}
-      house={item?.house?.[0].houseName}
+      house={item?.house?.houseName}
       workers={item?.workers}
       fullWidth={fullWidth}
     />

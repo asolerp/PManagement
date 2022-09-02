@@ -39,7 +39,7 @@ const uploadProfilePhoto = functions
         .collection('users')
         .doc(user.id)
         .update({
-          user,
+          ...user,
           profileImage: {
             original: result.url,
             small: result.eager[0].url,

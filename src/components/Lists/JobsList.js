@@ -65,7 +65,7 @@ const JobsList = ({uid, houses, workers}) => {
       <FlatList
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <View style={[theme.mT5, theme.mB2]}>
+          <View style={[theme.mB2]}>
             <Text style={[theme.fontSansBold, theme.textXl, theme.textGray900]}>
               Activos
             </Text>

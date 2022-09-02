@@ -18,7 +18,7 @@ const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
 
   const listOfChecks = noFinishFilter ? checks?.filter((c) => !c.done) : checks;
 
-  const {allChecked, handleCheckAll, handleRemoveAllChecks} = useListOfChecks({
+  const {handleCheckAll, handleRemoveAllChecks} = useListOfChecks({
     isCheckFinished,
     list: listOfChecks,
     checkId,
@@ -39,20 +39,25 @@ const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
         <Text style={[Fonts.textTitle, Gutters.smallBPadding]}>
           {t('checklists.checkPage.jobs')}
         </Text>
-        <Pressable onPress={togleFilter}>
-          <Badge
-            text={!noFinishFilter ? 'Sin completar' : 'Todo'}
-            variant={!noFinishFilter ? 'danger' : 'pm'}
-          />
-        </Pressable>
+
+        <Badge
+          text={!noFinishFilter ? 'Sin completar' : 'Todo'}
+          variant={!noFinishFilter ? 'danger' : 'pm'}
+          onPress={togleFilter}
+        />
       </View>
       <View style={[Layout.row, Gutters.smallBMargin]}>
-        <Pressable style={[Gutters.smallRMargin]} onPress={handleCheckAll}>
-          <Badge text={'Completar todo'} variant={'pm'} />
-        </Pressable>
-        <Pressable onPress={handleRemoveAllChecks}>
-          <Badge text={'Descompletar'} variant={'warning'} />
-        </Pressable>
+        <Badge
+          text={'Completar todo'}
+          variant={'pm'}
+          onPress={handleCheckAll}
+        />
+
+        <Badge
+          text={'Descompletar'}
+          variant={'warning'}
+          onPress={handleRemoveAllChecks}
+        />
       </View>
       {listOfChecks
         ?.sort((a, b) => a.locale.es.localeCompare(b.locale.es))

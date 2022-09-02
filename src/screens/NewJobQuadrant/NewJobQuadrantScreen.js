@@ -1,26 +1,31 @@
 import {set} from 'date-fns';
 import moment from 'moment';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ScrollView, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
+import {useDispatch, useSelector} from 'react-redux';
 import {BottomModal} from '../../components/BottomModal';
 import DynamicSelectorList from '../../components/DynamicSelectorList';
+import Badge from '../../components/Elements/Badge';
 import CustomButton from '../../components/Elements/CustomButton';
 import CustomInput from '../../components/Elements/CustomInput';
 import DateSelector from '../../components/Forms/Jobs/DateSelector';
 import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import PageLayout from '../../components/PageLayout';
 import {DEFAULT_IMAGE} from '../../constants/general';
+import {popScreen} from '../../Router/utils/actions';
+import {setJobsToQuadrant} from '../../Store/QuadrantForm/quadrantFormSlice';
 import theme from '../../Theme/Theme';
+import {randomColor} from '../../utils/randomColor';
 
 export const NewJobQuadrantScreen = ({route}) => {
-  const {house} = route.params;
+  const {house, jobsToEdit, date} = route.params;
 
   const [modalVisible, setModalVisible] = useState(false);
   const [workers, setWorkers] = useState();
 
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState(jobsToEdit || []);
 
   const [rangeHour, setRangeHour] = useState();
   const [modalContent, setModalContent] = useState();
@@ -28,21 +33,44 @@ export const NewJobQuadrantScreen = ({route}) => {
   const [startHour, setStartHour] = useState();
   const [endHour, setEndHour] = useState();
 
+  const dispatch = useDispatch();
+
   const cleanForm = () => {
     setWorkers(null);
     setStartHour(null);
     setEndHour(null);
   };
 
+  const handleSaveQuadrant = () => {
+    addJobsToQuadrant();
+    cleanForm();
+    popScreen();
+  };
+
   const handleAddJob = () => {
     workers?.value?.forEach((w) => {
       setJobs((oldValue) => [
         ...oldValue,
-        {houseId: house.id, worker: w, startHour, endHour},
+        {
+          date,
+          houseId: house.id,
+          worker: w,
+          startHour,
+          endHour,
+          color: randomColor(),
+        },
       ]);
     });
     cleanForm();
   };
+
+  const handleDeleteJob = (workerId) => {
+    setJobs((oldJobs) => oldJobs.filter((job) => job.worker.id !== workerId));
+  };
+
+  const addJobsToQuadrant = useCallback(() => {
+    dispatch(setJobsToQuadrant({houseId: house.id, jobs}));
+  }, [dispatch, house.id, jobs]);
 
   const modalSwitcher = (modal) => {
     switch (modal) {
@@ -165,6 +193,7 @@ export const NewJobQuadrantScreen = ({route}) => {
         </View>
         <View style={[theme.mT6]} />
         <CustomButton
+          disabled={!startHour || !endHour || !workers}
           type="clear"
           title="Asignar al cuadrante"
           onPress={handleAddJob}
@@ -183,23 +212,39 @@ export const NewJobQuadrantScreen = ({route}) => {
           <View
             style={[
               theme.flexRow,
+              theme.justifyBetween,
               theme.itemsCenter,
               theme.borderB0_5,
               theme.borderGray300,
               theme.p3,
             ]}>
-            <FastImage
-              source={{
-                uri: job?.worker?.profileImage?.small || DEFAULT_IMAGE,
-                priority: FastImage.priority.normal,
-              }}
-              style={[theme.mR2, {width: 30, height: 30, borderRadius: 15}]}
+            <View style={[theme.flexRow, theme.itemsCenter]}>
+              <FastImage
+                source={{
+                  uri: job?.worker?.profileImage?.small || DEFAULT_IMAGE,
+                  priority: FastImage.priority.normal,
+                }}
+                style={[theme.mR2, {width: 30, height: 30, borderRadius: 15}]}
+              />
+              <Text style={[theme.mR4]}>{job.worker.firstName}</Text>
+            </View>
+            <Badge
+              variant="info"
+              text={
+                moment(job.startHour.toDate() || job.startHour).format('LT') +
+                ' a ' +
+                moment(job.endHour.toDate() || job.endHour).format('LT')
+              }
             />
-            <Text>{job.worker.firstName}</Text>
+            <Badge
+              text="Eliminar"
+              variant="danger"
+              onPress={() => handleDeleteJob(job.worker.id)}
+            />
           </View>
         ))}
       </ScrollView>
-      <CustomButton title="Guardar cuadrante" onPress={handleAddJob} />
+      <CustomButton title="Guardar trabajos" onPress={handleSaveQuadrant} />
     </PageLayout>
   );
 };

@@ -53,7 +53,7 @@ const NewJobScreen = ({route}) => {
         workers: job?.workers?.value,
         workersId: job?.workers?.value.map((worker) => worker.id),
         houseId: job?.house?.value[0].id,
-        house: job?.house?.value,
+        house: job?.house?.value[0],
         task: job?.task,
         done: false,
       };
@@ -82,7 +82,7 @@ const NewJobScreen = ({route}) => {
         workers: job?.workers?.value,
         workersId: job?.workers?.value.map((worker) => worker.id),
         houseId: job?.house?.value[0].id,
-        house: job?.house?.value,
+        house: job?.house?.value[0],
         task: job?.task,
         done: false,
       };

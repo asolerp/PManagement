@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     borderColor: '#EAEAEA',
-    marginBottom: 20,
+    marginTop: 10,
     color: 'white',
   },
   gradientButton: {

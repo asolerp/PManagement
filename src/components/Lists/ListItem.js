@@ -3,6 +3,7 @@ import {View, Text, StyleSheet} from 'react-native';
 import {DEFAULT_IMAGE} from '../../constants/general';
 
 import {useTheme} from '../../Theme';
+import theme from '../../Theme/Theme';
 import {Colors, FontSize} from '../../Theme/Variables';
 
 import Avatar from '../Avatar';
@@ -18,7 +19,9 @@ export const ListItem = ({
   house,
   counter,
   workers,
+  endHour,
   subtitle,
+  startHour,
   dateVariant,
   statusPercentage,
   fullWidth = false,
@@ -117,6 +120,13 @@ export const ListItem = ({
                 />
               ))}
             </View>
+            {startHour && endHour && (
+              <View style={[theme.flexRow]}>
+                <Badge text={startHour} />
+                <View style={[theme.mL2]} />
+                <Badge variant="danger" text={endHour} />
+              </View>
+            )}
           </View>
         </View>
       </View>

@@ -23,6 +23,8 @@ import {GlobalStats} from '../../components/Dashboard/GlobalStats';
 import {HousesFilter} from '../../components/Dashboard/HousesFilter';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
+import theme from '../../Theme/Theme';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const DashboardWorkerScreen = () => {
   const [index, setIndex] = useState(0);
@@ -65,50 +67,46 @@ const DashboardWorkerScreen = () => {
             <ProfileBar />
           </View>
 
-          {/* <TouchableWithoutFeedback
-            onPress={() => openScreenWithPush(FILTERS_SCREEN_KEY)}>
-            <View style={[Layout.row, Layout.alignItemsCenter]}>
-              <Icon name="filter-alt" size={15} style={[Gutters.tinyRMargin]} />
-              <Text style={[Fonts.textTitle]}>{t('common.filters.title')}</Text>
-            </View>
-          </TouchableWithoutFeedback> */}
-
           <View style={[Layout.grow, styles.container]}>
             <GlobalStats onPressStat={setIndex} uid={user?.id} />
-            <HousesFilter
-              houses={filters.houses}
-              onClickHouse={(houses) => {
-                setFilters((oldFilters) => ({
-                  ...oldFilters,
-                  houses,
-                }));
-              }}
-            />
-            <TabView
-              renderTabBar={(props) => (
-                <TabBar
-                  {...props}
-                  style={styles.tabBarContainerStyle}
-                  indicatorStyle={styles.indicatorStyle}
-                  renderLabel={({route, focused}) => {
-                    return (
-                      <Text
-                        style={[
-                          {color: focused ? Colors.pm : Colors.gray800},
-                          styles.tabTextStyle,
-                        ]}>
-                        {route.title}
-                      </Text>
-                    );
+            <View style={[theme.flexGrow]}>
+              <ScrollView contentContainerStyle={[theme.flexGrow]}>
+                <HousesFilter
+                  houses={filters.houses}
+                  onClickHouse={(houses) => {
+                    setFilters((oldFilters) => ({
+                      ...oldFilters,
+                      houses,
+                    }));
                   }}
                 />
-              )}
-              navigationState={{index, routes}}
-              renderScene={renderScene}
-              onIndexChange={setIndex}
-              initialLayout={{width: layout.width}}
-              style={[Layout.fill]}
-            />
+                <TabView
+                  renderTabBar={(props) => (
+                    <TabBar
+                      {...props}
+                      style={styles.tabBarContainerStyle}
+                      indicatorStyle={styles.indicatorStyle}
+                      renderLabel={({route, focused}) => {
+                        return (
+                          <Text
+                            style={[
+                              {color: focused ? Colors.pm : Colors.gray800},
+                              styles.tabTextStyle,
+                            ]}>
+                            {route.title}
+                          </Text>
+                        );
+                      }}
+                    />
+                  )}
+                  navigationState={{index, routes}}
+                  renderScene={renderScene}
+                  onIndexChange={setIndex}
+                  initialLayout={{width: layout.width}}
+                  style={[Layout.fill]}
+                />
+              </ScrollView>
+            </View>
           </View>
         </View>
       </PageLayout>

@@ -39,6 +39,7 @@ export const useProfileForm = () => {
         });
       } else {
         await timeout(1500);
+        console.log('INFO', infoProfile);
         await updateFirebase(userId, {...infoProfile});
       }
       setNewImage(null);

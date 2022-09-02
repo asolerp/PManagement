@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 // UI
 import PageLayout from '../../components/PageLayout';
@@ -6,18 +6,22 @@ import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import {capitalizeText} from '../../utils/capitalize';
 import {today} from '../../utils/dates';
 import {useQuadrant} from './hooks/useQuadrant';
-import {ScrollView, Text, View} from 'react-native';
+import {RefreshControl, ScrollView, Text, View} from 'react-native';
 import theme from '../../Theme/Theme';
 import CustomButton from '../../components/Elements/CustomButton';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import {userSelector} from '../../Store/User/userSlice';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {Row} from '../../components/Quadrant/Row';
 import {NormalModal} from '../../components/Modals/NormalModal';
 import {Colors} from '../../Theme/Variables';
 import {NEW_QUADRANT_SCREEN_KEY} from '../NewQuadrant';
+import {useOrientationChange, PORTRAIT} from 'react-native-orientation-locker';
+import Badge from '../../components/Elements/Badge';
+import {useFocusEffect} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 
-const CELL_WIDTH = 120;
+const CELL_WIDTH = 125;
 const CELL_HEIGHT = 40;
 
 const cellStyle = [
@@ -29,27 +33,30 @@ const cellStyle = [
   theme.borderGray200,
 ];
 
-const QuadrantScreen = () => {
-  const {houses, jobs, isModalVisible, setIsModalVisible} = useQuadrant();
-  // const [orientationIsLandscape, setOrientation] = useState(true);
+const QuadrantScreen = ({navigation}) => {
+  const {
+    jobs,
+    houses,
+    loading,
+    quadrantId,
+    isModalVisible,
+    setIsModalVisible,
+    getQuadrantsWithJobs,
+  } = useQuadrant();
 
-  // async function changeScreenOrientation() {
-  //   if (orientationIsLandscape === true) {
-  //     ScreenOrientation.lockAsync(
-  //       ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
-  //     );
-  //   } else if (orientationIsLandscape === false) {
-  //     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-  //   }
-  // }
+  const user = useSelector(userSelector);
 
-  // useEffect(() => {
-  //   const toggleOrientation = () => {
-  //     setOrientation(!orientationIsLandscape);
-  //     changeScreenOrientation();
-  //   };
-  //   toggleOrientation();
-  // }, []);
+  const [isPortrait, setIsPortrait] = useState(false);
+
+  useOrientationChange((o) => {
+    setIsPortrait(o === PORTRAIT);
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      getQuadrantsWithJobs();
+    }, []),
+  );
 
   return (
     <React.Fragment>
@@ -90,20 +97,42 @@ const QuadrantScreen = () => {
           </View>
         </View>
       </NormalModal>
-      <PageLayout safe>
+      <PageLayout
+        safe
+        edges={['top']}
+        containerStyles={[!isPortrait && theme.pL5]}>
+        {!isPortrait && <View style={[theme.mT2]} />}
         <ScreenHeader
           title={'Cuadrante del día'}
           subtitle={capitalizeText(today)}
         />
-        <View style={[theme.mB4]} />
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={[theme.flexGrow]}>
+        <View style={[isPortrait ? theme.mB14 : theme.mB3]} />
+        <View style={[theme.flexRow]}>
+          {user.role === 'admin' && (
+            <Badge
+              containerStyle={[theme.mR2]}
+              text={'Editar'}
+              onPress={() =>
+                openScreenWithPush(NEW_QUADRANT_SCREEN_KEY, {
+                  quadrantId,
+                  quadrantToEdit: jobs,
+                })
+              }
+            />
+          )}
+          <Badge
+            text="Actualizar"
+            variant="danger"
+            onPress={getQuadrantsWithJobs}
+          />
+        </View>
+        <View style={[isPortrait ? theme.mB2 : theme.mB3]} />
+        <View style={[theme.flex1, theme.flexGrow, theme.pB3]}>
           <ScrollView
-            style={[theme.flexGrow]}
+            showsHorizontalScrollIndicator={false}
             horizontal
-            showsHorizontalScrollIndicator={false}>
-            <View>
+            style={[theme.flexGrow]}>
+            <View style={[theme.flexGrow]}>
               <View style={[theme.flexRow]}>
                 <View
                   style={[
@@ -111,56 +140,56 @@ const QuadrantScreen = () => {
                     theme.roundedTlLg,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>CASA / HORA</Text>
+                  <Text style={[theme.fontSansBold]}>CASA / HORA</Text>
                 </View>
                 <View
                   style={[
                     ...cellStyle,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>08:00 - 09:00</Text>
+                  <Badge text={'08:00 - 09:00'} variant="info" />
                 </View>
                 <View
                   style={[
                     ...cellStyle,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>09:00 - 10:00</Text>
+                  <Badge text={'09:00 - 10:00'} variant="info" />
                 </View>
                 <View
                   style={[
                     ...cellStyle,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>10:00 - 11:00</Text>
+                  <Badge text={'10:00 - 11:00'} variant="info" />
                 </View>
                 <View
                   style={[
                     ...cellStyle,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>11:00 - 12:00</Text>
+                  <Badge text={'11:00 - 12:00'} variant="info" />
                 </View>
                 <View
                   style={[
                     ...cellStyle,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>12:00 - 13:00</Text>
+                  <Badge text={'12:00 - 13:00'} variant="info" />
                 </View>
                 <View
                   style={[
                     ...cellStyle,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>13:00 - 14:00</Text>
+                  <Badge text={'13:00 - 14:00'} variant="info" />
                 </View>
                 <View
                   style={[
                     ...cellStyle,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>14:00 - 15:00</Text>
+                  <Badge text={'14:00 - 15:00'} variant="info" />
                 </View>
                 <View
                   style={[
@@ -169,75 +198,26 @@ const QuadrantScreen = () => {
                     theme.roundedTrLg,
                     {width: CELL_WIDTH, height: CELL_HEIGHT},
                   ]}>
-                  <Text>15:00 - 16:00</Text>
+                  <Badge text={'15:00 - 16:00'} variant="info" />
                 </View>
               </View>
-              {houses?.map((house) => (
-                <Row house={house} jobs={jobs?.[house.id]} />
-              ))}
-              <View
-                style={[theme.flexRow, theme.borderT0_5, theme.borderGray200]}>
-                <View
-                  style={[
-                    ...cellStyle,
-                    theme.roundedBlLg,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-                <View
-                  style={[
-                    ...cellStyle,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-                <View
-                  style={[
-                    ...cellStyle,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-                <View
-                  style={[
-                    ...cellStyle,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-                <View
-                  style={[
-                    ...cellStyle,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-                <View
-                  style={[
-                    ...cellStyle,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-                <View
-                  style={[
-                    ...cellStyle,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-                <View
-                  style={[
-                    ...cellStyle,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-                <View
-                  style={[
-                    ...cellStyle,
-                    theme.borderR0,
-                    theme.roundedBrLg,
-                    {width: CELL_WIDTH, height: CELL_HEIGHT / 2},
-                  ]}
-                />
-              </View>
+              <ScrollView
+                style={[theme.flexGrow]}
+                showsVerticalScrollIndicator={false}>
+                <View>
+                  {jobs &&
+                    houses?.map((house) => (
+                      <Row
+                        key={house.id}
+                        house={house}
+                        jobs={jobs?.[house.id]}
+                      />
+                    ))}
+                </View>
+              </ScrollView>
             </View>
           </ScrollView>
-        </ScrollView>
+        </View>
       </PageLayout>
     </React.Fragment>
   );

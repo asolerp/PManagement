@@ -1,22 +1,29 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
-  users: [],
+  quadrant: {},
 };
 
 const quadrantFormSlice = createSlice({
   name: 'quadrantForm',
   initialState,
   reducers: {
-    setUser: (state, {payload}) => {
-      state.users = payload.users;
+    setQuadrant: (state, {payload}) => {
+      state.quadrant = payload.quadrant;
+    },
+    setJobsToQuadrant: (state, {payload}) => {
+      state.quadrant[payload.houseId] = payload.jobs;
+    },
+    clearQuadrant: (state, {payload}) => {
+      state.quadrant = {};
     },
   },
 });
 
-export const usersSelector = (state) => state.quadrantForm.users;
+export const quadrantSelector = (state) => state.quadrantForm.quadrant;
 
 // Actions
-export const {setUser} = quadrantFormSlice.actions;
+export const {setJobsToQuadrant, setQuadrant, clearQuadrant} =
+  quadrantFormSlice.actions;
 
 export default quadrantFormSlice.reducer;

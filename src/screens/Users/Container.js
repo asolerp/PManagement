@@ -15,6 +15,7 @@ import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {PROFILE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {DEFAULT_IMAGE} from '../../constants/general';
+import theme from '../../Theme/Theme';
 
 const Container = () => {
   const {Layout, Gutters, Fonts} = useTheme();
@@ -59,54 +60,57 @@ const Container = () => {
         onChangeText={setSearch}
         value={search}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={[Gutters.tinyTMargin]}>
-          {users &&
-            Object.entries(groupedUsersByRole)
-              .sort(([aKey], [bKey]) => aKey.localeCompare(bKey))
-              .map(([key, users]) => (
-                <View key={key}>
-                  <View
-                    style={[
-                      styles.titleContainer,
-                      Gutters.tinyVPadding,
-                      Gutters.tinyHPadding,
-                    ]}>
-                    <Text style={[Fonts.textTitle, {color: Colors.white}]}>
-                      {t(parseRoleName(key))}
-                    </Text>
+      <View style={[theme.flex1]}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={[Gutters.tinyTMargin]}>
+            {users &&
+              Object.entries(groupedUsersByRole)
+                .sort(([aKey], [bKey]) => aKey.localeCompare(bKey))
+                .map(([key, users]) => (
+                  <View key={key}>
+                    <View
+                      style={[
+                        styles.titleContainer,
+                        Gutters.tinyVPadding,
+                        Gutters.tinyHPadding,
+                      ]}>
+                      <Text style={[Fonts.textTitle, {color: Colors.white}]}>
+                        {t(parseRoleName(key))}
+                      </Text>
+                    </View>
+                    <View
+                      style={[Layout.row, Layout.wrap, Gutters.smallVMargin]}>
+                      {users?.map((user) => (
+                        <Pressable
+                          key={user.id}
+                          onPress={() => {
+                            openScreenWithPush(PROFILE_SCREEN_KEY, {
+                              userId: user.id,
+                              mode: 'admin',
+                            });
+                          }}>
+                          <View
+                            style={[
+                              Layout.colCenter,
+                              Gutters.tinyRMargin,
+                              Gutters.tinyBMargin,
+                              styles.userContainer,
+                            ]}>
+                            <Avatar
+                              key={user.id}
+                              uri={user.profileImage?.small || DEFAULT_IMAGE}
+                              size="big"
+                            />
+                            <Text>{user.firstName}</Text>
+                          </View>
+                        </Pressable>
+                      ))}
+                    </View>
                   </View>
-                  <View style={[Layout.row, Layout.wrap, Gutters.smallVMargin]}>
-                    {users?.map((user) => (
-                      <Pressable
-                        key={user.id}
-                        onPress={() => {
-                          openScreenWithPush(PROFILE_SCREEN_KEY, {
-                            userId: user.id,
-                            mode: 'admin',
-                          });
-                        }}>
-                        <View
-                          style={[
-                            Layout.colCenter,
-                            Gutters.tinyRMargin,
-                            Gutters.tinyBMargin,
-                            styles.userContainer,
-                          ]}>
-                          <Avatar
-                            key={user.id}
-                            uri={user.profileImage?.small || DEFAULT_IMAGE}
-                            size="big"
-                          />
-                          <Text>{user.firstName}</Text>
-                        </View>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
-              ))}
-        </View>
-      </ScrollView>
+                ))}
+          </View>
+        </ScrollView>
+      </View>
     </>
   );
 };

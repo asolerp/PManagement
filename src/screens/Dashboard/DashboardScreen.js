@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, Text, useWindowDimensions} from 'react-native';
 
 // Components
@@ -22,8 +22,9 @@ import {GlobalStats} from '../../components/Dashboard/GlobalStats';
 import {HousesFilter} from '../../components/Dashboard/HousesFilter';
 import theme from '../../Theme/Theme';
 import {HDivider} from '../../components/UI/HDivider';
+import Orientation from 'react-native-orientation-locker';
 
-const DashboardScreen = () => {
+const DashboardScreen = ({navigation}) => {
   const [index, setIndex] = useState(0);
   const {filters, setFilters} = useContext(FiltersContext);
 
@@ -50,6 +51,16 @@ const DashboardScreen = () => {
         return null;
     }
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      Orientation.unlockAllOrientations();
+      Orientation.lockToPortrait();
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <>

@@ -48,7 +48,7 @@ const HousesScreen = () => {
 
   return (
     <React.Fragment>
-      <PageLayout safe titleLefSide={true}>
+      <PageLayout safe titleLefSide={true} edges={['top']}>
         <AddButton
           iconName="add"
           onPress={() => handleNewHome()}
@@ -67,6 +67,7 @@ const HousesScreen = () => {
                   contentContainerStyle={[
                     Layout.flexGrow,
                     Layout.alignItemsCenter,
+                    theme.pB10,
                   ]}
                 />
               </>

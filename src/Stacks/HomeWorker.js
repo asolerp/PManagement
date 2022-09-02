@@ -9,6 +9,7 @@ import {Platform} from 'react-native';
 import {
   DASHBOARD_WORKER_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
+  QUADRANT_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import DashboardWorkerScreen from '../Screens/DashboardWorker/DashboardWorker';
 
@@ -20,6 +21,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Colors} from '../Theme/Variables';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../Store/User/userSlice';
+import {QuadrantScreen} from '../Screens/Quadrant';
 
 const {Navigator, Screen} = createBottomTabNavigator();
 
@@ -60,6 +62,24 @@ const HomeWorker = () => {
               focused={focused}
               color={Colors.pm}
             />
+          ),
+        })}
+      />
+      <Screen
+        name={t(tabNameByScreen[QUADRANT_SCREEN_KEY])}
+        initialParams={{screenKey: QUADRANT_SCREEN_KEY}}
+        component={QuadrantScreen}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisible(route),
+          tabBarIcon: ({focused, color, size}) => (
+            <>
+              <Icon
+                name={focused ? 'grid' : 'grid-outline'}
+                size={25}
+                focused={focused}
+                color={Colors.pm}
+              />
+            </>
           ),
         })}
       />

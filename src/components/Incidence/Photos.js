@@ -20,7 +20,7 @@ import {useTheme} from '../../Theme';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {Colors} from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {handleImagePicker} from '../../utils/imageFunctions';
+
 import {INCIDENCES} from '../../utils/firebaseKeys';
 import {usePhotos} from '../../utils/usePhotos';
 import {parseImages} from './utils/parserImages';

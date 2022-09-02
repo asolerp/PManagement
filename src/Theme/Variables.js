@@ -1,3 +1,5 @@
+import theme from './Theme';
+
 // Colors
 export const Colors = {
   white: '#FFFFFF',
@@ -27,6 +29,10 @@ export const Colors = {
 };
 
 export const Variants = {
+  info: {
+    backgroundColor: `${theme.bgInfo.backgroundColor}30`,
+    color: theme.textInfo.color,
+  },
   pm: {
     backgroundColor: Colors.pmLow,
     color: Colors.pm,
