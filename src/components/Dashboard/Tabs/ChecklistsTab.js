@@ -5,7 +5,7 @@ import {userSelector} from '../../../Store/User/userSlice';
 
 import theme from '../../../Theme/Theme';
 import ChecklistList from '../../Lists/ChecklistList';
-export const ChecklistsTab = ({filters}) => {
+export const ChecklistsTab = ({filters, scrollEnabled}) => {
   const user = useSelector(userSelector);
 
   const isAdmin = user?.role === 'admin';
@@ -13,6 +13,7 @@ export const ChecklistsTab = ({filters}) => {
   return (
     <View style={[theme.flex1]}>
       <ChecklistList
+        scrollEnabled={scrollEnabled}
         uid={!isAdmin && user?.id}
         workers={filters?.workers}
         houses={filters?.houses}

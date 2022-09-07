@@ -20,6 +20,7 @@ import {useLocales} from './utils/useLocales';
 import moment from 'moment';
 import {useNotification} from './lib/notification/notificationHooks';
 import {LoadinModalProvider} from './context/loadinModalContext';
+import {initRemoteConfig} from './lib/featureToggle';
 
 const CustomFallback = (props) => (
   <View style={{flex: 1}}>
@@ -30,6 +31,12 @@ const CustomFallback = (props) => (
 const App = () => {
   useNotification();
   const {locale} = useLocales();
+
+  useEffect(() => {
+    (async () => {
+      await initRemoteConfig();
+    })();
+  });
 
   useEffect(() => {
     const init = async () => {

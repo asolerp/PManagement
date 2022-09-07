@@ -19,7 +19,7 @@ import theme from '../../Theme/Theme';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
 
-const JobsList = ({uid, houses, workers}) => {
+const JobsList = ({uid, houses, workers, scrollEnabled}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
 
@@ -63,6 +63,7 @@ const JobsList = ({uid, houses, workers}) => {
     <>
       {loading && <DashboardSectionSkeleton />}
       <FlatList
+        scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={[theme.mB2]}>
@@ -81,6 +82,7 @@ const JobsList = ({uid, houses, workers}) => {
               </Text>
             </View>
             <FlatList
+              scrollEnabled={scrollEnabled}
               ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
               showsHorizontalScrollIndicator={false}
               data={filteredList

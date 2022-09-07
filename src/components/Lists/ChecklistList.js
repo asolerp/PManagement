@@ -17,7 +17,7 @@ import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
 
-const ChecklistList = ({uid, house, houses, workers, time}) => {
+const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
 
@@ -75,6 +75,7 @@ const ChecklistList = ({uid, house, houses, workers, time}) => {
     <View style={[theme.flex1]}>
       {loading && <DashboardSectionSkeleton />}
       <FlatList
+        scrollEnabled={scrollEnabled}
         ListHeaderComponent={
           <View style={[theme.mT5, theme.mB2]}>
             <Text style={[theme.fontSansBold, theme.textXl, theme.textGray900]}>
@@ -98,6 +99,7 @@ const ChecklistList = ({uid, house, houses, workers, time}) => {
               </Text>
             </View>
             <FlatList
+              scrollEnabled={scrollEnabled}
               ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
               showsHorizontalScrollIndicator={false}
               data={filteredList

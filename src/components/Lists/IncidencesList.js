@@ -17,7 +17,7 @@ import theme from '../../Theme/Theme';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
 
-const IncidencesList = ({uid, houses, workers, state}) => {
+const IncidencesList = ({uid, houses, workers, state, scrollEnabled}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
 
@@ -68,6 +68,7 @@ const IncidencesList = ({uid, houses, workers, state}) => {
     <View style={[theme.flex1]}>
       {loading && <DashboardSectionSkeleton />}
       <FlatList
+        scrollEnabled={scrollEnabled}
         nestedScrollEnabled
         ListHeaderComponent={
           <View style={[theme.mB2]}>
@@ -95,6 +96,7 @@ const IncidencesList = ({uid, houses, workers, state}) => {
               </Text>
             </View>
             <FlatList
+              scrollEnabled={scrollEnabled}
               ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
               showsHorizontalScrollIndicator={false}
               data={filteredList

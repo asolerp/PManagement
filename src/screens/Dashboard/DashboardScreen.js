@@ -23,10 +23,15 @@ import {HousesFilter} from '../../components/Dashboard/HousesFilter';
 import theme from '../../Theme/Theme';
 import {HDivider} from '../../components/UI/HDivider';
 import Orientation from 'react-native-orientation-locker';
+import {PanGestureHandler} from 'react-native-gesture-handler';
+import {useAnimatedContainer} from './hooks/useAnimatedContainer';
+import Animated from 'react-native-reanimated';
 
 const DashboardScreen = ({navigation}) => {
   const [index, setIndex] = useState(0);
   const {filters, setFilters} = useContext(FiltersContext);
+  const {isScrollActive, gestureHandler, containerStyles} =
+    useAnimatedContainer();
 
   const [routes] = useState([
     {key: 'checklists', title: 'Checklists'},
@@ -42,11 +47,15 @@ const DashboardScreen = ({navigation}) => {
   const renderScene = ({route}) => {
     switch (route.key) {
       case 'checklists':
-        return <ChecklistsTab filters={filters} />;
+        return (
+          <ChecklistsTab filters={filters} scrollEnabled={isScrollActive} />
+        );
       case 'incidences':
-        return <IncidencesTab filters={filters} />;
+        return (
+          <IncidencesTab filters={filters} scrollEnabled={isScrollActive} />
+        );
       case 'jobs':
-        return <JobsTab filters={filters} />;
+        return <JobsTab filters={filters} scrollEnabled={isScrollActive} />;
       default:
         return null;
     }
@@ -88,33 +97,55 @@ const DashboardScreen = ({navigation}) => {
               }}
             />
             <HDivider style={[theme.mY4]} />
-            <View style={[theme.flex1, theme.pX4]}>
-              <TabView
-                renderTabBar={(props) => (
-                  <TabBar
-                    {...props}
-                    style={styles.tabBarContainerStyle}
-                    indicatorStyle={styles.indicatorStyle}
-                    renderLabel={({route, focused}) => {
-                      return (
-                        <Text
-                          style={[
-                            {color: focused ? Colors.pm : Colors.gray800},
-                            styles.tabTextStyle,
-                          ]}>
-                          {route.title}
-                        </Text>
-                      );
-                    }}
+            <PanGestureHandler
+              // enabled={!disableGestures}
+              onGestureEvent={gestureHandler}>
+              <Animated.View
+                style={[
+                  theme.flexGrow,
+                  theme.bgWhite,
+                  // theme.bgWarning,
+                  theme.pX4,
+                  containerStyles,
+                ]}>
+                <View style={[theme.itemsCenter, theme.mT2]}>
+                  <View
+                    style={[
+                      theme.w8,
+                      theme.h2,
+                      theme.bgGray200,
+                      theme.roundedSm,
+                    ]}
                   />
-                )}
-                navigationState={{index, routes}}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{width: layout.width, height: layout.height}}
-                sceneContainerStyle={{flex: 1}}
-              />
-            </View>
+                </View>
+                <TabView
+                  renderTabBar={(props) => (
+                    <TabBar
+                      {...props}
+                      style={styles.tabBarContainerStyle}
+                      indicatorStyle={styles.indicatorStyle}
+                      renderLabel={({route, focused}) => {
+                        return (
+                          <Text
+                            style={[
+                              {color: focused ? Colors.pm : Colors.gray800},
+                              styles.tabTextStyle,
+                            ]}>
+                            {route.title}
+                          </Text>
+                        );
+                      }}
+                    />
+                  )}
+                  navigationState={{index, routes}}
+                  renderScene={renderScene}
+                  onIndexChange={setIndex}
+                  initialLayout={{width: layout.width, height: layout.height}}
+                  sceneContainerStyle={{flex: 1}}
+                  style={[theme.flexGrow, {marginBottom: -130}]}
+                />
+              </Animated.View>
+            </PanGestureHandler>
           </View>
         </View>
       </PageLayout>
