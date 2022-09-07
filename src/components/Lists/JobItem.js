@@ -33,7 +33,7 @@ const JobItem = ({item, fullWidth}) => {
         title={taksDescByLocale}
         subtitle={item?.observations}
         counter={noReadCounter}
-        house={item?.house?.[0].houseName}
+        house={item?.house?.houseName}
         workers={item?.workers}
       />
     );
@@ -50,7 +50,7 @@ const JobItem = ({item, fullWidth}) => {
       title={taksDescByLocale}
       subtitle={item?.observations}
       counter={noReadCounter}
-      house={item?.house?.[0].houseName}
+      house={item?.house?.houseName}
       workers={item?.workers}
       fullWidth={fullWidth}
     />

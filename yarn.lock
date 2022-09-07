@@ -1619,6 +1619,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-13.1.1.tgz#fbf91a8126dedf7088db65a64ae4ff1bc17d6470"
   integrity sha512-O5+WRZy9PHMHSzg0U2JotJ661ZBKP/92eTZeStaVcrfKA6miPiaNDLX4oYxu28AfwckHiwyLgM3SasTTYt15gA==
 
+"@react-native-firebase/remote-config@^15.4.0":
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-15.4.0.tgz#793161f2364db80873dd3fefb7372b833b08abc2"
+  integrity sha512-jFdC2NT85fqvZFcT5BEY/CY4YlMZyEu7U8BksvYBMlrORalGpc/V/jgaZ7zJzjeBMrP6h8AutXKI3R/JVhgXSg==
+
 "@react-native-firebase/storage@^13.1.0":
   version "13.1.1"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-13.1.1.tgz#bb519055dbba49e42770082dd4bda837cd907329"

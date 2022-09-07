@@ -91,7 +91,7 @@ const Info = () => {
             ]}>
             <View>
               <Badge
-                text={job?.house?.[0].houseName}
+                text={job?.house?.houseName}
                 variant="purple"
                 containerStyle={Gutters.smallVMargin}
               />
@@ -153,18 +153,18 @@ const Info = () => {
           <FastImage
             style={styles.houseImage}
             source={{
-              uri: job?.house && job?.house[0]?.houseImage?.original,
+              uri: job?.house && job?.house?.houseImage?.original,
               priority: FastImage.priority.normal,
             }}
           />
           <Badge
             label={t('houses.house_municipality') + ': '}
-            text={job?.house?.[0]?.municipio}
+            text={job?.house?.municipio}
             containerStyle={Gutters.smallBMargin}
           />
           <Badge
             label={t('houses.house_street') + ': '}
-            text={job?.house?.[0]?.street}
+            text={job?.house?.street}
             variant="warning"
           />
         </View>
