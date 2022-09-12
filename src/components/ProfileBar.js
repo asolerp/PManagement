@@ -48,7 +48,8 @@ const ProfileBar = () => {
             onPress={() =>
               userProfile?.role === 'admin' &&
               openScreenWithPush(PROFILE_SCREEN_KEY, {
-                userId: userProfile?.id,
+                mode: 'admin',
+                user: userProfile,
               })
             }>
             <Image

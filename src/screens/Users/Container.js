@@ -85,7 +85,7 @@ const Container = () => {
                           key={user.id}
                           onPress={() => {
                             openScreenWithPush(PROFILE_SCREEN_KEY, {
-                              userId: user.id,
+                              user,
                               mode: 'admin',
                             });
                           }}>

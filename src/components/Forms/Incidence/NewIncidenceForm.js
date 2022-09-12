@@ -73,16 +73,18 @@ const NewIncidenceForm = () => {
         <CustomInput
           title={t('common.house')}
           subtitle={
-            <View style={{flexDirection: 'row'}}>
-              {incidence?.house?.value.map((house, i) => (
-                <View key={i}>
-                  <Text style={styles.subtitle}>{house.houseName}</Text>
-                  {incidence?.house?.value?.length - 1 !== i && (
-                    <Text style={styles.subtitle}> & </Text>
-                  )}
-                </View>
-              ))}
-            </View>
+            incidence?.house?.value && (
+              <View style={{flexDirection: 'row'}}>
+                {incidence?.house?.value.map((house, i) => (
+                  <View key={i}>
+                    <Text style={styles.subtitle}>{house.houseName}</Text>
+                    {incidence?.house?.value?.length - 1 !== i && (
+                      <Text style={styles.subtitle}> & </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )
           }
           iconProps={{name: 'house', color: '#55A5AD'}}
           onPress={() => {

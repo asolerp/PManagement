@@ -14,6 +14,7 @@ import {TouchableWithoutFeedback} from 'react-native';
 import {info} from '../../../lib/logging';
 import {useTranslation} from 'react-i18next';
 import {TextInputController} from '../TextInputController';
+import theme from '../../../Theme/Theme';
 
 const LoginForm = () => {
   const {
@@ -60,7 +61,7 @@ const LoginForm = () => {
         control={control}
         errors={errors}
         name="username"
-        style={styles.input}
+        style={[styles.input]}
         inputProps={{
           autoCapitalize: 'none',
           placeholderTextColor: 'white',
@@ -82,7 +83,7 @@ const LoginForm = () => {
         }}
       />
       <TouchableWithoutFeedback onPress={() => resetPassword()}>
-        <Text style={styles.forgotText}>{t('login.forgot')}</Text>
+        <Text style={[styles.forgotText, theme.mT2]}>{t('login.forgot')}</Text>
       </TouchableWithoutFeedback>
       <View style={styles.buttonWrapper}>
         <CustomButton
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderRadius: 10,
+    fontSize: 18,
     padding: 10,
     borderColor: '#EAEAEA',
     marginTop: 10,

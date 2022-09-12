@@ -25,6 +25,7 @@ export const useNewUserForm = (docId) => {
     user?.email &&
     user?.phone &&
     user?.role &&
+    user?.language &&
     user?.gender;
 
   const createUser = async (form) => {
@@ -34,25 +35,27 @@ export const useNewUserForm = (docId) => {
       await createNewUser({
         name: form?.name,
         surname: form?.surname,
+        language: form?.language,
         gender: form?.gender,
         email: form?.email,
         phone: form?.phone,
         role: form?.role,
       });
+      popScreen();
     } catch (err) {
       error({
-        message: err.message,
+        message: 'Comprueba que el email es correcto y no está en uso',
         track: true,
         asToast: true,
       });
     } finally {
       setLoading(false);
       setVisible(false);
-      popScreen();
     }
   };
 
   const editUser = async ({userId, form}) => {
+    console.log(form);
     try {
       setVisible(true);
       setLoading(true);
@@ -68,16 +71,16 @@ export const useNewUserForm = (docId) => {
       } else {
         await updateFirebase(userId, {...user});
       }
+      popScreen();
     } catch (err) {
       error({
-        message: err.message,
+        message: 'Comprueba que el email es correcto y no está en uso',
         track: true,
         asToast: true,
       });
     } finally {
       setVisible(false);
       setLoading(false);
-      popScreen();
     }
   };
 

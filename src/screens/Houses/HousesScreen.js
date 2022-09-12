@@ -57,23 +57,25 @@ const HousesScreen = () => {
         <View style={styles.container}>
           <ScreenHeader title={t('houses.title')} />
           <View style={styles.homesScreen}>
-            {houses ? (
-              <>
-                <FlatList
-                  data={houses}
-                  renderItem={renderItem}
-                  keyExtractor={(item) => item.id}
-                  showsVerticalScrollIndicator={false}
-                  contentContainerStyle={[
-                    Layout.flexGrow,
-                    Layout.alignItemsCenter,
-                    theme.pB10,
-                  ]}
-                />
-              </>
-            ) : (
-              <Text>{t('houses.no_found')}</Text>
-            )}
+            <FlatList
+              data={houses}
+              ListEmptyComponent={() => (
+                <View style={[theme.wFull, theme.mT10]}>
+                  <Text style={[theme.fontSans]}>
+                    No hay creada ninguna casa. Crear tu primera casa para poder
+                    empezar a asignar trabajos a tus trabajadores
+                  </Text>
+                </View>
+              )}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={[
+                Layout.flexGrow,
+                Layout.alignItemsCenter,
+                theme.pB10,
+              ]}
+            />
           </View>
         </View>
       </PageLayout>

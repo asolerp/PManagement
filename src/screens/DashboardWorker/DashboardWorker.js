@@ -24,7 +24,9 @@ import {HousesFilter} from '../../components/Dashboard/HousesFilter';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import theme from '../../Theme/Theme';
-import {ScrollView} from 'react-native-gesture-handler';
+import {PanGestureHandler, ScrollView} from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+import {useAnimatedContainer} from '../Dashboard/hooks/useAnimatedContainer';
 
 const DashboardWorkerScreen = () => {
   const [index, setIndex] = useState(0);
@@ -38,17 +40,22 @@ const DashboardWorkerScreen = () => {
   const user = useSelector(userSelector);
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
-
+  const {isScrollActive, gestureHandler, containerStyles} =
+    useAnimatedContainer();
   const layout = useWindowDimensions();
 
   const renderScene = ({route}) => {
     switch (route.key) {
       case 'checklists':
-        return <ChecklistsTab filters={filters} />;
+        return (
+          <ChecklistsTab filters={filters} scrollEnabled={isScrollActive} />
+        );
       case 'incidences':
-        return <IncidencesTab filters={filters} />;
+        return (
+          <IncidencesTab filters={filters} scrollEnabled={isScrollActive} />
+        );
       case 'jobs':
-        return <JobsTab filters={filters} />;
+        return <JobsTab filters={filters} scrollEnabled={isScrollActive} />;
       default:
         return null;
     }
@@ -59,8 +66,7 @@ const DashboardWorkerScreen = () => {
       <PageLayout
         statusBar="light-content"
         withTitle={false}
-        withPadding={false}
-        containerStyles={{backgroundColor: Colors.gray100}}>
+        withPadding={false}>
         <ActionButtons />
         <View style={[Layout.grow]}>
           <View style={[styles.profileBarContainerStyle]}>
@@ -68,18 +74,38 @@ const DashboardWorkerScreen = () => {
           </View>
 
           <View style={[Layout.grow, styles.container]}>
-            <GlobalStats onPressStat={setIndex} uid={user?.id} />
-            <View style={[theme.flexGrow]}>
-              <ScrollView contentContainerStyle={[theme.flexGrow]}>
-                <HousesFilter
-                  houses={filters.houses}
-                  onClickHouse={(houses) => {
-                    setFilters((oldFilters) => ({
-                      ...oldFilters,
-                      houses,
-                    }));
-                  }}
-                />
+            <View style={[theme.pX4]}>
+              <GlobalStats onPressStat={setIndex} uid={user?.id} />
+            </View>
+
+            <HousesFilter
+              houses={filters.houses}
+              onClickHouse={(houses) => {
+                setFilters((oldFilters) => ({
+                  ...oldFilters,
+                  houses,
+                }));
+              }}
+            />
+            <PanGestureHandler onGestureEvent={gestureHandler}>
+              <Animated.View
+                style={[
+                  theme.flexGrow,
+                  theme.bgWhite,
+                  // theme.bgWarning,
+                  theme.pX4,
+                  containerStyles,
+                ]}>
+                <View style={[theme.itemsCenter, theme.mT2]}>
+                  <View
+                    style={[
+                      theme.w8,
+                      theme.h2,
+                      theme.bgGray200,
+                      theme.roundedSm,
+                    ]}
+                  />
+                </View>
                 <TabView
                   renderTabBar={(props) => (
                     <TabBar
@@ -105,8 +131,8 @@ const DashboardWorkerScreen = () => {
                   initialLayout={{width: layout.width}}
                   style={[Layout.fill]}
                 />
-              </ScrollView>
-            </View>
+              </Animated.View>
+            </PanGestureHandler>
           </View>
         </View>
       </PageLayout>
@@ -116,8 +142,7 @@ const DashboardWorkerScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
-    flex: 1,
+    paddingHorizontal: 0,
   },
   profileBarContainerStyle: {
     backgroundColor: Colors.pm,

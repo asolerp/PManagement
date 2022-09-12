@@ -15,6 +15,7 @@ import LoginForm from '../../components/Forms/Auth/LoginForm';
 import {KeyboardAvoidingView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useKeyboard} from '../../hooks/useKeyboard';
+import theme from '../../Theme/Theme';
 
 export const LOGIN_SCREEN_KEY = 'loginScreen';
 const isAndroid = Platform.OS === 'android';
@@ -24,6 +25,7 @@ const LoginScreen = () => {
   const isVisible = heightScreen > 700;
   const {isKeyboardVisible} = useKeyboard();
   const {t} = useTranslation();
+
   return (
     <LinearGradient colors={['#126D9B', '#67B26F']} style={styles.gradient}>
       <SafeAreaView style={{flex: 1}}>
@@ -40,7 +42,7 @@ const LoginScreen = () => {
                 />
               </View>
             )}
-            <View style={styles.welcomeWrapper}>
+            <View style={[styles.welcomeWrapper, theme.mB20]}>
               <Text style={styles.welcomeText}>{t('login.welcome')}</Text>
               <Text style={styles.welcomeTextSub}>{t('login.login')}</Text>
             </View>

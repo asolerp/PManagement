@@ -7,7 +7,7 @@ const sendNewUserConfirmationEmail = async ({email, password}) => {
     subject: 'Bienvenido a la app de Port Management',
     html: `
         <h1>Bienvenido!!</h1>
-        <p>Se te ha dado de alta en la aplicación para que tengas acceso a la visualización y gestión de las tareas que se te asignen.</p>
+        <p>Se te ha dado de alta en la aplicación de Port Management para que tengas acceso a la visualización y gestión de las tareas que se te asignen.</p>
         <p>
         <b>Usuario: </b>${email}<br>
         </p>

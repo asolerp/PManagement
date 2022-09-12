@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import {Pressable, Text, FlatList, View} from 'react-native';
 
@@ -16,12 +16,43 @@ import theme from '../../Theme/Theme';
 
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
+import {useState} from 'react';
+import moment from 'moment';
 
 const IncidencesList = ({uid, houses, workers, state, scrollEnabled}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
+  const [oldIncidences, setOldIncidences] = useState();
+
+  const start = moment(new Date()).subtract(7, 'days');
+  const end = moment(new Date()).add(1, 'days');
 
   let firestoreQuery;
+
+  useEffect(() => {
+    const getOldIncidences = async () => {
+      let query = firestore()
+        .collection('incidences')
+        .where('done', '==', true);
+
+      if (uid) {
+        query = query
+          .where('workersId', 'array-contains', uid)
+          .where('date', '>', new Date(start))
+          .where('date', '<', new Date(end));
+      }
+
+      query = query
+        .where('date', '>', new Date(start))
+        .where('date', '<', new Date(end));
+
+      const response = await query.get();
+      setOldIncidences(
+        response.docs.map((doc) => ({id: doc.id, ...doc.data()})),
+      );
+    };
+    getOldIncidences();
+  }, [uid, end, start]);
 
   if (uid) {
     firestoreQuery = firestore()
@@ -99,9 +130,7 @@ const IncidencesList = ({uid, houses, workers, state, scrollEnabled}) => {
               scrollEnabled={scrollEnabled}
               ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
               showsHorizontalScrollIndicator={false}
-              data={filteredList
-                ?.filter((item) => item.done)
-                .sort((a, b) => sortByDate(a, b, 'desc'))}
+              data={oldIncidences?.sort((a, b) => sortByDate(a, b, 'desc'))}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
               style={[theme.mT3]}

@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
 
 // UI
@@ -16,7 +17,7 @@ import CustomButton from '../../components/Elements/CustomButton';
 import {useSelector} from 'react-redux';
 
 //Firebase
-import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
+import firestore from '@react-native-firebase/firestore';
 
 import auth from '@react-native-firebase/auth';
 
@@ -42,6 +43,7 @@ import {useChoseImage} from '../../hooks/useChoseImage';
 import {Colors} from '../../Theme/Variables';
 
 import FastImage from 'react-native-fast-image';
+import theme from '../../Theme/Theme';
 
 const styles = StyleSheet.create({
   input: {
@@ -96,7 +98,7 @@ const styles = StyleSheet.create({
 });
 
 const ProfileScreen = ({route}) => {
-  const {userId} = route.params;
+  const {user, mode} = route.params;
 
   const [isPickerVisibleRole, setIsPickerVisibleRole] = useState(false);
   const [isPickerVisibleGender, setIsPickerVisibleGender] = useState(false);
@@ -115,16 +117,11 @@ const ProfileScreen = ({route}) => {
   const {Layout, Gutters} = useTheme();
 
   const {handlePressImage} = useChoseImage(setNewImage);
-  const user = useSelector(userSelector);
+  const currentUser = useSelector(userSelector);
   const {t} = useTranslation();
 
   const defaultImg =
     'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
-
-  const {document: userLoggedIn} = useGetDocFirebase(
-    'users',
-    userId || user.id,
-  );
 
   const logOut = async () => {
     try {
@@ -139,29 +136,37 @@ const ProfileScreen = ({route}) => {
   };
 
   useEffect(() => {
-    if (userLoggedIn) {
-      setInfoProfile(userLoggedIn);
+    const getCurrentUserData = async () => {
+      const userQuery = await firestore()
+        .collection('users')
+        .doc(currentUser.id)
+        .get();
+      const userResponse = {id: userQuery.id, ...userQuery.data()};
+      setInfoProfile(userResponse);
+    };
+    if (user) {
+      setInfoProfile(user);
+    } else {
+      getCurrentUserData();
     }
-  }, [userLoggedIn, setInfoProfile]);
-
-  console.log('lOGEDIN', userLoggedIn);
+  }, [user, setInfoProfile, currentUser.id]);
 
   return (
     <PageLayout
       safe
-      edges={userLoggedIn.role === 'worker' ? ['top'] : ['top', 'bottom']}
+      edges={mode === 'admin' ? ['top', 'bottom'] : ['top']}
       titleRightSide={
         <PageOptionsScreen
           editable={false}
           collection={USERS}
-          docId={userId || user?.id}
-          showDelete={userId !== user?.id}
+          docId={infoProfile?.id}
+          showDelete={currentUser.id !== infoProfile?.id}
           duplicate={false}
         />
       }
       footer={
         <>
-          {userId === user.id && (
+          {currentUser.id === infoProfile?.id && (
             <CustomButton
               type="clear"
               styled="rounded"
@@ -169,22 +174,22 @@ const ProfileScreen = ({route}) => {
               onPress={() => logOut()}
             />
           )}
-          <View style={[Gutters.smallTMargin]}>
+          <View style={[Gutters.smallTMargin, theme.mB2]}>
             <CustomButton
               styled="rounded"
               title={t('profile.edit')}
-              onPress={() => handleEdit(userId)}
+              onPress={() => handleEdit(currentUser.id)}
             />
           </View>
         </>
       }
       titleLefSide={true}
-      backButton={user?.role === 'admin'}>
+      backButton={currentUser?.role === 'admin'}>
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <CustomPicker
           isPickerVisible={isPickerVisibleRole}
           closePicker={() => setIsPickerVisibleRole(false)}
-          value={user?.role}
+          value={infoProfile?.role}
           setValue={(role) => {
             setInfoProfile({...infoProfile, role: role});
           }}
@@ -287,51 +292,59 @@ const ProfileScreen = ({route}) => {
             />
 
             <Text style={styles.inputLabel}>{t('profile.gender') + ': '}</Text>
-
-            <TextInput
-              editable={false}
-              style={[styles.input]}
-              placeholder={t('profile.gender')}
-              onPressOut={() => setIsPickerVisibleGender(true)}
-              value={
-                genderOptions?.find((g) => g.value === infoProfile?.gender)
-                  ?.label || ''
-              }
-            />
+            <Pressable onPress={() => setIsPickerVisibleGender(true)}>
+              <View pointerEvents="none">
+                <TextInput
+                  editable={false}
+                  style={[styles.input]}
+                  placeholder={t('profile.gender')}
+                  value={
+                    genderOptions?.find((g) => g.value === infoProfile?.gender)
+                      ?.label || ''
+                  }
+                />
+              </View>
+            </Pressable>
 
             <Text style={styles.inputLabel}>
               {t('profile.language') + ': '}
             </Text>
-
-            <TextInput
-              editable={false}
-              style={[styles.input]}
-              placeholder={t('profile.language')}
-              onPressOut={() => setIsPickerVisibleLanguage(true)}
-              value={
-                languageOptions.find((g) => g.value === infoProfile?.language)
-                  ?.label || ''
-              }
-            />
-            {userLoggedIn.role === 'admin' && (
+            <Pressable onPress={() => setIsPickerVisibleLanguage(true)}>
+              <View pointerEvents="none">
+                <TextInput
+                  editable={false}
+                  style={[styles.input]}
+                  placeholder={t('profile.language')}
+                  value={
+                    languageOptions.find(
+                      (g) => g.value === infoProfile?.language,
+                    )?.label || ''
+                  }
+                />
+              </View>
+            </Pressable>
+            {infoProfile?.role === 'admin' && (
               <>
                 <Text style={styles.inputLabel}>
                   {t('profile.role') + ': '}
                 </Text>
-                <TextInput
-                  editable={false}
-                  style={[styles.input]}
-                  placeholder={t('profile.role')}
-                  onPressOut={() => setIsPickerVisibleRole(true)}
-                  value={
-                    roleOptions.find((g) => g.value === infoProfile?.role)
-                      ?.label || ''
-                  }
-                />
+                <Pressable onPress={() => setIsPickerVisibleRole(true)}>
+                  <View pointerEvents="none">
+                    <TextInput
+                      editable={false}
+                      style={[styles.input]}
+                      placeholder={t('profile.role')}
+                      value={
+                        roleOptions.find((g) => g.value === infoProfile?.role)
+                          ?.label || ''
+                      }
+                    />
+                  </View>
+                </Pressable>
               </>
             )}
           </View>
-          {userId === user?.id && (
+          {currentUser.id === infoProfile?.id && (
             <View>
               <Text style={[styles.titleStyle, Gutters.mediumBMargin]}>
                 Contraseña

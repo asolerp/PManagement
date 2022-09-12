@@ -30,6 +30,7 @@ export const TextInputController = ({
         rules={rules}
         render={({field: {onChange, onBlur, value}}) => (
           <TextInput
+            autoCapitalize="none"
             style={[styles.input, style]}
             placeholder={placeholder}
             onBlur={onBlur}

@@ -19,6 +19,7 @@
 		5F2CE82934A5A3A9F8DDC78A /* libPods-portmanagement.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E2E8260341DCA2F862EF28 /* libPods-portmanagement.a */; };
 		9C92A3BC314C6793A2CB5B41 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E6A5A495F31E99C7650ACB /* ExpoModulesProvider.swift */; };
 		D37AAD0C259DE43A0006FCE1 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = D37AAD0B259DE43A0006FCE1 /* fonts */; };
+		D3BCCA3928CB3793004E6A0A /* 1024.png in Resources */ = {isa = PBXBuildFile; fileRef = D3BCCA3828CB3793004E6A0A /* 1024.png */; };
 		D3C4ABE52762610E00BD231D /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3C4ABE42762610E00BD231D /* BootSplash.storyboard */; };
 		D3ED4DB827CE930800152D8F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D3ED4DB727CE930800152D8F /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
@@ -62,6 +63,7 @@
 		D290360AEED963A85FD47D05 /* Pods-portmanagement-portmanagementTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-portmanagement-portmanagementTests.debug.xcconfig"; path = "Target Support Files/Pods-portmanagement-portmanagementTests/Pods-portmanagement-portmanagementTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D344EFBD25F20C8100753942 /* portmanagement.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = portmanagement.entitlements; path = portmanagement/portmanagement.entitlements; sourceTree = "<group>"; };
 		D37AAD0B259DE43A0006FCE1 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
+		D3BCCA3828CB3793004E6A0A /* 1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 1024.png; path = portmanagement/Images.xcassets/AppIcon.appiconset/1024.png; sourceTree = "<group>"; };
 		D3C4ABE42762610E00BD231D /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = portmanagement/BootSplash.storyboard; sourceTree = "<group>"; };
 		D3ED4DB727CE930800152D8F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -184,6 +186,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				D3BCCA3828CB3793004E6A0A /* 1024.png */,
 				D3ED4DB727CE930800152D8F /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* portmanagement */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -365,6 +368,7 @@
 			files = (
 				D3C4ABE52762610E00BD231D /* BootSplash.storyboard in Resources */,
 				D3ED4DB827CE930800152D8F /* GoogleService-Info.plist in Resources */,
+				D3BCCA3928CB3793004E6A0A /* 1024.png in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				D37AAD0C259DE43A0006FCE1 /* fonts in Resources */,
 			);
@@ -410,6 +414,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-portmanagement-portmanagementTests/Pods-portmanagement-portmanagementTests-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleSignIn/GoogleSignIn.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
@@ -434,6 +439,7 @@
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
@@ -539,6 +545,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-portmanagement/Pods-portmanagement-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleSignIn/GoogleSignIn.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
@@ -563,6 +570,7 @@
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
@@ -744,7 +752,7 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20320222262;
+				CURRENT_PROJECT_VERSION = 202209091309;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = portmanagement/Info.plist;
@@ -774,7 +782,7 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20320222262;
+				CURRENT_PROJECT_VERSION = 202209091309;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				INFOPLIST_FILE = portmanagement/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

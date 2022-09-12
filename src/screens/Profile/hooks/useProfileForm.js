@@ -80,7 +80,6 @@ export const useProfileForm = () => {
           message: 'Contraseña actualizada correctamente',
           asToast: true,
         });
-        popScreen();
       });
   };
 

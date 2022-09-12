@@ -24,6 +24,21 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string>/Users/alberto/Desktop/Enalbis/PManagement/ios/portmanagement/Images.xcassets/AppIcon.appiconset/1024.png</string>
+			<key>CFBundleURLName</key>
+			<string>Port Management</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.355954173896-m70dgupq00a0jb60u15g8a9n2jdhiab7</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -46,11 +61,11 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires access to the camera to take a pictures of the jobs.</string>
+	<string>This app requires access to the camera to take a picture for the profile or for the jobs</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to the library to upload photos of the jobs.</string>
+	<string>This app requires access to the library to upload a picture for the profile or for the jobs</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>fonts/Ionicons.ttf</string>

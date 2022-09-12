@@ -22,6 +22,7 @@ import {Colors} from '../Theme/Variables';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../Store/User/userSlice';
 import {QuadrantScreen} from '../Screens/Quadrant';
+import {isFeatureEnabled, REGISTRY} from '../lib/featureToggle';
 
 const {Navigator, Screen} = createBottomTabNavigator();
 
@@ -65,24 +66,26 @@ const HomeWorker = () => {
           ),
         })}
       />
-      <Screen
-        name={t(tabNameByScreen[QUADRANT_SCREEN_KEY])}
-        initialParams={{screenKey: QUADRANT_SCREEN_KEY}}
-        component={QuadrantScreen}
-        options={({route}) => ({
-          tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
-            <>
-              <Icon
-                name={focused ? 'grid' : 'grid-outline'}
-                size={25}
-                focused={focused}
-                color={Colors.pm}
-              />
-            </>
-          ),
-        })}
-      />
+      {isFeatureEnabled(REGISTRY.FEATURE_QUADRANT) && (
+        <Screen
+          name={t(tabNameByScreen[QUADRANT_SCREEN_KEY])}
+          initialParams={{screenKey: QUADRANT_SCREEN_KEY}}
+          component={QuadrantScreen}
+          options={({route}) => ({
+            tabBarVisible: getTabBarVisible(route),
+            tabBarIcon: ({focused, color, size}) => (
+              <>
+                <Icon
+                  name={focused ? 'grid' : 'grid-outline'}
+                  size={25}
+                  focused={focused}
+                  color={Colors.pm}
+                />
+              </>
+            ),
+          })}
+        />
+      )}
       <Screen
         name={t(tabNameByScreen[PROFILE_SCREEN_KEY])}
         initialParams={{screenKey: PROFILE_SCREEN_KEY, userId: user?.id}}

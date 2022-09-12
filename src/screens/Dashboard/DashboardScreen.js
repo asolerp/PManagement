@@ -97,9 +97,7 @@ const DashboardScreen = ({navigation}) => {
               }}
             />
             <HDivider style={[theme.mY4]} />
-            <PanGestureHandler
-              // enabled={!disableGestures}
-              onGestureEvent={gestureHandler}>
+            <PanGestureHandler onGestureEvent={gestureHandler}>
               <Animated.View
                 style={[
                   theme.flexGrow,

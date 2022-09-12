@@ -259,19 +259,22 @@ const CheckListForm = ({edit, docId}) => {
         }}
       />
       <Spacer space={4} />
+      {console.log('HOUSE', house)}
       <CustomInput
         title={t('common.house')}
         subtitle={
-          <View style={{flexDirection: 'row'}}>
-            {house?.value?.map((house, i) => (
-              <View key={house.id}>
-                <Text style={styles.subtitle}>{house.houseName}</Text>
-                {house?.value?.length > 1 && (
-                  <Text style={styles.subtitle}> & </Text>
-                )}
-              </View>
-            ))}
-          </View>
+          house?.value && (
+            <View style={{flexDirection: 'row'}}>
+              {house?.value?.map((house, i) => (
+                <View key={house.id}>
+                  <Text style={styles.subtitle}>{house.houseName}</Text>
+                  {house?.value?.length > 1 && (
+                    <Text style={styles.subtitle}> & </Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          )
         }
         iconProps={{name: 'house', color: '#55A5AD'}}
         onPress={() => {
@@ -280,19 +283,22 @@ const CheckListForm = ({edit, docId}) => {
         }}
       />
       <Spacer space={4} />
+      {console.log('WORKERS', workers)}
       <CustomInput
         title={t('common.worker')}
         subtitle={
-          <View style={{flexDirection: 'row'}}>
-            {workers?.value?.map((worker, i) => (
-              <View key={worker.id} style={[Layout.row]}>
-                <Text style={styles.subtitle}>{worker.firstName}</Text>
-                {workers?.value?.length - 1 !== i && (
-                  <Text style={styles.subtitle}> & </Text>
-                )}
-              </View>
-            ))}
-          </View>
+          workers?.value && (
+            <View style={{flexDirection: 'row'}}>
+              {workers?.value?.map((worker, i) => (
+                <View key={worker.id} style={[Layout.row]}>
+                  <Text style={styles.subtitle}>{worker.firstName}</Text>
+                  {workers?.value?.length - 1 !== i && (
+                    <Text style={styles.subtitle}> & </Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          )
         }
         iconProps={{name: 'people', color: '#55A5AD'}}
         onPress={() => {

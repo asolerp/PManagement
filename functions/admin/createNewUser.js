@@ -14,7 +14,7 @@ const createNewUser = functions
     memory: '2GB',
   })
   .https.onCall(async (data) => {
-    const {name, surname, email, phone, gender, role} = data;
+    const {name, surname, email, phone, gender, language, role} = data;
     const password = genPassword();
 
     try {
@@ -40,9 +40,11 @@ const createNewUser = functions
           role,
           email,
         });
-      sendNewUserConfirmationEmail({email, password});
+      if (role === 'worker') {
+        sendNewUserConfirmationEmail({email, password});
+      }
     } catch (err) {
-      console.log(err);
+      throw new Error(err);
     }
   });
 
