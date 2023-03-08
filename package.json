@@ -1,10 +1,10 @@
 {
   "name": "portmanagement",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios --port 9988 --simulator='Enalbis' && npx react-native start --port 9988",
+    "ios": "react-native run-ios --simulator='iPhone 14' && npx react-native start",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",

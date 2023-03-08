@@ -184,7 +184,11 @@ const HouseScreen = ({route}) => {
           ]}
           store="jobForm"
           searchBy="firstName"
-          schema={{img: 'profileImage', name: 'firstName'}}
+          schema={{
+            img: 'profileImage',
+            name: 'firstName',
+            lastname: 'lastName',
+          }}
           get={[infoHouse?.owner || house?.owner]}
           set={(owners) => setInfoHouse({...infoHouse, owner: owners[0]})}
           closeModal={() => setModalVisible(false)}
@@ -298,7 +302,7 @@ const HouseScreen = ({route}) => {
                           key={owner?.id || i}
                           style={{flexDirection: 'row'}}>
                           <Text style={styles.subtitle}>
-                            {owner?.firstName}
+                            {owner?.firstName} {owner?.lastName}
                           </Text>
                         </View>
                       ))}

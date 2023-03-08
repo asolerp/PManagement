@@ -16,6 +16,7 @@ const ItemList = ({item, schema, handleChange, active}) => {
       <Avatar uri={item?.[schema?.img]?.small || DEFAULT_IMAGE} size="big" />
       <View style={styles.infoWrapper}>
         <Text style={styles.name}>{item?.[schema.name]}</Text>
+        <Text style={styles.name}>{item?.[schema.lastname]}</Text>
       </View>
       <View style={styles.checkboxWrapper}>
         <CheckBox disabled={false} value={active} />

@@ -178,7 +178,7 @@ const ProfileScreen = ({route}) => {
             <CustomButton
               styled="rounded"
               title={t('profile.edit')}
-              onPress={() => handleEdit(currentUser.id)}
+              onPress={() => handleEdit(infoProfile.id)}
             />
           </View>
         </>

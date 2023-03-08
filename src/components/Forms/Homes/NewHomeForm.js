@@ -107,7 +107,11 @@ const NewFormHome = () => {
           ]}
           store="jobForm"
           searchBy="firstName"
-          schema={{img: 'profileImage', name: 'firstName'}}
+          schema={{
+            img: 'profileImage',
+            name: 'firstName',
+            lastname: 'lastName',
+          }}
           get={owner}
           set={(owners) => {
             setOwner(owners);
