@@ -171,7 +171,9 @@ const NewFormHome = () => {
             owner?.length > 0 && (
               <View style={{flexDirection: 'row'}}>
                 <View style={{flexDirection: 'row'}}>
-                  <Text style={styles.subtitle}>{owner[0]?.firstName}</Text>
+                  <Text style={styles.subtitle}>
+                    {owner[0]?.firstName} {owner[0]?.lastName}
+                  </Text>
                 </View>
               </View>
             )

@@ -30,7 +30,9 @@ const HouseItemList = ({house}) => {
         />
         <View style={styles.leftTop}>
           <Text style={styles.name}>{house?.houseName}</Text>
-          <Text style={styles.ownerTitle}>{house?.owner?.firstName}</Text>
+          <Text style={styles.ownerTitle}>
+            {house?.owner?.firstName} {house?.owner?.lastName}
+          </Text>
           <Text style={styles.street}>{house?.street}</Text>
           <Text style={styles.ownerTitle}>{house?.owner?.phone}</Text>
         </View>
@@ -80,7 +82,7 @@ const styles = StyleSheet.create({
     height: 180,
     borderTopLeftRadius: 20,
     borderBottomLeftRadius: 20,
-    backgroundColor: 'rgba(79,138, 163, .5)',
+    backgroundColor: 'rgba(79,138, 163, .9)',
     paddingLeft: 10,
     paddingTop: 10,
   },

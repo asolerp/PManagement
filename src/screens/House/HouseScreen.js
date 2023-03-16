@@ -318,7 +318,7 @@ const HouseScreen = ({route}) => {
                   {t('houses.owner_name') + ':'}
                 </Text>
                 <Text style={styles.infoStyle}>
-                  {infoHouse?.owner?.firstName}
+                  {infoHouse?.owner?.firstName} {infoHouse?.owner?.lastName}
                 </Text>
                 <Text style={styles.inputLabel}>
                   {t('houses.owner_phone') + ':'}
