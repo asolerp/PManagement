@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useForm, Controller} from 'react-hook-form';
 
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import CustomButton from '../../Elements/CustomButton';
 
 //Firebase
@@ -9,14 +9,16 @@ import auth from '@react-native-firebase/auth';
 
 // UI
 
-import {TextInput} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native';
 import {info} from '../../../lib/logging';
 import {useTranslation} from 'react-i18next';
 import {TextInputController} from '../TextInputController';
 import theme from '../../../Theme/Theme';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const LoginForm = () => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -67,21 +69,33 @@ const LoginForm = () => {
           placeholderTextColor: 'white',
         }}
       />
-      <TextInputController
-        placeholder={'Contraseña'}
-        rules={{
-          required: true,
-        }}
-        control={control}
-        errors={errors}
-        name="password"
-        style={styles.input}
-        inputProps={{
-          autoCapitalize: 'none',
-          secureTextEntry: true,
-          placeholderTextColor: 'white',
-        }}
-      />
+      <View>
+        <TextInputController
+          placeholder={'Contraseña'}
+          rules={{
+            required: true,
+          }}
+          right={() => (
+            <TouchableOpacity
+              onPress={() => setPasswordVisible(!passwordVisible)}>
+              <Icon
+                name={passwordVisible ? 'eye' : 'eye-off'}
+                size={25}
+                color="white"
+              />
+            </TouchableOpacity>
+          )}
+          control={control}
+          errors={errors}
+          name="password"
+          style={styles.input}
+          inputProps={{
+            autoCapitalize: 'none',
+            secureTextEntry: !passwordVisible,
+            placeholderTextColor: 'white',
+          }}
+        />
+      </View>
       <TouchableWithoutFeedback onPress={() => resetPassword()}>
         <Text style={[styles.forgotText, theme.mT2]}>{t('login.forgot')}</Text>
       </TouchableWithoutFeedback>

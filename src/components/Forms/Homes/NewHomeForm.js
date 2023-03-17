@@ -119,7 +119,7 @@ const NewFormHome = () => {
           closeModal={() => setModalVisible(false)}
         />
       </BottomModal>
-      <KeyboardAwareScrollView contentContainerStyle={{flexGrow: 1}}>
+      <KeyboardAwareScrollView>
         <ImageLoader
           onPress={() => handlePress(LIBRARY_ACTION)}
           image={houseImage}

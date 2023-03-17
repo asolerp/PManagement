@@ -11,6 +11,8 @@ import ItemList from './ItemList';
 import CustomButton from './Elements/CustomButton';
 import {useTranslation} from 'react-i18next';
 import {useTheme} from '../Theme';
+import theme from '../Theme/Theme';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const DynamicSelectorList = ({
   collection,
@@ -91,41 +93,48 @@ const DynamicSelectorList = ({
   };
 
   return (
-    <View>
-      <View style={styles.userListSelectorScreen}>
-        <SearchBar
-          placeholder={t('common.search_name')}
-          onChangeText={setSearch}
-          value={search}
-          platform="ios"
-          round
-          containerStyle={{padding: 0}}
-          inputStyle={{fontSize: 14, padding: 0}}
-        />
-        <View style={[Gutters.regularVPadding]}>
+    <>
+      <>
+        <View style={[theme.flex1]}>
+          <SearchBar
+            placeholder={t('common.search_name')}
+            onChangeText={setSearch}
+            value={search}
+            platform="ios"
+            round
+            containerStyle={[theme.p0]}
+            inputStyle={{fontSize: 14, padding: 0}}
+          />
+        </View>
+        <View style={{flex: 8}}>
           <FlatList
+            showsVerticalScrollIndicator={false}
             data={fList}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
           />
         </View>
-        <KeyboardAvoidingView behavior="padding">
-          <CustomButton
-            loading={loadingOnSave}
-            styled="rounded"
-            title={t('common.save')}
-            onPress={onSubmit}
-          />
-        </KeyboardAvoidingView>
-      </View>
-    </View>
+        <View style={[theme.flex1, theme.justifyEnd]}>
+          <KeyboardAvoidingView behavior="padding">
+            <CustomButton
+              loading={loadingOnSave}
+              styled="rounded"
+              title={t('common.save')}
+              onPress={onSubmit}
+            />
+          </KeyboardAvoidingView>
+        </View>
+      </>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {flex: 1},
   titleWrapper: {},
-  userListSelectorScreen: {},
+  userListSelectorScreen: {
+    flex: 1,
+  },
   scrollWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
