@@ -31,7 +31,6 @@ const DynamicSelectorList = ({
   const {list} = useGetFirebase(collection, order, where);
   const [selected, setSelected] = useState(get);
   const [loadingOnSave, setLoadingOnSave] = useState(false);
-  const {Gutters} = useTheme();
 
   const fList = search
     ? list.filter((item) =>

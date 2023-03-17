@@ -25,6 +25,7 @@ import {BottomModal} from '../../Modals/BottomModal';
 import {useCameraOrLibrary} from '../../../hooks/useCamerOrLibrary';
 import {imageActions} from '../../../utils/imageActions';
 import {TextInputController} from '../TextInputController';
+import theme from '../../../Theme/Theme';
 
 const LIBRARY_ACTION = 'library';
 
@@ -97,6 +98,7 @@ const NewFormHome = () => {
           setModalVisible(false);
         }}>
         <DynamicSelectorList
+          order={{field: 'firstName', type: 'asc'}}
           collection="users"
           where={[
             {
@@ -169,8 +171,8 @@ const NewFormHome = () => {
           title="Propietario"
           subtitle={
             owner?.length > 0 && (
-              <View style={{flexDirection: 'row'}}>
-                <View style={{flexDirection: 'row'}}>
+              <View style={[theme.flexRow]}>
+                <View style={[theme.flexRow]}>
                   <Text style={styles.subtitle}>
                     {owner[0]?.firstName} {owner[0]?.lastName}
                   </Text>

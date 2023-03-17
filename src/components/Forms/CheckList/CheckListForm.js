@@ -180,6 +180,7 @@ const CheckListForm = ({edit, docId}) => {
       collection="houses"
       store="jobForm"
       searchBy="houseName"
+      order={{field: 'houseName', type: 'asc'}}
       schema={{img: 'houseImage', name: 'houseName'}}
       get={house?.value || []}
       set={(house) => {

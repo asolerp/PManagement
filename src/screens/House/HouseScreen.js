@@ -175,6 +175,7 @@ const HouseScreen = ({route}) => {
         swipeDirection={null}>
         <DynamicSelectorList
           collection="users"
+          order={{field: 'firstName', type: 'asc'}}
           where={[
             {
               label: 'role',
