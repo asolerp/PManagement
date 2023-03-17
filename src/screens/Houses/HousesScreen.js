@@ -19,7 +19,9 @@ import {
 import {useTheme} from '../../Theme';
 import theme from '../../Theme/Theme';
 
-const HOUSES_QUERY = firestore().collection('houses');
+const HOUSES_QUERY = firestore()
+  .collection('houses')
+  .orderBy('houseName', 'asc');
 
 const HousesScreen = () => {
   const {t} = useTranslation();
