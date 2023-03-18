@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {useSelector, useDispatch, shallowEqual} from 'react-redux';
 
 // UI
@@ -17,6 +17,7 @@ import {useTranslation} from 'react-i18next';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {useLocales} from '../../utils/useLocales';
 import {ScreenHeader} from '../../components/Layout/ScreenHeader';
+import {TASKS} from '../../utils/firebaseKeys';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,14 +55,18 @@ const styles = StyleSheet.create({
 const NewJobTaskSelectorScreen = ({route}) => {
   const {t} = useTranslation();
   const dispatch = useDispatch();
+
+  const queryTasks = useMemo(() => {
+    return firestore().collection(TASKS);
+  }, []);
+
   const {job} = useSelector(({jobForm: {job}}) => ({job}), shallowEqual);
   const {locale} = useLocales();
-  const [tasks, loadingTasks] = useCollectionData(
-    firestore().collection('tasks'),
-    {
-      idField: 'id',
-    },
-  );
+  const [tasks, loadingTasks] = useCollectionData(queryTasks, {
+    idField: 'id',
+  });
+
+  console.log('tasks', tasks, loadingTasks);
 
   const setTaskAction = useCallback(
     (task) => dispatch(setTask({task})),

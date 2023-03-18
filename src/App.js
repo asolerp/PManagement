@@ -11,6 +11,7 @@ import ErrorBoundary from 'react-native-error-boundary';
 
 import {Provider} from 'react-redux';
 import store from './Store';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import * as RNLocalize from 'react-native-localize';
 import './Translations';
@@ -60,7 +61,9 @@ const App = () => {
       <MenuProvider>
         <LoadinModalProvider>
           <Provider store={store}>
-            <AuthRouter />
+            <GestureHandlerRootView style={{flex: 1}}>
+              <AuthRouter />
+            </GestureHandlerRootView>
             <ModalPortal />
             <Toast ref={(ref) => Toast.setRef(ref)} />
           </Provider>

@@ -35,6 +35,7 @@ export const useAnimatedContainer = () => {
 
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, ctx) => {
+      console.log('translateY.value', translateY.value);
       ctx.offsetY = translateY.value;
     },
     onActive: (event, ctx) => {

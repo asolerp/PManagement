@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flexGrow: 1,
     paddingHorizontal: 15,
+    marginTop: 10,
   },
   topSlider: {
     width: 50,
