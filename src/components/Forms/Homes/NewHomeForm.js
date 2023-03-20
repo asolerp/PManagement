@@ -99,7 +99,7 @@ const NewFormHome = () => {
           setModalVisible(false);
         }}>
         <DynamicSelectorList
-          order={{field: 'firstName', type: 'asc'}}
+          order={{field: 'firstName'}}
           collection="users"
           where={[
             {

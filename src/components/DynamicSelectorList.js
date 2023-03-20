@@ -28,15 +28,20 @@ const DynamicSelectorList = ({
 }) => {
   const {t} = useTranslation();
   const [search, setSearch] = useState();
-  const {list} = useGetFirebase(collection, order, where);
+  const {list} = useGetFirebase(collection, where);
   const [selected, setSelected] = useState(get);
   const [loadingOnSave, setLoadingOnSave] = useState(false);
 
+  console.log(list);
+
   const fList = search
-    ? list.filter((item) =>
-        item[searchBy].toLowerCase().includes(search?.toLowerCase()),
-      )
-    : list;
+    ? list
+        .sort((a, b) => a[order?.field].localeCompare(b[order?.field]))
+        .filter((item) =>
+          item[searchBy].toLowerCase().includes(search?.toLowerCase()),
+        )
+    : list &&
+      list.sort((a, b) => a[order?.field].localeCompare(b[order?.field]));
 
   const onSubmit = async () => {
     set(selected);

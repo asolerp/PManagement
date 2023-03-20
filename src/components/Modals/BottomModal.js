@@ -29,21 +29,28 @@ export const BottomModal = ({
       {/* <KeyboardAvoidingView behavior="padding"> */}
       <SafeAreaView
         edges={['top', 'bottom']}
-        style={isFixedBottom ? [] : [theme.flex1]}>
+        style={isFixedBottom ? [theme.bgWhite] : [theme.flex1]}>
         <View
           style={
             isFixedBottom ? styles.modalContainerFixed : styles.modalContainer
           }>
-          <View style={[theme.flex, theme.flexRow, theme.itemsCenter]}>
-            <View style={[theme.w14, theme.h10]} />
+          <View
+            style={[
+              theme.flex,
+              theme.flexRow,
+              theme.itemsCenter,
+              theme.mT2,
+              theme.mB4,
+            ]}>
+            <View style={[theme.w14]} />
             <View style={[theme.flexGrow, theme.itemsCenter]}>
               <View style={styles.topSlider} />
             </View>
-            <View style={[theme.w14, theme.h10]}>
+            <View style={[theme.w14]}>
               <TouchableOpacity
                 onPress={onClose}
                 style={(theme.flex1, theme.selfEnd)}>
-                <Icon name="close" size={30} color={Colors.black} />
+                <Icon name="close" size={20} color={Colors.black} />
               </TouchableOpacity>
             </View>
           </View>
