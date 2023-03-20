@@ -42,6 +42,7 @@ const NewIncidenceForm = () => {
   return (
     <View>
       <BottomModal
+        isFixedBottom={false}
         isVisible={modalVisible}
         swipeDirection={null}
         onClose={() => {

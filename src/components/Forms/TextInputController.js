@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 10,
     padding: 10,
-    color: 'white',
   },
 });
 
@@ -45,10 +44,10 @@ export const TextInputController = ({
         control={control}
         rules={rules}
         render={({field: {onChange, onBlur, value}}) => (
-          <View style={[styles.inputContainer, style]}>
+          <View style={[styles.inputContainer]}>
             <TextInput
               autoCapitalize="none"
-              style={[styles.input]}
+              style={[styles.input, style]}
               placeholder={placeholder}
               onBlur={onBlur}
               onChangeText={onChange}

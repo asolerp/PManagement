@@ -92,6 +92,7 @@ const NewFormHome = () => {
   return (
     <React.Fragment>
       <BottomModal
+        isFixedBottom={false}
         isVisible={modalVisible}
         swipeDirection={null}
         onClose={() => {

@@ -6,7 +6,6 @@ import {Text, View, TextInput, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 // UI
-import InputGroup from '../../Elements/InputGroup';
 import DynamicSelectorList from '../../DynamicSelectorList';
 import DateSelector from '../Jobs/DateSelector';
 import CustomInput from '../../Elements/CustomInput';
@@ -240,6 +239,7 @@ const CheckListForm = ({edit, docId}) => {
   return (
     <View style={[styles.newJobScreen]}>
       <BottomModal
+        isFixedBottom={modalContent === 'date'}
         swipeDirection={null}
         onClose={() => setModalVisible(false)}
         isVisible={modalVisible}>

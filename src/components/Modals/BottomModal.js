@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  Dimensions,
-  KeyboardAvoidingView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Dimensions, StyleSheet, TouchableOpacity, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useTheme} from '../../Theme';
+
 import {Colors} from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import theme from '../../Theme/Theme';
@@ -17,10 +11,9 @@ export const BottomModal = ({
   onClose,
   children,
   isVisible,
+  isFixedBottom = true,
   swipeDirection = ['down'],
 }) => {
-  const {Layout} = useTheme();
-
   return (
     <Modal
       testID={'modal'}
@@ -28,10 +21,19 @@ export const BottomModal = ({
       onBackdropPress={onClose}
       onSwipeComplete={onClose}
       swipeDirection={swipeDirection}
-      style={[theme.bgWhite, theme.p0, theme.m0]}>
+      style={
+        isFixedBottom
+          ? [theme.justifyEnd, theme.m0]
+          : [theme.bgWhite, theme.p0, theme.m0]
+      }>
       {/* <KeyboardAvoidingView behavior="padding"> */}
-      <SafeAreaView edges={['top', 'bottom']} style={{flex: 1}}>
-        <View style={styles.modalContainer}>
+      <SafeAreaView
+        edges={['top', 'bottom']}
+        style={isFixedBottom ? [] : [theme.flex1]}>
+        <View
+          style={
+            isFixedBottom ? styles.modalContainerFixed : styles.modalContainer
+          }>
           <View style={[theme.flex, theme.flexRow, theme.itemsCenter]}>
             <View style={[theme.w14, theme.h10]} />
             <View style={[theme.flexGrow, theme.itemsCenter]}>
@@ -59,6 +61,14 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 15,
     marginTop: 10,
+  },
+  modalContainerFixed: {
+    backgroundColor: 'white',
+    paddingTop: 15,
+    paddingHorizontal: 15,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: Dimensions.get('window').height * 1,
   },
   topSlider: {
     width: 50,

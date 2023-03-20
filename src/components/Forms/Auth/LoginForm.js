@@ -69,33 +69,33 @@ const LoginForm = () => {
           placeholderTextColor: 'white',
         }}
       />
-      <View>
-        <TextInputController
-          placeholder={'Contraseña'}
-          rules={{
-            required: true,
-          }}
-          right={() => (
-            <TouchableOpacity
-              onPress={() => setPasswordVisible(!passwordVisible)}>
-              <Icon
-                name={passwordVisible ? 'eye' : 'eye-off'}
-                size={25}
-                color="white"
-              />
-            </TouchableOpacity>
-          )}
-          control={control}
-          errors={errors}
-          name="password"
-          style={styles.input}
-          inputProps={{
-            autoCapitalize: 'none',
-            secureTextEntry: !passwordVisible,
-            placeholderTextColor: 'white',
-          }}
-        />
-      </View>
+      <View style={[theme.mB3]} />
+      <TextInputController
+        placeholder={'Contraseña'}
+        rules={{
+          required: true,
+        }}
+        right={() => (
+          <TouchableOpacity
+            onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Icon
+              name={passwordVisible ? 'eye' : 'eye-off'}
+              size={25}
+              color="white"
+            />
+          </TouchableOpacity>
+        )}
+        control={control}
+        errors={errors}
+        name="password"
+        style={styles.input}
+        inputProps={{
+          autoCapitalize: 'none',
+          secureTextEntry: !passwordVisible,
+          placeholderTextColor: 'white',
+        }}
+      />
+
       <TouchableWithoutFeedback onPress={() => resetPassword()}>
         <Text style={[styles.forgotText, theme.mT2]}>{t('login.forgot')}</Text>
       </TouchableWithoutFeedback>
@@ -120,13 +120,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   input: {
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 10,
     fontSize: 18,
-    padding: 10,
-    borderColor: '#EAEAEA',
-    marginTop: 10,
     color: 'white',
   },
   gradientButton: {

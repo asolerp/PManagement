@@ -168,6 +168,7 @@ const HouseScreen = ({route}) => {
   return (
     <React.Fragment>
       <BottomModal
+        isFixedBottom={false}
         isVisible={modalVisible}
         onClose={(event) => {
           setModalVisible(false);

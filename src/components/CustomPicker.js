@@ -4,6 +4,7 @@ import {Picker} from '@react-native-picker/picker';
 import {View, StyleSheet} from 'react-native';
 
 import {BottomModal} from './BottomModal';
+import theme from '../Theme/Theme';
 
 export const CustomPicker = ({
   isPickerVisible,
@@ -62,5 +63,9 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '100%',
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
+    borderRadius: 10,
+    marginVertical: 20,
   },
 });

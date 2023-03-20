@@ -46,7 +46,7 @@ const DateSelector = ({closeModal, set, get, mode = 'date'}) => {
         onDateChange={setDateSelected}
         locale={locale}
       />
-      <View style={{marginTop: 'auto'}}>
+      <View style={{marginTop: 20}}>
         <CustomButton
           styled="rounded"
           title={t('common.save')}
