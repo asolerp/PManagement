@@ -22,9 +22,10 @@ import moment from 'moment';
 import {useNotification} from './lib/notification/notificationHooks';
 import {LoadinModalProvider} from './context/loadinModalContext';
 import {initRemoteConfig} from './lib/featureToggle';
+import theme from './Theme/Theme';
 
 const CustomFallback = (props) => (
-  <View style={{flex: 1}}>
+  <View style={theme.flex1}>
     <ErrorScreen />
   </View>
 );
@@ -37,7 +38,7 @@ const App = () => {
     (async () => {
       await initRemoteConfig();
     })();
-  });
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -61,7 +62,7 @@ const App = () => {
       <MenuProvider>
         <LoadinModalProvider>
           <Provider store={store}>
-            <GestureHandlerRootView style={{flex: 1}}>
+            <GestureHandlerRootView style={[theme.flex1]}>
               <AuthRouter />
             </GestureHandlerRootView>
             <ModalPortal />
