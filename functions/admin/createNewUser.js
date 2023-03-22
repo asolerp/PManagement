@@ -34,6 +34,7 @@ const createNewUser = functions
         .set({
           firstName: name,
           lastName: surname,
+          language,
           phone,
           gender,
           profileImage: {original: DEFAULT_PHOTO_URL, small: DEFAULT_PHOTO_URL},

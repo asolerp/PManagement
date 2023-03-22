@@ -44,8 +44,6 @@ const sendPushNotificationUpdateCheckList = functions.firestore
 
         const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
 
-        console.log('[[ADMIN TOKENS]]', adminTokens);
-
         const listTokens = removeUserActionToken(
           adminTokens.concat(workersTokens),
           check.worker.token,

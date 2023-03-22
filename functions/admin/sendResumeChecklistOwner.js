@@ -85,7 +85,11 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
     from: process.env.EMAIL,
     to: email,
     subject: `🏡 CHECK LIST ${street}`,
-    html: language === 'en' ? generateEnglishEmail() : generateSpanishEmail(),
+    html: !language
+      ? generateEnglishEmail()
+      : language === 'en'
+      ? generateEnglishEmail()
+      : generateSpanishEmail(),
   };
 
   let emailTransporter = await createTransporter();

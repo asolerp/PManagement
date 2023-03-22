@@ -56,9 +56,6 @@ exports.deleteUser = deleteUser;
 
 // CHECKLISTS
 
-exports.sendPushNotificationUpdateCheckList =
-  sendPushNotificationUpdateCheckList;
-
 exports.sendPushNotificationNewChecklistMessage =
   sendPushNotificationNewChecklistMessage;
 
