@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 
 import {useSelector, shallowEqual} from 'react-redux';
 import {View, Text, StyleSheet} from 'react-native';
@@ -21,6 +21,7 @@ import {Colors} from '../../Theme/Variables';
 import PageLayout from '../../components/PageLayout';
 
 import {useTheme} from '../../Theme';
+import {useGetOwnerHouse} from './hooks/useGetOwnerHouse';
 
 const styles = StyleSheet.create({
   container: {
@@ -55,12 +56,8 @@ const styles = StyleSheet.create({
 const DashboardOwner = () => {
   const user = useSelector(userSelector, shallowEqual);
   const {Fonts, Layout, Gutters} = useTheme();
-  const [houseOwner] = useCollectionData(
-    firestore().collection('houses').where('owner.id', '==', user.uid),
-    {
-      idField: 'id',
-    },
-  );
+
+  const {house} = useGetOwnerHouse({userId: user?.id});
 
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
@@ -71,7 +68,7 @@ const DashboardOwner = () => {
       titleChildren={<ProfileBar />}
       titleProps={{
         background: {
-          uri: houseOwner?.[0]?.houseImage,
+          uri: house?.houseImage?.original,
         },
       }}
       titleLefSide={true}>
@@ -84,7 +81,7 @@ const DashboardOwner = () => {
             <Text style={[Fonts.textTitle, Gutters.mediumVMargin]}>
               Hoy es {date.join(' ')} ☀️
             </Text>
-            <ChecklistList house={houseOwner?.[0]} />
+            <ChecklistList house={house} />
           </View>
         </View>
       </ScrollView>

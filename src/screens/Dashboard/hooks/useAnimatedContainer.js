@@ -11,7 +11,7 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
-const SCROLL_LIMIT = 131;
+const SCROLL_LIMIT = 111;
 
 const timingOptions = {
   duration: 300,

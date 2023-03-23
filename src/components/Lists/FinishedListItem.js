@@ -36,8 +36,10 @@ export const FinishedListItem = ({
           style={[
             Layout.row,
             Layout.justifyContentSpaceBetween,
+            Layout.alignItemsCenter,
             Gutters.smallBMargin,
           ]}>
+          <Badge type="outline" text="Finished" variant="danger" />
           <Badge
             type="outline"
             text={house}

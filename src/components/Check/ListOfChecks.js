@@ -9,6 +9,7 @@ import Badge from '../Elements/Badge';
 import {useState} from 'react';
 
 import {useListOfChecks} from './hooks/useListOfChecks';
+import theme from '../../Theme/Theme';
 
 const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
   const {Layout, Fonts, Gutters} = useTheme();
@@ -52,7 +53,7 @@ const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
           variant={'pm'}
           onPress={handleCheckAll}
         />
-
+        <View style={[theme.mR2]} />
         <Badge
           text={'Descompletar'}
           variant={'warning'}

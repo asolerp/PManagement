@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 20,
     paddingTop: 20,
-    height: 200,
+    height: 150,
   },
   profileBar: {
     flexDirection: 'row',

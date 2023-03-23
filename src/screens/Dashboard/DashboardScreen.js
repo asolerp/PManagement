@@ -79,7 +79,7 @@ const DashboardScreen = ({navigation}) => {
         withPadding={false}
         edges={['top']}>
         <ActionButtons />
-        <View style={[[theme.flex1]]}>
+        <View style={[[theme.flex1, theme.bgGray100]]}>
           <View style={[styles.profileBarContainerStyle]}>
             <ProfileBar />
           </View>
@@ -101,7 +101,7 @@ const DashboardScreen = ({navigation}) => {
               <Animated.View
                 style={[
                   theme.flexGrow,
-                  theme.bgWhite,
+                  theme.bgGray100,
                   // theme.bgWarning,
                   theme.pX4,
                   containerStyles,
@@ -111,7 +111,7 @@ const DashboardScreen = ({navigation}) => {
                     style={[
                       theme.w8,
                       theme.h2,
-                      theme.bgGray200,
+                      theme.bgGray400,
                       theme.roundedSm,
                     ]}
                   />

@@ -8,6 +8,21 @@ export const sortByDate = (a, b, order = 'asc') => {
   return 0;
 };
 
+export const sortByDone = (list) => {
+  const doneList = list?.filter((el) => !el.done);
+  const notDoneList = list?.filter((el) => el.done);
+  return [...doneList?.sort(sortByDate), ...notDoneList?.sort(sortByDate)];
+};
+
+export const sortByFinished = (list) => {
+  const finishedList = list?.filter((el) => !el.finished);
+  const notFinishedList = list?.filter((el) => el.finished);
+  return [
+    ...finishedList.sort(sortByDate),
+    ...notFinishedList.sort(sortByDate),
+  ];
+};
+
 let sortingOrder = {
   iniciada: 1,
   tramite: 2,

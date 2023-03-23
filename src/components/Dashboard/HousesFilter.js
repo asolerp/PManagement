@@ -45,7 +45,11 @@ export const HousesFilter = ({houses, onClickHouse}) => {
             Gutters.tinyHMargin,
           ]}>
           <FastImage
-            style={[{width: 70, height: 70, borderRadius: 100}]}
+            style={[
+              theme.bgWhite,
+              theme.shadow2xl,
+              {width: 50, height: 50, borderRadius: 100},
+            ]}
             source={{
               uri: item?.houseImage?.small || DEFAULT_IMAGE,
               priority: FastImage.priority.normal,

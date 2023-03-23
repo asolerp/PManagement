@@ -40,26 +40,27 @@ export const ListItem = ({
         Gutters.mediumRMargin,
         {
           width: fullWidth ? FULL_WIDTH : CARD_WIDTH,
-          minHeight: 50,
-          maxHeight: 150,
+          maxHeight: 120,
         },
       ]}>
-      {statusColor && (
-        <View
-          style={[
-            Gutters.smallRMargin,
-            {backgroundColor: `${Colors.pm}30`},
-            styles.statusBarContainer,
-          ]}>
+      <View style={{height: '100%'}}>
+        {statusColor && (
           <View
             style={[
+              Gutters.smallRMargin,
+              {backgroundColor: `${Colors.pm}30`},
               styles.statusBarContainer,
-              {backgroundColor: statusColor},
-              {height: `${statusPercentage * 100}%`},
-            ]}
-          />
-        </View>
-      )}
+            ]}>
+            <View
+              style={[
+                styles.statusBarContainer,
+                {backgroundColor: statusColor},
+                {height: `${statusPercentage * 100}%`},
+              ]}
+            />
+          </View>
+        )}
+      </View>
       <View style={[Layout.grow]}>
         <View
           style={[
@@ -88,7 +89,7 @@ export const ListItem = ({
             containerStyle={[Gutters.smallRMargin]}
           />
         </View>
-        <View style={[Layout.grow]}>
+        <View>
           <View style={[Gutters.smallBMargin, Gutters.smallBMargin]}>
             {title && (
               <Text
@@ -98,7 +99,14 @@ export const ListItem = ({
                 {title}
               </Text>
             )}
-            {subtitle && <Text style={styles.infoStyle}>{subtitle}</Text>}
+            {subtitle && (
+              <Text
+                style={styles.infoStyle}
+                numberOfLines={2}
+                ellipsizeMode="tail">
+                {subtitle}
+              </Text>
+            )}
           </View>
         </View>
         <View style={[Layout.justifyContentEnd]}>
@@ -160,6 +168,7 @@ const styles = StyleSheet.create({
   statusBarContainer: {
     width: 8,
     borderRadius: 20,
+    height: '100%',
   },
   avatarWrapper: {
     flex: 1,
