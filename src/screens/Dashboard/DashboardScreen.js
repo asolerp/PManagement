@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   indicatorStyle: {
     backgroundColor: Colors.pm,
-    height: 5,
+    height: 3,
     borderRadius: 5,
   },
   tabTextStyle: {

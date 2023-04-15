@@ -37,7 +37,6 @@ export const FinishedListItem = ({
             Layout.row,
             Layout.justifyContentSpaceBetween,
             Layout.alignItemsCenter,
-            Gutters.smallBMargin,
           ]}>
           <Badge type="outline" text="Finished" variant="danger" />
           <Badge
@@ -61,17 +60,17 @@ export const FinishedListItem = ({
             containerStyle={[Gutters.smallRMargin]}
           />
         </View>
-        <View style={[Layout.grow]}>
-          <View style={[Gutters.smallBMargin, Gutters.smallBMargin]}>
-            {title && (
+        <View>
+          {title && (
+            <View style={[Gutters.smallBMargin, Gutters.smallBMargin]}>
               <Text
                 style={[Fonts.titleCard, Gutters.smallBMargin]}
                 numberOfLines={2}
                 ellipsizeMode="tail">
                 {title}
               </Text>
-            )}
-          </View>
+            </View>
+          )}
           {startHour && endHour && (
             <View style={[theme.flexRow]}>
               <Badge text={startHour} />
@@ -96,18 +95,10 @@ export const FinishedListItem = ({
 
 const styles = StyleSheet.create({
   checkWrapper: {
-    minHeight: 50,
-    maxHeight: 120,
     width: '100%',
     backgroundColor: Colors.white,
+    borderColor: Colors.gray300,
+    borderWidth: 1,
     borderRadius: 10,
-    shadowColor: '#4f4f4f',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3,
   },
 });

@@ -40,25 +40,13 @@ export const ListItem = ({
         Gutters.mediumRMargin,
         {
           width: fullWidth ? FULL_WIDTH : CARD_WIDTH,
-          maxHeight: 120,
         },
       ]}>
-      <View style={{height: '100%'}}>
+      <View style={[{height: '100%'}]}>
         {statusColor && (
           <View
-            style={[
-              Gutters.smallRMargin,
-              {backgroundColor: `${Colors.pm}30`},
-              styles.statusBarContainer,
-            ]}>
-            <View
-              style={[
-                styles.statusBarContainer,
-                {backgroundColor: statusColor},
-                {height: `${statusPercentage * 100}%`},
-              ]}
-            />
-          </View>
+            style={[styles.statusBarContainer, {backgroundColor: statusColor}]}
+          />
         )}
       </View>
       <View style={[Layout.grow]}>
@@ -68,13 +56,7 @@ export const ListItem = ({
             Layout.justifyContentSpaceBetween,
             Gutters.smallBMargin,
           ]}>
-          <Badge
-            type="outline"
-            text={house}
-            variant="purple"
-            iconName="home"
-            containerStyle={{width: 100}}
-          />
+          <Badge type="outline" text={house} variant="purple" iconName="home" />
           <Badge
             text={date}
             variant={dateVariant}
@@ -90,7 +72,7 @@ export const ListItem = ({
           />
         </View>
         <View>
-          <View style={[Gutters.smallBMargin, Gutters.smallBMargin]}>
+          <View>
             {title && (
               <Text
                 style={[Fonts.titleCard, Gutters.smallBMargin]}
@@ -146,14 +128,8 @@ const styles = StyleSheet.create({
   checkWrapper: {
     backgroundColor: Colors.white,
     borderRadius: 10,
-    shadowColor: '#4f4f4f',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3,
+    borderColor: Colors.gray300,
+    borderWidth: 1,
   },
   checkDoneMask: {
     position: 'absolute',
@@ -168,7 +144,8 @@ const styles = StyleSheet.create({
   statusBarContainer: {
     width: 8,
     borderRadius: 20,
-    height: '100%',
+    flexGrow: 1,
+    marginRight: 10,
   },
   avatarWrapper: {
     flex: 1,

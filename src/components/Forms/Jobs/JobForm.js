@@ -170,6 +170,7 @@ const JobForm = ({docId, edit}) => {
   return (
     <View style={[styles.newJobScreen]}>
       <BottomModal
+        isFixedBottom={modalContent === 'date'}
         isVisible={modalVisible}
         onClose={(event) => {
           setModalVisible(false);

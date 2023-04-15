@@ -94,11 +94,12 @@ const NewIncidenceForm = () => {
                 collection="houses"
                 store="jobForm"
                 searchBy="houseName"
+                order={{field: 'houseName', type: 'asc'}}
                 schema={{img: 'houseImage', name: 'houseName'}}
                 get={incidence?.house?.value || []}
                 set={(house) =>
                   setInputFormAction('house', {
-                    ...incidence.house,
+                    ...incidence?.house,
                     value: house,
                   })
                 }

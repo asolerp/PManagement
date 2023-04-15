@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 
 import {View, FlatList, StyleSheet, KeyboardAvoidingView} from 'react-native';
 
@@ -10,9 +10,8 @@ import {SearchBar} from 'react-native-elements';
 import ItemList from './ItemList';
 import CustomButton from './Elements/CustomButton';
 import {useTranslation} from 'react-i18next';
-import {useTheme} from '../Theme';
+
 import theme from '../Theme/Theme';
-import {ScrollView} from 'react-native-gesture-handler';
 
 const DynamicSelectorList = ({
   collection,
@@ -36,12 +35,12 @@ const DynamicSelectorList = ({
 
   const fList = search
     ? list
-        .sort((a, b) => a[order?.field].localeCompare(b[order?.field]))
+        .sort((a, b) => a[order?.field]?.localeCompare(b[order?.field]))
         .filter((item) =>
           item[searchBy].toLowerCase().includes(search?.toLowerCase()),
         )
     : list &&
-      list.sort((a, b) => a[order?.field].localeCompare(b[order?.field]));
+      list.sort((a, b) => a[order?.field]?.localeCompare(b[order?.field]));
 
   const onSubmit = async () => {
     set(selected);
@@ -63,38 +62,41 @@ const DynamicSelectorList = ({
     closeModal();
   };
 
-  const renderItem = ({item}) => {
-    const handleChange = (newValue) => {
-      if (!multiple) {
-        if (!newValue) {
-          return setSelected([]);
+  const renderItem = useCallback(
+    ({item}) => {
+      const handleChange = (newValue) => {
+        if (!multiple) {
+          if (!newValue) {
+            return setSelected([]);
+          }
+          return setSelected([item]);
+        } else {
+          if (!newValue) {
+            const updatedItemList = selected?.filter(
+              (i) => (i?.id || i?.uid) !== item?.id,
+            );
+            return setSelected(updatedItemList);
+          }
+          return setSelected([...(selected || []), item]);
         }
-        return setSelected([item]);
-      } else {
-        if (!newValue) {
-          const updatedItemList = selected?.filter(
-            (i) => (i?.id || i?.uid) !== item?.id,
-          );
-          return setSelected(updatedItemList);
-        }
-        return setSelected([...(selected || []), item]);
-      }
-    };
+      };
 
-    return (
-      <React.Fragment>
-        <ItemList
-          item={item}
-          schema={schema}
-          setter={set}
-          handleChange={handleChange}
-          active={selected?.some((i) => (i?.id || i?.uid) === item?.id)}
-          multiple={multiple}
-        />
-        <View style={styles.separator} />
-      </React.Fragment>
-    );
-  };
+      return (
+        <React.Fragment>
+          <ItemList
+            item={item}
+            schema={schema}
+            setter={set}
+            handleChange={handleChange}
+            active={selected?.some((i) => (i?.id || i?.uid) === item?.id)}
+            multiple={multiple}
+          />
+          <View style={styles.separator} />
+        </React.Fragment>
+      );
+    },
+    [selected],
+  );
 
   return (
     <>

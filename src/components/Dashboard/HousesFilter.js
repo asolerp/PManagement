@@ -60,7 +60,7 @@ export const HousesFilter = ({houses, onClickHouse}) => {
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
-          style={[theme.maxW16, theme.textXs, theme.textGray700, theme.mT2]}>
+          style={[theme.maxW12, theme.textXs, theme.textGray700, theme.mT2]}>
           {item?.houseName}
         </Text>
       </View>
