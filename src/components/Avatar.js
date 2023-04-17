@@ -28,6 +28,7 @@ const Avatar = ({
   name,
   overlap,
   position,
+  enabled = true,
   size = 'small',
   index,
   style,
@@ -81,6 +82,7 @@ const Avatar = ({
       <TouchableOpacity
         key={id}
         onPress={() =>
+          enabled &&
           openScreenWithPush(PROFILE_SCREEN_KEY, {
             userId: id,
           })

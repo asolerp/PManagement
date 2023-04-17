@@ -72,10 +72,7 @@ const DashboardOwner = () => {
         },
       }}
       titleLefSide={true}>
-      <ScrollView
-        style={[Layout.fill, styles.container, Gutters.smallTMargin]}
-        nestedScrollEnabled
-        showsVerticalScrollIndicator={false}>
+      <View style={[Layout.fill, styles.container, Gutters.smallTMargin]}>
         <View style={styles.home}>
           <View>
             <Text style={[Fonts.textTitle, Gutters.mediumVMargin]}>
@@ -84,7 +81,7 @@ const DashboardOwner = () => {
             <ChecklistList house={house} />
           </View>
         </View>
-      </ScrollView>
+      </View>
     </PageLayout>
   );
 };

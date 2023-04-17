@@ -21,6 +21,8 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
 
+  console.log(house?.id);
+
   // let filteredValues;
   let firestoreQuery;
 
@@ -49,6 +51,8 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
     idField: 'id',
   });
 
+  console.log(values, 'values');
+
   const filters = {
     houses,
     workers,
@@ -74,7 +78,7 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   };
 
   return (
-    <View style={[theme.flex1]}>
+    <View style={[theme.flexGrow]}>
       {loading && <DashboardSectionSkeleton />}
       <FlatList
         scrollEnabled={scrollEnabled}

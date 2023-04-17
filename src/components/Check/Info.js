@@ -205,6 +205,7 @@ const Info = ({isCheckFinished}) => {
                 {checklist?.workers?.map((worker, i) => (
                   <View style={[theme.justifyCenter, theme.itemsCenter]}>
                     <Avatar
+                      enabled={!isOwner}
                       overlap={checklist?.workers?.length > 1}
                       index={i}
                       id={worker.id}
@@ -233,7 +234,7 @@ const Info = ({isCheckFinished}) => {
       </View>
       {!loadingChecklist && (
         <ListOfChecks
-          disabled={false}
+          disabled={isOwner}
           checks={checks}
           checkId={docId}
           isCheckFinished={isCheckFinished}

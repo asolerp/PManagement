@@ -10,11 +10,12 @@ import {useState} from 'react';
 
 import {useListOfChecks} from './hooks/useListOfChecks';
 import theme from '../../Theme/Theme';
+import useAuth from '../../utils/useAuth';
 
 const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
   const {Layout, Fonts, Gutters} = useTheme();
   const [noFinishFilter, setNoFinishFilter] = useState(false);
-
+  const {isOwner} = useAuth();
   const {t} = useTranslation();
 
   const listOfChecks = noFinishFilter ? checks?.filter((c) => !c.done) : checks;
@@ -40,26 +41,29 @@ const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
         <Text style={[Fonts.textTitle, Gutters.smallBPadding]}>
           {t('checklists.checkPage.jobs')}
         </Text>
-
-        <Badge
-          text={!noFinishFilter ? 'Sin completar' : 'Todo'}
-          variant={!noFinishFilter ? 'danger' : 'pm'}
-          onPress={togleFilter}
-        />
+        {!isOwner && (
+          <Badge
+            text={!noFinishFilter ? 'Sin completar' : 'Todo'}
+            variant={!noFinishFilter ? 'danger' : 'pm'}
+            onPress={togleFilter}
+          />
+        )}
       </View>
-      <View style={[Layout.row, Gutters.smallBMargin]}>
-        <Badge
-          text={'Completar todo'}
-          variant={'pm'}
-          onPress={handleCheckAll}
-        />
-        <View style={[theme.mR2]} />
-        <Badge
-          text={'Descompletar'}
-          variant={'warning'}
-          onPress={handleRemoveAllChecks}
-        />
-      </View>
+      {!isOwner && (
+        <View style={[Layout.row, Gutters.smallBMargin]}>
+          <Badge
+            text={'Completar todo'}
+            variant={'pm'}
+            onPress={handleCheckAll}
+          />
+          <View style={[theme.mR2]} />
+          <Badge
+            text={'Descompletar'}
+            variant={'warning'}
+            onPress={handleRemoveAllChecks}
+          />
+        </View>
+      )}
       {listOfChecks
         ?.sort((a, b) => a.locale.es.localeCompare(b.locale.es))
         ?.map((item) => {
