@@ -19,11 +19,7 @@ const ItemList = ({item, schema, handleChange, active}) => {
         <Text style={styles.name}>{item?.[schema.lastname]}</Text>
       </View>
       <View style={styles.checkboxWrapper}>
-        <CheckBox
-          disabled={false}
-          value={active}
-          onValueChange={(newValue) => handleChange(newValue)}
-        />
+        <CheckBox disabled={false} value={active} />
       </View>
     </TouchableOpacity>
   );

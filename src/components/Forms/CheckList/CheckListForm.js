@@ -288,7 +288,8 @@ const CheckListForm = ({edit, docId}) => {
       <CustomInput
         title={t('common.worker')}
         subtitle={
-          workers?.value && (
+          workers?.value &&
+          workers?.value.length > 0 && (
             <View style={{flexDirection: 'row'}}>
               {workers?.value?.map((worker, i) => (
                 <View key={worker.id} style={[Layout.row]}>

@@ -191,7 +191,7 @@ const Info = ({isCheckFinished}) => {
           )}
         </View>
 
-        {checklist?.workers?.length && (
+        {checklist?.workers?.length > 0 && (
           <>
             <View style={[Layout.col, Gutters.smallVMargin]}>
               <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
