@@ -9,10 +9,7 @@ import {name as appName} from './app.json';
 let CodePushOptions = {
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
   mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
-  updateDialog: {
-    appendReleaseDescription: true,
-    title: 'a new update is available!',
-  },
+  updateDialog: true,
 };
 
 const AppWithCodePush = CodePush(CodePushOptions)(App);

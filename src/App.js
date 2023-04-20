@@ -43,7 +43,7 @@ const App = ({isProd}) => {
     CodePush.sync({
       deploymentKey: !isProd ? CODE_PUSH_STAGING_KEY : CODE_PUSH_PRODUCTION_KEY,
     });
-  });
+  }, [isProd]);
 
   useEffect(() => {
     (async () => {
