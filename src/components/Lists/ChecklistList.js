@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Text, FlatList, Pressable, View} from 'react-native';
 
 //Firebase
@@ -11,7 +11,7 @@ import CheckItem from './CheckItem';
 import {useTheme} from '../../Theme';
 import theme from '../../Theme/Theme';
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
-import {sortByDate, sortByFinished} from '../../utils/sorts';
+import {sortByFinished} from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';
@@ -21,9 +21,6 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   const {Gutters} = useTheme();
   const {t} = useTranslation();
 
-  console.log(house?.id);
-
-  // let filteredValues;
   let firestoreQuery;
 
   if (house?.id) {
@@ -50,8 +47,6 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   const [values, loading] = useCollectionData(firestoreQuery, {
     idField: 'id',
   });
-
-  console.log(values, 'values');
 
   const filters = {
     houses,
@@ -84,7 +79,7 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
         scrollEnabled={scrollEnabled}
         ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
         showsVerticalScrollIndicator={false}
-        contentInset={{bottom: 5}}
+        contentInset={{bottom: 50}}
         data={filteredList && sortByFinished(filteredList)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}

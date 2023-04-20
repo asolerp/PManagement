@@ -101,7 +101,12 @@ const Container = () => {
                               uri={user.profileImage?.small || DEFAULT_IMAGE}
                               size="big"
                             />
-                            <Text>{user.firstName}</Text>
+                            <Text
+                              ellipsizeMode="tail"
+                              numberOfLines={2}
+                              style={[theme.mT2]}>
+                              {user.firstName}
+                            </Text>
                           </View>
                         </Pressable>
                       ))}

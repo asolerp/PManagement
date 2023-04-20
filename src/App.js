@@ -6,6 +6,7 @@ import i18n from 'i18next';
 import Toast from 'react-native-toast-message';
 import {MenuProvider} from 'react-native-popup-menu';
 import RNBootSplash from 'react-native-bootsplash';
+import CodePush from 'react-native-code-push';
 
 import ErrorBoundary from 'react-native-error-boundary';
 
@@ -23,6 +24,15 @@ import {useNotification} from './lib/notification/notificationHooks';
 import {LoadinModalProvider} from './context/loadinModalContext';
 import {initRemoteConfig} from './lib/featureToggle';
 import theme from './Theme/Theme';
+
+let CodePushOptions = {
+  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
+  mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
+  updateDialog: {
+    appendReleaseDescription: true,
+    title: 'a new update is available!',
+  },
+};
 
 const CustomFallback = (props) => (
   <View style={theme.flex1}>
@@ -74,4 +84,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default CodePush(CodePushOptions)(App);

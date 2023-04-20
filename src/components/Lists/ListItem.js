@@ -99,10 +99,10 @@ export const ListItem = ({
               Layout.justifyContentSpaceBetween,
             ]}>
             <View style={[Layout.row]}>
-              {workers?.map((worker, i) => (
+              {workers?.map((worker) => (
                 <Avatar
                   overlap={workers?.length > 1}
-                  index={i}
+                  index={worker.id}
                   id={worker.id}
                   key={worker.id}
                   uri={worker.profileImage?.small || DEFAULT_IMAGE}
