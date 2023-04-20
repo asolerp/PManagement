@@ -24,15 +24,10 @@ import {useNotification} from './lib/notification/notificationHooks';
 import {LoadinModalProvider} from './context/loadinModalContext';
 import {initRemoteConfig} from './lib/featureToggle';
 import theme from './Theme/Theme';
-
-let CodePushOptions = {
-  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
-  mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
-  updateDialog: {
-    appendReleaseDescription: true,
-    title: 'a new update is available!',
-  },
-};
+import {
+  CODE_PUSH_PRODUCTION_KEY,
+  CODE_PUSH_STAGING_KEY,
+} from './constants/codePush';
 
 const CustomFallback = (props) => (
   <View style={theme.flex1}>
@@ -40,9 +35,15 @@ const CustomFallback = (props) => (
   </View>
 );
 
-const App = () => {
+const App = ({isProd}) => {
   useNotification();
   const {locale} = useLocales();
+
+  useEffect(() => {
+    CodePush.sync({
+      deploymentKey: !isProd ? CODE_PUSH_STAGING_KEY : CODE_PUSH_PRODUCTION_KEY,
+    });
+  });
 
   useEffect(() => {
     (async () => {
@@ -84,4 +85,4 @@ const App = () => {
   );
 };
 
-export default CodePush(CodePushOptions)(App);
+export default App;

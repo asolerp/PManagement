@@ -97,7 +97,7 @@ const DashboardScreen = ({navigation}) => {
               }}
             />
             <HDivider style={[theme.mY4]} />
-            <PanGestureHandler onGestureEvent={gestureHandler}>
+            {/* <PanGestureHandler onGestureEvent={gestureHandler}>
               <Animated.View
                 style={[
                   theme.flexGrow,
@@ -143,7 +143,7 @@ const DashboardScreen = ({navigation}) => {
                   style={[theme.flexGrow, {marginBottom: -130}]}
                 />
               </Animated.View>
-            </PanGestureHandler>
+            </PanGestureHandler> */}
           </View>
         </View>
       </PageLayout>
