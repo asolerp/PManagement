@@ -26,7 +26,7 @@ const CheckScreen = ({route}) => {
   const {docId} = route.params;
   const {t} = useTranslation();
 
-  const {isCheckFinished, reOpenChecklist} = useCheck({docId});
+  const {isCheckFinished} = useCheck({docId});
   const {notifyOwner} = useNotifyOwner();
   const [checks, checksLoading] = useCollectionData(
     firestore().collection(CHECKLISTS).doc(docId).collection('checks'),
@@ -71,7 +71,7 @@ const CheckScreen = ({route}) => {
         }}
         footer={
           areAllChecksDone &&
-          (user.role === 'admin' || user.role === 'worker') &&
+          user.role === 'admin' &&
           !checksLoading &&
           !isCheckFinished && (
             <CustomButton

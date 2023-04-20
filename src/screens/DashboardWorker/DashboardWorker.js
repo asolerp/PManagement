@@ -27,6 +27,7 @@ import theme from '../../Theme/Theme';
 import {PanGestureHandler, ScrollView} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import {useAnimatedContainer} from '../Dashboard/hooks/useAnimatedContainer';
+import {HDivider} from '../../components/UI/HDivider';
 
 const DashboardWorkerScreen = () => {
   const [index, setIndex] = useState(0);
@@ -66,14 +67,14 @@ const DashboardWorkerScreen = () => {
       <PageLayout
         statusBar="light-content"
         withTitle={false}
-        withPadding={false}>
+        withPadding={false}
+        edges={['top']}>
         <ActionButtons />
-        <View style={[Layout.grow]}>
+        <View style={[[theme.flex1, theme.bgGray100]]}>
           <View style={[styles.profileBarContainerStyle]}>
             <ProfileBar />
           </View>
-
-          <View style={[Layout.grow, styles.container]}>
+          <View style={[[theme.flex1], styles.container]}>
             <View style={[theme.pX4]}>
               <GlobalStats onPressStat={setIndex} uid={user?.id} />
             </View>
@@ -87,11 +88,12 @@ const DashboardWorkerScreen = () => {
                 }));
               }}
             />
+            <HDivider style={[theme.mY4]} />
             <PanGestureHandler onGestureEvent={gestureHandler}>
               <Animated.View
                 style={[
                   theme.flexGrow,
-                  theme.bgWhite,
+                  theme.bgGray100,
                   // theme.bgWarning,
                   theme.pX4,
                   containerStyles,
