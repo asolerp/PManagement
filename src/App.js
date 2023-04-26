@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import {View} from 'react-native';
 import AuthRouter from './Router/authRouter';
-import {ModalPortal} from 'react-native-modals';
 import i18n from 'i18next';
 import Toast from 'react-native-toast-message';
 import {MenuProvider} from 'react-native-popup-menu';
@@ -65,7 +64,6 @@ const App = () => {
             <GestureHandlerRootView style={[theme.flex1]}>
               <AuthRouter />
             </GestureHandlerRootView>
-            <ModalPortal />
             <Toast ref={(ref) => Toast.setRef(ref)} />
           </Provider>
         </LoadinModalProvider>

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 
-import {Pressable, Text, FlatList, View} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -18,6 +19,7 @@ import {useTheme} from '../../Theme';
 
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
+import theme from '../../Theme/Theme';
 
 const JobsList = ({uid, houses, workers, scrollEnabled}) => {
   const {Gutters} = useTheme();
@@ -65,7 +67,7 @@ const JobsList = ({uid, houses, workers, scrollEnabled}) => {
       <FlatList
         scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={<Text>{t('job.empty')}</Text>}
+        ListEmptyComponent={<Text style={[theme.textBlack]}>{t('job.empty')}</Text>}
         nestedScrollEnabled
         showsHorizontalScrollIndicator={false}
         data={

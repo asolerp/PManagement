@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "355954173896",
+    "project_id": "port-management-9bd53",
+    "storage_bucket": "port-management-9bd53.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355954173896:android:244fa1cc66de15468f82fd",
+        "android_client_info": {
+          "package_name": "com.portmanagement"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "355954173896-3tom0s4aenbk7v5u1j39646adn4fqu48.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.portmanagement",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "355954173896-jf4vg94m12evidms1i4ppjoqh5jbki3b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDW1J-NOODoiRi2lR_gUaT0UJbClp7aSk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "355954173896-jf4vg94m12evidms1i4ppjoqh5jbki3b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "355954173896-p332f6ifse0fgmlaum8o5jpbve3frr0o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.portmanagement"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

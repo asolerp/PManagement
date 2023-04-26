@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: '#EAEAEA',
     marginBottom: 10,
+    color: '#284748',
   },
   avatarContainer: {
     flex: 2,

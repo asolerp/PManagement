@@ -104,7 +104,7 @@ const Container = () => {
                             <Text
                               ellipsizeMode="tail"
                               numberOfLines={2}
-                              style={[theme.mT2]}>
+                              style={[theme.mT2, theme.textBlack]}>
                               {user.firstName}
                             </Text>
                           </View>

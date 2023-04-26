@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 
-import {Pressable, Text, FlatList, View} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -70,7 +71,7 @@ const IncidencesList = ({uid, houses, workers, state, scrollEnabled}) => {
       <FlatList
         scrollEnabled={scrollEnabled}
         nestedScrollEnabled
-        ListEmptyComponent={<Text>{t('incidences.empty')}</Text>}
+        ListEmptyComponent={<Text style={[theme.textBlack]}>{t('incidences.empty')}</Text>}
         showsVerticalScrollIndicator={false}
         data={
           filteredList &&

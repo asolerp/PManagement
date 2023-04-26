@@ -93,7 +93,7 @@ const PageOptionsScreen = ({
             setIsVisible(true);
           }}>
           <View>
-            <Icon name="settings" size={25} />
+            <Icon name="settings" size={25} color="#284748" />
           </View>
         </TouchableWithoutFeedback>
       )}

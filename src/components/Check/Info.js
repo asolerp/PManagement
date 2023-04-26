@@ -151,7 +151,7 @@ const Info = ({isCheckFinished}) => {
                 backgroundColor={Colors.lowGrey}
                 backgroundWidth={2}>
                 {() => (
-                  <Text style={{fontSize: 12}}>
+                  <Text style={{fontSize: 12, color: 'black'}}>
                     {Math.round((doneCounter / checklist?.total) * 100)}%
                   </Text>
                 )}
@@ -161,15 +161,15 @@ const Info = ({isCheckFinished}) => {
         </View>
 
         <View style={[Gutters.smallBMargin]}>
-          <Text style={[Gutters.smallVMargin, Fonts.textTitle]}>
+          <Text style={[Gutters.smallVMargin, Fonts.textTitle, theme.textBlack]}>
             {t('checklists.comments')}
           </Text>
           {isOwner ? (
             <View style={[Gutters.smallBMargin, {width: '90%'}]}>
-              <Text style={[Gutters.regularTMargin, Gutters.tinyBMargin]}>
+              <Text style={[Gutters.regularTMargin, Gutters.tinyBMargin, theme.textBlack]}>
                 Our team is working hard to keep your house clean and safe! 🚀🚀
               </Text>
-              <Text>
+              <Text style={[theme.textBlack]}>
                 Here you will see the update of the jobs made in your house
               </Text>
             </View>
@@ -195,7 +195,7 @@ const Info = ({isCheckFinished}) => {
           <>
             <View style={[Layout.col, Gutters.smallVMargin]}>
               <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
-                <Text style={[Gutters.smallBMargin, Fonts.textTitle]}>
+                <Text style={[Gutters.smallBMargin, Fonts.textTitle, theme.textBlack]}>
                   {isOwner
                     ? t('checklists.checkPage.workers')
                     : t('common.asigned_workers')}
@@ -219,7 +219,7 @@ const Info = ({isCheckFinished}) => {
                       ellipsizeMode="tail"
                       style={[
                         theme.textXs,
-                        theme.textGray600,
+                        theme.textBlack,
                         theme.textCenter,
                         theme.w12,
                       ]}>

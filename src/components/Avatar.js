@@ -5,6 +5,7 @@ import FastImage from 'react-native-fast-image';
 
 import {openScreenWithPush} from '../Router/utils/actions';
 import {PROFILE_SCREEN_KEY} from '../Router/utils/routerKeys';
+import theme from '../Theme/Theme';
 
 const styles = StyleSheet.create({
   ownerWrapper: {
@@ -72,7 +73,7 @@ const Avatar = ({
           }}
           resizeMode={FastImage.resizeMode.cover}
         />
-        {name && <Text>{name}</Text>}
+        {name && <Text style={[theme.textBlack]}>{name}</Text>}
       </React.Fragment>
     );
   };

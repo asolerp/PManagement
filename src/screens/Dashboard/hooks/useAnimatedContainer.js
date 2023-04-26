@@ -35,7 +35,6 @@ export const useAnimatedContainer = () => {
 
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, ctx) => {
-      console.log('translateY.value', translateY.value);
       ctx.offsetY = translateY.value;
     },
     onActive: (event, ctx) => {
@@ -71,18 +70,7 @@ export const useAnimatedContainer = () => {
   });
 
   const handleSetCurrentScroll = (scroll) => {
-    if (Platform.OS === 'android') {
-      if (scroll < 0) {
-        return;
-      }
-      if (scroll < SCROLL_LIMIT && scroll > 0 && translateY.value > -170) {
-        translateY.value = withSpring(-scroll, springOptions);
-      } else if (scroll === 0 && translateY.value < -170) {
-        translateY.value = withSpring(scroll, springOptions);
-      }
-    } else {
-      scroll <= 0 && setIsScrollActive(false);
-    }
+    scroll <= 0 && setIsScrollActive(false);
   };
 
   const containerStyles = useAnimatedStyle(() => {

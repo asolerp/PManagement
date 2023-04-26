@@ -6,6 +6,7 @@ import {DEFAULT_IMAGE} from '../constants/general';
 
 //Ui
 import Avatar from './Avatar';
+import theme from '../Theme/Theme';
 
 const ItemList = ({item, schema, handleChange, active}) => {
   console.log(schema, item);
@@ -15,8 +16,12 @@ const ItemList = ({item, schema, handleChange, active}) => {
       onPress={() => handleChange(!active)}>
       <Avatar uri={item?.[schema?.img]?.small || DEFAULT_IMAGE} size="big" />
       <View style={styles.infoWrapper}>
-        <Text style={styles.name}>{item?.[schema.name]}</Text>
-        <Text style={styles.name}>{item?.[schema.lastname]}</Text>
+        <Text style={[styles.name, theme.textBlack]}>{item?.[schema.name]}</Text>
+        {
+          schema?.lastname && (
+            <Text style={[styles.name, theme.textBlack]}>{item?.[schema.lastname]}</Text>
+          )
+        }
       </View>
       <View style={styles.checkboxWrapper}>
         <CheckBox disabled={false} value={active} />

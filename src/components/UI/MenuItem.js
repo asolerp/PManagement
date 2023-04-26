@@ -3,6 +3,7 @@ import {View, Text, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useTheme} from '../../Theme';
 import {HDivider} from '../UI/HDivider';
+import theme from '../../Theme/Theme';
 
 export const MenuItem = ({
   title,
@@ -25,7 +26,7 @@ export const MenuItem = ({
         ]}>
         <View style={[Layout.row, Layout.alignItemsCenter]}>
           <Icon name={iconName} size={25} color={iconColor} />
-          <Text style={[Gutters.smallLMargin, Fonts.textSm, textStyle]}>
+          <Text style={[Gutters.smallLMargin, Fonts.textSm, theme.textBlack, textStyle]}>
             {title}
           </Text>
         </View>

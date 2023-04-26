@@ -1,5 +1,6 @@
 import React from 'react';
-import {Text, FlatList, Pressable, View} from 'react-native';
+import {Text, Pressable, View} from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -77,13 +78,14 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
       {loading && <DashboardSectionSkeleton />}
       <FlatList
         scrollEnabled={scrollEnabled}
-        ListEmptyComponent={<Text>{t('checklists.empty')}</Text>}
+        ListEmptyComponent={<Text style={[theme.textBlack]}>{t('checklists.empty')}</Text>}
         showsVerticalScrollIndicator={false}
-        contentInset={{bottom: 50}}
+        contentInset={{bottom: 150}}
         data={filteredList && sortByFinished(filteredList)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         style={[theme.mT3]}
+        contentContainerStyle={{ paddingBottom: 50 }}
       />
     </View>
   );

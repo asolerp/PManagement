@@ -34,6 +34,7 @@ import useUploadImageCheck from '../hooks/useUploadImage';
 import {CHECKLISTS} from '../utils/firebaseKeys';
 import {LoadingModalContext} from '../context/loadinModalContext';
 import {timeout} from '../utils/timeout';
+import theme from '../Theme/Theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -152,12 +153,13 @@ const ItemCheck = ({check, checklistId, disabled, isCheckFinished}) => {
             <Text
               style={[
                 styles.name,
+                theme.textBlack,
                 check.done && {textDecorationLine: 'line-through'},
               ]}>
               {check?.locale?.[getLocales()[0].languageCode]}
             </Text>
             {check?.date && (
-              <Text style={styles.dateStyle}>
+              <Text style={[styles.dateStyle, theme.textBlack]}>
                 {moment(check?.date?.toDate()).format('LL')}
               </Text>
             )}
