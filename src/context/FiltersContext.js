@@ -8,7 +8,7 @@ export const FiltersContext = createContext();
 
 export const FiltersProvider = ({children}) => {
   const [filters, setFilters] = useState({
-    time: parseTimeFilter('week'),
+    time: parseTimeFilter('all'),
     state: false,
     checklistState: false,
     type: ['jobs', 'incidences', 'checklists'],

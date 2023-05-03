@@ -18,6 +18,14 @@ const CheckItem = ({item, fullWidth}) => {
   const {isOwner} = useAuth();
   const {t} = useTranslation();
 
+  function cutSentence(sentence) {
+    if (sentence.length > 10) {
+      return sentence.slice(0, 10) + '...';
+    }
+    return sentence;
+  }
+  
+
   const {noReadCounter} = useNoReadMessages({
     collection: CHECKLISTS,
     docId: item.id,
@@ -45,7 +53,7 @@ const CheckItem = ({item, fullWidth}) => {
         }
         fullWidth={fullWidth}
         counter={noReadCounter}
-        house={item?.house?.[0].houseName}
+        house={cutSentence(item?.house?.[0].houseName)}
         workers={item?.workers}
       />
     );

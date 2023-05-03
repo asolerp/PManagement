@@ -53,7 +53,7 @@ const CheckScreen = ({route}) => {
 
   return (
     <React.Fragment>
-      <ChatButtonWithMessagesCounter collection={CHECKLISTS} docId={docId} />
+      {/* <ChatButtonWithMessagesCounter collection={CHECKLISTS} docId={docId} /> */}
       <PageLayout
         safe
         backButton

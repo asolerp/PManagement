@@ -1,6 +1,6 @@
 {
   "name": "portmanagement",
-  "version": "1.8.5",
+  "version": "1.8.4",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -9,7 +9,9 @@
     "test": "jest",
     "lint": "eslint .",
     "testflight": "cd ios && fastlane beta",
-    "generate": "npx react-native generate-bootsplash ./src/assets/images/port.png --background-color=FFFFFF   --logo-width=100 --assets-path=./src/assets --flavor=main"
+    "generate": "npx react-native generate-bootsplash ./src/assets/images/port.png --background-color=FFFFFF   --logo-width=100 --assets-path=./src/assets --flavor=main",
+    "CodePush:ios": "appcenter codepush release-react -a albertosolpalgmail.com/Port-Management -d Production",
+    "CodePush:android": "appcenter codepush release-react -a albertosolpalgmail.com/Port-Management-Android -d Production"
   },
   "dependencies": {
     "@codler/react-native-keyboard-aware-scroll-view": "^2.0.0",
