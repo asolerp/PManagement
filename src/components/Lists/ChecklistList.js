@@ -44,7 +44,7 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
       .collection('checklists')
       .where('finished', '==', false)
       .where('workersId', 'array-contains', uid)
-      // .limit(limit);
+      .limit(limit);
   }
 
   if (!uid && !house?.id && time) {
