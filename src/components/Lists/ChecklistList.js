@@ -79,10 +79,10 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
 
   useEffect(() => {
     if (values && valuesNotFinished) {
-      setData([...valuesNotFinished, ...values]);
-    }
+      return setData([...valuesNotFinished, ...values]);
+    } 
     if (values) {
-      setData([ ...values]);
+      return setData([ ...values]);
     }
   },[values, valuesNotFinished])
 
