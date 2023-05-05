@@ -37,12 +37,14 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
       .limit(limit);
   }
 
+  console.log("UID", uid)
+
   if (uid) {
     firestoreQuery = firestore()
       .collection('checklists')
       .where('finished', '==', false)
       .where('workersId', 'array-contains', uid)
-      .limit(limit);
+      // .limit(limit);
   }
 
   if (!uid && !house?.id && time) {
@@ -78,6 +80,9 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   useEffect(() => {
     if (values && valuesNotFinished) {
       setData([...valuesNotFinished, ...values]);
+    }
+    if (values) {
+      setData([ ...values]);
     }
   },[values, valuesNotFinished])
 
