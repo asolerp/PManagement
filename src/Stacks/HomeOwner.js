@@ -14,10 +14,12 @@ import {
 import {DashboardOwner} from '../Screens/DashboardOwner';
 import {ProfileScreen} from '../Screens/Profile';
 import {tabNameByScreen} from '../utils/parsers';
+import { useTranslation } from 'react-i18next';
 
 const Tabs = AnimatedTabBarNavigator();
 
 const HomeOwner = () => {
+  const {t} = useTranslation();
   const getTabBarVisible = (route) => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (
@@ -52,7 +54,7 @@ const HomeOwner = () => {
         tabBarBackground: 'white',
       }}>
       <Tabs.Screen
-        name={tabNameByScreen[DASHBOARD_OWNER_SCREEN_KEY]}
+        name={t(tabNameByScreen[DASHBOARD_OWNER_SCREEN_KEY])}
         initialParams={{screenKey: DASHBOARD_OWNER_SCREEN_KEY}}
         component={DashboardOwner}
         options={({route}) => ({
@@ -68,7 +70,7 @@ const HomeOwner = () => {
         })}
       />
       <Tabs.Screen
-        name={tabNameByScreen[PROFILE_SCREEN_KEY]}
+        name={t(tabNameByScreen[PROFILE_SCREEN_KEY])}
         initialParams={{screenKey: PROFILE_SCREEN_KEY}}
         component={ProfileScreen}
         options={{

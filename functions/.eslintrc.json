@@ -1,5 +1,6 @@
 {
   "parserOptions": {
+    "requireConfigFile": false,
     // Required for certain syntax usages
     "ecmaVersion": 2017
   },
@@ -8,6 +9,7 @@
   ],
   "extends": "eslint:recommended",
   "rules": {
+    "prettier/prettier": 0,
     // Removed rule "disallow the use of console" from recommended eslint rules
     "no-console": "off",
 

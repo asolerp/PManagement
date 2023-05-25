@@ -32,8 +32,9 @@ const styles = StyleSheet.create({
 });
 
 const EditableInput = ({value, onPressAccept}) => {
+  
   const {Layout, Gutters, Fonts} = useTheme();
-  const [text, onChangeText] = useState();
+  const [text, onChangeText] = useState(value);
   const [showOptions, setShowOptions] = useState(false);
   useEffect(() => {
     onChangeText(value);

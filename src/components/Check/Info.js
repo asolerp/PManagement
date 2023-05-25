@@ -181,12 +181,14 @@ const Info = ({isCheckFinished}) => {
                 theme.roundedSm,
                 theme.p4,
               ]}>
-              <EditableInput
-                value={checklist?.observations || 'Sin observaciones'}
-                onPressAccept={(change) =>
-                  updateChecklistInput(docId, {observations: change})
-                }
-              />
+              {checklist && (
+                <EditableInput
+                  value={checklist?.observations || 'Sin observaciones'}
+                  onPressAccept={(change) =>
+                    updateChecklistInput(docId, {observations: change})
+                  }
+                />
+              )}
             </View>
           )}
         </View>
