@@ -1,89 +1,138 @@
-import React, {useMemo} from 'react';
+import React from 'react';
+import {
+  View,
+  StyleSheet,
+  Text,
+  ImageBackground,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
-import {useSelector, shallowEqual} from 'react-redux';
-import {View, Text, StyleSheet} from 'react-native';
-import {useTranslation} from 'react-i18next';
-
+// Components
 import ProfileBar from '../../components/ProfileBar';
+
+// UI
+import PageLayout from '../../components/PageLayout';
 
 // Utils
 import moment from 'moment';
-
-import {ScrollView} from 'react-native';
-
-import {userSelector} from '../../Store/User/userSlice';
-import ChecklistList from '../../components/Lists/ChecklistList';
-
-// Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {Colors} from '../../Theme/Variables';
-import PageLayout from '../../components/PageLayout';
-
 import {useTheme} from '../../Theme';
-import {useGetOwnerHouse} from './hooks/useGetOwnerHouse';
+import {ActionButtons} from '../../components/Dashboard/ActionButtons';
+
+import {Colors} from '../../Theme/Variables';
+
+import {useSelector} from 'react-redux';
+import {userSelector} from '../../Store/User/userSlice';
+import {useGetHouseById} from './hooks/useGetHouseById';
+import theme from '../../Theme/Theme';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Badge from '../../components/Elements/Badge';
+import { OwnerChecks } from '../../components/Check/OwnerChecks';
+
+const DEFAULT_BACKGROUND_IMAGE =
+  'https://res.cloudinary.com/enalbis/image/upload/v1663600847/PortManagement/varios/w0n2hq4uhhgjdrlhlnns.jpg';
+
+const DashboardOwner = () => {
+  const {Layout} = useTheme();
+
+  const user = useSelector(userSelector);
+  const [date] = React.useState(moment(new Date()).format('LL').split(' '));
+  date[2] = date[2][0].toUpperCase() + date[2].slice(1);
+
+  const {house, checklist, checksFromChecklist} = useGetHouseById(user?.id);
+
+  return (
+    <>
+      <PageLayout
+        statusBar="light-content"
+        withTitle={false}
+        withPadding={false}>
+        {/* <ActionButtons /> */}
+        <ScrollView style={[Layout.grow]} showsVerticalScrollIndicator={false}>
+          <ImageBackground
+            imageStyle={[styles.profileImageContainerStyle]}
+            source={{
+              uri: house?.houseImage?.original || DEFAULT_BACKGROUND_IMAGE,
+            }}
+            style={[styles.profileBarContainerStyle]}>
+            <SafeAreaView edges={['top']} style={[theme.flexGrow]}>
+              <View style={[theme.flexRow, theme.justifyCenter]}>
+                <Image
+                  source={require('../../assets/images/logo_pm_servicios.png')}
+                  style={{height: 30, resizeMode: 'contain'}}
+                />
+              </View>
+              <View>
+                <ProfileBar role="owner" />
+              </View>
+              <View
+                style={[
+                  theme.flexGrow,
+                  theme.justifyEnd,
+                  theme.mB3,
+                  theme.pX8,
+                ]}>
+                {/* <CustomButton
+                  onPress={() =>
+                    openScreenWithPush(CHAT_SCREEN_KEY, {
+                      collection: 'chats',
+                      docId: user.id,
+                    })
+                  }
+                  type="clear"
+                  title="Contacta con nuestros gestores"
+                /> */}
+              </View>
+            </SafeAreaView>
+          </ImageBackground>
+          <View style={[theme.p4]}>
+            <Text style={[theme.fontSansNormal, theme.textXl]}>
+              Last report
+            </Text>
+            <View style={[theme.mT4]}>
+              <View style={[theme.flexRow, theme.flexWrap, theme.itemsCenter]}>
+                <Text style={[theme.mR1]}>We checked on</Text>
+                <Badge text={moment(checklist?.date?.toDate()).format('LL')} />
+                <Text style={[theme.mY1]}>
+                  the functioning and state of your Villa located in{' '}
+                </Text>
+                <Badge text={house?.street} variant="purple" />
+              </View>
+            </View>
+            <OwnerChecks checklist={checklist} checksFromChecklist={checksFromChecklist} />
+          </View>
+        </ScrollView>
+      </PageLayout>
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    paddingHorizontal: 0,
   },
-  addButton: {
-    position: 'absolute',
-    right: 30,
-    bottom: 20,
-    zIndex: 10,
+  profileBarContainerStyle: {
+    backgroundColor: Colors.pm,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 30,
+    height: 200,
   },
-  homeBackScreen: {
-    flex: 1,
+  profileImageContainerStyle: {
+    borderBottomRightRadius: 25,
+    borderBottomLeftRadius: 25,
   },
-  home: {
-    flex: 5,
+  tabBarContainerStyle: {
+    backgroundColor: null,
   },
-  content: {
-    paddingHorizontal: 20,
+  indicatorStyle: {
+    backgroundColor: Colors.pm,
+    height: 5,
+    borderRadius: 5,
   },
-  label: {
-    fontSize: 20,
-    width: '90%',
-    color: Colors.darkBlue,
+  tabTextStyle: {
     fontWeight: '500',
   },
-  checksWrapper: {
-    marginBottom: 20,
-  },
 });
-
-const DashboardOwner = () => {
-  const user = useSelector(userSelector, shallowEqual);
-  const {Fonts, Layout, Gutters} = useTheme();
-
-  const {house} = useGetOwnerHouse({userId: user?.id});
-
-  const date = moment(new Date()).format('LL').split(' ');
-  date[2] = date[2][0].toUpperCase() + date[2].slice(1);
-
-  return (
-    <PageLayout
-      white
-      titleChildren={<ProfileBar />}
-      titleProps={{
-        background: {
-          uri: house?.houseImage?.original,
-        },
-      }}
-      titleLefSide={true}>
-      <View style={[Layout.fill, styles.container, Gutters.smallTMargin]}>
-        <View style={styles.home}>
-          <View>
-            <Text style={[Fonts.textTitle, Gutters.mediumVMargin]}>
-              Hoy es {date.join(' ')} ☀️
-            </Text>
-            <ChecklistList house={house} />
-          </View>
-        </View>
-      </View>
-    </PageLayout>
-  );
-};
 
 export default DashboardOwner;
