@@ -11,6 +11,7 @@ const useUploadImageCheck = (collection, docId) => {
   const {uploadPhotos, loading} = usePhotos();
 
   const uploadImages = async (imgs, item) => {
+    console.log("IMGS", imgs)
     try {
       setIdCheckLoading(item.id);
 
@@ -23,7 +24,7 @@ const useUploadImageCheck = (collection, docId) => {
               .doc(docId)
               .collection('checks')
               .doc(item.id),
-            cloudinaryFolder: `/PortManagement/${CHECKLISTS}/${docId}/Check/${item.id}/Photos`,
+            folder: `/${CHECKLISTS}/${docId}/Check/${item.id}/Photos`,
             docId: docId,
           });
         }

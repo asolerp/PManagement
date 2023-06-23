@@ -63,12 +63,15 @@ export const OwnerChecks = ({
                     <View
                         style={[
                         theme.p1,
+                        theme.flexRow,
+                        theme.flexWrap,
                         {
                             backgroundColor: Colors.pmLow,
                         },
                         ]}>
                         {check?.photos?.map((photo) => (
                         <TouchableOpacity
+                            style={[theme.mR1]}
                             onPress={() => {
                             setModal(true);
                             setImage([{uri: photo}]);
@@ -88,7 +91,7 @@ export const OwnerChecks = ({
                 ))}
                 </View>
                 <View style={[theme.mT4]}>
-                <Text style={[theme.fontSansBold]}>Observaciones:</Text>
+                <Text style={[theme.fontSansBold]}>Observations:</Text>
                 <Text style={[theme.mT2]}>{checklist?.observations || 'No observations'}</Text>
                 </View>
             </View>

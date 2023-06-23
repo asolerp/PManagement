@@ -16,10 +16,13 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
           check.photos.forEach((photo) => {
             checkImages += `
             <td>
-              <a href="${photo}" style="text-decoration: none; margin: 5px;"><img src="${photo}" style="height:auto;display:block;object-fit:contain; border-radius: 10px; width:150px; height: 150px;" alt=""></a>
+              <a href="${photo}" style="text-decoration: none; margin: 5px;">
+                <img src="${photo}" style="height:auto;display:block;object-fit:contain; border-radius: 10px; width:150px; height: 150px;" alt="">
+              </a>
             </td>
             `;
           });
+        console.log("Check Images", checkImages);
       }
       checksHtml += `
       <tr>
@@ -80,17 +83,14 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
         table, td, div, h1, p {font-family: Arial, sans-serif;}
       </style>
     </head>
-    <body style="margin:0;padding:0;">
-    <table role="presentation" style="position:relative; height: 100% ;border-left: 80px solid #42505F;">
+    <body style="margin:0;padding:0;background-color: red;">
+    <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;">
       <tr>
-        <td align="left" style="padding-left: 20px;">
-            <table role="presentation" style="width:602px;border: 0;text-align:left;">
+        <td align="center" style="padding:0; background: #f2f2f2;">
+          <table role="presentation" style="width:602px;border: 0;text-align:left; background: white; padding: 0 10px;">
               <tr>
                 <td align="center" style="padding:20px 0 20px 0;">
-                  <div style="position:relative">
-                      <img src="https://res.cloudinary.com/enalbis/image/upload/v1684221984/PortManagement/varios/o9rgrefebivmftjjifq1.jpg" alt="" width="120" style="background-color:white; padding: 0 10px; height:auto;position:absolute;left:50%;transform: translateX(-50%); z-index: 2;" />
-                      <div style="position:absolute; width:100%; top:12px; border-bottom: 2px solid #42505F; z-index: 1;"/>
-                  </div>
+                  <img src="https://res.cloudinary.com/enalbis/image/upload/v1684221984/PortManagement/varios/o9rgrefebivmftjjifq1.jpg" alt="" width="120" style="background-color:white; padding: 0 10px; height:auto;position:absolute;left:50%;transform: translateX(-50%); z-index: 2;" />            
                 </td>
               </tr>
               <tr>
@@ -121,12 +121,9 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
                       <td style="padding:30px;">
                         <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family:Arial,sans-serif;">
                           <tr>
-                            <td align="center" style="padding:20px 0 20px 0;">
-                              <div style="position:relative">
-                                <div style="padding: 0 10px; background-color: white; height: 20px; position:absolute;left:50%;transform: translateX(-50%); z-index: 2;"><p style="margin:0;font-size:12px;line-height:24px;font-family:Arial,sans-serif; font-weight: 100; color:#98B29A;">WWW.PORTMANAGEMENT.ES</p></div>
-                                <div style="position:absolute; width:100%; top:12px; border-bottom: 2px solid #42505F; z-index: 1;"/>
-                              </div>
-                            </td>           
+                            <td align="center" style="padding:20px 0 40px 0;">
+                              <p style="margin:0;font-size:12px;line-height:24px;font-family:Arial,sans-serif; font-weight: 100; color:#98B29A;">WWW.PORTMANAGEMENT.ES</p>
+                            </td>         
                           </tr>
                         </table>
                       </td>

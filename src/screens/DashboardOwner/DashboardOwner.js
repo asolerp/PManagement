@@ -6,7 +6,6 @@ import {
   ImageBackground,
   Image,
   ScrollView,
-  TouchableOpacity,
 } from 'react-native';
 
 // Components
@@ -73,16 +72,6 @@ const DashboardOwner = () => {
                   theme.mB3,
                   theme.pX8,
                 ]}>
-                {/* <CustomButton
-                  onPress={() =>
-                    openScreenWithPush(CHAT_SCREEN_KEY, {
-                      collection: 'chats',
-                      docId: user.id,
-                    })
-                  }
-                  type="clear"
-                  title="Contacta con nuestros gestores"
-                /> */}
               </View>
             </SafeAreaView>
           </ImageBackground>

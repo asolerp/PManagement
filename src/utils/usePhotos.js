@@ -1,13 +1,29 @@
 import {useState} from 'react';
 import {useUploadCloudinaryImage} from '../hooks/useUploadCloudinaryImage';
 import firestore, {firebase} from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 import {error as errorLog} from '../lib/logging';
+
+const uploadImageToFirebase = async (asset) => {
+  const {uri, storageFolder, fileName} = asset;
+
+  // Create a reference to the location you want to upload to in firebase
+  const reference = storage().ref(`${storageFolder}/${fileName}`);
+
+  // Use the putFile() method to upload the image
+  await reference.putFile(uri);
+
+  // Get the download URL
+  const url = await reference.getDownloadURL();
+
+  return url;
+};
 
 export const usePhotos = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
-  const {upload} = useUploadCloudinaryImage();
+  // const {upload} = useUploadCloudinaryImage();
 
   const deleteFn = firebase.functions().httpsCallable('deletePhotoCloudinary');
 
@@ -48,15 +64,15 @@ export const usePhotos = () => {
   };
 
   const uploadPhotos = async (imgs, fbRoute) => {
-    const {collectionRef, cloudinaryFolder} = fbRoute;
+    const {collectionRef, folder} = fbRoute;
     try {
       setLoading(true);
-      const uploadImagesCloudinary = imgs.map(
-        async (file) => await upload(file, cloudinaryFolder),
-      );
-      const imagesURLs = await Promise.all(uploadImagesCloudinary);
 
-      console.log('URLS', imagesURLs);
+      const promises = imgs.map(
+        async (file) => await uploadImageToFirebase({uri: file.fileUri, storageFolder: folder, fileName: file.fileName}),
+      );
+      
+      const imagesURLs = await Promise.all(promises);
 
       const uploadImageFirebase = imagesURLs.map((image) =>
         collectionRef.update({

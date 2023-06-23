@@ -60,7 +60,7 @@ const QuadrantScreen = ({navigation}) => {
 
   return (
     <React.Fragment>
-      <NormalModal isVisible={isModalVisible}>
+      <NormalModal isVisible={isModalVisible} onClose={() => setIsModalVisible(false)}>
         <View style={[theme.flexGrow]}>
           <View>
             <Text style={[theme.textCenter, theme.fontSansBold, theme.textXl]}>
