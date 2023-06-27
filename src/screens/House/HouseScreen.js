@@ -38,6 +38,7 @@ import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {DEFAULT_IMAGE} from '../../constants/general';
 import FastImage from 'react-native-fast-image';
 import {firebase} from '@react-native-firebase/firestore';
+import uploadImage from '../../utils/uploadImage';
 
 const styles = StyleSheet.create({
   pageWrapper: {
@@ -112,9 +113,7 @@ const HouseScreen = ({route}) => {
   // Modal State
   const [modalVisible, setModalVisible] = useState(false);
   const {onImagePress} = useCameraOrLibrary();
-  const uploadHousePhoto = firebase
-    .functions()
-    .httpsCallable('uploadHousePhoto');
+
 
   const handlePressImage = (type) => {
     onImagePress({
@@ -142,9 +141,12 @@ const HouseScreen = ({route}) => {
         });
       }
       if (newImage) {
-        await uploadHousePhoto({
-          houseId,
-          imageBase64: newImage[0],
+        const downloadURL = await uploadImage(newImage[0].fileUri, `houses/${houseId}/photos/${houseId}`);
+        await updateFirebase(houseId, {
+          houseImage: {
+            original: downloadURL,
+            small: downloadURL,
+          },
         });
       }
     } catch (err) {

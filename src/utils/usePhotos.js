@@ -1,9 +1,9 @@
 import {useState} from 'react';
-import {useUploadCloudinaryImage} from '../hooks/useUploadCloudinaryImage';
-import firestore, {firebase} from '@react-native-firebase/firestore';
+import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 
 import {error as errorLog} from '../lib/logging';
+import uploadImage from './uploadImage';
 
 const uploadImageToFirebase = async (asset) => {
   const {uri, storageFolder, fileName} = asset;
@@ -23,31 +23,23 @@ const uploadImageToFirebase = async (asset) => {
 export const usePhotos = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
-  // const {upload} = useUploadCloudinaryImage();
-
-  const deleteFn = firebase.functions().httpsCallable('deletePhotoCloudinary');
 
   const removePhotos = async (imgs, setter, fbRoute) => {
-    const {collectionRef} = fbRoute;
+    const {collectionRef, folder} = fbRoute;
+
     const photosToDelete = imgs.map(
-      async (photo) =>
+      async (photo) => {
+        const ref = storage().ref(`${folder}/${photo.name}`);
+        await ref.delete();
         await collectionRef.update({
           photos: firestore.FieldValue.arrayRemove(photo.uri),
-        }),
+        })
+      }
     );
-
-    const photoIds = imgs.map((photo) => {
-      const id = photo.ref.split('.')[0];
-
-      return id;
-    });
 
     try {
       setLoading(true);
       await Promise.all(photosToDelete);
-      await deleteFn({
-        photoIds,
-      });
       if (setter) {
         setter([]);
       }
@@ -64,12 +56,14 @@ export const usePhotos = () => {
   };
 
   const uploadPhotos = async (imgs, fbRoute) => {
+
     const {collectionRef, folder} = fbRoute;
+
     try {
       setLoading(true);
 
       const promises = imgs.map(
-        async (file) => await uploadImageToFirebase({uri: file.fileUri, storageFolder: folder, fileName: file.fileName}),
+        async (file) => await uploadImage(file.fileUri, `${folder}/${file.fileName}`, false),
       );
       
       const imagesURLs = await Promise.all(promises);

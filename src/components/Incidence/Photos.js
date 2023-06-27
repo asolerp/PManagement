@@ -27,6 +27,7 @@ import {parseImages} from './utils/parserImages';
 import {useTranslation} from 'react-i18next';
 import {parseRef} from '../../Screens/CheckPhotos/utils/parseRef';
 import {useCameraOrLibrary} from '../../hooks/useCamerOrLibrary';
+import extractFileNameFromURL from '../../utils/extractFileNameFromURL';
 
 const styles = StyleSheet.create({
   container: {
@@ -74,7 +75,7 @@ const Photos = () => {
     if (isSelected) {
       return setDeletePhotos([...deletePhotos.filter((p) => p.id !== id)]);
     }
-    setDeletePhotos([...deletePhotos, {id, uri: id, ref}]);
+    setDeletePhotos([...deletePhotos, {id, uri: id, ref, name: extractFileNameFromURL(id)}]);
   };
 
   const Photo = ({photo, index}) => {
@@ -84,7 +85,7 @@ const Photos = () => {
         onPress={() => handlePressPhoto(index)}
         key={index}
         onLongPress={() =>
-          handleLongPressPhoto({id: photo.uri, ref: parseRef(photo.uri)})
+          handleLongPressPhoto({id: photo.uri, ref: parseRef(photo.uri), name: extractFileNameFromURL(photo.uri)})
         }>
         <ImageBackground
           source={{uri: photo.uri}}
@@ -142,6 +143,7 @@ const Photos = () => {
             if (deletePhotos.length > 0) {
               return removePhotos(deletePhotos, setDeletePhotos, {
                 collectionRef: incidenceQuery,
+                folder: `${INCIDENCES}/${incidenceId}/photos`,
               });
             }
             return onImagePress({
@@ -155,7 +157,7 @@ const Photos = () => {
                   collectionRef: firestore()
                     .collection(INCIDENCES)
                     .doc(incidenceId),
-                  cloudinaryFolder: `/PortManagement/${INCIDENCES}/${incidenceId}/Photos`,
+                  folder: `${INCIDENCES}/${incidenceId}/photos`,
                   docId: incidenceId,
                 });
               },

@@ -25,6 +25,7 @@ import {usePhotos} from '../../utils/usePhotos';
 import {parseRef} from './utils/parseRef';
 import {CHECKLISTS} from '../../utils/firebaseKeys';
 import {ScreenHeader} from '../../components/Layout/ScreenHeader';
+import extractFileNameFromURL from '../../utils/extractFileNameFromURL';
 
 const styles = StyleSheet.create({
   container: {
@@ -90,6 +91,8 @@ const CheckPhotosScreen = ({route}) => {
     idField: 'id',
   });
 
+  console.log(values)
+
   const handlePressPhoto = (i) => {
     setModal(true);
     setImageIndex(i);
@@ -112,13 +115,19 @@ const CheckPhotosScreen = ({route}) => {
       .collection('checks')
       .doc(checkItemId);
 
-    const photosWithUri = photosSelected.map((photo) => ({
+    const photosWithUri = photosSelected.map((photo) => {
+  
+      const photoName = extractFileNameFromURL(photo.id)
+
+      return {
+      name: photoName,
       uri: photo.id,
       ref: photo.ref,
-    }));
+    }});
 
     await removePhotos(photosWithUri, setPhotosSelected, {
       collectionRef: checkQuery,
+      folder: `/${CHECKLISTS}/${checkId}/check/${checkItemId}/photos`
     });
   };
 

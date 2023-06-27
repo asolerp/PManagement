@@ -120,7 +120,7 @@ const NewIncidence = () => {
 
       if (incidenceImages?.length > 0) {
         const uploadImages = incidenceImages.map((file) =>
-          upload(file, `/PortManagement/Incidences/${newIncidence.id}/Photos`),
+          upload(file, `/incidences/${newIncidence.id}/photos`),
         );
 
         const imagesURLs = await Promise.all(uploadImages);

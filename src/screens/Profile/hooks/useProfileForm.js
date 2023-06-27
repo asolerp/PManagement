@@ -8,6 +8,7 @@ import {useUpdateFirebase} from '../../../hooks/useUpdateFirebase';
 import {timeout} from '../../../utils/timeout';
 
 import {firebase} from '@react-native-firebase/firestore';
+import uploadImage from '../../../utils/uploadImage';
 
 export const useProfileForm = () => {
   const [loading, setLoading] = useState(false);
@@ -15,9 +16,6 @@ export const useProfileForm = () => {
   const [newImage, setNewImage] = useState();
 
   const {setVisible} = useContext(LoadingModalContext);
-  const uploadProfilePhoto = firebase
-    .functions()
-    .httpsCallable('uploadProfilePhoto');
   const {updateFirebase} = useUpdateFirebase('users');
 
   const reauthenticate = (currentPassword) => {
@@ -26,23 +24,22 @@ export const useProfileForm = () => {
     return user.reauthenticateWithCredential(cred);
   };
 
+
+
   const handleEdit = async (userId) => {
     try {
       setVisible(true);
       if (newImage) {
-        await uploadProfilePhoto({
-          user: {
-            id: userId,
-            ...infoProfile,
-          },
-          imageBase64: newImage?.[0],
-        });
+        const downloadURL = await uploadImage(newImage[0].fileUri, `users/${userId}/photos/${userId}`)
+        await updateFirebase(userId, {...infoProfile, profileImage: {
+          original: downloadURL,
+          small: downloadURL,
+        }});
       } else {
         await timeout(1500);
-        console.log('INFO', infoProfile);
         await updateFirebase(userId, {...infoProfile});
       }
-      setNewImage(null);
+      // setNewImage(null);
     } catch (err) {
       error({
         message: err.message,

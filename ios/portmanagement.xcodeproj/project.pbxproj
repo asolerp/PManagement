@@ -10,8 +10,8 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		5F5BBFFB61F70AEDDA3EDF08 /* libPods-PortManagementCommonPods-PortManagement-Development.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEF44FBD3EBF686324AFEDBD /* libPods-PortManagementCommonPods-PortManagement-Development.a */; };
-		D058A31A808621232FC63A0F /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 896B191AE05F45B647FD0BDF /* libPods-PortManagementCommonPods-PortManagement.a */; };
+		B0EB11FFD8646D7DD5525803 /* libPods-PortManagementCommonPods-PortManagement-Development.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78879FEB57F46555F64CDD71 /* libPods-PortManagementCommonPods-PortManagement-Development.a */; };
+		B8572BD19981B36B36C55DBC /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A90482BC041CFC191BFEAFE0 /* libPods-PortManagementCommonPods-PortManagement.a */; };
 		D36EAEC429CB471100C728CB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		D36EAEC529CB471100C728CB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		D36EAECA29CB471100C728CB /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3C4ABE42762610E00BD231D /* BootSplash.storyboard */; };
@@ -33,11 +33,12 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = portmanagement/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = portmanagement/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = portmanagement/main.m; sourceTree = "<group>"; };
-		387D8075D03D7B75251B17F3 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement.debug.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement.debug.xcconfig"; sourceTree = "<group>"; };
-		3A983DDA86BBF6B55A1EF33E /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement.release.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement.release.xcconfig"; sourceTree = "<group>"; };
-		3EE7CD5A2C1C812E1871C498 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig"; sourceTree = "<group>"; };
-		896B191AE05F45B647FD0BDF /* libPods-PortManagementCommonPods-PortManagement.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortManagementCommonPods-PortManagement.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE7CCF13B826DEBEC7C67E46 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig"; sourceTree = "<group>"; };
+		421BE5E505C99C14902BC0A9 /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement.release.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement.release.xcconfig"; sourceTree = "<group>"; };
+		78879FEB57F46555F64CDD71 /* libPods-PortManagementCommonPods-PortManagement-Development.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortManagementCommonPods-PortManagement-Development.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B24E5A4E7643A02386B12CD /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig"; sourceTree = "<group>"; };
+		A90482BC041CFC191BFEAFE0 /* libPods-PortManagementCommonPods-PortManagement.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortManagementCommonPods-PortManagement.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB3DE17C4625F5EC41821235 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig"; sourceTree = "<group>"; };
+		AE05ACF84CE874BD01DF528A /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement.debug.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement.debug.xcconfig"; sourceTree = "<group>"; };
 		D344EFBD25F20C8100753942 /* portmanagement.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = portmanagement.entitlements; path = portmanagement/portmanagement.entitlements; sourceTree = "<group>"; };
 		D36EAED529CB471100C728CB /* PortManagement-Development.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PortManagement-Development.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D36EAED629CB471100C728CB /* PortManagement copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PortManagement copy-Info.plist"; path = "/Users/alberto/Desktop/Enalbis/PManagement/ios/PortManagement copy-Info.plist"; sourceTree = "<absolute>"; };
@@ -46,7 +47,6 @@
 		D37AAD0B259DE43A0006FCE1 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		D3BCCA3828CB3793004E6A0A /* 1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 1024.png; path = portmanagement/Images.xcassets/AppIcon.appiconset/1024.png; sourceTree = "<group>"; };
 		D3C4ABE42762610E00BD231D /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = portmanagement/BootSplash.storyboard; sourceTree = "<group>"; };
-		DEF44FBD3EBF686324AFEDBD /* libPods-PortManagementCommonPods-PortManagement-Development.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortManagementCommonPods-PortManagement-Development.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -56,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D058A31A808621232FC63A0F /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */,
+				B8572BD19981B36B36C55DBC /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,7 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F5BBFFB61F70AEDDA3EDF08 /* libPods-PortManagementCommonPods-PortManagement-Development.a in Frameworks */,
+				B0EB11FFD8646D7DD5525803 /* libPods-PortManagementCommonPods-PortManagement-Development.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,8 +93,8 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				896B191AE05F45B647FD0BDF /* libPods-PortManagementCommonPods-PortManagement.a */,
-				DEF44FBD3EBF686324AFEDBD /* libPods-PortManagementCommonPods-PortManagement-Development.a */,
+				A90482BC041CFC191BFEAFE0 /* libPods-PortManagementCommonPods-PortManagement.a */,
+				78879FEB57F46555F64CDD71 /* libPods-PortManagementCommonPods-PortManagement-Development.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -102,10 +102,10 @@
 		73AD0794B5D29150E5C61272 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				387D8075D03D7B75251B17F3 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */,
-				3A983DDA86BBF6B55A1EF33E /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */,
-				3EE7CD5A2C1C812E1871C498 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */,
-				CE7CCF13B826DEBEC7C67E46 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */,
+				AE05ACF84CE874BD01DF528A /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */,
+				421BE5E505C99C14902BC0A9 /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */,
+				AB3DE17C4625F5EC41821235 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */,
+				8B24E5A4E7643A02386B12CD /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -174,14 +174,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "PortManagement" */;
 			buildPhases = (
-				5B8FF3F068A2109707D694FB /* [CP] Check Pods Manifest.lock */,
+				BE670921C2E8B74463D64F81 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				DD9B63AB9235BEB112538F77 /* [CP] Embed Pods Frameworks */,
-				18FA7FB451CD2B4CCAB5D7E1 /* [CP] Copy Pods Resources */,
+				8707621EF054210B5F4A9E28 /* [CP] Embed Pods Frameworks */,
+				6855FDBF815E34A6BC6F7B18 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -196,14 +196,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D36EAED229CB471100C728CB /* Build configuration list for PBXNativeTarget "PortManagement-Development" */;
 			buildPhases = (
-				85A3378729B1DE22F6DEF157 /* [CP] Check Pods Manifest.lock */,
+				7BF9F33589C5030D0B79B164 /* [CP] Check Pods Manifest.lock */,
 				D36EAEC229CB471100C728CB /* Start Packager */,
 				D36EAEC329CB471100C728CB /* Sources */,
 				D36EAEC729CB471100C728CB /* Frameworks */,
 				D36EAEC929CB471100C728CB /* Resources */,
 				D36EAECF29CB471100C728CB /* Bundle React Native code and images */,
-				2B1D2FB4026E333BC064F834 /* [CP] Embed Pods Frameworks */,
-				E2B3C15BBF8FB35EE7B568F9 /* [CP] Copy Pods Resources */,
+				4354928AC5428AB9945676B1 /* [CP] Embed Pods Frameworks */,
+				F289DC4EF298938159D3E71E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -294,7 +294,31 @@
 			shellPath = /bin/sh;
 			shellScript = "export EXTRA_PACKAGER_ARGS=\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		18FA7FB451CD2B4CCAB5D7E1 /* [CP] Copy Pods Resources */ = {
+		4354928AC5428AB9945676B1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-DoubleConversion/double-conversion.framework/double-conversion",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/double-conversion.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6855FDBF815E34A6BC6F7B18 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -352,53 +376,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2B1D2FB4026E333BC064F834 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-DoubleConversion/double-conversion.framework/double-conversion",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/double-conversion.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5B8FF3F068A2109707D694FB /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-PortManagementCommonPods-PortManagement-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		85A3378729B1DE22F6DEF157 /* [CP] Check Pods Manifest.lock */ = {
+		7BF9F33589C5030D0B79B164 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -414,6 +392,52 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-PortManagementCommonPods-PortManagement-Development-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8707621EF054210B5F4A9E28 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-DoubleConversion/double-conversion.framework/double-conversion",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/double-conversion.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BE670921C2E8B74463D64F81 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PortManagementCommonPods-PortManagement-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -453,31 +477,7 @@
 			shellPath = /bin/sh;
 			shellScript = "export EXTRA_PACKAGER_ARGS=\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		DD9B63AB9235BEB112538F77 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-DoubleConversion/double-conversion.framework/double-conversion",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/double-conversion.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E2B3C15BBF8FB35EE7B568F9 /* [CP] Copy Pods Resources */ = {
+		F289DC4EF298938159D3E71E /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -580,7 +580,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 387D8075D03D7B75251B17F3 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */;
+			baseConfigurationReference = AE05ACF84CE874BD01DF528A /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -618,7 +618,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3A983DDA86BBF6B55A1EF33E /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */;
+			baseConfigurationReference = 421BE5E505C99C14902BC0A9 /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -771,7 +771,7 @@
 		};
 		D36EAED329CB471100C728CB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3EE7CD5A2C1C812E1871C498 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */;
+			baseConfigurationReference = AB3DE17C4625F5EC41821235 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -809,7 +809,7 @@
 		};
 		D36EAED429CB471100C728CB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE7CCF13B826DEBEC7C67E46 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */;
+			baseConfigurationReference = 8B24E5A4E7643A02386B12CD /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

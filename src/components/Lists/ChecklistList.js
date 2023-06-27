@@ -18,6 +18,7 @@ import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
 import { Colors } from '../../Theme/Variables';
+import { set } from 'date-fns';
 
 const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   const {Gutters} = useTheme();
@@ -29,15 +30,25 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   let firestoreQuery;
   let firestoreQueryNotFinished;
 
+
+
+  if (houses?.length > 0) {
+    firestoreQuery = firestore()
+    .collection('checklists')
+    .where('finished', '==', false)
+    .where('houseId', 'in', houses)
+    .limit(limit);
+  }
+
+
   if (house?.id) {
+
     firestoreQuery = firestore()
       .collection('checklists')
       .where('finished', '==', false)
       .where('houseId', '==', house?.id)
       .limit(limit);
   }
-
-  console.log("UID", uid)
 
   if (uid) {
     firestoreQuery = firestore()
@@ -48,6 +59,26 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   }
 
   if (!uid && !house?.id && time) {
+
+    if (houses?.length > 0) {
+
+    firestoreQueryNotFinished = firestore()
+      .collection('checklists')
+      .where('finished', '==', false)
+      .where('houseId', 'in', houses)
+      .where('date', '>', new Date(time.start))
+      .where('date', '<', new Date(time.end))
+  
+    firestoreQuery = firestore()
+      .collection('checklists')
+      .where('finished', '==', true)
+      .where('houseId', 'in', houses)
+      .where('date', '>', new Date(time.start))
+      .where('date', '<', new Date(time.end))
+      .limit(limit);
+
+    } else {
+
     firestoreQueryNotFinished = firestore()
       .collection('checklists')
       .where('finished', '==', false)
@@ -60,6 +91,8 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
       .where('date', '>', new Date(time.start))
       .where('date', '<', new Date(time.end))
       .limit(limit);
+
+    }
   }
 
   const [valuesNotFinished, loadingNotFinished] = useCollectionData(firestoreQueryNotFinished, {
@@ -71,11 +104,15 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   });
 
   const filters = {
-    houses,
+    // houses,
     workers,
   };
 
   const {filteredList} = useFilters({list: data, filters});
+
+  useEffect(() => {
+    setLimit(5);
+  }, [houses]);
 
   useEffect(() => {
     if (values && valuesNotFinished) {
@@ -114,7 +151,7 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
         scrollEnabled={scrollEnabled}
         ListEmptyComponent={<Text style={[theme.textBlack]}>{t('checklists.empty')}</Text>}
         showsVerticalScrollIndicator={false}
-        ListFooterComponent={  <TouchableOpacity onPress={handleShowMore} ><Text style={[{color: Colors.pm}, theme.fontSansBold, theme.textCenter]}>Show more</Text></TouchableOpacity>}
+        ListFooterComponent={<TouchableOpacity onPress={handleShowMore}><Text style={[{color: Colors.pm}, theme.fontSansBold, theme.textCenter]}>Show more</Text></TouchableOpacity>}
         contentInset={{bottom: 150}}
         data={filteredList && sortByFinished(filteredList)}
         renderItem={renderItem}

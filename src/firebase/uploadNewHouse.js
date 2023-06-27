@@ -1,26 +1,20 @@
 //Firebase
-
-import {firebase} from '@react-native-firebase/firestore';
+import firestore from '@react-native-firebase/firestore';
 
 import {error} from '../lib/logging';
-
-const uploadHousePhoto = firebase.functions().httpsCallable('uploadHousePhoto');
+import uploadImage from '../utils/uploadImage';
 
 export const newHouse = async (data, houseImage, userUID) => {
   try {
-    await uploadHousePhoto({
-      house: data,
-      imageBase64: houseImage,
-    });
-    // const house = await firestore().collection('houses').add(data);
-    // const uploadImage = await cloudinaryUpload(
-    //   houseImage,
-    //   `/PortManagement/Houses/${house.id}`,
-    // );
-    // await firestore()
-    //   .collection('houses')
-    //   .doc(house.id)
-    //   .update({houseImage: uploadImage});
+    const house = await firestore().collection('houses').add(data);
+    const downloadURL = await uploadImage(houseImage, `/PortManagement/Houses/${userUID}`);
+    await firestore()
+      .collection('houses')
+      .doc(house.id)
+      .update({...data, houseImage: {
+        original: downloadURL,
+        small: downloadURL,
+      }});
   } catch (err) {
     error({
       message: err.message,

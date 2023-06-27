@@ -17,12 +17,11 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
             checkImages += `
             <td>
               <a href="${photo}" style="text-decoration: none; margin: 5px;">
-                <img src="${photo}" style="height:auto;display:block;object-fit:contain; border-radius: 10px; width:150px; height: 150px;" alt="">
+                <img src="${photo}" style="height:150px;display:block;object-fit:cover; border-radius: 10px; width:150px; height: 150px;" alt="">
               </a>
             </td>
             `;
           });
-        console.log("Check Images", checkImages);
       }
       checksHtml += `
       <tr>

@@ -205,7 +205,7 @@ const Info = ({isCheckFinished}) => {
               </View>
               <View style={[Layout.row, theme.mL1]}>
                 {checklist?.workers?.map((worker, i) => (
-                  <View style={[theme.justifyCenter, theme.itemsCenter]}>
+                  <View key={worker.id} style={[theme.justifyCenter, theme.itemsCenter]}>
                     <Avatar
                       enabled={!isOwner}
                       overlap={checklist?.workers?.length > 1}

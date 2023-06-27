@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import theme from '../../Theme/Theme';
 import { Colors } from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -16,7 +16,7 @@ export const OwnerChecks = ({
 
     return (
         <>
-            <ImageView
+          <ImageView
             visible={modal}
             imageIndex={0}
             images={image}
@@ -27,7 +27,7 @@ export const OwnerChecks = ({
                 <Text style={[theme.fontSansBold]}>We check:</Text>
                 </View>
                 <View>
-                {checksFromChecklist?.map((check) => (
+                {checksFromChecklist?.sort((a, b) => a.locale.en.localeCompare(b.locale.en))?.map((check) => (
                     <View
                     style={[
                         theme.mB2,
@@ -60,33 +60,38 @@ export const OwnerChecks = ({
                         size={25}
                         />
                     </View>
-                    <View
-                        style={[
-                        theme.p1,
-                        theme.flexRow,
-                        theme.flexWrap,
-                        {
-                            backgroundColor: Colors.pmLow,
-                        },
-                        ]}>
-                        {check?.photos?.map((photo) => (
-                        <TouchableOpacity
-                            style={[theme.mR1]}
-                            onPress={() => {
-                            setModal(true);
-                            setImage([{uri: photo}]);
-                            }}>
-                            <FastImage
-                            source={{
-                                uri: photo,
-                                priority: FastImage.priority.normal,
-                            }}
-                            style={[theme.w20, theme.h20, theme.roundedSm]}
-                            resizeMode={FastImage.resizeMode.cover}
-                            />
-                        </TouchableOpacity>
-                        ))}
-                    </View>
+                    {
+                      check?.photos?.length > 0 && (
+                        <ScrollView
+                            horizontal={true}
+                            style={[
+                            theme.p1,
+                            theme.flexRow,
+                            theme.flexWrap,
+                            {
+                                backgroundColor: Colors.pmLow,
+                            },
+                            ]}>
+                            {check?.photos?.map((photo) => (
+                            <TouchableOpacity
+                                style={[theme.mR1]}
+                                onPress={() => {
+                                setModal(true);
+                                setImage([{uri: photo}]);
+                                }}>
+                                <FastImage
+                                source={{
+                                    uri: photo,
+                                    priority: FastImage.priority.normal,
+                                }}
+                                style={[theme.w20, theme.h20, theme.roundedSm]}
+                                resizeMode={FastImage.resizeMode.cover}
+                                />
+                            </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                      ) 
+                    }
                     </View>
                 ))}
                 </View>

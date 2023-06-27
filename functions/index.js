@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+
 const firebase_tools = require('firebase-tools');
 
 const cloudinary = require('cloudinary').v2;
@@ -7,6 +8,7 @@ const cloudinary = require('cloudinary').v2;
 const {createNewUser} = require('./admin/createNewUser');
 const {notifyOwner} = require('./admin/notifyOwner');
 const {deleteUser} = require('./admin/deleteUser');
+const {onDeleteCheckList} = require('./admin/onDeleteCheckList');
 
 // Cloudinary
 
@@ -18,7 +20,6 @@ const {
   sendPushNotificationFinishedChecklist,
   sendPushNotificationNewAsignedChecklist,
   sendPushNotificationNewChecklistMessage,
-  sendPushNotificationUpdateCheckList,
 } = require('./notifications/checklists');
 
 const {
@@ -55,6 +56,8 @@ exports.notifyOwner = notifyOwner;
 exports.deleteUser = deleteUser;
 
 // CHECKLISTS
+
+exports.onDeleteCheckList = onDeleteCheckList;
 
 exports.sendPushNotificationNewChecklistMessage =
   sendPushNotificationNewChecklistMessage;

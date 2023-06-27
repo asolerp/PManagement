@@ -75,7 +75,7 @@ export const HousesFilter = ({houses, onClickHouse}) => {
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={values}
+          data={values.sort((a, b) => a.houseName.localeCompare(b.houseName))}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={[theme.pX4]}

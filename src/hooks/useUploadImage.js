@@ -11,7 +11,6 @@ const useUploadImageCheck = (collection, docId) => {
   const {uploadPhotos, loading} = usePhotos();
 
   const uploadImages = async (imgs, item) => {
-    console.log("IMGS", imgs)
     try {
       setIdCheckLoading(item.id);
 
@@ -24,7 +23,7 @@ const useUploadImageCheck = (collection, docId) => {
               .doc(docId)
               .collection('checks')
               .doc(item.id),
-            folder: `/${CHECKLISTS}/${docId}/Check/${item.id}/Photos`,
+            folder: `/${CHECKLISTS}/${docId}/check/${item.id}/photos`,
             docId: docId,
           });
         }
