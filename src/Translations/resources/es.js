@@ -178,6 +178,11 @@ export default {
     gender: 'Género',
     role: 'Rol',
     language: 'Idioma',
+    password: 'Contraseña',
+    old_password: 'Contraseña actual',
+    password_confirm: 'Confirmar contraseña',
+    change_password: 'Cambiar contraseña',
+    notifications: 'Notificaciones',
   },
   options: {
     title: 'Opciones',

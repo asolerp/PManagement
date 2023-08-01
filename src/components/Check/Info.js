@@ -90,6 +90,7 @@ const Info = ({isCheckFinished}) => {
   const {Layout, Gutters, Fonts} = useTheme();
   const {docId} = route.params;
   const {t} = useTranslation();
+
   const query = useMemo(() => {
     return firestore().collection('checklists').doc(docId).collection('checks');
   }, [docId]);
@@ -207,7 +208,7 @@ const Info = ({isCheckFinished}) => {
                 {checklist?.workers?.map((worker, i) => (
                   <View key={worker.id} style={[theme.justifyCenter, theme.itemsCenter]}>
                     <Avatar
-                      enabled={!isOwner}
+                      enabled={false}
                       overlap={checklist?.workers?.length > 1}
                       index={i}
                       id={worker.id}

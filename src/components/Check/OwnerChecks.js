@@ -95,10 +95,14 @@ export const OwnerChecks = ({
                     </View>
                 ))}
                 </View>
-                <View style={[theme.mT4]}>
-                <Text style={[theme.fontSansBold]}>Observations:</Text>
-                <Text style={[theme.mT2]}>{checklist?.observations || 'No observations'}</Text>
-                </View>
+                {
+                    checklist?.observations && (
+                    <View style={[theme.mT4]}>
+                        <Text style={[theme.fontSansBold]}>Observations:</Text>
+                        <Text style={[theme.mT2]}>{checklist?.observations}</Text>
+                    </View>
+                    )
+                }
             </View>
         </>
     )

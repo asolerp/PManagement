@@ -37,6 +37,7 @@ const createNewUser = functions
           language,
           phone,
           gender,
+          notifications: true,
           profileImage: {original: DEFAULT_PHOTO_URL, small: DEFAULT_PHOTO_URL},
           role,
           email,

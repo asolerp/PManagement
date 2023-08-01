@@ -162,8 +162,21 @@ export const parseTimeFilter = (time) => {
 };
 
 export const parseDateWithText = (date) => {
+
+  if (date !== undefined) {
+    console.log("[[DATE]]", date?._seconds)
+  }
+
+
+  return {
+    text: 'common.range_time.today',
+    variant: 'pm',
+  };
+
+  if (!date) return null;
+
   const inOneWeek = format(subDays(new Date(), 7), 'dd/MM/yyyy');
-  const diff = differenceInDays(date.toDate(), new Date());
+  const diff = date && differenceInDays(date && date.toDate(), new Date());
 
   if (isSameDay(date.toDate(), new Date())) {
     return {

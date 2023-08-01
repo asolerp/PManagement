@@ -9,6 +9,7 @@ const {createNewUser} = require('./admin/createNewUser');
 const {notifyOwner} = require('./admin/notifyOwner');
 const {deleteUser} = require('./admin/deleteUser');
 const {onDeleteCheckList} = require('./admin/onDeleteCheckList');
+const { resetPassword } = require('./admin/resetPassword');
 
 // Cloudinary
 
@@ -51,6 +52,7 @@ exports.uploadProfilePhoto = uploadProfilePhoto;
 
 /// ADMIN
 
+exports.resetPassword = resetPassword;
 exports.createNewUser = createNewUser;
 exports.notifyOwner = notifyOwner;
 exports.deleteUser = deleteUser;

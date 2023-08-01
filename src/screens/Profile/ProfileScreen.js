@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {createRef, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Pressable,
+  Switch,
 } from 'react-native';
 
 // UI
@@ -18,7 +19,7 @@ import {useSelector} from 'react-redux';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
-
+import {firebase} from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 //Utils
@@ -44,6 +45,7 @@ import {Colors} from '../../Theme/Variables';
 
 import FastImage from 'react-native-fast-image';
 import theme from '../../Theme/Theme';
+import Toast from 'react-native-toast-message';
 
 const styles = StyleSheet.create({
   input: {
@@ -104,8 +106,9 @@ const ProfileScreen = ({route}) => {
   const [isPickerVisibleRole, setIsPickerVisibleRole] = useState(false);
   const [isPickerVisibleGender, setIsPickerVisibleGender] = useState(false);
   const [isPickerVisibleLanguage, setIsPickerVisibleLanguage] = useState(false);
-
   const {
+    notifications,
+    setNotifications,
     changePassword,
     loading,
     newImage,
@@ -116,13 +119,32 @@ const ProfileScreen = ({route}) => {
   } = useProfileForm();
 
   const {Layout, Gutters} = useTheme();
-
+  const switchRef = createRef();
   const {handlePressImage} = useChoseImage(setNewImage);
   const currentUser = useSelector(userSelector);
   const {t} = useTranslation();
 
   const defaultImg =
     'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
+
+
+    
+  const resetPassword = firebase.functions().httpsCallable('resetPassword');
+
+  const resetPasswordHandler = async () => {
+    try {
+      await resetPassword({
+        email: infoProfile.email,
+      });
+      Toast.show({
+        type: 'success',
+        position: 'bottom',
+        text1: 'Petición enviada correctamente',
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const logOut = async () => {
     try {
@@ -144,6 +166,7 @@ const ProfileScreen = ({route}) => {
         .get();
       const userResponse = {id: userQuery.id, ...userQuery.data()};
       setInfoProfile(userResponse);
+      setNotifications(userResponse.notifications || false);
     };
     if (user) {
       setInfoProfile(user);
@@ -324,6 +347,18 @@ const ProfileScreen = ({route}) => {
                 />
               </View>
             </Pressable>
+            {
+              currentUser?.role === 'admin' && (
+                <>
+                  <CustomButton
+                    type="clear"
+                    styled="rounded"
+                    title="Reset Password"
+                    onPress={resetPasswordHandler}
+                  />
+                 </>
+              )
+            }
             {infoProfile?.role === 'admin' && (
               <>
                 <Text style={styles.inputLabel}>
@@ -346,44 +381,58 @@ const ProfileScreen = ({route}) => {
             )}
           </View>
           {currentUser.id === infoProfile?.id && (
-            <View>
-              <Text style={[styles.titleStyle, Gutters.mediumBMargin]}>
-                Contraseña
-              </Text>
-              <Text style={styles.inputLabel}>Contraseña antigua:</Text>
+            <>
+              <View style={[Gutters.mediumTMargin]}>
+                <Text style={[styles.titleStyle, Gutters.mediumBMargin]}>
+                  {t('profile.password')}
+                </Text>
+                <Text style={styles.inputLabel}>{t('profile.old_password')}:</Text>
 
-              <TextInput
-                style={[styles.input]}
-                placeholder="Contraseña antigua"
-                onChangeText={(text) =>
-                  setInfoProfile({...infoProfile, oldPassword: text})
-                }
-                value={infoProfile?.oldPassword}
-              />
+                <TextInput
+                  style={[styles.input]}
+                  placeholder={t('profile.old_password')}
+                  onChangeText={(text) =>
+                    setInfoProfile({...infoProfile, oldPassword: text})
+                  }
+                  value={infoProfile?.oldPassword}
+                />
 
-              <Text style={styles.inputLabel}>Nueva contraseña:</Text>
+                <Text style={styles.inputLabel}>{t('profile.password_confirm')}:</Text>
 
-              <TextInput
-                style={[styles.input]}
-                placeholder="Nueva contraseña"
-                onChangeText={(text) =>
-                  setInfoProfile({...infoProfile, newPassword: text})
-                }
-                value={infoProfile?.newPassword}
-              />
+                <TextInput
+                  style={[styles.input]}
+                  placeholder={t('profile.password_confirm')}
+                  onChangeText={(text) =>
+                    setInfoProfile({...infoProfile, newPassword: text})
+                  }
+                  value={infoProfile?.newPassword}
+                />
 
-              <CustomButton
-                loading={loading}
-                type="clear"
-                title="Cambiar contraseña"
-                onPress={() => {
-                  changePassword(
-                    infoProfile?.oldPassword,
-                    infoProfile?.newPassword,
-                  );
-                }}
-              />
-            </View>
+                <CustomButton
+                  loading={loading}
+                  type="clear"
+                  title={t('profile.change_password')}
+                  onPress={() => {
+                    changePassword(
+                      infoProfile?.oldPassword,
+                      infoProfile?.newPassword,
+                    );
+                  }}
+                />
+              </View>
+              <View style={[Gutters.mediumTMargin, theme.flexRow, theme.justifyBetween]}>
+                <Text style={[styles.titleStyle, Gutters.smallBMargin]}>
+                  {t('profile.notifications')}
+                </Text>
+                <Switch
+                  style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}
+                  trackColor={{true: '#60AD88', false: 'grey'}}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={(e) => setNotifications(e)}
+                  value={notifications}
+                />
+              </View>
+            </>
           )}
         </View>
       </KeyboardAwareScrollView>

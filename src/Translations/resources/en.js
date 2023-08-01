@@ -39,6 +39,7 @@ export default {
     clean: 'Clean',
     save: 'Save',
     edit: 'Edit',
+    
     search_name: 'Search by name...',
     informer: 'Informer',
     asigned_to: 'Asigned to',
@@ -181,6 +182,11 @@ export default {
     gender: 'Gender',
     role: 'Role',
     language: 'Language',
+    password: 'Password',
+    old_password: 'Old password',
+    password_confirm: 'Confirm password',
+    change_password: 'Change password',
+    notifications: 'Notifications',
   },
   options: {
     title: 'Options',

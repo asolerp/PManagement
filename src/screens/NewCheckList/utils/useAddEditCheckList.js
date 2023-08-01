@@ -42,10 +42,6 @@ export const useAddEditCheckist = ({docId, edit}) => {
 
   const {addFirebase} = useAddFirebase();
   const {updateFirebase} = useUpdateFirebase(CHECKLISTS);
-  const {recursiveDelete} = useRecursiveDelete({
-    path: `${CHECKLISTS}/${docId}/checks`,
-    collection: CHECKLISTS,
-  });
 
   const setAllChecks = useCallback(
     (checks) => {
@@ -58,12 +54,15 @@ export const useAddEditCheckist = ({docId, edit}) => {
     !!date && Object.keys(checks).length > 0 && Object.keys(house).length;
 
   const handleEdit = async () => {
+
+    console.log("Date", date)
+
     try {
       setLoading(true);
       setVisible(true);
       const editCheckListForm = {
         observations: observations,
-        date: date?._i || date,
+        date: date?._i,
         workers: workers?.value,
         workersId: workers?.value?.map((worker) => worker.id) || null,
         houseId: house?.value[0].id,
@@ -74,30 +73,10 @@ export const useAddEditCheckist = ({docId, edit}) => {
         done: 0,
       };
 
+      console.log('editCheckListForm', editCheckListForm)
+
+
       await updateFirebase(docId, editCheckListForm);
-      await recursiveDelete();
-
-      const newChecks = Object.entries(checks)
-        .filter(([key, value]) => value.check)
-        .map(([key, value]) => ({
-          locale: value?.locale,
-          originalId: value?.originalId,
-          photos: value?.photos || null,
-          numberOfPhotos: value?.photos?.length || 0,
-          done: false,
-          worker: null,
-          date: null,
-        }));
-
-      await Promise.all(
-        newChecks.map((c) =>
-          firestore()
-            .collection('checklists')
-            .doc(docId)
-            .collection('checks')
-            .add(c),
-        ),
-      );
 
       Toast.show({
         type: 'success',
@@ -131,6 +110,7 @@ export const useAddEditCheckist = ({docId, edit}) => {
         send: false,
         done: 0,
       };
+
       const newCheckList = await addFirebase('checklists', newCheckListForm);
       await Promise.all(
         Object.entries(checks)

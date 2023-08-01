@@ -6,7 +6,16 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
   .onUpdate(async (change, context) => {
     const checklist = change.after.data();
 
-    const {street} = checklist.house[0];
+    const {street, owner} = checklist.house[0];
+
+    const ownerSnapshot = await admin
+      .firestore()
+      .collection('users')
+      .doc(owner)
+      .get();
+
+    const ownerToken = ownerSnapshot.data().token;
+    const ownerNotificationStatus = ownerSnapshot.data().notifications;
 
     if (checklist.finished) {
       try {
@@ -17,8 +26,11 @@ const sendPushNotificationNewChecklistMessage = functions.firestore
           .get();
 
         const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
-
         const cleanListTokens = adminTokens.filter((t) => t !== undefined);
+
+        if (ownerNotificationStatus && ownerToken) {
+          cleanListTokens.push(ownerToken);
+        }
 
         let notification = {
           title: `Checklist finalizado en ${street}`,

@@ -35,6 +35,7 @@ const notifyOwner = functions
       const checks = checksRef.docs.map((doc) => doc.data());
 
       sendResumeChecklistOwner({checklist, checks});
+      
     } catch (err) {
       console.log(err);
     }

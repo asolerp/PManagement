@@ -5,21 +5,6 @@ import storage from '@react-native-firebase/storage';
 import {error as errorLog} from '../lib/logging';
 import uploadImage from './uploadImage';
 
-const uploadImageToFirebase = async (asset) => {
-  const {uri, storageFolder, fileName} = asset;
-
-  // Create a reference to the location you want to upload to in firebase
-  const reference = storage().ref(`${storageFolder}/${fileName}`);
-
-  // Use the putFile() method to upload the image
-  await reference.putFile(uri);
-
-  // Get the download URL
-  const url = await reference.getDownloadURL();
-
-  return url;
-};
-
 export const usePhotos = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
@@ -55,7 +40,7 @@ export const usePhotos = () => {
     }
   };
 
-  const uploadPhotos = async (imgs, fbRoute) => {
+  const uploadPhotos = async (imgs, fbRoute, withCompression = true) => {
 
     const {collectionRef, folder} = fbRoute;
 
@@ -63,7 +48,7 @@ export const usePhotos = () => {
       setLoading(true);
 
       const promises = imgs.map(
-        async (file) => await uploadImage(file.fileUri, `${folder}/${file.fileName}`, false),
+        async (file) => await uploadImage(file.fileUri, `${folder}/${file.fileName}`, withCompression),
       );
       
       const imagesURLs = await Promise.all(promises);

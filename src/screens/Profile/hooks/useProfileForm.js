@@ -7,13 +7,13 @@ import {LoadingModalContext} from '../../../context/loadinModalContext';
 import {useUpdateFirebase} from '../../../hooks/useUpdateFirebase';
 import {timeout} from '../../../utils/timeout';
 
-import {firebase} from '@react-native-firebase/firestore';
 import uploadImage from '../../../utils/uploadImage';
 
 export const useProfileForm = () => {
   const [loading, setLoading] = useState(false);
   const [infoProfile, setInfoProfile] = useState();
   const [newImage, setNewImage] = useState();
+  const [notifications, setNotifications] = useState(false);
 
   const {setVisible} = useContext(LoadingModalContext);
   const {updateFirebase} = useUpdateFirebase('users');
@@ -31,13 +31,13 @@ export const useProfileForm = () => {
       setVisible(true);
       if (newImage) {
         const downloadURL = await uploadImage(newImage[0].fileUri, `users/${userId}/photos/${userId}`)
-        await updateFirebase(userId, {...infoProfile, profileImage: {
+        await updateFirebase(userId, {...infoProfile, notifications, profileImage: {
           original: downloadURL,
           small: downloadURL,
         }});
       } else {
         await timeout(1500);
-        await updateFirebase(userId, {...infoProfile});
+        await updateFirebase(userId, {...infoProfile, notifications});
       }
       // setNewImage(null);
     } catch (err) {
@@ -86,7 +86,9 @@ export const useProfileForm = () => {
     handleEdit,
     infoProfile,
     setNewImage,
+    notifications,
     setInfoProfile,
     changePassword,
+    setNotifications,
   };
 };

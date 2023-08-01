@@ -89,6 +89,7 @@ const CheckListForm = ({edit, docId}) => {
     }),
     {},
   );
+
   const setAllChecksActions = useCallback(() => {
     dispatch(setAllChecks({checks: allChecks}));
   }, [dispatch, allChecks]);
@@ -317,37 +318,42 @@ const CheckListForm = ({edit, docId}) => {
         onChangeText={(text) => setInputFormAction('observations', text)}
         value={observations}
       />
-      <View
-        style={[
-          Layout.fill,
-          Layout.rowCenter,
-          Layout.justifyContentSpaceBetween,
-        ]}>
-        <Text style={{...defaultLabel, marginTop: 10}}>
-          {t('new_checklist.check_list')}
-        </Text>
-        <View style={[Layout.rowCenter, Layout.justifyContentCenter]}>
-          <TouchableOpacity
-            onPress={() => setAllChecksActions()}
-            style={styles.labelWrapper}>
-            <Label title={t('common.all')} color={Colors.pm} active={true} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => removeAllChecksActions()}
-            style={styles.labelWrapper}>
-            <Label
-              title={t('common.neither')}
-              color={Colors.danger}
-              active={true}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <ScrollView style={styles.checkListWrapper}>
-        {list?.map((check) => (
-          <CheckItem item={check} key={check.id} />
-        ))}
-      </ScrollView>
+    
+      {!edit && (
+        <>
+          <View
+            style={[
+              Layout.fill,
+              Layout.rowCenter,
+              Layout.justifyContentSpaceBetween,
+            ]}>
+            <Text style={{...defaultLabel, marginTop: 10}}>
+              {t('new_checklist.check_list')}
+            </Text>
+            <View style={[Layout.rowCenter, Layout.justifyContentCenter]}>
+              <TouchableOpacity
+                onPress={() => setAllChecksActions()}
+                style={styles.labelWrapper}>
+                <Label title={t('common.all')} color={Colors.pm} active={true} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => removeAllChecksActions()}
+                style={styles.labelWrapper}>
+                <Label
+                  title={t('common.neither')}
+                  color={Colors.danger}
+                  active={true}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <ScrollView style={styles.checkListWrapper}>
+            {list?.map((check) => (
+              <CheckItem item={check} key={check.id} />
+            ))}
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 };

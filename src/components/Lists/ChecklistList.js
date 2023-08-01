@@ -30,8 +30,6 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   let firestoreQuery;
   let firestoreQueryNotFinished;
 
-
-
   if (houses?.length > 0) {
     firestoreQuery = firestore()
     .collection('checklists')
@@ -40,9 +38,7 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
     .limit(limit);
   }
 
-
   if (house?.id) {
-
     firestoreQuery = firestore()
       .collection('checklists')
       .where('finished', '==', false)

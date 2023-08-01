@@ -1,3 +1,9 @@
+const {createTransporter} = require('../utils/email/config');
+
+const sendResetEmailUser = async ({ email, link }) => {
+
+  const generateEmail = () => {
+    return `
     <!DOCTYPE html>
     <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
@@ -59,3 +65,27 @@
           </div>
         </body>
       </html>
+     `;
+  };
+
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: `Reset your Port Management password`,
+    html: generateEmail(),
+  };
+
+  let emailTransporter = await createTransporter();
+
+  return emailTransporter.sendMail(mailOptions, (error, data) => {
+    if (error) {
+      console.log(error);
+      return;
+    }
+    console.log('Sent!');
+  });
+};
+
+module.exports = {
+  sendResetEmailUser,
+};
