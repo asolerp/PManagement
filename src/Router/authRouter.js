@@ -75,6 +75,7 @@ const AuthRouter = () => {
   if (!user) {
     return null;
   }
+  
 
   if (!user?.loggedIn) {
     return <SignOutRouter />;

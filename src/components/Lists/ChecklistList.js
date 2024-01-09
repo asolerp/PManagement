@@ -25,7 +25,6 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   const [limit, setLimit] = useState(5);
   const [data, setData] = useState([]);
 
-  
   let firestoreQuery;
   let firestoreQueryNotFinished;
 
@@ -37,8 +36,6 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
       .limit(limit);
   }
 
-  console.log("UID", uid)
-
   if (uid) {
     firestoreQuery = firestore()
       .collection('checklists')
@@ -47,7 +44,7 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
       .limit(limit);
   }
 
-  if (!uid && !house?.id && time) {
+  if (time) {
     firestoreQueryNotFinished = firestore()
       .collection('checklists')
       .where('finished', '==', false)
@@ -57,9 +54,6 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
     firestoreQuery = firestore()
       .collection('checklists')
       .where('finished', '==', true)
-      .where('date', '>', new Date(time.start))
-      .where('date', '<', new Date(time.end))
-      .limit(limit);
   }
 
   const [valuesNotFinished, loadingNotFinished] = useCollectionData(firestoreQueryNotFinished, {
@@ -78,13 +72,11 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   const {filteredList} = useFilters({list: data, filters});
 
   useEffect(() => {
-    if (values && valuesNotFinished) {
-      return setData([...valuesNotFinished, ...values]);
-    } 
-    if (values) {
-      return setData([ ...values]);
+    if (values || valuesNotFinished) {
+        let result = houses && houses?.length > 0 ? [ ...valuesNotFinished || [],...values || []] : [...valuesNotFinished || []];
+        setData(result);
     }
-  },[values, valuesNotFinished])
+  },[values, valuesNotFinished, houses])
 
   const handleShowMore = () => {
     setLimit((prevLimit) => prevLimit + 5);

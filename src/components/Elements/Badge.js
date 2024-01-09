@@ -35,9 +35,9 @@ const Badge = ({
 
   const isTypeNormal = type === 'normal';
 
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <View
+  const BadgeComponent = () => {
+    return (
+        <View
         style={[
           Layout.row,
           Layout.alignItemsCenter,
@@ -64,7 +64,19 @@ const Badge = ({
           </Text>
         </Text>
       </View>
-    </TouchableOpacity>
+    )
+  }
+
+  if (onPress) {
+    return (
+      <TouchableOpacity onPress={onPress}>
+        <BadgeComponent />
+      </TouchableOpacity>
+    )
+  }
+
+  return (
+    <BadgeComponent />
   );
 };
 
