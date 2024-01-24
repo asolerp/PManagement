@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, Pressable} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  SectionList,
+} from 'react-native';
 
 import {useTheme} from '../../Theme';
 import {Colors} from '../../Theme/Variables';
@@ -16,38 +23,92 @@ import {openScreenWithPush} from '../../Router/utils/actions';
 import {PROFILE_SCREEN_KEY} from '../../Router/utils/routerKeys';
 import {DEFAULT_IMAGE} from '../../constants/general';
 import theme from '../../Theme/Theme';
+import Badge from '../../components/Elements/Badge';
+import {HDivider} from '../../components/UI/HDivider';
 
 const Container = () => {
   const {Layout, Gutters, Fonts} = useTheme();
   const {t} = useTranslation();
-  const [search, setSearch] = useState();
+  const [searchQuery, setSearchQuery] = useState('');
   const [users] = useCollectionData(firestore().collection('users'), {
     idField: 'id',
   });
 
-  const groupedUsersByRole = search
-    ? users
-        ?.filter((user) =>
-          user.firstName.toLowerCase().includes(search?.toLowerCase()),
-        )
-        ?.reduce(
-          (acc, user) => ({
-            ...acc,
-            [user?.role]: acc?.[user?.role]
-              ? acc?.[user?.role].concat([{...user}])
-              : [{...user}],
-          }),
-          {},
-        )
-    : users?.reduce(
-        (acc, user) => ({
-          ...acc,
-          [user?.role]: acc?.[user?.role]
-            ? acc?.[user?.role].concat([{...user}])
-            : [{...user}],
-        }),
-        {},
-      );
+  const DATA = [
+    {
+      title: parseRoleName('admin'),
+      data: users?.filter((user) => user.role === 'admin'),
+    },
+    {
+      title: parseRoleName('owner'),
+      data: users?.filter((user) => user.role === 'owner'),
+    },
+    {
+      title: parseRoleName('worker'),
+      data: users?.filter((user) => user.role === 'worker'),
+    },
+  ];
+
+  const renderItem = ({item}) => {
+    const fullName = `${item.firstName} ${item.lastName}`;
+    if (
+      searchQuery.length > 0 &&
+      !fullName.toLowerCase().includes(searchQuery?.toLowerCase())
+    ) {
+      return null; // If it doesn't match the search, don't render the item
+    }
+
+    return (
+      <>
+        <Pressable
+          key={item.id}
+          onPress={() => {
+            openScreenWithPush(PROFILE_SCREEN_KEY, {
+              user: item,
+              mode: 'admin',
+            });
+          }}>
+          <View
+            style={[
+              theme.flexRow,
+              theme.itemsCenter,
+              Gutters.tinyRMargin,
+              Gutters.tinyBMargin,
+              styles.userContainer,
+            ]}>
+            <Avatar
+              key={item.id}
+              uri={item.profileImage?.small || DEFAULT_IMAGE}
+              size="big"
+            />
+            <View style={[theme.mL2]}>
+              <View
+                style={[
+                  theme.flexRow,
+                  theme.flexWrap,
+                  theme.itemsCenter,
+                  theme.justifyBetween,
+                  theme.mB2,
+                ]}>
+                <Text
+                  ellipsizeMode="tail"
+                  numberOfLines={2}
+                  style={[theme.textBlack, theme.mR2]}>
+                  {item.firstName} {item.lastName}
+                </Text>
+                {item?.phone && <Badge text={item.phone} variant="pm" />}
+              </View>
+              <View style={[theme.flexRow]}>
+                <Badge text={item.email} variant="purple" />
+                <View style={[theme.w3]} />
+              </View>
+            </View>
+          </View>
+        </Pressable>
+        <HDivider />
+      </>
+    );
+  };
 
   return (
     <>
@@ -57,11 +118,31 @@ const Container = () => {
         containerStyle={styles.searchBarContainer}
         inputContainerStyle={styles.inputContainer}
         placeholder={t('common.search_name')}
-        onChangeText={setSearch}
-        value={search}
+        onChangeText={setSearchQuery}
+        value={searchQuery}
       />
-      <View style={[theme.flex1]}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+      {users && (
+        <View style={[theme.flex1]}>
+          <SectionList
+            sections={DATA}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => item + index}
+            renderItem={renderItem}
+            renderSectionHeader={({section: {title}}) => (
+              <View
+                style={[
+                  styles.titleContainer,
+                  Gutters.tinyVPadding,
+                  Gutters.tinyHPadding,
+                  theme.mB3,
+                ]}>
+                <Text style={[Fonts.textTitle, {color: Colors.white}]}>
+                  {t(title)}
+                </Text>
+              </View>
+            )}
+          />
+          {/* <ScrollView showsVerticalScrollIndicator={false}>
           <View style={[Gutters.tinyTMargin]}>
             {users &&
               Object.entries(groupedUsersByRole)
@@ -78,8 +159,7 @@ const Container = () => {
                         {t(parseRoleName(key))}
                       </Text>
                     </View>
-                    <View
-                      style={[Layout.row, Layout.wrap, Gutters.smallVMargin]}>
+                    <View style={[Layout.col, Gutters.smallVMargin]}>
                       {users?.map((user) => (
                         <Pressable
                           key={user.id}
@@ -91,7 +171,8 @@ const Container = () => {
                           }}>
                           <View
                             style={[
-                              Layout.colCenter,
+                              theme.flexRow,
+                              theme.itemsCenter,
                               Gutters.tinyRMargin,
                               Gutters.tinyBMargin,
                               styles.userContainer,
@@ -101,12 +182,29 @@ const Container = () => {
                               uri={user.profileImage?.small || DEFAULT_IMAGE}
                               size="big"
                             />
-                            <Text
-                              ellipsizeMode="tail"
-                              numberOfLines={2}
-                              style={[theme.mT2, theme.textBlack]}>
-                              {user.firstName}
-                            </Text>
+                            <View style={[theme.mL2]}>
+                              <View
+                                style={[
+                                  theme.flexRow,
+                                  theme.itemsCenter,
+                                  theme.justifyBetween,
+                                  theme.mB2,
+                                ]}>
+                                <Text
+                                  ellipsizeMode="tail"
+                                  numberOfLines={2}
+                                  style={[theme.textBlack, theme.mR4]}>
+                                  {user.firstName} {user.lastName}
+                                </Text>
+                                {user?.phone && (
+                                  <Badge text={user.phone} variant="pm" />
+                                )}
+                              </View>
+                              <View style={[theme.flexRow]}>
+                                <Badge text={user.email} variant="purple" />
+                                <View style={[theme.w3]} />
+                              </View>
+                            </View>
                           </View>
                         </Pressable>
                       ))}
@@ -114,8 +212,9 @@ const Container = () => {
                   </View>
                 ))}
           </View>
-        </ScrollView>
-      </View>
+        </ScrollView> */}
+        </View>
+      )}
     </>
   );
 };
@@ -135,12 +234,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   userContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    padding: 10,
-    borderColor: Colors.lowGrey,
-    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
   },
 });
 

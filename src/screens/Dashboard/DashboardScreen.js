@@ -36,7 +36,6 @@ const DashboardScreen = ({navigation}) => {
   const [routes] = useState([
     {key: 'checklists', title: 'Checklists'},
     {key: 'incidences', title: 'Incidencias'},
-    {key: 'jobs', title: 'Trabajos'},
   ]);
 
   const date = moment(new Date()).format('LL').split(' ');
@@ -54,8 +53,6 @@ const DashboardScreen = ({navigation}) => {
         return (
           <IncidencesTab filters={filters} scrollEnabled={isScrollActive} />
         );
-      case 'jobs':
-        return <JobsTab filters={filters} scrollEnabled={isScrollActive} />;
       default:
         return null;
     }

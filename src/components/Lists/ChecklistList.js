@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, Pressable, View, TouchableOpacity} from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 
 //Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -17,7 +17,7 @@ import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
-import { Colors } from '../../Theme/Variables';
+import {Colors} from '../../Theme/Variables';
 
 const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
   const {Gutters} = useTheme();
@@ -49,16 +49,19 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
       .collection('checklists')
       .where('finished', '==', false)
       .where('date', '>', new Date(time.start))
-      .where('date', '<', new Date(time.end))
-  
+      .where('date', '<', new Date(time.end));
+
     firestoreQuery = firestore()
       .collection('checklists')
-      .where('finished', '==', true)
+      .where('finished', '==', true);
   }
 
-  const [valuesNotFinished, loadingNotFinished] = useCollectionData(firestoreQueryNotFinished, {
-    idField: 'id',
-  });
+  const [valuesNotFinished, loadingNotFinished] = useCollectionData(
+    firestoreQueryNotFinished,
+    {
+      idField: 'id',
+    },
+  );
 
   const [values, loading] = useCollectionData(firestoreQuery, {
     idField: 'id',
@@ -73,10 +76,13 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
 
   useEffect(() => {
     if (values || valuesNotFinished) {
-        let result = houses && houses?.length > 0 ? [ ...valuesNotFinished || [],...values || []] : [...valuesNotFinished || []];
-        setData(result);
+      let result =
+        houses && houses?.length > 0
+          ? [...(valuesNotFinished || []), ...(values || [])]
+          : [...(valuesNotFinished || [])];
+      setData(result);
     }
-  },[values, valuesNotFinished, houses])
+  }, [values, valuesNotFinished, houses]);
 
   const handleShowMore = () => {
     setLimit((prevLimit) => prevLimit + 5);
@@ -101,18 +107,31 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
 
   return (
     <View style={[theme.flexGrow]}>
-      {loading || loadingNotFinished && <DashboardSectionSkeleton />}
+      {loading || (loadingNotFinished && <DashboardSectionSkeleton />)}
       <FlatList
-        scrollEnabled={scrollEnabled}
-        ListEmptyComponent={<Text style={[theme.textBlack]}>{t('checklists.empty')}</Text>}
+        scrollEnabled={true}
+        ListEmptyComponent={
+          <Text style={[theme.textBlack]}>{t('checklists.empty')}</Text>
+        }
         showsVerticalScrollIndicator={false}
-        ListFooterComponent={  <TouchableOpacity onPress={handleShowMore} ><Text style={[{color: Colors.pm}, theme.fontSansBold, theme.textCenter]}>Show more</Text></TouchableOpacity>}
+        ListFooterComponent={
+          <TouchableOpacity onPress={handleShowMore}>
+            <Text
+              style={[
+                {color: Colors.pm},
+                theme.fontSansBold,
+                theme.textCenter,
+              ]}>
+              Show more
+            </Text>
+          </TouchableOpacity>
+        }
         contentInset={{bottom: 150}}
         data={filteredList && sortByFinished(filteredList)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         style={[theme.mT3]}
-        contentContainerStyle={{ paddingBottom: 50 }}
+        contentContainerStyle={{paddingBottom: 50}}
       />
     </View>
   );

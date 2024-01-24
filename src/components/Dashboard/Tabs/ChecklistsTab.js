@@ -11,16 +11,14 @@ export const ChecklistsTab = ({filters, scrollEnabled}) => {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <View style={[theme.flex1]}>
-      <ChecklistList
-        scrollEnabled={scrollEnabled}
-        uid={!isAdmin && user?.id}
-        workers={filters?.workers}
-        houses={filters?.houses}
-        typeFilters={filters?.type}
-        time={filters?.time}
-        state={filters?.checklistState}
-      />
-    </View>
+    <ChecklistList
+      scrollEnabled={scrollEnabled}
+      uid={!isAdmin && user?.id}
+      workers={filters?.workers}
+      houses={filters?.houses}
+      typeFilters={filters?.type}
+      time={filters?.time}
+      state={filters?.checklistState}
+    />
   );
 };
