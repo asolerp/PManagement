@@ -191,16 +191,17 @@ exports.recursiveDelete = functions
     memory: '2GB',
   })
   .https.onCall(async (data, context) => {
-    const {path, collection, docId} = data;
+    const {path, collection} = data;
+
     console.log(
       `User ${context.auth.uid} has requested to delete path ${path} with collection ${collection}`,
     );
 
-    const collectionFolders = {
-      checklists: 'CheckLists',
-      incidences: 'Incidences',
-      jobs: 'Jobs',
-    };
+    // const collectionFolders = {
+    //   checklists: 'checkLists',
+    //   incidences: 'incidences',
+    //   jobs: 'jobs',
+    // };
 
     // Run a recursive delete on the given document or collection path.
     // The 'token' must be set in the functions config, and can be generated
@@ -213,12 +214,16 @@ exports.recursiveDelete = functions
       token: process.env.FB_TOKEN,
     });
 
-    await cloudinary.api.delete_resources_by_prefix(
-      `PortManagement/${collectionFolders[collection]}/${docId}`,
-      (error, result) => {
-        console.log(result, error);
-      },
-    );
+    const bucket = admin.storage().bucket();
+
+    await bucket.deleteFiles({
+      prefix: path, // the path of the folder
+    });
+
+    // Delete the file from Firebase Storage.
+    // const storagePath = `${collectionFolders[collection]}/${docId}`;
+    // const fileRef = storage.ref(storagePath);
+    // fileRef.delete();
 
     return {
       path: path,

@@ -66,7 +66,7 @@ const HomeWorker = () => {
           ),
         })}
       />
-      {isFeatureEnabled(REGISTRY.FEATURE_QUADRANT) && (
+      {/* {isFeatureEnabled(REGISTRY.FEATURE_QUADRANT) && (
         <Screen
           name={t(tabNameByScreen[QUADRANT_SCREEN_KEY])}
           initialParams={{screenKey: QUADRANT_SCREEN_KEY}}
@@ -85,7 +85,7 @@ const HomeWorker = () => {
             ),
           })}
         />
-      )}
+      )} */}
       <Screen
         name={t(tabNameByScreen[PROFILE_SCREEN_KEY])}
         initialParams={{screenKey: PROFILE_SCREEN_KEY, userId: user?.id}}

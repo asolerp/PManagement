@@ -186,7 +186,7 @@ const ProfileScreen = ({route}) => {
           <View style={[Gutters.smallTMargin, theme.mB2]}>
             <CustomButton
               styled="rounded"
-              title={t('profile.edit')}
+              title="Guardar"
               onPress={() => handleEdit(infoProfile.id)}
             />
           </View>

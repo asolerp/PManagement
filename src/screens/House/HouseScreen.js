@@ -205,10 +205,7 @@ const HouseScreen = ({route}) => {
               </View>
               {(infoHouse || newImage) && (
                 <View style={{flex: 1}}>
-                  <CustomButton
-                    title="Editar perfil"
-                    onPress={() => handleEdit()}
-                  />
+                  <CustomButton title="Guardar" onPress={() => handleEdit()} />
                 </View>
               )}
             </View>

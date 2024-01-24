@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {TouchableWithoutFeedback, View} from 'react-native';
 
-import {openScreenWithPush} from '../../Router/utils/actions';
+import {openScreenWithPush, popScreen} from '../../Router/utils/actions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Container from './Container';
@@ -72,6 +72,7 @@ const PageOptionsScreen = ({
             await timeout(400);
             deleteGeneric(async () => {
               try {
+                popScreen();
                 await recursiveDelete();
               } catch (err) {
                 console.log('ERROR', err);
@@ -87,16 +88,17 @@ const PageOptionsScreen = ({
           }}
         />
       </BottomModal>
-      {user?.id !== docId && (user?.role === 'admin' || user?.id === ownerId) && (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            setIsVisible(true);
-          }}>
-          <View>
-            <Icon name="settings" size={25} color="#284748" />
-          </View>
-        </TouchableWithoutFeedback>
-      )}
+      {user?.id !== docId &&
+        (user?.role === 'admin' || user?.id === ownerId) && (
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setIsVisible(true);
+            }}>
+            <View>
+              <Icon name="settings" size={25} color="#284748" />
+            </View>
+          </TouchableWithoutFeedback>
+        )}
     </>
   );
 };

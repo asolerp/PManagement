@@ -4,19 +4,18 @@ import {usePhotos} from '../utils/usePhotos';
 import {error as errorLog} from '../lib/logging';
 import firestore from '@react-native-firebase/firestore';
 import {parseImages} from '../components/Incidence/utils/parserImages';
-import {CHECKLISTS} from '../utils/firebaseKeys';
+import {CHECKLISTS, ENTRANCES, INCIDENCES} from '../utils/firebaseKeys';
 
-const useUploadImageCheck = (collection, docId) => {
+const useUploadImageCheck = (collection) => {
   const [idCheckLoading, setIdCheckLoading] = useState();
   const {uploadPhotos, loading} = usePhotos();
 
-  const uploadImages = async (imgs, item) => {
-    console.log("IMGS", imgs)
+  const uploadImages = async (imgs, item, docId, callback) => {
+    console.log('IMGS', imgs);
     try {
-      setIdCheckLoading(item.id);
-
       if (imgs?.length > 0) {
         if (collection === 'checklists') {
+          setIdCheckLoading(item.id);
           const mappedImages = parseImages(imgs);
           await uploadPhotos(mappedImages, {
             collectionRef: firestore()
@@ -28,6 +27,22 @@ const useUploadImageCheck = (collection, docId) => {
             docId: docId,
           });
         }
+        if (collection === 'incidences') {
+          const mappedImages = parseImages(imgs);
+          await uploadPhotos(mappedImages, {
+            collectionRef: firestore().collection(collection).doc(docId),
+            folder: `/${INCIDENCES}/${docId}/Photos`,
+            docId: docId,
+          });
+        }
+        if (collection === 'entrances') {
+          const mappedImages = parseImages(imgs);
+          await uploadPhotos(mappedImages, {
+            collectionRef: firestore().collection(collection).doc(docId),
+            folder: `/${ENTRANCES}/${docId}/Photos`,
+            docId: docId,
+          });
+        }
       }
     } catch (err) {
       errorLog({
@@ -36,6 +51,7 @@ const useUploadImageCheck = (collection, docId) => {
         asToast: true,
       });
     } finally {
+      callback && callback();
       setIdCheckLoading(null);
     }
   };

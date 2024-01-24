@@ -30,6 +30,7 @@ const CustomButton = ({
   styled,
   title,
   onPress,
+  color,
   loading = false,
   disabled = false,
   containerStyle = [],
@@ -62,9 +63,10 @@ const CustomButton = ({
         style={[
           Layout.rowCenter,
           {
-            backgroundColor: type === 'clear' ? 'white' : Variants.pm.color,
+            backgroundColor:
+              type === 'clear' ? 'white' : color || Variants.pm.color,
             borderRadius: parseStyled(),
-            borderColor: Colors.pm,
+            borderColor: color || Colors.pm,
             borderWidth: 1,
           },
           disabled

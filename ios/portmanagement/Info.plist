@@ -66,6 +66,8 @@
 	<string>This app requires access to the camera to take a picture for the profile or for the jobs</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to the library to upload a picture for the profile or for the jobs</string>
 	<key>UIAppFonts</key>

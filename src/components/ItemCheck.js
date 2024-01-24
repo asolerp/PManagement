@@ -81,7 +81,7 @@ const ItemCheck = ({check, checklistId, disabled, isCheckFinished}) => {
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {updateFirebase} = useUpdateFirebase(CHECKLISTS);
 
-  const {uploadImages} = useUploadImageCheck(CHECKLISTS, checklistId);
+  const {uploadImages} = useUploadImageCheck(CHECKLISTS);
   const {setVisible} = useContext(LoadingModalContext);
 
   const handleSelectImage = async (imgs) => {
@@ -89,7 +89,7 @@ const ItemCheck = ({check, checklistId, disabled, isCheckFinished}) => {
       setPhotoCameraModal(false);
       await timeout(400);
       setVisible(true);
-      await uploadImages(imgs, check);
+      await uploadImages(imgs, check, checklistId);
     } catch (err) {
       console.log(err);
     } finally {

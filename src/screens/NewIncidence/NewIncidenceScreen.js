@@ -30,6 +30,8 @@ import {LoadingModalContext} from '../../context/loadinModalContext';
 import {useContext} from 'react';
 import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import {useTheme} from '../../Theme';
+import useUploadImageCheck from '../../hooks/useUploadImage';
+import {INCIDENCES} from '../../utils/firebaseKeys';
 
 const styles = StyleSheet.create({
   container: {
@@ -80,17 +82,16 @@ const NewIncidenceScreen = () => {
     shallowEqual,
   );
 
+  const {uploadImages} = useUploadImageCheck(INCIDENCES);
+  const {addFirebase} = useAddFirebase();
+
   const setImagesAction = useCallback(
     (images) => dispatch(setImages({images})),
     [dispatch],
   );
 
-  const {updateFirebase} = useUpdateFirebase('incidences');
-
   const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
 
-  const {addFirebase} = useAddFirebase();
-  const {upload} = useUploadCloudinaryImage();
   const {setVisible} = useContext(LoadingModalContext);
 
   const hasFormFilled =
@@ -102,6 +103,7 @@ const NewIncidenceScreen = () => {
     try {
       setLo(true);
       setVisible(true);
+
       const newIncidence = await addFirebase('incidences', {
         ...incidence,
         house: incidence.house.value[0],
@@ -115,16 +117,9 @@ const NewIncidenceScreen = () => {
       });
 
       if (incidenceImages?.length > 0) {
-        const uploadImages = incidenceImages.map((file) =>
-          upload(file, `/PortManagement/Incidences/${newIncidence.id}/Photos`),
-        );
-
-        const imagesURLs = await Promise.all(uploadImages);
-
-        await updateFirebase(`${newIncidence.id}`, {
-          photos: imagesURLs,
-        });
+        await uploadImages(incidenceImages, null, newIncidence.id);
       }
+
       resetFormAction();
       popScreen();
     } catch (err) {

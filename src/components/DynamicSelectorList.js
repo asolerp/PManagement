@@ -31,8 +31,6 @@ const DynamicSelectorList = ({
   const [selected, setSelected] = useState(get);
   const [loadingOnSave, setLoadingOnSave] = useState(false);
 
-  console.log(list);
-
   const fList = search
     ? list
         .sort((a, b) => a[order?.field]?.localeCompare(b[order?.field]))

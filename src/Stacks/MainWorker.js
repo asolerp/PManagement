@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {
   CHECK_STACK_KEY,
+  CONFIRM_ENTRANCE_SCREEN_KEY,
   HOME_WORKER_STACK_KEY,
   INCIDENCE_SCREEN_KEY,
   JOB_SCREEN_KEY,
@@ -14,6 +15,7 @@ import {JobScreen} from '../Screens/Job';
 
 import Check from './Check';
 import {ProfileScreen} from '../Screens/Profile';
+import {ConfirmEntranceScreen} from '../Screens/ConfirmEntrance';
 
 const {Navigator, Screen} = createNativeStackNavigator();
 
@@ -24,6 +26,10 @@ export const MainWorker = ({route}) => (
       headerShown: false,
     }}>
     <Screen name={HOME_WORKER_STACK_KEY} component={HomeWorker} />
+    <Screen
+      name={CONFIRM_ENTRANCE_SCREEN_KEY}
+      component={ConfirmEntranceScreen}
+    />
     <Screen name={PROFILE_SCREEN_KEY} component={ProfileScreen} />
 
     <Screen

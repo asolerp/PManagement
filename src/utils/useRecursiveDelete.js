@@ -14,13 +14,14 @@ const useRecursiveDelete = ({path, collection, docId, backScreen}) => {
     try {
       setLoading(true);
       setVisible(true);
+      console.log('Borrando');
       await deleteFn({
         path: path,
         docId,
         collection: collection,
       }).then(() => setVisible(false));
-      popScreen();
     } catch (err) {
+      console.log('ERROR', err);
       error({
         message: err.message,
         track: true,

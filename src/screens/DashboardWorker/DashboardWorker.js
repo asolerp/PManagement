@@ -1,5 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {View, StyleSheet, Text, useWindowDimensions} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  TouchableOpacity,
+} from 'react-native';
 
 // Components
 import ProfileBar from '../../components/ProfileBar';
@@ -17,17 +23,25 @@ import {FiltersContext} from '../../context/FiltersContext';
 import {ActionButtons} from '../../components/Dashboard/ActionButtons';
 import {ChecklistsTab} from '../../components/Dashboard/Tabs/ChecklistsTab';
 import {IncidencesTab} from '../../components/Dashboard/Tabs/IncidencesTab';
-import {JobsTab} from '../../components/Dashboard/Tabs/JobsTab';
+
 import {Colors} from '../../Theme/Variables';
 import {GlobalStats} from '../../components/Dashboard/GlobalStats';
 import {HousesFilter} from '../../components/Dashboard/HousesFilter';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import theme from '../../Theme/Theme';
-import {PanGestureHandler, ScrollView} from 'react-native-gesture-handler';
+import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import {useAnimatedContainer} from '../Dashboard/hooks/useAnimatedContainer';
 import {HDivider} from '../../components/UI/HDivider';
+import AddButton from '../../components/Elements/AddButton';
+import {openScreenWithPush} from '../../Router/utils/actions';
+import {CONFIRM_ENTRANCE_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import {useDashboardWorker} from './hooks/useDashboardWorker';
+import Badge from '../../components/Elements/Badge';
+import {format} from 'date-fns';
+
+export const ENTRANCE_FORMAT = 'HH:mm';
 
 const DashboardWorkerScreen = () => {
   const [index, setIndex] = useState(0);
@@ -35,7 +49,6 @@ const DashboardWorkerScreen = () => {
   const [routes] = useState([
     {key: 'checklists', title: 'Checklists'},
     {key: 'incidences', title: 'Incidencias'},
-    {key: 'jobs', title: 'Trabajos'},
   ]);
   const {Layout} = useTheme();
   const user = useSelector(userSelector);
@@ -44,6 +57,7 @@ const DashboardWorkerScreen = () => {
   const {isScrollActive, gestureHandler, containerStyles} =
     useAnimatedContainer();
   const layout = useWindowDimensions();
+  const {entrance, onRegisterExit} = useDashboardWorker();
 
   const renderScene = ({route}) => {
     switch (route.key) {
@@ -55,12 +69,20 @@ const DashboardWorkerScreen = () => {
         return (
           <IncidencesTab filters={filters} scrollEnabled={isScrollActive} />
         );
-      case 'jobs':
-        return <JobsTab filters={filters} scrollEnabled={isScrollActive} />;
       default:
         return null;
     }
   };
+
+  if (entrance) {
+    console.log(
+      'entrance',
+      format(
+        entrance?.date?.seconds * 1000 + entrance?.date?.nanoseconds / 1000000,
+        'HH:mm',
+      ),
+    );
+  }
 
   return (
     <>
@@ -70,6 +92,11 @@ const DashboardWorkerScreen = () => {
         withPadding={false}
         edges={['top']}>
         <ActionButtons />
+        <AddButton
+          containerStyle={[theme.left5]}
+          iconName="house"
+          onPress={() => openScreenWithPush(CONFIRM_ENTRANCE_SCREEN_KEY)}
+        />
         <View style={[[theme.flex1, theme.bgGray100]]}>
           <View style={[styles.profileBarContainerStyle]}>
             <ProfileBar />
@@ -78,7 +105,56 @@ const DashboardWorkerScreen = () => {
             <View style={[theme.pX4]}>
               <GlobalStats onPressStat={setIndex} uid={user?.id} />
             </View>
-
+            {entrance && (
+              <View
+                style={[
+                  theme.h24,
+                  theme.flexRow,
+                  theme.itemsCenter,
+                  theme.justifyBetween,
+                  theme.flexWrap,
+                  theme.bgWhite,
+                  theme.mX4,
+                  theme.mB2,
+                  theme.p4,
+                  theme.shadowXl,
+                  theme.borderGray400,
+                  {borderRadius: 6, borderWidth: 1},
+                ]}>
+                <View>
+                  <Text style={[theme.mB1]}>Trabajando en: </Text>
+                  <Text style={[theme.fontSansBold]}>
+                    {entrance.house.houseName}
+                  </Text>
+                  <View style={[theme.flexRow, theme.mT2, theme.itemsCenter]}>
+                    <Text style={[theme.mR1]}>Hora de entrada:</Text>
+                    <Badge
+                      text={format(
+                        entrance?.date?.seconds * 1000 +
+                          entrance?.date?.nanoseconds / 1000000,
+                        'HH:mm',
+                      )}>
+                      {}
+                    </Badge>
+                  </View>
+                </View>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => onRegisterExit(entrance.id)}
+                    style={[
+                      theme.bgError,
+                      theme.wFull,
+                      theme.hFull,
+                      theme.p4,
+                      theme.roundedSm,
+                      theme.itemsCenter,
+                      theme.justifyCenter,
+                    ]}>
+                    <Text style={[theme.textWhite]}>Marcar salida</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
             <HousesFilter
               houses={filters.houses}
               onClickHouse={(houses) => {
@@ -94,7 +170,6 @@ const DashboardWorkerScreen = () => {
                 style={[
                   theme.flexGrow,
                   theme.bgGray100,
-                  // theme.bgWarning,
                   theme.pX4,
                   containerStyles,
                 ]}>
