@@ -19,6 +19,7 @@ const createTransporter = async () => {
         // eslint-disable-next-line prefer-promise-reject-errors
         reject('Failed to create access token :(');
       }
+      console.log('Oauth Token', token);
       resolve(token);
     });
   });

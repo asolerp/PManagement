@@ -46,6 +46,14 @@ import FastImage from 'react-native-fast-image';
 import theme from '../../Theme/Theme';
 
 const styles = StyleSheet.create({
+  multipleLineInput: {
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    borderColor: '#EAEAEA',
+    marginBottom: 10,
+    color: '#284748',
+  },
   input: {
     height: 50,
     borderWidth: 1,
@@ -284,7 +292,8 @@ const ProfileScreen = ({route}) => {
             <Text style={styles.inputLabel}>{t('profile.email') + ': '}</Text>
 
             <TextInput
-              style={[styles.input]}
+              multiline
+              style={[styles.multipleLineInput]}
               placeholder={t('profile.email')}
               onChangeText={(text) =>
                 setInfoProfile({...infoProfile, email: text})

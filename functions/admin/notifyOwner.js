@@ -34,7 +34,17 @@ const notifyOwner = functions
       const checklist = checklistRef.data();
       const checks = checksRef.docs.map((doc) => doc.data());
 
-      sendResumeChecklistOwner({checklist, checks});
+      const ownerId = checklist.house[0].owner.id;
+
+      const ownerRef = await admin
+        .firestore()
+        .collection('users')
+        .doc(ownerId)
+        .get();
+
+      const owner = ownerRef.data();
+
+      sendResumeChecklistOwner({email: owner.email, checklist, checks});
     } catch (err) {
       console.log(err);
     }

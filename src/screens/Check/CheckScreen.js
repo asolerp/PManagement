@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Info} from '../../components/Check';
-import ChatButtonWithMessagesCounter from '../../components/ChatButtonWithMessagesCounter';
+
 
 // UI
 import PageLayout from '../../components/PageLayout';
@@ -53,7 +53,6 @@ const CheckScreen = ({route}) => {
 
   return (
     <React.Fragment>
-      {/* <ChatButtonWithMessagesCounter collection={CHECKLISTS} docId={docId} /> */}
       <PageLayout
         safe
         backButton

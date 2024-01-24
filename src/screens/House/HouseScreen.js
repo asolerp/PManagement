@@ -1,11 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import React from 'react';
+import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 
 // UI
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -16,154 +10,36 @@ import PageLayout from '../../components/PageLayout';
 import DynamicSelectorList from '../../components/DynamicSelectorList';
 import CustomButton from '../../components/Elements/CustomButton';
 
-// Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-
 //Utils
 
-import useAuth from '../../utils/useAuth';
 import {useTranslation} from 'react-i18next';
-import {error} from '../../lib/logging';
 import {BottomModal} from '../../components/Modals/BottomModal';
-import {useCameraOrLibrary} from '../../hooks/useCamerOrLibrary';
-import {imageActions} from '../../utils/imageActions';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {ScreenHeader} from '../../components/Layout/ScreenHeader';
-import {useTheme} from '../../Theme';
 import PageOptionsScreen from '../PageOptions/PageOptions';
-import {LoadingModalContext} from '../../context/loadinModalContext';
 import {Spacer} from '../../components/Elements/Spacer';
-import {useDocumentData} from 'react-firebase-hooks/firestore';
+
 import {DEFAULT_IMAGE} from '../../constants/general';
 import FastImage from 'react-native-fast-image';
-import {firebase} from '@react-native-firebase/firestore';
 
-const styles = StyleSheet.create({
-  pageWrapper: {
-    marginTop: 0,
-  },
-  infoWrapper: {
-    marginVertical: 20,
-  },
-  houseImageContainer: {
-    height: 170,
-    borderRadius: 10,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#EAEAEA',
-  },
-  iconContainer: {
-    position: 'absolute',
-    right: 0,
-    top: -10,
-    backgroundColor: '#ED7A7A',
-    borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 5,
-    padding: 5,
-  },
-  houseImage: {
-    width: '100%',
-    height: 170,
-    borderRadius: 10,
-  },
-  titleStyle: {
-    fontSize: 20,
-    color: '#284748',
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  infoStyle: {
-    fontSize: 15,
-    marginBottom: 20,
-    color: '#284748',
-  },
-  subtitle: {
-    color: '#2A7BA5',
-  },
-  inputLabel: {
-    fontSize: 15,
-    marginBottom: 10,
-    color: '#284748',
-    fontWeight: 'bold',
-  },
-});
+import {styles} from './styles';
+import {useHouseScreen} from './useHouseScreen';
 
 const HouseScreen = ({route}) => {
-  const {Gutters} = useTheme();
-  const [infoHouse, setInfoHouse] = useState();
-  const [newImage, setNewImage] = useState();
-  const {isAdmin} = useAuth();
   const {t} = useTranslation();
-  const {houseId} = route.params;
-
-  const houseQuery = firestore().collection('houses').doc(houseId);
-
-  const {setVisible} = useContext(LoadingModalContext);
-  const [house] = useDocumentData(houseQuery, {idField: 'id'});
-  const {updateFirebase} = useUpdateFirebase('houses');
-
-  // Modal State
-  const [modalVisible, setModalVisible] = useState(false);
-  const {onImagePress} = useCameraOrLibrary();
-  const uploadHousePhoto = firebase
-    .functions()
-    .httpsCallable('uploadHousePhoto');
-
-  const handlePressImage = (type) => {
-    onImagePress({
-      type,
-      options: {...imageActions[type], selectionLimit: 1},
-      callback: async (imgs) => {
-        setNewImage(
-          imgs.map((image, i) => ({
-            fileBase64: image?.base64,
-            fileName: image?.fileName || `image-${i}`,
-            fileUri: image?.uri,
-            fileType: image?.type,
-          })),
-        );
-      },
-    });
-  };
-
-  const handleEdit = async () => {
-    setVisible(true);
-    try {
-      if (infoHouse) {
-        await updateFirebase(houseId, {
-          ...infoHouse,
-        });
-      }
-      if (newImage) {
-        await uploadHousePhoto({
-          houseId,
-          imageBase64: newImage[0],
-        });
-      }
-    } catch (err) {
-      error({
-        message: err.message,
-        track: true,
-        asToast: true,
-      });
-    } finally {
-      setNewImage(null);
-      setVisible(false);
-    }
-  };
-
-  useEffect(() => {
-    if (house) {
-      setInfoHouse(house);
-    }
-  }, [house]);
+  const {
+    house,
+    isAdmin,
+    houseId,
+    Gutters,
+    newImage,
+    infoHouse,
+    handleEdit,
+    setInfoHouse,
+    modalVisible,
+    setModalVisible,
+    handlePressImage,
+  } = useHouseScreen({route});
 
   return (
     <React.Fragment>

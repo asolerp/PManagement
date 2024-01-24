@@ -18,7 +18,6 @@ const {
   sendPushNotificationFinishedChecklist,
   sendPushNotificationNewAsignedChecklist,
   sendPushNotificationNewChecklistMessage,
-  sendPushNotificationUpdateCheckList,
 } = require('./notifications/checklists');
 
 const {

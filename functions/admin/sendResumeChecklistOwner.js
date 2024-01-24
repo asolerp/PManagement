@@ -1,9 +1,18 @@
 const {createTransporter} = require('../utils/email/config');
 
-const sendResumeChecklistOwner = async ({checklist, checks}) => {
+const ADMIN_EMAIL = 'info@portmanagement.es';
+
+const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
   const {observations} = checklist;
-  const {street, owner, houseImage: { original }} = checklist.house[0];
-  const {lastName, email, gender, language} = owner;
+  const {
+    street,
+    owner,
+    houseImage: {original},
+  } = checklist.house[0];
+
+  const {lastName, gender, language} = owner;
+
+  const arrayOfEmails = email.split(',');
 
   const generateTitle = () => (gender === 'male' ? 'Mr' : 'Mrs');
 
@@ -22,7 +31,6 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
             </td>
             `;
           });
-        console.log("Check Images", checkImages);
       }
       checksHtml += `
       <tr>
@@ -33,13 +41,16 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
                 <table style="display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
                   <tr>
                     <td align="center" style="background-color: #98B29A; width: 50px; height: 50px; border-radius: 100%;">
-                      <p style="margin:0;font-size:30px;line-height:24px;font-family:Arial,sans-serif; font-weight: 100; color:white;">${i + 1}</p>
+                      <p style="margin:0;font-size:30px;line-height:24px;font-family:Arial,sans-serif; font-weight: 100; color:white;">${
+                        i + 1
+                      }</p>
                     </td>
                     <td style="padding-left: 10px;">
                       <p style="margin:0;font-size:24px;font-weight:100;letter-spacing: 2px; line-height:24px;font-family:Arial,sans-serif; color: #42505F">
-                      ${ check.locale[language]
-                        ? check.locale[language]
-                        : check.locale.en
+                      ${
+                        check.locale[language]
+                          ? check.locale[language]
+                          : check.locale.en
                       }
                       </p>
                     </td>
@@ -206,26 +217,34 @@ const sendResumeChecklistOwner = async ({checklist, checks}) => {
     `;
   };
 
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to: email,
-    subject: `🏡 CHECK LIST ${street}`,
-    html: !language
-      ? generateEmail('en')
-      : language === 'en'
-      ? generateEmail('en')
-      : generateEmail('es'),
+  const sendEmail = async () => {
+    return new Promise(async (resolve, reject) => {
+      let emailTransporter = await createTransporter();
+
+      const mailOptions = {
+        from: process.env.EMAIL,
+        cc: ADMIN_EMAIL,
+        to: arrayOfEmails,
+        subject: `🏡 CHECK LIST ${street}`,
+        html: !language
+          ? generateEmail('en')
+          : language === 'en'
+          ? generateEmail('en')
+          : generateEmail('es'),
+      };
+      emailTransporter.sendMail(mailOptions, (error, data) => {
+        if (error) {
+          console.log(error);
+          resolve(false);
+        } else {
+          console.log('Sent!');
+          resolve(true);
+        }
+      });
+    });
   };
 
-  let emailTransporter = await createTransporter();
-
-  return emailTransporter.sendMail(mailOptions, (error, data) => {
-    if (error) {
-      console.log(error);
-      return;
-    }
-    console.log('Sent!');
-  });
+  await sendEmail();
 };
 
 module.exports = {
