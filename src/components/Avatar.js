@@ -1,5 +1,5 @@
 import React from 'react';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {Text, StyleSheet} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -29,6 +29,8 @@ const Avatar = ({
   name,
   overlap,
   position,
+  disabled = false,
+  horizontal = false,
   enabled = true,
   size = 'small',
   index,
@@ -38,6 +40,9 @@ const Avatar = ({
     switch (sizeImage) {
       case 'xxl': {
         return 150;
+      }
+      case 'xl': {
+        return 60;
       }
       case 'tiny': {
         return 25;
@@ -59,22 +64,43 @@ const Avatar = ({
 
   const ProfileContainer = () => {
     return (
-      <React.Fragment>
-        <FastImage
+      <View style={[horizontal && theme.itemsCenter]}>
+        <View
           style={[
-            styles.ownerImage,
-            {width: parseSize(size), height: parseSize(size)},
-            {marginLeft: index > 0 && overlap ? -10 : 0},
-            {marginRight: name ? 15 : 0},
-          ]}
-          source={{
-            uri: uri,
-            priority: FastImage.priority.normal,
-          }}
-          resizeMode={FastImage.resizeMode.cover}
-        />
+            theme.roundedFull,
+            theme.border0_5,
+            theme.borderGray300,
+            horizontal && theme.mB1,
+          ]}>
+          {disabled && (
+            <View
+              style={[
+                theme.bgError,
+                theme.opacity70,
+                theme.wFull,
+                theme.hFull,
+                theme.roundedFull,
+                theme.absolute,
+                theme.z10,
+              ]}
+            />
+          )}
+          <FastImage
+            style={[
+              styles.ownerImage,
+              {width: parseSize(size), height: parseSize(size)},
+              {marginLeft: index > 0 && overlap ? -10 : 0},
+              {marginRight: name && !horizontal ? 15 : 0},
+            ]}
+            source={{
+              uri: uri,
+              priority: FastImage.priority.normal,
+            }}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+        </View>
         {name && <Text style={[theme.textBlack]}>{name}</Text>}
-      </React.Fragment>
+      </View>
     );
   };
 

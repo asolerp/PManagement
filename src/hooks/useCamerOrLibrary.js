@@ -11,7 +11,7 @@ export const useCameraOrLibrary = () => {
     } else {
       launchImageLibrary(
         options,
-        (response = callback && callback(response?.assets)),
+        (response) => callback && callback(response?.assets),
       );
     }
   }, []);

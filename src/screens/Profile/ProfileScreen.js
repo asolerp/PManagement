@@ -44,6 +44,8 @@ import {Colors} from '../../Theme/Variables';
 
 import FastImage from 'react-native-fast-image';
 import theme from '../../Theme/Theme';
+import {DEFAULT_IMAGE} from '../../constants/general';
+import PhotoCameraModal from '../../components/Modals/PhotoCameraModal';
 
 const styles = StyleSheet.create({
   multipleLineInput: {
@@ -112,6 +114,7 @@ const ProfileScreen = ({route}) => {
   const [isPickerVisibleRole, setIsPickerVisibleRole] = useState(false);
   const [isPickerVisibleGender, setIsPickerVisibleGender] = useState(false);
   const [isPickerVisibleLanguage, setIsPickerVisibleLanguage] = useState(false);
+  const [photoCameraModal, setPhotoCameraModal] = useState(false);
 
   const {
     changePassword,
@@ -125,12 +128,8 @@ const ProfileScreen = ({route}) => {
 
   const {Layout, Gutters} = useTheme();
 
-  const {handlePressImage} = useChoseImage(setNewImage);
   const currentUser = useSelector(userSelector);
   const {t} = useTranslation();
-
-  const defaultImg =
-    'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
 
   const logOut = async () => {
     try {
@@ -161,242 +160,252 @@ const ProfileScreen = ({route}) => {
   }, [user, setInfoProfile, currentUser.id]);
 
   return (
-    <PageLayout
-      safe
-      edges={mode === 'admin' ? ['top', 'bottom'] : ['top']}
-      titleRightSide={
-        <PageOptionsScreen
-          editable={false}
-          collection={USERS}
-          docId={infoProfile?.id}
-          showDelete={currentUser.id !== infoProfile?.id}
-          duplicate={false}
-        />
-      }
-      footer={
-        <>
-          {currentUser.id === infoProfile?.id && (
-            <CustomButton
-              type="clear"
-              styled="rounded"
-              title={t('profile.logout')}
-              onPress={() => logOut()}
-            />
-          )}
-          <View style={[Gutters.smallTMargin, theme.mB2]}>
-            <CustomButton
-              styled="rounded"
-              title="Guardar"
-              onPress={() => handleEdit(infoProfile.id)}
-            />
-          </View>
-        </>
-      }
-      titleLefSide={true}
-      backButton={currentUser?.role === 'admin'}>
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-        <CustomPicker
-          isPickerVisible={isPickerVisibleRole}
-          closePicker={() => setIsPickerVisibleRole(false)}
-          value={infoProfile?.role}
-          setValue={(role) => {
-            setInfoProfile({...infoProfile, role: role});
-          }}
-          options={roleOptions}
-        />
-        <CustomPicker
-          isPickerVisible={isPickerVisibleGender}
-          closePicker={() => setIsPickerVisibleGender(false)}
-          value={user?.gender}
-          setValue={(gender) => {
-            setInfoProfile({...infoProfile, gender: gender});
-          }}
-          options={genderOptions}
-        />
-        <CustomPicker
-          isPickerVisible={isPickerVisibleLanguage}
-          closePicker={() => setIsPickerVisibleLanguage(false)}
-          value={user?.language}
-          setValue={(language) => {
-            setInfoProfile({...infoProfile, language: language});
-          }}
-          options={languageOptions}
-        />
-        <View style={styles.pageContainer}>
-          <View style={styles.avatarContainer}>
-            <TouchableOpacity onPress={() => handlePressImage('library')}>
-              {newImage && (
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity onPress={() => setNewImage(null)}>
-                    <Icon name="close" size={20} color="white" />
-                  </TouchableOpacity>
-                </View>
-              )}
-              <FastImage
-                source={{
-                  uri:
-                    newImage?.[0]?.fileUri ||
-                    infoProfile?.profileImage?.original ||
-                    defaultImg,
-                  priority: FastImage.priority.normal,
-                }}
-                style={styles.avatarWrapper}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.formContainer}>
-            <View
-              style={[
-                Layout.row,
-                Layout.justifyContentSpaceBetween,
-                Layout.alignItemsCenter,
-                Gutters.mediumBMargin,
-              ]}
-            />
-            <Text style={styles.inputLabel}>{t('profile.name') + ': '}</Text>
-
-            <TextInput
-              style={[styles.input]}
-              placeholder={t('profile.name')}
-              onChangeText={(text) =>
-                setInfoProfile({...infoProfile, firstName: text})
-              }
-              value={infoProfile?.firstName}
-            />
-
-            <Text style={styles.inputLabel}>
-              {t('profile.last_name') + ': '}
-            </Text>
-
-            <TextInput
-              style={[styles.input]}
-              placeholder={t('profile.last_name')}
-              placeholderTextColor={Colors.gray600}
-              onChangeText={(text) =>
-                setInfoProfile({...infoProfile, lastName: text})
-              }
-              value={infoProfile?.lastName}
-            />
-
-            <Text style={styles.inputLabel}>{t('profile.phone') + ': '}</Text>
-
-            <TextInput
-              style={[styles.input]}
-              placeholder={t('profile.phone')}
-              onChangeText={(text) =>
-                setInfoProfile({...infoProfile, phone: text})
-              }
-              value={infoProfile?.phone}
-            />
-
-            <Text style={styles.inputLabel}>{t('profile.email') + ': '}</Text>
-
-            <TextInput
-              multiline
-              style={[styles.multipleLineInput]}
-              placeholder={t('profile.email')}
-              onChangeText={(text) =>
-                setInfoProfile({...infoProfile, email: text})
-              }
-              value={infoProfile?.email}
-            />
-
-            <Text style={styles.inputLabel}>{t('profile.gender') + ': '}</Text>
-            <Pressable onPress={() => setIsPickerVisibleGender(true)}>
-              <View pointerEvents="none">
-                <TextInput
-                  editable={false}
-                  style={[styles.input]}
-                  placeholder={t('profile.gender')}
-                  value={
-                    genderOptions?.find((g) => g.value === infoProfile?.gender)
-                      ?.label || ''
-                  }
-                />
-              </View>
-            </Pressable>
-
-            <Text style={styles.inputLabel}>
-              {t('profile.language') + ': '}
-            </Text>
-            <Pressable onPress={() => setIsPickerVisibleLanguage(true)}>
-              <View pointerEvents="none">
-                <TextInput
-                  editable={false}
-                  style={[styles.input]}
-                  placeholder={t('profile.language')}
-                  value={
-                    languageOptions.find(
-                      (g) => g.value === infoProfile?.language,
-                    )?.label || ''
-                  }
-                />
-              </View>
-            </Pressable>
-            {infoProfile?.role === 'admin' && (
-              <>
-                <Text style={styles.inputLabel}>
-                  {t('profile.role') + ': '}
-                </Text>
-                <Pressable onPress={() => setIsPickerVisibleRole(true)}>
-                  <View pointerEvents="none">
-                    <TextInput
-                      editable={false}
-                      style={[styles.input]}
-                      placeholder={t('profile.role')}
-                      value={
-                        roleOptions.find((g) => g.value === infoProfile?.role)
-                          ?.label || ''
-                      }
-                    />
-                  </View>
-                </Pressable>
-              </>
-            )}
-          </View>
-          {currentUser.id === infoProfile?.id && (
-            <View>
-              <Text style={[styles.titleStyle, Gutters.mediumBMargin]}>
-                Contraseña
-              </Text>
-              <Text style={styles.inputLabel}>Contraseña antigua:</Text>
-
-              <TextInput
-                style={[styles.input]}
-                placeholder="Contraseña antigua"
-                onChangeText={(text) =>
-                  setInfoProfile({...infoProfile, oldPassword: text})
-                }
-                value={infoProfile?.oldPassword}
-              />
-
-              <Text style={styles.inputLabel}>Nueva contraseña:</Text>
-
-              <TextInput
-                style={[styles.input]}
-                placeholder="Nueva contraseña"
-                onChangeText={(text) =>
-                  setInfoProfile({...infoProfile, newPassword: text})
-                }
-                value={infoProfile?.newPassword}
-              />
-
+    <>
+      <PhotoCameraModal
+        visible={photoCameraModal}
+        handleVisibility={setPhotoCameraModal}
+        onSelectImage={(imgs) => setNewImage(imgs)}
+      />
+      <PageLayout
+        safe
+        edges={mode === 'admin' ? ['top', 'bottom'] : ['top']}
+        titleRightSide={
+          <PageOptionsScreen
+            editable={false}
+            collection={USERS}
+            docId={infoProfile?.id}
+            showDelete={currentUser.id !== infoProfile?.id}
+            duplicate={false}
+          />
+        }
+        footer={
+          <>
+            {currentUser.id === infoProfile?.id && (
               <CustomButton
-                loading={loading}
                 type="clear"
-                title="Cambiar contraseña"
-                onPress={() => {
-                  changePassword(
-                    infoProfile?.oldPassword,
-                    infoProfile?.newPassword,
-                  );
-                }}
+                styled="rounded"
+                title={t('profile.logout')}
+                onPress={() => logOut()}
+              />
+            )}
+            <View style={[Gutters.smallTMargin, theme.mB2]}>
+              <CustomButton
+                styled="rounded"
+                title="Guardar"
+                onPress={() => handleEdit(infoProfile.id)}
               />
             </View>
-          )}
-        </View>
-      </KeyboardAwareScrollView>
-    </PageLayout>
+          </>
+        }
+        titleLefSide={true}
+        backButton={currentUser?.role === 'admin'}>
+        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+          <CustomPicker
+            isPickerVisible={isPickerVisibleRole}
+            closePicker={() => setIsPickerVisibleRole(false)}
+            value={infoProfile?.role}
+            setValue={(role) => {
+              setInfoProfile({...infoProfile, role: role});
+            }}
+            options={roleOptions}
+          />
+          <CustomPicker
+            isPickerVisible={isPickerVisibleGender}
+            closePicker={() => setIsPickerVisibleGender(false)}
+            value={user?.gender}
+            setValue={(gender) => {
+              setInfoProfile({...infoProfile, gender: gender});
+            }}
+            options={genderOptions}
+          />
+          <CustomPicker
+            isPickerVisible={isPickerVisibleLanguage}
+            closePicker={() => setIsPickerVisibleLanguage(false)}
+            value={user?.language}
+            setValue={(language) => {
+              setInfoProfile({...infoProfile, language: language});
+            }}
+            options={languageOptions}
+          />
+          <View style={styles.pageContainer}>
+            <View style={styles.avatarContainer}>
+              <TouchableOpacity onPress={() => setPhotoCameraModal(true)}>
+                {newImage && (
+                  <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={() => setNewImage(null)}>
+                      <Icon name="close" size={20} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                )}
+                <FastImage
+                  source={{
+                    uri:
+                      newImage?.[0]?.uri ||
+                      infoProfile?.profileImage?.original ||
+                      DEFAULT_IMAGE,
+                    priority: FastImage.priority.normal,
+                  }}
+                  style={styles.avatarWrapper}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.formContainer}>
+              <View
+                style={[
+                  Layout.row,
+                  Layout.justifyContentSpaceBetween,
+                  Layout.alignItemsCenter,
+                  Gutters.mediumBMargin,
+                ]}
+              />
+              <Text style={styles.inputLabel}>{t('profile.name') + ': '}</Text>
+
+              <TextInput
+                style={[styles.input]}
+                placeholder={t('profile.name')}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, firstName: text})
+                }
+                value={infoProfile?.firstName}
+              />
+
+              <Text style={styles.inputLabel}>
+                {t('profile.last_name') + ': '}
+              </Text>
+
+              <TextInput
+                style={[styles.input]}
+                placeholder={t('profile.last_name')}
+                placeholderTextColor={Colors.gray600}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, lastName: text})
+                }
+                value={infoProfile?.lastName}
+              />
+
+              <Text style={styles.inputLabel}>{t('profile.phone') + ': '}</Text>
+
+              <TextInput
+                style={[styles.input]}
+                placeholder={t('profile.phone')}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, phone: text})
+                }
+                value={infoProfile?.phone}
+              />
+
+              <Text style={styles.inputLabel}>{t('profile.email') + ': '}</Text>
+
+              <TextInput
+                multiline
+                style={[styles.multipleLineInput]}
+                placeholder={t('profile.email')}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, email: text})
+                }
+                value={infoProfile?.email}
+              />
+
+              <Text style={styles.inputLabel}>
+                {t('profile.gender') + ': '}
+              </Text>
+              <Pressable onPress={() => setIsPickerVisibleGender(true)}>
+                <View pointerEvents="none">
+                  <TextInput
+                    editable={false}
+                    style={[styles.input]}
+                    placeholder={t('profile.gender')}
+                    value={
+                      genderOptions?.find(
+                        (g) => g.value === infoProfile?.gender,
+                      )?.label || ''
+                    }
+                  />
+                </View>
+              </Pressable>
+
+              <Text style={styles.inputLabel}>
+                {t('profile.language') + ': '}
+              </Text>
+              <Pressable onPress={() => setIsPickerVisibleLanguage(true)}>
+                <View pointerEvents="none">
+                  <TextInput
+                    editable={false}
+                    style={[styles.input]}
+                    placeholder={t('profile.language')}
+                    value={
+                      languageOptions.find(
+                        (g) => g.value === infoProfile?.language,
+                      )?.label || ''
+                    }
+                  />
+                </View>
+              </Pressable>
+              {infoProfile?.role === 'admin' && (
+                <>
+                  <Text style={styles.inputLabel}>
+                    {t('profile.role') + ': '}
+                  </Text>
+                  <Pressable onPress={() => setIsPickerVisibleRole(true)}>
+                    <View pointerEvents="none">
+                      <TextInput
+                        editable={false}
+                        style={[styles.input]}
+                        placeholder={t('profile.role')}
+                        value={
+                          roleOptions.find((g) => g.value === infoProfile?.role)
+                            ?.label || ''
+                        }
+                      />
+                    </View>
+                  </Pressable>
+                </>
+              )}
+            </View>
+            {currentUser.id === infoProfile?.id && (
+              <View>
+                <Text style={[styles.titleStyle, Gutters.mediumBMargin]}>
+                  Contraseña
+                </Text>
+                <Text style={styles.inputLabel}>Contraseña antigua:</Text>
+
+                <TextInput
+                  style={[styles.input]}
+                  placeholder="Contraseña antigua"
+                  onChangeText={(text) =>
+                    setInfoProfile({...infoProfile, oldPassword: text})
+                  }
+                  value={infoProfile?.oldPassword}
+                />
+
+                <Text style={styles.inputLabel}>Nueva contraseña:</Text>
+
+                <TextInput
+                  style={[styles.input]}
+                  placeholder="Nueva contraseña"
+                  onChangeText={(text) =>
+                    setInfoProfile({...infoProfile, newPassword: text})
+                  }
+                  value={infoProfile?.newPassword}
+                />
+
+                <CustomButton
+                  loading={loading}
+                  type="clear"
+                  title="Cambiar contraseña"
+                  onPress={() => {
+                    changePassword(
+                      infoProfile?.oldPassword,
+                      infoProfile?.newPassword,
+                    );
+                  }}
+                />
+              </View>
+            )}
+          </View>
+        </KeyboardAwareScrollView>
+      </PageLayout>
+    </>
   );
 };
 

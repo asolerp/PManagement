@@ -14,6 +14,7 @@ import {
   DASHBOARD_OWNER_SCREEN_KEY,
   DASHBOARD_SCREEN_KEY,
   DASHBOARD_WORKER_SCREEN_KEY,
+  ENTRANCES_MANAGER_SCREEN_KEY,
   FILTERS_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
   HOUSE_SCREEN_KEY,
@@ -35,6 +36,7 @@ export const minimizetext = (text, numberOfCharts = 40) => {
 export const tabNameByScreen = {
   [DASHBOARD_SCREEN_KEY]: 'tabs.dashboard',
   [USERS_SCREEN_KEY]: 'tabs.users',
+  [ENTRANCES_MANAGER_SCREEN_KEY]: 'tabs.entrances',
   [DASHBOARD_WORKER_SCREEN_KEY]: 'tabs.dashboard',
   [QUADRANT_SCREEN_KEY]: 'tabs.quadrant',
   [DASHBOARD_OWNER_SCREEN_KEY]: 'tabs.dashboard',

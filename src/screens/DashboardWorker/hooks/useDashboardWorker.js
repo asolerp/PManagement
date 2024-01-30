@@ -22,8 +22,6 @@ export const useDashboardWorker = () => {
     return end;
   }
 
-  console.log('USER', user.id);
-
   const query = useMemo(
     () =>
       firestore()

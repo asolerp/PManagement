@@ -15,6 +15,7 @@ import {PRIORITY_HEIGHT} from '../styles/colors';
 import {tabNameByScreen} from '../utils/parsers';
 import {
   DASHBOARD_SCREEN_KEY,
+  ENTRANCES_MANAGER_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
   QUADRANT_SCREEN_KEY,
   USERS_SCREEN_KEY,
@@ -23,9 +24,7 @@ import {UsersScreen} from '../Screens/Users';
 import {useTranslation} from 'react-i18next';
 import {isIOS} from '../utils/platform';
 import {Colors} from '../Theme/Variables';
-import {QuadrantScreen} from '../Screens/Quadrant';
-import {isFeatureEnabled} from '../lib/featureToggle';
-import {REGISTRY} from '../lib/featureToggle/registry';
+import {EntrancesManager} from '../Screens/EntrancesManager';
 
 const {Navigator, Screen} = createBottomTabNavigator();
 
@@ -113,7 +112,25 @@ const HomeAdmin = () => {
           ),
         })}
       />
-      {isFeatureEnabled(REGISTRY.FEATURE_QUADRANT) && (
+      <Screen
+        name={t(tabNameByScreen[ENTRANCES_MANAGER_SCREEN_KEY])}
+        initialParams={{screenKey: ENTRANCES_MANAGER_SCREEN_KEY}}
+        component={EntrancesManager}
+        options={({route}) => ({
+          tabBarVisible: getTabBarVisible(route),
+          tabBarIcon: ({focused, color, size}) => (
+            <>
+              <Icon
+                name={focused ? 'grid' : 'grid-outline'}
+                size={25}
+                focused={focused}
+                color={Colors.pm}
+              />
+            </>
+          ),
+        })}
+      />
+      {/* {isFeatureEnabled(REGISTRY.FEATURE_QUADRANT) && (
         <Screen
           name={t(tabNameByScreen[QUADRANT_SCREEN_KEY])}
           initialParams={{screenKey: QUADRANT_SCREEN_KEY}}
@@ -132,7 +149,7 @@ const HomeAdmin = () => {
             ),
           })}
         />
-      )}
+      )} */}
       <Screen
         name={t(tabNameByScreen[USERS_SCREEN_KEY])}
         initialParams={{screenKey: USERS_SCREEN_KEY}}

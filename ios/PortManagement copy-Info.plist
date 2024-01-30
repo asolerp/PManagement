@@ -47,6 +47,8 @@
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MBXAccessToken</key>
+	<string>sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHJzdWM3Z3IwOXF5MmtwYmkzdWI4djVjIn0.V2yhEawgietZ4AbsTvr7Tw</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

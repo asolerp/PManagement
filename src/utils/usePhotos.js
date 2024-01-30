@@ -69,9 +69,14 @@ export const usePhotos = () => {
       setLoading(true);
 
       const promises = imgs.map(
-        async (file) => await uploadImageToFirebase({uri: file.fileUri, storageFolder: folder, fileName: file.fileName}),
+        async (file) =>
+          await uploadImageToFirebase({
+            uri: file.fileUri,
+            storageFolder: folder,
+            fileName: file.fileName,
+          }),
       );
-      
+
       const imagesURLs = await Promise.all(promises);
 
       const uploadImageFirebase = imagesURLs.map((image) =>
@@ -92,10 +97,38 @@ export const usePhotos = () => {
     }
   };
 
+  const updatePhotoProfile = async (img, fbRoute) => {
+    const {collectionRef, folder} = fbRoute;
+    try {
+      setLoading(true);
+
+      const imageURL = await uploadImageToFirebase({
+        uri: img.fileUri,
+        storageFolder: folder,
+        fileName: img.fileName,
+      });
+
+      collectionRef.update({
+        [`profileImage.original`]: imageURL,
+        ['profileImage.small']: imageURL,
+      });
+    } catch (err) {
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
-    loading,
     error,
-    uploadPhotos,
+    loading,
     removePhotos,
+    uploadPhotos,
+    updatePhotoProfile,
   };
 };

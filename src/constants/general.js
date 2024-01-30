@@ -1,2 +1,2 @@
 export const DEFAULT_IMAGE =
-  'https://res.cloudinary.com/enalbis/image/upload/v1645955643/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_10.52.53_farpbv.jpg';
+  'https://firebasestorage.googleapis.com/v0/b/port-management---dev.appspot.com/o/other%2Fport.png?alt=media&token=78b69e06-9e27-4d3f-aa87-d80bde3c2601g';
