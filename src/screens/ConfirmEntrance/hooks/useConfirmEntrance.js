@@ -87,6 +87,8 @@ export const useConfirmEntrance = () => {
     } catch (err) {
       console.log(err);
       setVisible(false);
+    } finally {
+      setVisible(false);
     }
   };
 

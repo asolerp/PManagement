@@ -101,6 +101,8 @@ const DynamicSelectorList = ({
       <>
         <View style={[theme.flex1]}>
           <SearchBar
+            searchIcon={Platform.OS === 'ios' ? {name: 'search'} : null}
+            clearIcon={Platform.OS === 'ios' ? {name: 'close-circle'} : null}
             placeholder={t('common.search_name')}
             onChangeText={setSearch}
             value={search}

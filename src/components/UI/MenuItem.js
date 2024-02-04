@@ -26,11 +26,17 @@ export const MenuItem = ({
         ]}>
         <View style={[Layout.row, Layout.alignItemsCenter]}>
           <Icon name={iconName} size={25} color={iconColor} />
-          <Text style={[Gutters.smallLMargin, Fonts.textSm, theme.textBlack, textStyle]}>
+          <Text
+            style={[
+              Gutters.smallLMargin,
+              Fonts.textSm,
+              theme.textBlack,
+              textStyle,
+            ]}>
             {title}
           </Text>
         </View>
-        <Icon name="ios-chevron-forward" size={25} color="black" />
+        <Icon name="chevron-forward" size={25} color="black" />
       </TouchableOpacity>
       <HDivider />
     </>

@@ -4,8 +4,9 @@
  *
  * @format
  */
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 
-module.exports = {
+config = {
   resolver: {
     extraNodeModules: {
       '@': `${__dirname}/src`,
@@ -20,3 +21,5 @@ module.exports = {
     }),
   },
 };
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

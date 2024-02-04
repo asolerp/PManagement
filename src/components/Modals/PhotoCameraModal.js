@@ -31,13 +31,13 @@ const PhotoCameraModal = ({visible, handleVisibility, onSelectImage}) => {
         handleVisibility(false);
       }}>
       <MenuItem
-        iconName="ios-camera"
+        iconName="camera"
         title="Usar cámara"
         onPress={() => handlePress(CAPTURE_ACTION)}
       />
 
       <MenuItem
-        iconName="ios-folder"
+        iconName="folder"
         title="Acceder a fotos"
         onPress={() => handlePress(LIBRARY_ACTION)}
       />

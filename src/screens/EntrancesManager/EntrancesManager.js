@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {Text} from 'react-native';
 import {StyleSheet, View} from 'react-native';
 import Mapbox from '@rnmapbox/maps';
 import {useEntrancesManager} from './hooks/useEntrancesManager';
@@ -7,10 +6,13 @@ import Avatar from '../../components/Avatar';
 import {ListOfWorkers} from './components/ListOfWorkers';
 import {EntranceInfo} from './components/EntranceInfo';
 
+import {DateSelector} from './components/DateSelector';
+
 const DEFAULT_COORDINATES = [2.3969, 39.5743];
 
+Mapbox.setWellKnownTileServer('Mapbox');
 Mapbox.setAccessToken(
-  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHJzdWM3Z3IwOXF5MmtwYmkzdWI4djVjIn0.V2yhEawgietZ4AbsTvr7Tw',
+  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHM0ZmF6b2IwN3lnMmlvMDVuNm50bjE1In0.g1n5Nv5WhPDU5YjmwrgoLQ',
 );
 
 const EntrancesManager = () => {
@@ -21,7 +23,13 @@ const EntrancesManager = () => {
 
   const [isModalInfoOpened, setIsModalInfoOpened] = useState();
   const [entranceInfo, setEntranceInfo] = useState();
-  const {entrances, activeWorkers} = useEntrancesManager();
+  const {
+    entrances,
+    activeWorkers,
+    selectedDate,
+    goBackOneDay,
+    goForwardOneDay,
+  } = useEntrancesManager();
 
   // Function to update camera settings
   const updateCamera = (zoom, newCoordinates) => {
@@ -32,10 +40,10 @@ const EntrancesManager = () => {
   };
 
   const handlePressWorkerFromList = (workerId) => {
-    const worker = entrances.find(
+    const worker = entrances?.find(
       (entrance) => entrance.worker.id === workerId,
     );
-    const workerEntrances = entrances.filter(
+    const workerEntrances = entrances?.filter(
       (entrance) => entrance.worker.id === workerId,
     );
     if (worker) {
@@ -49,6 +57,11 @@ const EntrancesManager = () => {
 
   return (
     <View style={styles.page}>
+      <DateSelector
+        goBackOneDay={goBackOneDay}
+        goForwardOneDay={goForwardOneDay}
+        selectedDate={selectedDate}
+      />
       <ListOfWorkers
         workers={activeWorkers}
         onPressWorker={handlePressWorkerFromList}

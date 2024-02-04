@@ -17,7 +17,6 @@ import {
   DASHBOARD_SCREEN_KEY,
   ENTRANCES_MANAGER_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
-  QUADRANT_SCREEN_KEY,
   USERS_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import {UsersScreen} from '../Screens/Users';
@@ -103,7 +102,7 @@ const HomeAdmin = () => {
           tabBarIcon: ({focused, color, size}) => (
             <>
               <Icon
-                name={focused ? 'ios-speedometer' : 'ios-speedometer-outline'}
+                name={focused ? 'speedometer' : 'speedometer-outline'}
                 size={25}
                 focused={focused}
                 color={Colors.pm}
@@ -159,7 +158,7 @@ const HomeAdmin = () => {
           tabBarIcon: ({focused, color, size}) => (
             <>
               <Icon
-                name={focused ? 'ios-person' : 'ios-person-outline'}
+                name={focused ? 'person' : 'person-outline'}
                 size={25}
                 focused={focused}
                 color={Colors.pm}
@@ -177,7 +176,7 @@ const HomeAdmin = () => {
           tabBarIcon: ({focused, color, size}) => (
             <>
               <Icon
-                name={focused ? 'ios-home' : 'ios-home-outline'}
+                name={focused ? 'home' : 'home-outline'}
                 size={25}
                 focused={focused}
                 color={Colors.pm}

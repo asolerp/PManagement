@@ -6,8 +6,6 @@
 #import <Firebase.h>
 #import <CodePush/CodePush.h>
 
-
-
 #import "RNBootSplash.h"
 
 // #ifdef FB_SONARKIT_ENABLED
@@ -57,6 +55,10 @@ if ([FIRApp defaultApp] == nil) {
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+  return [self getBundleURL];
+}
+- (NSURL *)getBundleURL
 {
   #if DEBUG
     return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];

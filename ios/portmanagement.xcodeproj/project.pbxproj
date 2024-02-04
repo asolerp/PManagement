@@ -10,43 +10,45 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		5F5BBFFB61F70AEDDA3EDF08 /* libPods-PortManagementCommonPods-PortManagement-Development.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEF44FBD3EBF686324AFEDBD /* libPods-PortManagementCommonPods-PortManagement-Development.a */; };
-		D058A31A808621232FC63A0F /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 896B191AE05F45B647FD0BDF /* libPods-PortManagementCommonPods-PortManagement.a */; };
-		D36EAEC429CB471100C728CB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		D36EAEC529CB471100C728CB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		D36EAECA29CB471100C728CB /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3C4ABE42762610E00BD231D /* BootSplash.storyboard */; };
-		D36EAECC29CB471100C728CB /* 1024.png in Resources */ = {isa = PBXBuildFile; fileRef = D3BCCA3828CB3793004E6A0A /* 1024.png */; };
-		D36EAECD29CB471100C728CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		D36EAECE29CB471100C728CB /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = D37AAD0B259DE43A0006FCE1 /* fonts */; };
-		D36EAEE229CB49C900C728CB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D36EAEE129CB49C900C728CB /* GoogleService-Info.plist */; };
+		2591F1BAD1D7EE354BD332AD /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A3B297318BF99025F1EB25 /* libPods-PortManagementCommonPods-PortManagement.a */; };
+		A745ACE2117EC6D3C43091D8 /* libPods-PortManagementCommonPods-PortManagement-Development.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10A73D8A7D890989DA522C3F /* libPods-PortManagementCommonPods-PortManagement-Development.a */; };
+		D30446692B6FACF2000FD6A1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
+		D304466A2B6FACF2000FD6A1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		D304466E2B6FACF2000FD6A1 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3C4ABE42762610E00BD231D /* BootSplash.storyboard */; };
+		D304466F2B6FACF2000FD6A1 /* 1024.png in Resources */ = {isa = PBXBuildFile; fileRef = D3BCCA3828CB3793004E6A0A /* 1024.png */; };
+		D30446712B6FACF2000FD6A1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		D304467A2B6FAE86000FD6A1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D36EAEE129CB49C900C728CB /* GoogleService-Info.plist */; };
 		D36EAEE429CB49D300C728CB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D36EAEE329CB49D300C728CB /* GoogleService-Info.plist */; };
-		D37AAD0C259DE43A0006FCE1 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = D37AAD0B259DE43A0006FCE1 /* fonts */; };
 		D3BCCA3928CB3793004E6A0A /* 1024.png in Resources */ = {isa = PBXBuildFile; fileRef = D3BCCA3828CB3793004E6A0A /* 1024.png */; };
 		D3C4ABE52762610E00BD231D /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3C4ABE42762610E00BD231D /* BootSplash.storyboard */; };
+		DD779D5DC171C3E917B64A9F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		0103D94E13050F72CECBC6ED /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig"; sourceTree = "<group>"; };
+		054AED4D81727277922ECB26 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement.debug.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement.debug.xcconfig"; sourceTree = "<group>"; };
+		10A73D8A7D890989DA522C3F /* libPods-PortManagementCommonPods-PortManagement-Development.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortManagementCommonPods-PortManagement-Development.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* portmanagement.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = portmanagement.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = portmanagement/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = portmanagement/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = portmanagement/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = portmanagement/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = portmanagement/main.m; sourceTree = "<group>"; };
-		387D8075D03D7B75251B17F3 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement.debug.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement.debug.xcconfig"; sourceTree = "<group>"; };
-		3A983DDA86BBF6B55A1EF33E /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement.release.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement.release.xcconfig"; sourceTree = "<group>"; };
-		3EE7CD5A2C1C812E1871C498 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig"; sourceTree = "<group>"; };
-		896B191AE05F45B647FD0BDF /* libPods-PortManagementCommonPods-PortManagement.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortManagementCommonPods-PortManagement.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE7CCF13B826DEBEC7C67E46 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig"; sourceTree = "<group>"; };
+		408F7A35BEAB5A6DABFBD2EA /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement.release.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement.release.xcconfig"; sourceTree = "<group>"; };
+		48A3B297318BF99025F1EB25 /* libPods-PortManagementCommonPods-PortManagement.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortManagementCommonPods-PortManagement.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		501CE05434CE9359D43D19C9 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig"; path = "Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig"; sourceTree = "<group>"; };
+		D304462E2B6F695C000FD6A1 /* Ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		D30446312B6F696B000FD6A1 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		D30446342B6F6981000FD6A1 /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
+		D30446372B6F6993000FD6A1 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		D30446782B6FACF2000FD6A1 /* PortManagement-Development.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PortManagement-Development.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D30446792B6FACF2000FD6A1 /* PortManagement Development-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PortManagement Development-Info.plist"; path = "/Users/alberto/Desktop/Proyectos/PManagement/ios/PortManagement Development-Info.plist"; sourceTree = "<absolute>"; };
 		D344EFBD25F20C8100753942 /* portmanagement.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = portmanagement.entitlements; path = portmanagement/portmanagement.entitlements; sourceTree = "<group>"; };
-		D36EAED529CB471100C728CB /* PortManagement-Development.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PortManagement-Development.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D36EAED629CB471100C728CB /* PortManagement copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PortManagement copy-Info.plist"; path = "/Users/alberto/Desktop/Enalbis/PManagement/ios/PortManagement copy-Info.plist"; sourceTree = "<absolute>"; };
 		D36EAEE129CB49C900C728CB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Firebase/Dev/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D36EAEE329CB49D300C728CB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Firebase/Prod/GoogleService-Info.plist"; sourceTree = "<group>"; };
-		D37AAD0B259DE43A0006FCE1 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		D3BCCA3828CB3793004E6A0A /* 1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 1024.png; path = portmanagement/Images.xcassets/AppIcon.appiconset/1024.png; sourceTree = "<group>"; };
 		D3C4ABE42762610E00BD231D /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = portmanagement/BootSplash.storyboard; sourceTree = "<group>"; };
-		DEF44FBD3EBF686324AFEDBD /* libPods-PortManagementCommonPods-PortManagement-Development.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortManagementCommonPods-PortManagement-Development.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -56,15 +58,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D058A31A808621232FC63A0F /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */,
+				DD779D5DC171C3E917B64A9F /* (null) in Frameworks */,
+				2591F1BAD1D7EE354BD332AD /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D36EAEC729CB471100C728CB /* Frameworks */ = {
+		D304466B2B6FACF2000FD6A1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F5BBFFB61F70AEDDA3EDF08 /* libPods-PortManagementCommonPods-PortManagement-Development.a in Frameworks */,
+				A745ACE2117EC6D3C43091D8 /* libPods-PortManagementCommonPods-PortManagement-Development.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,10 +77,10 @@
 		13B07FAE1A68108700A75B9A /* portmanagement */ = {
 			isa = PBXGroup;
 			children = (
+				D304462D2B6F68BA000FD6A1 /* Fonts */,
 				D36EAEDE29CB49AB00C728CB /* Firebase */,
 				D3C4ABE42762610E00BD231D /* BootSplash.storyboard */,
 				D344EFBD25F20C8100753942 /* portmanagement.entitlements */,
-				D37AAD0B259DE43A0006FCE1 /* fonts */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -93,8 +96,8 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				896B191AE05F45B647FD0BDF /* libPods-PortManagementCommonPods-PortManagement.a */,
-				DEF44FBD3EBF686324AFEDBD /* libPods-PortManagementCommonPods-PortManagement-Development.a */,
+				10A73D8A7D890989DA522C3F /* libPods-PortManagementCommonPods-PortManagement-Development.a */,
+				48A3B297318BF99025F1EB25 /* libPods-PortManagementCommonPods-PortManagement.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -102,10 +105,10 @@
 		73AD0794B5D29150E5C61272 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				387D8075D03D7B75251B17F3 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */,
-				3A983DDA86BBF6B55A1EF33E /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */,
-				3EE7CD5A2C1C812E1871C498 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */,
-				CE7CCF13B826DEBEC7C67E46 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */,
+				054AED4D81727277922ECB26 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */,
+				408F7A35BEAB5A6DABFBD2EA /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */,
+				0103D94E13050F72CECBC6ED /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */,
+				501CE05434CE9359D43D19C9 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -126,7 +129,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				73AD0794B5D29150E5C61272 /* Pods */,
-				D36EAED629CB471100C728CB /* PortManagement copy-Info.plist */,
+				D30446792B6FACF2000FD6A1 /* PortManagement Development-Info.plist */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -137,9 +140,20 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* portmanagement.app */,
-				D36EAED529CB471100C728CB /* PortManagement-Development.app */,
+				D30446782B6FACF2000FD6A1 /* PortManagement-Development.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D304462D2B6F68BA000FD6A1 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				D304462E2B6F695C000FD6A1 /* Ionicons.ttf */,
+				D30446342B6F6981000FD6A1 /* Feather.ttf */,
+				D30446312B6F696B000FD6A1 /* FontAwesome.ttf */,
+				D30446372B6F6993000FD6A1 /* MaterialIcons.ttf */,
+			);
+			name = Fonts;
 			sourceTree = "<group>";
 		};
 		D36EAEDE29CB49AB00C728CB /* Firebase */ = {
@@ -174,14 +188,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "PortManagement" */;
 			buildPhases = (
-				5B8FF3F068A2109707D694FB /* [CP] Check Pods Manifest.lock */,
+				0CE629DA474B207FAB9369BC /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				DD9B63AB9235BEB112538F77 /* [CP] Embed Pods Frameworks */,
-				18FA7FB451CD2B4CCAB5D7E1 /* [CP] Copy Pods Resources */,
+				A9EA73FF5C026DCFCF772BF3 /* [CP] Embed Pods Frameworks */,
+				0582A39742174C1FC4654686 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -192,18 +206,18 @@
 			productReference = 13B07F961A680F5B00A75B9A /* portmanagement.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D36EAEC029CB471100C728CB /* PortManagement-Development */ = {
+		D30446652B6FACF2000FD6A1 /* PortManagement-Development */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D36EAED229CB471100C728CB /* Build configuration list for PBXNativeTarget "PortManagement-Development" */;
+			buildConfigurationList = D30446752B6FACF2000FD6A1 /* Build configuration list for PBXNativeTarget "PortManagement-Development" */;
 			buildPhases = (
-				85A3378729B1DE22F6DEF157 /* [CP] Check Pods Manifest.lock */,
-				D36EAEC229CB471100C728CB /* Start Packager */,
-				D36EAEC329CB471100C728CB /* Sources */,
-				D36EAEC729CB471100C728CB /* Frameworks */,
-				D36EAEC929CB471100C728CB /* Resources */,
-				D36EAECF29CB471100C728CB /* Bundle React Native code and images */,
-				2B1D2FB4026E333BC064F834 /* [CP] Embed Pods Frameworks */,
-				E2B3C15BBF8FB35EE7B568F9 /* [CP] Copy Pods Resources */,
+				D30446662B6FACF2000FD6A1 /* [CP] Check Pods Manifest.lock */,
+				D30446672B6FACF2000FD6A1 /* Start Packager */,
+				D30446682B6FACF2000FD6A1 /* Sources */,
+				D304466B2B6FACF2000FD6A1 /* Frameworks */,
+				D304466D2B6FACF2000FD6A1 /* Resources */,
+				D30446722B6FACF2000FD6A1 /* Bundle React Native code and images */,
+				D30446732B6FACF2000FD6A1 /* [CP] Embed Pods Frameworks */,
+				D30446742B6FACF2000FD6A1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -211,7 +225,7 @@
 			);
 			name = "PortManagement-Development";
 			productName = portmanagement;
-			productReference = D36EAED529CB471100C728CB /* PortManagement-Development.app */;
+			productReference = D30446782B6FACF2000FD6A1 /* PortManagement-Development.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -227,7 +241,7 @@
 						LastSwiftMigration = 1120;
 						ProvisioningStyle = Automatic;
 					};
-					D36EAEC029CB471100C728CB = {
+					D30446652B6FACF2000FD6A1 = {
 						DevelopmentTeam = Y86MT47MC7;
 						ProvisioningStyle = Automatic;
 					};
@@ -247,7 +261,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* PortManagement */,
-				D36EAEC029CB471100C728CB /* PortManagement-Development */,
+				D30446652B6FACF2000FD6A1 /* PortManagement-Development */,
 			);
 		};
 /* End PBXProject section */
@@ -261,19 +275,17 @@
 				D3BCCA3928CB3793004E6A0A /* 1024.png in Resources */,
 				D36EAEE429CB49D300C728CB /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				D37AAD0C259DE43A0006FCE1 /* fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D36EAEC929CB471100C728CB /* Resources */ = {
+		D304466D2B6FACF2000FD6A1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D36EAECA29CB471100C728CB /* BootSplash.storyboard in Resources */,
-				D36EAECC29CB471100C728CB /* 1024.png in Resources */,
-				D36EAEE229CB49C900C728CB /* GoogleService-Info.plist in Resources */,
-				D36EAECD29CB471100C728CB /* Images.xcassets in Resources */,
-				D36EAECE29CB471100C728CB /* fonts in Resources */,
+				D304466E2B6FACF2000FD6A1 /* BootSplash.storyboard in Resources */,
+				D304467A2B6FAE86000FD6A1 /* GoogleService-Info.plist in Resources */,
+				D304466F2B6FACF2000FD6A1 /* 1024.png in Resources */,
+				D30446712B6FACF2000FD6A1 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,15 +298,17 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/.xcode.env",
 			);
 			name = "Bundle React Native code and images";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export EXTRA_PACKAGER_ARGS=\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "set -e\n\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n\n";
 		};
-		18FA7FB451CD2B4CCAB5D7E1 /* [CP] Copy Pods Resources */ = {
+		0582A39742174C1FC4654686 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -311,6 +325,9 @@
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome6_Brands.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome6_Regular.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome6_Solid.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
@@ -319,7 +336,7 @@
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/gRPC-C++/gRPCCertificates-Cpp.bundle",
 			);
@@ -335,6 +352,9 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome6_Brands.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome6_Regular.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome6_Solid.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
@@ -343,7 +363,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gRPCCertificates-Cpp.bundle",
 			);
@@ -352,41 +372,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2B1D2FB4026E333BC064F834 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/MapboxMaps/MapboxMaps.framework",
-				"${BUILT_PRODUCTS_DIR}/Turf/Turf.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-DoubleConversion/double-conversion.framework/double-conversion",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/MapboxCommon/MapboxCommon.framework/MapboxCommon",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/MapboxCoreMaps/MapboxCoreMaps.framework/MapboxCoreMaps",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/MapboxMobileEvents/MapboxMobileEvents.framework/MapboxMobileEvents",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxMaps.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Turf.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/double-conversion.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxCommon.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxCoreMaps.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxMobileEvents.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5B8FF3F068A2109707D694FB /* [CP] Check Pods Manifest.lock */ = {
+		0CE629DA474B207FAB9369BC /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -408,62 +394,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		85A3378729B1DE22F6DEF157 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-PortManagementCommonPods-PortManagement-Development-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D36EAEC229CB471100C728CB /* Start Packager */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Start Packager";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		D36EAECF29CB471100C728CB /* Bundle React Native code and images */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Bundle React Native code and images";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export EXTRA_PACKAGER_ARGS=\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
-		};
-		DD9B63AB9235BEB112538F77 /* [CP] Embed Pods Frameworks */ = {
+		A9EA73FF5C026DCFCF772BF3 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -497,7 +428,97 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement/Pods-PortManagementCommonPods-PortManagement-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E2B3C15BBF8FB35EE7B568F9 /* [CP] Copy Pods Resources */ = {
+		D30446662B6FACF2000FD6A1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PortManagementCommonPods-PortManagement-Development-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D30446672B6FACF2000FD6A1 /* Start Packager */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Start Packager";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		D30446722B6FACF2000FD6A1 /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+			);
+			name = "Bundle React Native code and images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
+		};
+		D30446732B6FACF2000FD6A1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/MapboxMaps/MapboxMaps.framework",
+				"${BUILT_PRODUCTS_DIR}/Turf/Turf.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-DoubleConversion/double-conversion.framework/double-conversion",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Flipper-Glog/glog.framework/glog",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/MapboxCommon/MapboxCommon.framework/MapboxCommon",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/MapboxCoreMaps/MapboxCoreMaps.framework/MapboxCoreMaps",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/MapboxMobileEvents/MapboxMobileEvents.framework/MapboxMobileEvents",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxMaps.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Turf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/double-conversion.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxCommon.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxCoreMaps.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxMobileEvents.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortManagementCommonPods-PortManagement-Development/Pods-PortManagementCommonPods-PortManagement-Development-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D30446742B6FACF2000FD6A1 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -514,6 +535,9 @@
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome6_Brands.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome6_Regular.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome6_Solid.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
@@ -522,7 +546,7 @@
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/gRPC-C++/gRPCCertificates-Cpp.bundle",
 			);
@@ -538,6 +562,9 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome6_Brands.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome6_Regular.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome6_Solid.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
@@ -546,7 +573,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gRPCCertificates-Cpp.bundle",
 			);
@@ -586,12 +613,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D36EAEC329CB471100C728CB /* Sources */ = {
+		D30446682B6FACF2000FD6A1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D36EAEC429CB471100C728CB /* AppDelegate.m in Sources */,
-				D36EAEC529CB471100C728CB /* main.m in Sources */,
+				D30446692B6FACF2000FD6A1 /* AppDelegate.m in Sources */,
+				D304466A2B6FACF2000FD6A1 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -600,7 +627,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 387D8075D03D7B75251B17F3 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */;
+			baseConfigurationReference = 054AED4D81727277922ECB26 /* Pods-PortManagementCommonPods-PortManagement.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -626,6 +653,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -635,7 +663,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3A983DDA86BBF6B55A1EF33E /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */;
+			baseConfigurationReference = 408F7A35BEAB5A6DABFBD2EA /* Pods-PortManagementCommonPods-PortManagement.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -660,6 +688,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -671,7 +700,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -723,8 +752,12 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -733,7 +766,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -777,40 +810,45 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		D36EAED329CB471100C728CB /* Debug */ = {
+		D30446762B6FACF2000FD6A1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3EE7CD5A2C1C812E1871C498 /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */;
+			baseConfigurationReference = 0103D94E13050F72CECBC6ED /* Pods-PortManagementCommonPods-PortManagement-Development.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202209091312;
+				CURRENT_PROJECT_VERSION = 202309120734;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = "PortManagement copy-Info.plist";
+				INFOPLIST_FILE = "PortManagement Development-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.4;
+				MARKETING_VERSION = 1.8.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.port.management;
+				PRODUCT_BUNDLE_IDENTIFIER = com.port.management.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -818,33 +856,34 @@
 			};
 			name = Debug;
 		};
-		D36EAED429CB471100C728CB /* Release */ = {
+		D30446772B6FACF2000FD6A1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE7CCF13B826DEBEC7C67E46 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */;
+			baseConfigurationReference = 501CE05434CE9359D43D19C9 /* Pods-PortManagementCommonPods-PortManagement-Development.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202209091312;
+				CURRENT_PROJECT_VERSION = 202309120734;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
-				INFOPLIST_FILE = "PortManagement copy-Info.plist";
+				INFOPLIST_FILE = "PortManagement Development-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.4;
+				MARKETING_VERSION = 1.8.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.port.management;
+				PRODUCT_BUNDLE_IDENTIFIER = com.port.management.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -872,11 +911,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D36EAED229CB471100C728CB /* Build configuration list for PBXNativeTarget "PortManagement-Development" */ = {
+		D30446752B6FACF2000FD6A1 /* Build configuration list for PBXNativeTarget "PortManagement-Development" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D36EAED329CB471100C728CB /* Debug */,
-				D36EAED429CB471100C728CB /* Release */,
+				D30446762B6FACF2000FD6A1 /* Debug */,
+				D30446772B6FACF2000FD6A1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

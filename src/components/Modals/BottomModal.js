@@ -1,7 +1,12 @@
 import React from 'react';
-import {Dimensions, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  Dimensions,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Modal from 'react-native-modal';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {Colors} from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -27,9 +32,7 @@ export const BottomModal = ({
           : [theme.bgWhite, theme.p0, theme.m0]
       }>
       {/* <KeyboardAvoidingView behavior="padding"> */}
-      <SafeAreaView
-        edges={['top', 'bottom']}
-        style={isFixedBottom ? [theme.bgWhite] : [theme.flex1]}>
+      <SafeAreaView style={isFixedBottom ? [theme.bgWhite] : [theme.flex1]}>
         <View
           style={
             isFixedBottom ? styles.modalContainerFixed : styles.modalContainer

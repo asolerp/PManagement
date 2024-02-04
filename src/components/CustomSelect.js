@@ -18,7 +18,7 @@ export const CustomSelect = ({
   onPressBubble,
   disabled = false,
   onPress,
-  iconName = 'ios-chevron-forward-outline',
+  iconName = 'chevron-forward-outline',
   label,
   placeHolder,
   value,

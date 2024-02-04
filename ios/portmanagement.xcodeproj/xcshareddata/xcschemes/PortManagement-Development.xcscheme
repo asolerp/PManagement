@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D36EAEC029CB471100C728CB"
+               BlueprintIdentifier = "D30446652B6FACF2000FD6A1"
                BuildableName = "PortManagement-Development.app"
                BlueprintName = "PortManagement-Development"
                ReferencedContainer = "container:portmanagement.xcodeproj">
@@ -44,7 +44,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D36EAEC029CB471100C728CB"
+            BlueprintIdentifier = "D30446652B6FACF2000FD6A1"
             BuildableName = "PortManagement-Development.app"
             BlueprintName = "PortManagement-Development"
             ReferencedContainer = "container:portmanagement.xcodeproj">
@@ -57,22 +57,21 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D36EAEC029CB471100C728CB"
+            BlueprintIdentifier = "D30446652B6FACF2000FD6A1"
             BuildableName = "PortManagement-Development.app"
             BlueprintName = "PortManagement-Development"
             ReferencedContainer = "container:portmanagement.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
    </AnalyzeAction>
    <ArchiveAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

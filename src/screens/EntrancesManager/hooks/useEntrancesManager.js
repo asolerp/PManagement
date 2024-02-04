@@ -1,16 +1,38 @@
 import firestore from '@react-native-firebase/firestore';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {getEndOfToday, getStartOfToday} from '../../../utils/dates';
+import {useState} from 'react';
 
 export const useEntrancesManager = () => {
+  const [dayOffset, setDayOffset] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const goBackOneDay = () => {
+    setDayOffset(dayOffset + 1);
+    setSelectedDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(newDate.getDate() - 1);
+      return newDate;
+    });
+  };
+
+  const goForwardOneDay = () => {
+    setDayOffset(dayOffset - 1);
+    setSelectedDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(newDate.getDate() + 1);
+      return newDate;
+    });
+  };
+
   const queryWorkers = firestore()
     .collection('users')
     .where('role', '==', 'worker');
 
   const queryEntrances = firestore()
     .collection('entrances')
-    .where('date', '>=', getStartOfToday())
-    .where('date', '<=', getEndOfToday());
+    .where('date', '>=', getStartOfToday(dayOffset))
+    .where('date', '<=', getEndOfToday(dayOffset));
 
   const [entrances, loading] = useCollectionData(queryEntrances, {
     idField: 'id',
@@ -32,7 +54,6 @@ export const useEntrancesManager = () => {
     // Check proximity to previous annotations
     for (let i = 0; i < index; i++) {
       const other = arr[i];
-      console.log('OTHER', other);
       if (
         isTooClose(
           [latitude, longitude],
@@ -49,7 +70,7 @@ export const useEntrancesManager = () => {
   });
 
   const activeWorkers = workers?.map((worker) =>
-    annotations.some((entrance) => entrance.worker.id === worker.id)
+    annotations?.some((entrance) => entrance.worker.id === worker.id)
       ? {...worker, active: true}
       : {...worker, active: false},
   );
@@ -57,7 +78,10 @@ export const useEntrancesManager = () => {
   return {
     loading,
     workers,
-    entrances: annotations,
+    selectedDate,
+    goBackOneDay,
     activeWorkers,
+    goForwardOneDay,
+    entrances: annotations,
   };
 };

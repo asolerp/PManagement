@@ -42,13 +42,13 @@ export const IncidencesCameraModal = ({setImages, isVisible, setIsVisible}) => {
         setIsVisible(false);
       }}>
       <MenuItem
-        iconName="ios-camera"
+        iconName="camera"
         title="Usar cámara"
         onPress={() => handlePress(CAPTURE_ACTION)}
       />
 
       <MenuItem
-        iconName="ios-folder"
+        iconName="folder"
         title="Acceder a fotos"
         onPress={() => handlePress(LIBRARY_ACTION)}
       />

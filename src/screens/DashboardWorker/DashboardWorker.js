@@ -75,13 +75,7 @@ const DashboardWorkerScreen = () => {
   };
 
   if (entrance) {
-    console.log(
-      'entrance',
-      format(
-        entrance?.date?.seconds * 1000 + entrance?.date?.nanoseconds / 1000000,
-        'HH:mm',
-      ),
-    );
+    console.log('entrance', entrance);
   }
 
   return (

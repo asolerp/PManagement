@@ -23,7 +23,7 @@ export const ListOfWorkers = ({workers, onPressWorker}) => {
     <View
       style={[
         theme.z50,
-        theme.top20,
+        theme.top40,
         theme.wFull,
         theme.flex,
         theme.justifyCenter,

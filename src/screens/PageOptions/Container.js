@@ -20,7 +20,7 @@ const Container = ({
     <View style={[]}>
       {editable && (
         <MenuItem
-          iconName="ios-pencil"
+          iconName="pencil"
           title={t('options.edit')}
           onPress={onEdit}
         />
@@ -28,7 +28,7 @@ const Container = ({
 
       {duplicate && (
         <MenuItem
-          iconName="ios-duplicate"
+          iconName="duplicate"
           title={t('options.duplicate')}
           onPress={onDuplicate}
         />
@@ -38,7 +38,7 @@ const Container = ({
         <MenuItem
           textStyle={{color: Colors.danger}}
           iconColor={Colors.danger}
-          iconName="ios-trash"
+          iconName="trash"
           title={t('options.delete')}
           onPress={onDelete}
         />

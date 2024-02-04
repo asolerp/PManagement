@@ -1,5 +1,5 @@
 <resources>
     <color name="bootsplash_background">#FFFFFF</color>
-    <color name="splashscreen_background">#fff</color>
+    <color name="splashscreen_background">#c41919</color>
     <color name="app_color">#00C3A5</color>
 </resources>

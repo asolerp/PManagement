@@ -98,18 +98,6 @@ export const ListItem = ({
               Layout.alignItemsCenter,
               Layout.justifyContentSpaceBetween,
             ]}>
-            <View style={[Layout.row]}>
-              {workers?.map((worker) => (
-                <Avatar
-                  overlap={workers?.length > 1}
-                  index={worker.id}
-                  id={worker.id}
-                  key={worker.id}
-                  uri={worker.profileImage?.small || DEFAULT_IMAGE}
-                  size="tiny"
-                />
-              ))}
-            </View>
             {startHour && endHour && (
               <View style={[theme.flexRow]}>
                 <Badge text={startHour} />

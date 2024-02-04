@@ -101,7 +101,7 @@ const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
           <table role="presentation" style="width:602px;border: 0;text-align:left; background: white; padding: 0 10px;">
               <tr>
                 <td align="center" style="padding:20px 0 20px 0;">
-                  <img src="https://res.cloudinary.com/enalbis/image/upload/v1684221984/PortManagement/varios/o9rgrefebivmftjjifq1.jpg" alt="" width="120" style="background-color:white; padding: 0 10px; height:auto;position:absolute;left:50%;transform: translateX(-50%); z-index: 2;" />            
+                  <img src="https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/other%2Fport.png?alt=media&token=41156ea7-76a2-4a28-8625-27f779433b78" alt="" width="120" style="background-color:white; padding: 0 10px; height:auto;position:absolute;left:50%;transform: translateX(-50%); z-index: 2;" />            
                 </td>
               </tr>
               <tr>
@@ -225,12 +225,12 @@ const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
         from: process.env.EMAIL,
         cc: ADMIN_EMAIL,
         to: arrayOfEmails,
-        subject: `🏡 CHECK LIST ${street}`,
+        subject: `CHECK LIST ${street}`,
         html: !language
           ? generateEmail('en')
           : language === 'en'
-          ? generateEmail('en')
-          : generateEmail('es'),
+            ? generateEmail('en')
+            : generateEmail('es'),
       };
       emailTransporter.sendMail(mailOptions, (error, data) => {
         if (error) {

@@ -58,7 +58,7 @@ const HomeWorker = () => {
           tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({focused, color, size}) => (
             <Icon
-              name={focused ? 'ios-speedometer' : 'ios-speedometer-outline'}
+              name={focused ? 'speedometer' : 'speedometer-outline'}
               size={25}
               focused={focused}
               color={Colors.pm}
@@ -93,7 +93,7 @@ const HomeWorker = () => {
         options={{
           tabBarIcon: ({focused, color, size}) => (
             <Icon
-              name={focused ? 'ios-person' : 'ios-person-outline'}
+              name={focused ? 'person' : 'person-outline'}
               size={25}
               focused={focused}
               color={Colors.pm}

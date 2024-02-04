@@ -14,11 +14,11 @@ import {PROFILE_SCREEN_KEY} from '../Router/utils/routerKeys';
 import {useDocumentData} from 'react-firebase-hooks/firestore';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../Store/User/userSlice';
+import {DEFAULT_IMAGE} from '../constants/general';
 
 const ProfileBar = () => {
   const {Fonts} = useTheme();
-  const defaultImg =
-    'https://res.cloudinary.com/enalbis/image/upload/v1645959807/PortManagement/varios/Captura_de_pantalla_2022-02-27_a_las_12.02.44_vttcma.jpg';
+
   const user = useSelector(userSelector);
   const today = format(new Date(), 'iii d MMMM yyyy', {locale: es});
 
@@ -55,7 +55,7 @@ const ProfileBar = () => {
             <Image
               style={styles.avatar}
               source={{
-                uri: userProfile?.profileImage?.original || defaultImg,
+                uri: userProfile?.profileImage?.original || DEFAULT_IMAGE,
               }}
             />
           </TouchableOpacity>

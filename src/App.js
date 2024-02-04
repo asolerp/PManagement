@@ -9,7 +9,7 @@ import RNBootSplash from 'react-native-bootsplash';
 import ErrorBoundary from 'react-native-error-boundary';
 
 import {Provider} from 'react-redux';
-import store from './Store'
+import store from './Store';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import * as RNLocalize from 'react-native-localize';
@@ -22,6 +22,7 @@ import {useNotification} from './lib/notification/notificationHooks';
 import {LoadinModalProvider} from './context/loadinModalContext';
 import {initRemoteConfig} from './lib/featureToggle';
 import theme from './Theme/Theme';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const CustomFallback = (props) => (
   <View style={theme.flex1}>
@@ -44,7 +45,7 @@ const App = () => {
       moment.locale(locale);
     };
     init().finally(async () => {
-      await RNBootSplash.hide({fade: true});
+      await RNBootSplash.hide({fade: false});
     });
   }, [locale]);
 
@@ -57,18 +58,20 @@ const App = () => {
   }, []);
 
   return (
-    <ErrorBoundary FallbackComponent={CustomFallback}>
-      <MenuProvider>
-        <LoadinModalProvider>
-          <Provider store={store}>
-            <GestureHandlerRootView style={[theme.flex1]}>
-              <AuthRouter />
-            </GestureHandlerRootView>
-            <Toast ref={(ref) => Toast.setRef(ref)} />
-          </Provider>
-        </LoadinModalProvider>
-      </MenuProvider>
-    </ErrorBoundary>
+    <SafeAreaProvider>
+      <ErrorBoundary FallbackComponent={CustomFallback}>
+        <MenuProvider>
+          <LoadinModalProvider>
+            <Provider store={store}>
+              <GestureHandlerRootView style={[theme.flex1]}>
+                <AuthRouter />
+              </GestureHandlerRootView>
+              <Toast ref={(ref) => Toast.setRef(ref)} />
+            </Provider>
+          </LoadinModalProvider>
+        </MenuProvider>
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
 };
 
