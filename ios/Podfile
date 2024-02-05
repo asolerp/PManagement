@@ -73,6 +73,7 @@ abstract_target 'PortManagementCommonPods' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+    `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_15_0/' #{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h`
   end
 
 end

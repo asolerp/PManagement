@@ -21,7 +21,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.8.8</string>
+	<string>1.8.9</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -64,9 +64,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera to take a picture for the profile or for the jobs</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Your location is used to show the position of your workers.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Your location is used to show the position of your workers.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to the library to upload a picture for the profile or for the jobs</string>
 	<key>UIAppFonts</key>
@@ -88,6 +88,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIStatusBarStyle</key>
+	<string></string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
