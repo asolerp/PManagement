@@ -14,9 +14,12 @@ import {
   INCIDENCE_SCREEN_KEY,
   JOB_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
+  RECYCLE_BIN_SCREEN_KEY,
 } from '../Router/utils/routerKeys';
 import HomeAdmin from './HomeAdmin';
 import {FiltersScreen} from '../Screens/Filters';
+import {RecycleBinScreen} from '../Screens/RecycleBin';
+
 
 const {Navigator, Screen, Group} = createNativeStackNavigator();
 
@@ -28,6 +31,10 @@ export const MainAdmin = ({route}) => {
         headerShown: false,
       }}>
       <Screen name={HOME_ADMIN_STACK_KEY} component={HomeAdmin} />
+      <Screen
+      name={RECYCLE_BIN_SCREEN_KEY}
+      component={RecycleBinScreen}
+    />
       <Screen name={PROFILE_SCREEN_KEY} component={ProfileScreen} />
       <Screen
         name={JOB_SCREEN_KEY}

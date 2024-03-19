@@ -42,10 +42,7 @@ export const useAddEditCheckist = ({docId, edit}) => {
 
   const {addFirebase} = useAddFirebase();
   const {updateFirebase} = useUpdateFirebase(CHECKLISTS);
-  const {recursiveDelete} = useRecursiveDelete({
-    path: `${CHECKLISTS}/${docId}/checks`,
-    collection: CHECKLISTS,
-  });
+  const {recursiveDelete} = useRecursiveDelete();
 
   const setAllChecks = useCallback(
     (checks) => {
@@ -75,7 +72,10 @@ export const useAddEditCheckist = ({docId, edit}) => {
       };
 
       await updateFirebase(docId, editCheckListForm);
-      await recursiveDelete();
+      await recursiveDelete({
+        path: `${CHECKLISTS}/${docId}/checks`,
+        collection: CHECKLISTS,
+      });
 
       const newChecks = Object.entries(checks)
         .filter(([key, value]) => value.check)

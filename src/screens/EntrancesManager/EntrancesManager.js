@@ -7,12 +7,13 @@ import {ListOfWorkers} from './components/ListOfWorkers';
 import {EntranceInfo} from './components/EntranceInfo';
 
 import {DateSelector} from './components/DateSelector';
+import { DEFAULT_IMAGE } from '../../constants/general';
 
 const DEFAULT_COORDINATES = [2.3969, 39.5743];
 
 Mapbox.setWellKnownTileServer('Mapbox');
 Mapbox.setAccessToken(
-  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHM0ZmF6b2IwN3lnMmlvMDVuNm50bjE1In0.g1n5Nv5WhPDU5YjmwrgoLQ',
+  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHNpdWttc3EyOWp6Mmhubzdqam1idmxoIn0.lVKFMEQKPXtJ8Fun3_JAgg',
 );
 
 const EntrancesManager = () => {
@@ -88,7 +89,7 @@ const EntrancesManager = () => {
                 ]}>
                 <View style={styles.customMarkerStyle}>
                   <Avatar
-                    uri={entrance.worker.profileImage.small}
+                    uri={entrance?.worker?.profileImage?.small || DEFAULT_IMAGE}
                     size="medium"
                   />
                 </View>

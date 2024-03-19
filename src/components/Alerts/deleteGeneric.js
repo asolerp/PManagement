@@ -3,7 +3,7 @@ import {Alert} from 'react-native';
 export const deleteGeneric = (action) =>
   Alert.alert(
     '🚨 Atención 🚨',
-    '¿Seguro que quieres continuar con el borrado? No se podrá recuperar',
+    '¿Seguro que quieres continuar con el borrado?',
     [
       {
         text: 'Cancelar',

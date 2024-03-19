@@ -171,6 +171,7 @@ export default {
   },
   profile: {
     edit: 'Edit',
+    aditionalEmail: 'Aditional email',
     personal_data: 'Personal data',
     title: 'Profile',
     phone: 'Phone',

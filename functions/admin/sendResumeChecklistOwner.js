@@ -1,18 +1,35 @@
 const {createTransporter} = require('../utils/email/config');
 
-const ADMIN_EMAIL = 'info@portmanagement.es';
+const ADMIN_EMAIL = 'recepcion@portmanagement.es';
 
 const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
   const {observations} = checklist;
   const {
     street,
     owner,
-    houseImage: {original},
+    houseImage: {original} = { original: null },
   } = checklist.house[0];
 
   const {lastName, gender, language} = owner;
 
   const arrayOfEmails = email.split(',');
+
+  const generateHouseImage = (original) => {
+    if (original) {
+      return `
+          <tr>
+            <td align="left" style="padding:40px 0 30px 0;">
+              <img src="${original}" alt="" height="300" style="display:block;border-radius: 10px; width: 100%; object-fit: cover;" />
+            </td>
+          </tr>
+      `
+    }
+    return `
+      <tr>
+        <td align="left" style="padding:20px 0 130px 0;"/>
+      </tr>
+    `
+  }
 
   const generateTitle = () => (gender === 'male' ? 'Mr' : 'Mrs');
 
@@ -104,11 +121,7 @@ const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
                   <img src="https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/other%2Fport.png?alt=media&token=41156ea7-76a2-4a28-8625-27f779433b78" alt="" width="120" style="background-color:white; padding: 0 10px; height:auto;position:absolute;left:50%;transform: translateX(-50%); z-index: 2;" />            
                 </td>
               </tr>
-              <tr>
-                <td align="left" style="padding:40px 0 30px 0;">
-                  <img src="${original}" alt="" height="300" style="display:block;border-radius: 10px; width: 100%; object-fit: cover;" />
-                </td>
-              </tr>
+              ${generateHouseImage(original)}
               <tr>
                   <td align="left" style="padding:10px 0 0px 0px;">
                     <h1 style="font-size:34px;margin:0 0 0px 0;font-family:Arial,sans-serif;">Your checklist is ready!</h1>

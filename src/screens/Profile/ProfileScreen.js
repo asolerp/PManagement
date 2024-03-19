@@ -306,6 +306,20 @@ const ProfileScreen = ({route}) => {
                 value={infoProfile?.email}
               />
 
+
+              <Text style={styles.inputLabel}>{t('profile.aditionalEmail') + ': '}</Text>
+
+              <TextInput
+                multiline
+                autoCapitalize='none'
+                style={[styles.multipleLineInput]}
+                placeholder={t('profile.aditionalEmail')}
+                onChangeText={(text) =>
+                  setInfoProfile({...infoProfile, aditionalEmail: text})
+                }
+                value={infoProfile?.aditionalEmail}
+              />
+
               <Text style={styles.inputLabel}>
                 {t('profile.gender') + ': '}
               </Text>

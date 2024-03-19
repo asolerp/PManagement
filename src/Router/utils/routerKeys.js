@@ -16,6 +16,7 @@ export const NEW_INCIDENCE_SCREEN_KEY = 'newIncidenceScreen';
 export const NEW_USER_SCREEN_KEY = 'newUserScreen';
 export const NEW_JOB_SCREEN_KEY = 'newJobScreen';
 export const CONFIRM_ENTRANCE_SCREEN_KEY = 'confirmEntranceScreen';
+export const RECYCLE_BIN_SCREEN_KEY = 'recycleBinScreen';
 export const NEW_JOB_TASK_SCREEN_KEY = 'newJobTaskScreen';
 export const NEW_JOB_TASK_SELECTOR_SCREEN_KEY = 'newJobTaskSelectorScreen';
 export const PROFILE_SCREEN_KEY = 'profileScreen';

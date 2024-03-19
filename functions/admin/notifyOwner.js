@@ -44,7 +44,7 @@ const notifyOwner = functions
 
       const owner = ownerRef.data();
 
-      sendResumeChecklistOwner({email: owner.email, checklist, checks});
+      sendResumeChecklistOwner({email: owner?.aditionalEmail ? `${owner.email},${owner.aditionalEmail}` : owner.email, checklist, checks});
     } catch (err) {
       console.log(err);
     }

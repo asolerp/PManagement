@@ -21,6 +21,7 @@ import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
 import {timeout} from '../../utils/timeout';
 import {deleteGeneric} from '../../components/Alerts/deleteGeneric';
+import useMoveToRecycleBien from '../../utils/useMoveToRecycleBin';
 
 const PageOptionsScreen = ({
   docId,
@@ -33,11 +34,8 @@ const PageOptionsScreen = ({
 }) => {
   const [isVisible, setIsVisible] = useState();
   const user = useSelector(userSelector);
-  const {recursiveDelete} = useRecursiveDelete({
-    path: `${collection}/${docId}`,
-    docId,
-    collection: collection,
-  });
+  const {recursiveDelete} = useRecursiveDelete();
+  const {moveToRecycleBin} = useMoveToRecycleBien()
 
   const handleDuplicate = async () => {
     if (collection === CHECKLISTS) {
@@ -73,7 +71,14 @@ const PageOptionsScreen = ({
             deleteGeneric(async () => {
               try {
                 popScreen();
-                await recursiveDelete();
+                if (collection === CHECKLISTS) {
+                  await moveToRecycleBin(docId);
+                }
+                await recursiveDelete({
+                  path: `${collection}/${docId}`,
+                  docId,
+                  collection: collection,
+                });
               } catch (err) {
                 console.log('ERROR', err);
               }

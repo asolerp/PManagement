@@ -98,9 +98,15 @@ const Container = () => {
                 </Text>
                 {item?.phone && <Badge text={item.phone} variant="pm" />}
               </View>
-              <View style={[theme.flexRow]}>
+              <View style={[theme.flexCol]}>
                 <Badge text={item.email} variant="purple" />
-                <View style={[theme.w3]} />
+                { item.aditionalEmail && (
+                  <>
+                  <View style={[theme.pB1]} />
+                  <Badge text={item.aditionalEmail} variant="warning" />
+                  </>
+                )
+                }
               </View>
             </View>
           </View>

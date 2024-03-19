@@ -16,7 +16,8 @@ import {FiltersContext} from '../../context/FiltersContext';
 import {ActionButtons} from '../../components/Dashboard/ActionButtons';
 import {ChecklistsTab} from '../../components/Dashboard/Tabs/ChecklistsTab';
 import {IncidencesTab} from '../../components/Dashboard/Tabs/IncidencesTab';
-import {JobsTab} from '../../components/Dashboard/Tabs/JobsTab';
+import AddButton from '../../components/Elements/AddButton';
+
 import {Colors} from '../../Theme/Variables';
 import {GlobalStats} from '../../components/Dashboard/GlobalStats';
 import {HousesFilter} from '../../components/Dashboard/HousesFilter';
@@ -26,6 +27,8 @@ import Orientation from 'react-native-orientation-locker';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import {useAnimatedContainer} from './hooks/useAnimatedContainer';
 import Animated from 'react-native-reanimated';
+import { RECYCLE_BIN_SCREEN_KEY } from '../../Router/utils/routerKeys';
+import { openScreenWithPush } from '../../Router/utils/actions';
 
 const DashboardScreen = ({navigation}) => {
   const [index, setIndex] = useState(0);
@@ -75,6 +78,11 @@ const DashboardScreen = ({navigation}) => {
         withTitle={false}
         withPadding={false}
         edges={['top']}>
+        <AddButton
+          containerStyle={[theme.left5]}
+          iconName="restore-from-trash"
+          onPress={() => openScreenWithPush(RECYCLE_BIN_SCREEN_KEY)}
+        />
         <ActionButtons />
         <View style={[[theme.flex1, theme.bgGray100]]}>
           <View style={[styles.profileBarContainerStyle]}>

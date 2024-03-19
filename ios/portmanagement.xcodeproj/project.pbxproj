@@ -239,7 +239,7 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = Y86MT47MC7;
 						LastSwiftMigration = 1120;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 					D30446652B6FACF2000FD6A1 = {
 						DevelopmentTeam = Y86MT47MC7;
@@ -306,7 +306,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n\n";
+			shellScript = "set -e\n\nexport NODE_BINARY=/Users/alberto/.nvm/versions/node/v18.19.0/bin/node\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n\n";
 		};
 		0582A39742174C1FC4654686 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -633,11 +633,9 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 202403020741;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Y86MT47MC7;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 202412020741;
+				DEVELOPMENT_TEAM = Y86MT47MC7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = portmanagement/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
@@ -652,7 +650,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.port.management;
 				PRODUCT_NAME = portmanagement;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.port.management";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -672,11 +669,9 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 202403020741;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Y86MT47MC7;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 202412020741;
+				DEVELOPMENT_TEAM = Y86MT47MC7;
 				INFOPLIST_FILE = portmanagement/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -690,7 +685,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.port.management;
 				PRODUCT_NAME = portmanagement;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.port.management";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -840,7 +834,7 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202309120734;
+				CURRENT_PROJECT_VERSION = 202402121455;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "PortManagement Development-Info.plist";
@@ -876,7 +870,7 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202309120734;
+				CURRENT_PROJECT_VERSION = 202402121455;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				INFOPLIST_FILE = "PortManagement Development-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";

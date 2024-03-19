@@ -1,15 +1,13 @@
 import {useContext, useState} from 'react';
 
-import {popScreen} from '../Router/utils/actions';
-
 import {firebase} from '@react-native-firebase/firestore';
 import {error} from '../lib/logging';
 import {LoadingModalContext} from '../context/loadinModalContext';
 
-const useRecursiveDelete = ({path, collection, docId, backScreen}) => {
+const useRecursiveDelete = () => {
   const [loading, setLoading] = useState(false);
   const {setVisible} = useContext(LoadingModalContext);
-  const recursiveDelete = async () => {
+  const recursiveDelete = async ({path, collection, docId}) => {
     const deleteFn = firebase.functions().httpsCallable('recursiveDelete');
     try {
       setLoading(true);

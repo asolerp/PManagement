@@ -102,13 +102,11 @@ const DashboardWorkerScreen = () => {
             {entrance && (
               <View
                 style={[
-                  theme.h28,
                   theme.flexRow,
                   theme.itemsCenter,
                   theme.justifyBetween,
-                  theme.flexWrap,
                   theme.bgWhite,
-                  theme.mX4,
+                  theme.mX3,
                   theme.mB2,
                   theme.p4,
                   theme.shadowXl,

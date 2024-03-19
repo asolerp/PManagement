@@ -14,7 +14,6 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@react-native-community/geolocation": "^3.1.0",
     "cloudinary": "^1.25.1",
     "dotenv": "^16.0.1",
     "firebase": "^8.6.8",
@@ -22,8 +21,7 @@
     "firebase-functions": "^3.18.0",
     "firebase-tools": "^10.2.0",
     "googleapis": "^104.0.0",
-    "nodemailer": "^6.7.2",
-    "react-native-animated-nav-tab-bar": "^3.0.5"
+    "nodemailer": "^6.7.2"
   },
   "devDependencies": {
     "eslint": "^5.12.0",

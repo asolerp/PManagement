@@ -7,6 +7,7 @@ const cloudinary = require('cloudinary').v2;
 const {createNewUser} = require('./admin/createNewUser');
 const {notifyOwner} = require('./admin/notifyOwner');
 const {deleteUser} = require('./admin/deleteUser');
+const { moveToRecycleBinWithSubcollection } = require('./admin/moveToRecycleBinWithSubcollection');
 
 // Cloudinary
 
@@ -33,6 +34,7 @@ const {
 } = require('./notifications/jobs');
 
 const {createJobsForQuadrant} = require('./admin/createJobsForQuadrant');
+const { restoreDocumentWithSubcollection } = require('./admin/restoreDocumentWithSubcollection');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -52,6 +54,8 @@ exports.uploadProfilePhoto = uploadProfilePhoto;
 exports.createNewUser = createNewUser;
 exports.notifyOwner = notifyOwner;
 exports.deleteUser = deleteUser;
+exports.moveToRecycleBinWithSubcollection = moveToRecycleBinWithSubcollection;
+exports.restoreDocumentWithSubcollection = restoreDocumentWithSubcollection;
 
 // CHECKLISTS
 
