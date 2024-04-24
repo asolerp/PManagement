@@ -4,11 +4,11 @@ import {usePhotos} from '../utils/usePhotos';
 import {error as errorLog} from '../lib/logging';
 import firestore from '@react-native-firebase/firestore';
 import {parseImages} from '../components/Incidence/utils/parserImages';
-import {CHECKLISTS, ENTRANCES, INCIDENCES, USERS} from '../utils/firebaseKeys';
+import {CHECKLISTS, ENTRANCES, HOUSES, INCIDENCES, USERS} from '../utils/firebaseKeys';
 
 const useUploadImageCheck = (collection) => {
   const [idCheckLoading, setIdCheckLoading] = useState();
-  const {uploadPhotos, updatePhotoProfile, loading} = usePhotos();
+  const {uploadPhotos, updatePhotoProfile, updateHousePhoto, loading} = usePhotos();
 
   const uploadImages = async (imgs, item, docId, callback) => {
     try {
@@ -39,6 +39,14 @@ const useUploadImageCheck = (collection) => {
           await updatePhotoProfile(mappedImages[0], {
             collectionRef: firestore().collection(collection).doc(docId),
             folder: `/${USERS}/${docId}/Photos`,
+            docId: docId,
+          });
+        }
+        if (collection === HOUSES) {
+          const mappedImages = parseImages(imgs);
+          await updateHousePhoto(mappedImages[0], {
+            collectionRef: firestore().collection(collection).doc(docId),
+            folder: `/${HOUSES}/${docId}/houseImage`,
             docId: docId,
           });
         }

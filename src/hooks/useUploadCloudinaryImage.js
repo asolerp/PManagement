@@ -13,8 +13,6 @@ export const useUploadCloudinaryImage = () => {
       name: photo.fileName,
     };
 
-    console.log('SOURCE', source);
-
     const data = new FormData();
     data.append('file', source);
     data.append('upload_preset', 'port_management');
@@ -27,7 +25,6 @@ export const useUploadCloudinaryImage = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log('DATA', data);
         setLoading(false);
         return data.secure_url;
       })

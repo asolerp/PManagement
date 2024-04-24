@@ -5,7 +5,7 @@ import storage from '@react-native-firebase/storage';
 
 import {error as errorLog} from '../lib/logging';
 
-const uploadImageToFirebase = async (asset) => {
+const uploadImageFromFirebase = async (asset) => {
   const {uri, storageFolder, fileName} = asset;
 
   // Create a reference to the location you want to upload to in firebase
@@ -70,7 +70,7 @@ export const usePhotos = () => {
 
       const promises = imgs.map(
         async (file) =>
-          await uploadImageToFirebase({
+          await uploadImageFromFirebase({
             uri: file.fileUri,
             storageFolder: folder,
             fileName: file.fileName,
@@ -97,12 +97,40 @@ export const usePhotos = () => {
     }
   };
 
+  const updateHousePhoto = async (img, fbRoute) => {
+
+    const {collectionRef, folder} = fbRoute;
+    try {
+      setLoading(true);
+
+      const imageURL = await uploadImageFromFirebase({
+        uri: img.fileUri,
+        storageFolder: folder,
+        fileName: img.fileName,
+      });
+
+      collectionRef.update({
+        ['houseImage.original']: imageURL,
+        ['houseImage.small']: imageURL,
+      });
+    } catch (err) {
+      errorLog({
+        message: err.message,
+        track: true,
+        asToast: true,
+      });
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const updatePhotoProfile = async (img, fbRoute) => {
     const {collectionRef, folder} = fbRoute;
     try {
       setLoading(true);
 
-      const imageURL = await uploadImageToFirebase({
+      const imageURL = await uploadImageFromFirebase({
         uri: img.fileUri,
         storageFolder: folder,
         fileName: img.fileName,
@@ -129,6 +157,7 @@ export const usePhotos = () => {
     loading,
     removePhotos,
     uploadPhotos,
+    updateHousePhoto,
     updatePhotoProfile,
   };
 };

@@ -62,8 +62,6 @@ export const useGetHouseById = (userId) => {
     getOwnerDashboardData();
   }, []);
 
-  console.log('CHECKLIST', checksFromChecklist);
-
   return {
     house,
     loading,

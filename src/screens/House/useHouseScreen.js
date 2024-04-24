@@ -12,6 +12,8 @@ import {useTheme} from '../../Theme';
 import {LoadingModalContext} from '../../context/loadinModalContext';
 import {firebase} from '@react-native-firebase/firestore';
 import {useDocumentData} from 'react-firebase-hooks/firestore';
+import useUploadImageCheck from '../../hooks/useUploadImage';
+import { HOUSES } from '../../utils/firebaseKeys';
 
 export const useHouseScreen = ({route}) => {
   const {Gutters} = useTheme();
@@ -29,9 +31,7 @@ export const useHouseScreen = ({route}) => {
   // Modal State
   const [modalVisible, setModalVisible] = useState(false);
   const {onImagePress} = useCameraOrLibrary();
-  const uploadHousePhoto = firebase
-    .functions()
-    .httpsCallable('uploadHousePhoto');
+  const {uploadImages} = useUploadImageCheck(HOUSES);
 
   const handlePressImage = (type) => {
     onImagePress({
@@ -59,10 +59,7 @@ export const useHouseScreen = ({route}) => {
         });
       }
       if (newImage) {
-        await uploadHousePhoto({
-          houseId,
-          imageBase64: newImage[0],
-        });
+        uploadImages(newImage, null, houseId)
       }
     } catch (err) {
       error({
@@ -90,6 +87,7 @@ export const useHouseScreen = ({route}) => {
     newImage,
     infoHouse,
     handleEdit,
+    setNewImage,
     setInfoHouse,
     modalVisible,
     setModalVisible,

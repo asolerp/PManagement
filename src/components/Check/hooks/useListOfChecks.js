@@ -39,7 +39,6 @@ export const useListOfChecks = ({list, checkId, isCheckFinished}) => {
   };
 
   const handleCheckAll = async () => {
-    console.log('hola');
     const batch = firestore().batch();
     try {
       list.forEach((check) => {

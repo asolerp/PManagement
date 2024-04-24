@@ -34,8 +34,6 @@ export const useGetGlobalStats = ({uid}) => {
     idField: 'id',
   });
 
-  console.log("CHECKS", checks)
-
   return {
     checks: checks?.length,
     incidences: incidences?.length,

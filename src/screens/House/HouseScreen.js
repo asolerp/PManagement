@@ -35,6 +35,7 @@ const HouseScreen = ({route}) => {
     newImage,
     infoHouse,
     handleEdit,
+    setNewImage,
     setInfoHouse,
     modalVisible,
     setModalVisible,

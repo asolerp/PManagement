@@ -47,7 +47,6 @@ export const useQuadrant = () => {
 
       setQuadrantId(quadrant.id);
 
-      console.log('[[QUADRANT]]', quadrant);
       const responseJobs = await firestore()
         .collection('quadrants')
         .doc(quadrant.id)
@@ -58,7 +57,6 @@ export const useQuadrant = () => {
         ...doc.data(),
       }));
       const groupedJobsById = groupBy(jobs, 'houseId');
-      console.log('GROUPED', groupedJobsById);
       setJobs(groupedJobsById);
     } catch (err) {
       console.log(err);

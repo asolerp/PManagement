@@ -75,7 +75,6 @@ const DashboardWorkerScreen = () => {
   };
 
   if (entrance) {
-    console.log('entrance', entrance);
   }
 
   return (

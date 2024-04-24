@@ -9,7 +9,6 @@ import Avatar from './Avatar';
 import theme from '../Theme/Theme';
 
 const ItemList = ({item, schema, handleChange, active}) => {
-  console.log(schema, item);
   return (
     <TouchableOpacity
       style={styles.container}

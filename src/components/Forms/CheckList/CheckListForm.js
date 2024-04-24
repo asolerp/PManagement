@@ -260,7 +260,6 @@ const CheckListForm = ({edit, docId}) => {
         }}
       />
       <Spacer space={4} />
-      {console.log('HOUSE', house)}
       <CustomInput
         title={t('common.house')}
         subtitle={
@@ -284,7 +283,6 @@ const CheckListForm = ({edit, docId}) => {
         }}
       />
       <Spacer space={4} />
-      {console.log('WORKERS', workers)}
       <CustomInput
         title={t('common.worker')}
         subtitle={

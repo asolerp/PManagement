@@ -10,9 +10,7 @@ import DateSelector from './Jobs/DateSelector';
 export const DateSelectorModal = ({date, setter}) => {
   const [visible, setIsVisible] = useState();
   const {t} = useTranslation();
-
-  console.log('[[DATE]]', date);
-
+  
   return (
     <>
       <BottomModal

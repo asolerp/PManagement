@@ -2,7 +2,6 @@ import {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 
 export const useGetOwnerHouse = ({userId}) => {
-  console.log('USERID', userId);
   const [house, setHouse] = useState({});
   useEffect(() => {
     if (userId) {

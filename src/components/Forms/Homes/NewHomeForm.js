@@ -26,6 +26,8 @@ import {useCameraOrLibrary} from '../../../hooks/useCamerOrLibrary';
 import {imageActions} from '../../../utils/imageActions';
 import {TextInputController} from '../TextInputController';
 import theme from '../../../Theme/Theme';
+import useUploadImageCheck from '../../../hooks/useUploadImage';
+import { HOUSES } from '../../../utils/firebaseKeys';
 
 const LIBRARY_ACTION = 'library';
 
@@ -33,6 +35,7 @@ const NewFormHome = () => {
   const navigation = useNavigation();
 
   const [owner, setOwner] = useState([]);
+  const {uploadImages} = useUploadImageCheck(HOUSES);
 
   const [modalVisible, setModalVisible] = useState(false);
   const {setVisible} = useContext(LoadingModalContext);
@@ -73,7 +76,8 @@ const NewFormHome = () => {
     setLoading(true);
     setVisible(true);
     try {
-      await newHouse({...data, owner: owner[0]}, houseImage?.[0]);
+      const houseId = await newHouse({...data, owner: owner[0]});
+      await uploadImages(houseImage, null, houseId);
       reset();
       setHouseImage(null);
     } catch (err) {

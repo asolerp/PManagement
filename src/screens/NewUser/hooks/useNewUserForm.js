@@ -55,7 +55,6 @@ export const useNewUserForm = (docId) => {
   };
 
   const editUser = async ({userId, form}) => {
-    console.log(form);
     try {
       setVisible(true);
       setLoading(true);
