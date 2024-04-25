@@ -58,24 +58,6 @@ export const GlobalStats = ({onPressStat, uid}) => {
         </Text>
         <Text style={[styles.statItemTextStyle]}>Incidencias</Text>
       </Pressable>
-      <Pressable
-        onPress={() => onPressStat(2)}
-        style={[
-          styles.statItemContainerStyle,
-          Layout.justifyContentCenter,
-          Layout.alignItemsCenter,
-        ]}>
-        <Text
-          style={[
-            Fonts.textMd2,
-            Fonts.textBold,
-            Gutters.tinyBMargin,
-            {color: Colors.black},
-          ]}>
-          {jobs}
-        </Text>
-        <Text style={[styles.statItemTextStyle]}>Trabajos</Text>
-      </Pressable>
     </View>
   );
 };

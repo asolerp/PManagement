@@ -28,13 +28,6 @@ export const ActionButtons = () => {
         onPress={() => openScreenWithPush(NEW_INCIDENCE_SCREEN_KEY)}>
         <Icon name="warning" color={Colors.white} size={20} />
       </ActionButton.Item>
-      {user.role === 'admin' && (
-        <ActionButton.Item
-          buttonColor={Colors.pm}
-          onPress={() => openScreenWithPush(NEW_JOB_STACK_KEY)}>
-          <Icon name="construction" color={Colors.white} size={20} />
-        </ActionButton.Item>
-      )}
     </ActionButton>
   );
 };

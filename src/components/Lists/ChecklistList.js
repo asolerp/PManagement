@@ -8,7 +8,7 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Utils
 import CheckItem from './CheckItem';
-
+import { useQuery } from '@tanstack/react-query';
 import {useTheme} from '../../Theme';
 import theme from '../../Theme/Theme';
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
@@ -18,71 +18,34 @@ import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';
 import {useFilters} from './hooks/useFilters';
 import {Colors} from '../../Theme/Variables';
+import { fetchChecklistsFinished, fetchChecklistsNotFinished } from '../../Services/firebase/checklistServices';
+import { set } from 'date-fns';
 
-const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
+const ChecklistList = ({uid, house, houses, workers}) => {
+
   const {Gutters} = useTheme();
   const {t} = useTranslation();
   const [limit, setLimit] = useState(5);
   const [data, setData] = useState([]);
 
-  let firestoreQuery;
-  let firestoreQueryNotFinished;
+  const { data: checklistsNotFinished, isLoading: isLoadingNotFinished } = useQuery({queryKey: ['checklistsNotFinished', uid, house, limit || 5, houses], queryFn: fetchChecklistsNotFinished})
+  const { data: checklistsFinished, isLoading: isLoadingFinished } = useQuery({queryKey: ['checklistsFinished', null, limit, houses], queryFn: fetchChecklistsFinished})
 
-  if (house?.id) {
-    firestoreQuery = firestore()
-      .collection('checklists')
-      .where('finished', '==', false)
-      .where('houseId', '==', house?.id)
-      .limit(limit);
-  }
-
-  if (uid) {
-    firestoreQuery = firestore()
-      .collection('checklists')
-      .where('finished', '==', false)
-      .where('workersId', 'array-contains', uid)
-      .limit(limit);
-  }
-
-  if (time) {
-    firestoreQueryNotFinished = firestore()
-      .collection('checklists')
-      .where('finished', '==', false)
-      .where('date', '>', new Date(time.start))
-      .where('date', '<', new Date(time.end));
-
-    firestoreQuery = firestore()
-      .collection('checklists')
-      .where('finished', '==', true);
-  }
-
-  const [valuesNotFinished, loadingNotFinished] = useCollectionData(
-    firestoreQueryNotFinished,
-    {
-      idField: 'id',
-    },
-  );
-
-  const [values, loading] = useCollectionData(firestoreQuery, {
-    idField: 'id',
-  });
-
-  const filters = {
-    houses,
-    workers,
-  };
-
-  const {filteredList} = useFilters({list: data, filters});
 
   useEffect(() => {
-    if (values || valuesNotFinished) {
+    if (checklistsFinished || checklistsNotFinished) {
+
       let result =
         houses && houses?.length > 0
-          ? [...(valuesNotFinished || []), ...(values || [])]
-          : [...(valuesNotFinished || [])];
+          ? [...(checklistsNotFinished || []), ...(checklistsFinished || [])]
+          : [...(checklistsNotFinished || [])];
       setData(result);
     }
-  }, [values, valuesNotFinished, houses]);
+  }, [checklistsFinished, checklistsNotFinished, houses]);
+
+  useEffect(() => {
+    setLimit(5);
+  }, [houses]);
 
   const handleShowMore = () => {
     setLimit((prevLimit) => prevLimit + 5);
@@ -107,7 +70,7 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
 
   return (
     <View style={[theme.flexGrow]}>
-      {loading || (loadingNotFinished && <DashboardSectionSkeleton />)}
+      {(isLoadingFinished || isLoadingNotFinished) ? <DashboardSectionSkeleton /> : (
       <FlatList
         scrollEnabled={true}
         ListEmptyComponent={
@@ -127,12 +90,12 @@ const ChecklistList = ({uid, house, houses, workers, time, scrollEnabled}) => {
           </TouchableOpacity>
         }
         contentInset={{bottom: 150}}
-        data={filteredList && sortByFinished(filteredList)}
+        data={data && sortByFinished(data)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         style={[theme.mT3]}
         contentContainerStyle={{paddingBottom: 50}}
-      />
+      /> )}
     </View>
   );
 };

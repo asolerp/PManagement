@@ -9,14 +9,14 @@ import {Colors} from '../../Theme/Variables';
 import FastImage from 'react-native-fast-image';
 import {HousesSkeleton} from './HousesSkeleton';
 import {DEFAULT_IMAGE} from '../../constants/general';
+import { useQuery } from '@tanstack/react-query';
+import { fetchHouses } from '../../Services/firebase/houseServices';
+
 
 export const HousesFilter = ({houses, onClickHouse}) => {
-  const [values, loading] = useCollectionData(
-    firestore().collection('houses'),
-    {
-      idField: 'id',
-    },
-  );
+
+ 
+  const { data, isLoading } = useQuery({queryKey: ['houses'], queryFn: fetchHouses})
   const {Gutters} = useTheme();
 
   const isInArray = (id) => {
@@ -69,13 +69,13 @@ export const HousesFilter = ({houses, onClickHouse}) => {
 
   return (
     <View style={[theme.mT2]}>
-      {loading ? (
+      {isLoading ? (
         <HousesSkeleton />
       ) : (
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={values}
+          data={data}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={[theme.pX4]}

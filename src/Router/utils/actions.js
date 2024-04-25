@@ -39,10 +39,10 @@ export const resetNavigator = (screenId) => {
 };
 
 export const onNavigatorReady = () =>
-  (routeName.current = navigation?.current?.getCurrentRoute().name);
+  (routeName.current = navigation?.current?.getCurrentRoute()?.name);
 
 export const onNavigatorStateChange = () => {
-  const currentRouteName = navigation?.current?.getCurrentRoute().name;
+  const currentRouteName = navigation?.current?.getCurrentRoute()?.name;
 
   routeName.current = currentRouteName;
 };

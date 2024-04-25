@@ -11,6 +11,7 @@ import ErrorBoundary from 'react-native-error-boundary';
 import {Provider} from 'react-redux';
 import store from './Store';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import * as RNLocalize from 'react-native-localize';
 import './Translations';
@@ -31,6 +32,7 @@ const CustomFallback = (props) => (
 );
 
 const App = () => {
+
   useNotification();
   const {locale} = useLocales();
 
@@ -57,21 +59,34 @@ const App = () => {
     i18n.changeLanguage(languages[RNLocalize.getCountry()]);
   }, []);
 
+  // Crear una instancia de QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: true, // Deshabilita el refetch automático cuando la ventana gana foco
+      staleTime: 5 * 60 * 1000, // Tiempo en milisegundos que una consulta se considerará "fresca"
+      cacheTime: 10 * 60 * 1000, // Tiempo en milisegundos que una consulta inactiva se mantendrá en caché
+    }
+  }
+});
+
   return (
-    <SafeAreaProvider>
-      <ErrorBoundary FallbackComponent={CustomFallback}>
-        <MenuProvider>
-          <LoadinModalProvider>
-            <Provider store={store}>
-              <GestureHandlerRootView style={[theme.flex1]}>
-                <AuthRouter />
-              </GestureHandlerRootView>
-              <Toast ref={(ref) => Toast.setRef(ref)} />
-            </Provider>
-          </LoadinModalProvider>
-        </MenuProvider>
-      </ErrorBoundary>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <ErrorBoundary FallbackComponent={CustomFallback}>
+          <MenuProvider>
+            <LoadinModalProvider>
+              <Provider store={store}>
+                <GestureHandlerRootView style={[theme.flex1]}>
+                  <AuthRouter />
+                </GestureHandlerRootView>
+                <Toast ref={(ref) => Toast.setRef(ref)} />
+              </Provider>
+            </LoadinModalProvider>
+          </MenuProvider>
+        </ErrorBoundary>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 };
 

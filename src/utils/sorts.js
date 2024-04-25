@@ -15,8 +15,11 @@ export const sortByDone = (list) => {
 };
 
 export const sortByFinished = (list) => {
+
   const notFinishedList = list?.filter((el) => !el.finished);
   const finishedList = list?.filter((el) => el.finished);
+
+
   return [
     ...notFinishedList.sort(sortByDate),
     ...finishedList.sort((a, b) => sortByDate(a, b, 'desc')),
