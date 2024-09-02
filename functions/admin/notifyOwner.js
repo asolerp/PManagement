@@ -2,9 +2,11 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
 const {sendResumeChecklistOwner} = require('./sendResumeChecklistOwner');
+const { REGION } = require('../utils');
 
 const notifyOwner = functions
-  .runWith({
+.region(REGION)  
+.runWith({
     timeoutSeconds: 540,
     memory: '2GB',
   })

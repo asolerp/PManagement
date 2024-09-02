@@ -1,14 +1,21 @@
-import {useState} from 'react';
-import {usePhotos} from '../utils/usePhotos';
+import { useState } from 'react';
+import { usePhotos } from '../utils/usePhotos';
 
-import {error as errorLog} from '../lib/logging';
+import { error as errorLog } from '../lib/logging';
 import firestore from '@react-native-firebase/firestore';
-import {parseImages} from '../components/Incidence/utils/parserImages';
-import {CHECKLISTS, ENTRANCES, HOUSES, INCIDENCES, USERS} from '../utils/firebaseKeys';
+import { parseImages } from '../components/Incidence/utils/parserImages';
+import {
+  CHECKLISTS,
+  ENTRANCES,
+  HOUSES,
+  INCIDENCES,
+  USERS
+} from '../utils/firebaseKeys';
 
-const useUploadImageCheck = (collection) => {
+const useUploadImageCheck = collection => {
   const [idCheckLoading, setIdCheckLoading] = useState();
-  const {uploadPhotos, updatePhotoProfile, updateHousePhoto, loading} = usePhotos();
+  const { uploadPhotos, updatePhotoProfile, updateHousePhoto, loading } =
+    usePhotos();
 
   const uploadImages = async (imgs, item, docId, callback) => {
     try {
@@ -23,7 +30,7 @@ const useUploadImageCheck = (collection) => {
               .collection('checks')
               .doc(item.id),
             folder: `/${CHECKLISTS}/${docId}/Check/${item.id}/Photos`,
-            docId: docId,
+            docId: docId
           });
         }
         if (collection === 'incidences') {
@@ -31,7 +38,7 @@ const useUploadImageCheck = (collection) => {
           await uploadPhotos(mappedImages, {
             collectionRef: firestore().collection(collection).doc(docId),
             folder: `/${INCIDENCES}/${docId}/Photos`,
-            docId: docId,
+            docId: docId
           });
         }
         if (collection === 'users') {
@@ -39,7 +46,7 @@ const useUploadImageCheck = (collection) => {
           await updatePhotoProfile(mappedImages[0], {
             collectionRef: firestore().collection(collection).doc(docId),
             folder: `/${USERS}/${docId}/Photos`,
-            docId: docId,
+            docId: docId
           });
         }
         if (collection === HOUSES) {
@@ -47,7 +54,7 @@ const useUploadImageCheck = (collection) => {
           await updateHousePhoto(mappedImages[0], {
             collectionRef: firestore().collection(collection).doc(docId),
             folder: `/${HOUSES}/${docId}/houseImage`,
-            docId: docId,
+            docId: docId
           });
         }
         if (collection === 'entrances') {
@@ -55,7 +62,7 @@ const useUploadImageCheck = (collection) => {
           await uploadPhotos(mappedImages, {
             collectionRef: firestore().collection(collection).doc(docId),
             folder: `/${ENTRANCES}/${docId}/Photos`,
-            docId: docId,
+            docId: docId
           });
         }
       }
@@ -63,7 +70,7 @@ const useUploadImageCheck = (collection) => {
       errorLog({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
     } finally {
       callback && callback();
@@ -74,7 +81,7 @@ const useUploadImageCheck = (collection) => {
   return {
     loading,
     idCheckLoading,
-    uploadImages,
+    uploadImages
   };
 };
 

@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { REGION } = require('../utils');
 
-const deleteUser = functions.firestore
+const deleteUser = functions.region(REGION).firestore
   .document('users/{userId}')
   .onDelete(async (snap, context) => {
     const deletedUser = snap.data();

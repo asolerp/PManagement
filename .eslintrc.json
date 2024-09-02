@@ -10,6 +10,7 @@
     "es6": true,
     "node": true
   },
+
   "extends": [
     "eslint:recommended",
     "plugin:jest/recommended",
@@ -23,30 +24,29 @@
     "react-native",
     "prettier"
   ],
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2020,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    }
+  },
   "rules": {
     "react/display-name": "off",
     // Base
     "consistent-return": "off",
     //TODO: turn it on and fix errors
     "no-redeclare": "off",
-    // Import Sort
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "off",
-    // Immutable
-    "immutable/no-let": "error",
-    "immutable/no-this": "error",
-    "immutable/no-mutation": "error",
+    // Immutable 
     // React Native
     "react-native/no-raw-text": "off",
     "react-native/no-inline-styles": "off",
+    "react-native/no-unused-styles": "off",
+    "react-native/no-color-literals": "off",
     // React
     "react/prop-types": "off",
     // Typescript
-    "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/no-var-requires": "off",
-    "@typescript-eslint/no-empty-function": "off",
     // Jest
     "jest/no-mocks-import": "off"
   }

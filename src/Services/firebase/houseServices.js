@@ -19,6 +19,24 @@ const fetchHouses = async () => {
   }
 };
 
+const fetchHouse = async (houseId) => {
+  try {
+    const doc = await firestore()
+      .collection('houses')
+      .doc(houseId)
+      .get();
+
+    return {
+      id: doc.id,
+      ...doc.data(),
+    };
+  } catch (error) {
+    console.error("Error fetching house: ", error);
+    throw error; // o manejar el error como prefieras
+  }
+}
+
 export {
-    fetchHouses
+    fetchHouses,
+    fetchHouse
 }

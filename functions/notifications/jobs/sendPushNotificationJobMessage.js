@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken} = require('../../utils');
+const {removeUserActionToken, REGION} = require('../../utils');
 
-const sendPushNotificationJobMessage = functions.firestore
+const sendPushNotificationJobMessage = functions.region(REGION).firestore
   .document('jobs/{jobId}/messages/{messageId}')
   .onCreate(async (snap, context) => {
     const message = snap.data();

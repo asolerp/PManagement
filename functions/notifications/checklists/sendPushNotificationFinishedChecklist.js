@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { REGION } = require('../../utils');
 
-const sendPushNotificationNewChecklistMessage = functions.firestore
+const sendPushNotificationNewChecklistMessage = functions.region(REGION).firestore
   .document('checklists/{checklistId}')
   .onUpdate(async (change, context) => {
     const checklist = change.after.data();

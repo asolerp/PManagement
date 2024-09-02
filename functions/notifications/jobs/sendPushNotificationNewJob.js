@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { REGION } = require('../../utils');
 
-const sendPushNotificationNewJob = functions.firestore
+const sendPushNotificationNewJob = functions.region(REGION).firestore
   .document('jobs/{jobId}')
   .onCreate(async (snap, context) => {
     try {

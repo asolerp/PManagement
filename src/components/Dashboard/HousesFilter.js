@@ -11,12 +11,13 @@ import {HousesSkeleton} from './HousesSkeleton';
 import {DEFAULT_IMAGE} from '../../constants/general';
 import { useQuery } from '@tanstack/react-query';
 import { fetchHouses } from '../../Services/firebase/houseServices';
+import { HOUSES } from '../../utils/firebaseKeys';
 
 
 export const HousesFilter = ({houses, onClickHouse}) => {
 
  
-  const { data, isLoading } = useQuery({queryKey: ['houses'], queryFn: fetchHouses})
+  const { data, isLoading } = useQuery({queryKey: [HOUSES], queryFn: fetchHouses})
   const {Gutters} = useTheme();
 
   const isInArray = (id) => {

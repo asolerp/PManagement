@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken} = require('../../utils');
+const {removeUserActionToken, REGION} = require('../../utils');
 
-const sendPushNotificationUpdateCheckList = functions.firestore
+const sendPushNotificationUpdateCheckList = functions.region(REGION).firestore
   .document('checklists/{checklistId}/checks/{checkId}')
   .onUpdate(async (change, context) => {
     let workers;

@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
 });
 
 const ItemCheck = ({check, checklistId, disabled, isCheckFinished}) => {
+  
   const {Layout, Gutters} = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
   const {updateFirebase} = useUpdateFirebase(CHECKLISTS);

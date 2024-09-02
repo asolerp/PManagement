@@ -46,6 +46,8 @@ import FastImage from 'react-native-fast-image';
 import theme from '../../Theme/Theme';
 import {DEFAULT_IMAGE} from '../../constants/general';
 import PhotoCameraModal from '../../components/Modals/PhotoCameraModal';
+import { useQuery } from '@tanstack/react-query';
+import { fetchUser } from '../../Services/firebase/userServices';
 
 const styles = StyleSheet.create({
   multipleLineInput: {
@@ -109,12 +111,18 @@ const styles = StyleSheet.create({
 });
 
 const ProfileScreen = ({route}) => {
+
   const {user, mode} = route.params;
 
   const [isPickerVisibleRole, setIsPickerVisibleRole] = useState(false);
   const [isPickerVisibleGender, setIsPickerVisibleGender] = useState(false);
   const [isPickerVisibleLanguage, setIsPickerVisibleLanguage] = useState(false);
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
+
+  const currentUser = useSelector(userSelector);
+
+
+  const { data } = useQuery({ queryKey: ['users', currentUser.id], queryFn: () => fetchUser(currentUser.id), enabled: !user })  
 
   const {
     changePassword,
@@ -128,7 +136,6 @@ const ProfileScreen = ({route}) => {
 
   const {Layout, Gutters} = useTheme();
 
-  const currentUser = useSelector(userSelector);
   const {t} = useTranslation();
 
   const logOut = async () => {
@@ -144,20 +151,12 @@ const ProfileScreen = ({route}) => {
   };
 
   useEffect(() => {
-    const getCurrentUserData = async () => {
-      const userQuery = await firestore()
-        .collection('users')
-        .doc(currentUser.id)
-        .get();
-      const userResponse = {id: userQuery.id, ...userQuery.data()};
-      setInfoProfile(userResponse);
-    };
     if (user) {
       setInfoProfile(user);
     } else {
-      getCurrentUserData();
+      setInfoProfile(data);
     }
-  }, [user, setInfoProfile, currentUser.id]);
+  }, [user, data, setInfoProfile, currentUser.id]);
 
   return (
     <>

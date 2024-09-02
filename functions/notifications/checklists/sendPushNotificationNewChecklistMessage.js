@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken} = require('../../utils');
+const {removeUserActionToken, REGION} = require('../../utils');
 
-const sendPushNotificationNewChecklistMessage = functions.firestore
+const sendPushNotificationNewChecklistMessage = functions.region(REGION).firestore
   .document('checklists/{checklistId}/messages/{messageId}')
   .onCreate(async (snap, context) => {
     const message = snap.data();

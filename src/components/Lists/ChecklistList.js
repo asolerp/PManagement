@@ -2,9 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {Text, Pressable, View, TouchableOpacity} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 
-//Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
 
 // Utils
 import CheckItem from './CheckItem';
@@ -16,12 +13,10 @@ import {sortByFinished} from '../../utils/sorts';
 import {openScreenWithPush} from '../../Router/utils/actions';
 import {CHECK_SCREEN_KEY, CHECK_STACK_KEY} from '../../Router/utils/routerKeys';
 import {useTranslation} from 'react-i18next';
-import {useFilters} from './hooks/useFilters';
 import {Colors} from '../../Theme/Variables';
 import { fetchChecklistsFinished, fetchChecklistsNotFinished } from '../../Services/firebase/checklistServices';
-import { set } from 'date-fns';
 
-const ChecklistList = ({uid, house, houses, workers}) => {
+const ChecklistList = ({uid, house, houses}) => {
 
   const {Gutters} = useTheme();
   const {t} = useTranslation();

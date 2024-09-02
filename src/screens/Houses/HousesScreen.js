@@ -18,17 +18,18 @@ import {
 } from '../../Router/utils/routerKeys';
 import {useTheme} from '../../Theme';
 import theme from '../../Theme/Theme';
+import { useQuery } from '@tanstack/react-query';
+import { HOUSES } from '../../utils/firebaseKeys';
+import { fetchHouses } from '../../Services/firebase/houseServices';
 
-const HOUSES_QUERY = firestore()
-  .collection('houses')
-  .orderBy('houseName', 'asc');
 
 const HousesScreen = () => {
   const {t} = useTranslation();
-  const [houses] = useCollectionData(HOUSES_QUERY, {
-    idField: 'id',
-  });
+
+  const { data: houses} = useQuery({queryKey: [HOUSES], queryFn: fetchHouses})
   const {Layout} = useTheme();
+
+  console.log("[[HOUSES]]", houses)
 
   const handleNewHome = () => {
     openScreenWithPush(NEW_HOUSE_SCREEN_KEY);

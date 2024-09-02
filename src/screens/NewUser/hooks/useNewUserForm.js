@@ -1,21 +1,21 @@
-import {useContext, useEffect, useState} from 'react';
-import {LoadingModalContext} from '../../../context/loadinModalContext';
-import {getUser} from '../../../firebase/getUser';
-import {firebase} from '@react-native-firebase/firestore';
+import { useContext, useEffect, useState } from 'react';
+import { LoadingModalContext } from '../../../context/loadinModalContext';
+import { getUser } from '../../../firebase/getUser';
+import { firebase } from '@react-native-firebase/firestore';
 
-import {useUpdateFirebase} from '../../../hooks/useUpdateFirebase';
-import {useUploadCloudinaryImage} from '../../../hooks/useUploadCloudinaryImage';
-import {error} from '../../../lib/logging';
-import {popScreen} from '../../../Router/utils/actions';
+import { useUpdateFirebase } from '../../../hooks/useUpdateFirebase';
+import { useUploadCloudinaryImage } from '../../../hooks/useUploadCloudinaryImage';
+import { error } from '../../../lib/logging';
+import { popScreen } from '../../../Router/utils/actions';
 
-export const useNewUserForm = (docId) => {
+export const useNewUserForm = docId => {
   const [user, setUser] = useState({});
   const [newImage, setNewImage] = useState();
 
   const [loading, setLoading] = useState(false);
-  const {setVisible} = useContext(LoadingModalContext);
-  const {updateFirebase} = useUpdateFirebase('users');
-  const {upload} = useUploadCloudinaryImage();
+  const { setVisible } = useContext(LoadingModalContext);
+  const { updateFirebase } = useUpdateFirebase('users');
+  const { upload } = useUploadCloudinaryImage();
 
   const createNewUser = firebase.functions().httpsCallable('createNewUser');
 
@@ -28,7 +28,7 @@ export const useNewUserForm = (docId) => {
     user?.language &&
     user?.gender;
 
-  const createUser = async (form) => {
+  const createUser = async form => {
     try {
       setVisible(true);
       setLoading(true);
@@ -39,14 +39,14 @@ export const useNewUserForm = (docId) => {
         gender: form?.gender,
         email: form?.email,
         phone: form?.phone,
-        role: form?.role,
+        role: form?.role
       });
       popScreen();
     } catch (err) {
       error({
         message: 'Comprueba que el email es correcto y no está en uso',
         track: true,
-        asToast: true,
+        asToast: true
       });
     } finally {
       setLoading(false);
@@ -54,28 +54,28 @@ export const useNewUserForm = (docId) => {
     }
   };
 
-  const editUser = async ({userId, form}) => {
+  const editUser = async ({ userId, form }) => {
     try {
       setVisible(true);
       setLoading(true);
       if (newImage?.length > 0) {
         const uploadImage = await upload(
           newImage?.[0],
-          `/PortManagement/Users/${userId}/Photos`,
+          `/PortManagement/Users/${userId}/Photos`
         );
         await updateFirebase(userId, {
           ...form,
-          profileImage: uploadImage,
+          profileImage: uploadImage
         });
       } else {
-        await updateFirebase(userId, {...user});
+        await updateFirebase(userId, { ...user });
       }
       popScreen();
     } catch (err) {
       error({
         message: 'Comprueba que el email es correcto y no está en uso',
         track: true,
-        asToast: true,
+        asToast: true
       });
     } finally {
       setVisible(false);
@@ -101,6 +101,6 @@ export const useNewUserForm = (docId) => {
     editUser,
     createUser,
     isAllfilled,
-    setNewImage,
+    setNewImage
   };
 };

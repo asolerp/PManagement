@@ -1,8 +1,8 @@
-import {useCallback, useEffect, useState} from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import firestore from '@react-native-firebase/firestore';
 
-export const useGetHouseById = (userId) => {
+export const useGetHouseById = userId => {
   const [house, setHouse] = useState();
   const [checklist, setChecklist] = useState();
   const [checksFromChecklist, setChecksFromChecklist] = useState();
@@ -16,9 +16,9 @@ export const useGetHouseById = (userId) => {
         .where('owner.id', '==', userId)
         .get();
 
-      const houseData = ownerHouse.docs.map((doc) => ({
+      const houseData = ownerHouse.docs.map(doc => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       }))[0];
 
       const houseQuery = await firestore()
@@ -32,10 +32,10 @@ export const useGetHouseById = (userId) => {
         .orderBy('date', 'desc')
         .limit(1)
         .get()
-        .then(async (response) => {
-          const document = response.docs.map((doc) => ({
+        .then(async response => {
+          const document = response.docs.map(doc => ({
             id: doc.id,
-            ...doc.data(),
+            ...doc.data()
           }))[0];
           setChecklist(document);
           const checksFromChecklistQuery = await firestore()
@@ -44,13 +44,13 @@ export const useGetHouseById = (userId) => {
             .collection('checks')
             .get();
           setChecksFromChecklist(
-            checksFromChecklistQuery.docs.map((doc) => ({
+            checksFromChecklistQuery.docs.map(doc => ({
               id: doc.id,
-              ...doc.data(),
-            })),
+              ...doc.data()
+            }))
           );
         });
-      setHouse({id: houseQuery.id, ...houseQuery.data()});
+      setHouse({ id: houseQuery.id, ...houseQuery.data() });
     } catch (err) {
       console.log(err);
     } finally {
@@ -67,6 +67,6 @@ export const useGetHouseById = (userId) => {
     loading,
     checklist,
     checksFromChecklist,
-    getOwnerDashboardData,
+    getOwnerDashboardData
   };
 };

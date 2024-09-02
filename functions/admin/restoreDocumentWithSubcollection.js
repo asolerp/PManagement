@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { REGION } = require('../utils');
 
-const restoreDocumentWithSubcollection = functions.https.onCall(async (data, context) => {
+const restoreDocumentWithSubcollection = functions.region(REGION).https.onCall(async (data, context) => {
     // Asumiendo que 'data' incluye el 'docId' del documento a restaurar
     const docId = data.docId;
     if (!docId) throw new functions.https.HttpsError('invalid-argument', 'The function must be called with the argument "docId".');

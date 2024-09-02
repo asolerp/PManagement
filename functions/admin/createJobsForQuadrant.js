@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { REGION } = require('../utils');
 
-const createJobsForQuadrant = functions.firestore
+const createJobsForQuadrant = functions.region(REGION).firestore
   .document('quadrants/{quadrantId}/jobs/{jobId}')
   .onCreate(async (snap, context) => {
     const job = snap.data();

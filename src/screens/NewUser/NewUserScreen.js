@@ -1,23 +1,30 @@
 import React from 'react';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 // UI
 import PageLayout from '../../components/PageLayout';
 
 import CustomButton from '../../components/Elements/CustomButton';
-import {ScreenHeader} from '../../components/Layout/ScreenHeader';
+import { ScreenHeader } from '../../components/Layout/ScreenHeader';
 
 import NewUserForm from '../../components/Forms/User/NewUserForm';
-import {useNewUserForm} from './hooks/useNewUserForm';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
-import {useForm} from 'react-hook-form';
+import { useNewUserForm } from './hooks/useNewUserForm';
+import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view';
+import { useForm } from 'react-hook-form';
 
-const NewUserScreen = ({route}) => {
+const NewUserScreen = ({ route }) => {
   const docId = route?.params?.docId;
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
-  const {user, setUser, newImage, setNewImage, createUser, editUser, loading} =
-    useNewUserForm(docId);
+  const {
+    user,
+    setUser,
+    newImage,
+    setNewImage,
+    createUser,
+    editUser,
+    loading
+  } = useNewUserForm(docId);
 
   const {
     watch,
@@ -25,7 +32,7 @@ const NewUserScreen = ({route}) => {
     setValue,
     register,
     handleSubmit,
-    formState: {errors},
+    formState: { errors }
   } = useForm({
     defaultValues: {
       name: '',
@@ -34,12 +41,12 @@ const NewUserScreen = ({route}) => {
       phone: '',
       role: '',
       gender: '',
-      language: '',
-    },
+      language: ''
+    }
   });
 
-  const onSubmit = (data) =>
-    docId ? editUser({userId: user?.id, form: data}) : createUser(data);
+  const onSubmit = data =>
+    docId ? editUser({ userId: user?.id, form: data }) : createUser(data);
 
   return (
     <PageLayout
@@ -52,7 +59,8 @@ const NewUserScreen = ({route}) => {
           title={docId ? t('newUser.form.edit') : t('newUser.form.create')}
           onPress={handleSubmit(onSubmit)}
         />
-      }>
+      }
+    >
       <>
         <ScreenHeader title={docId ? t('newUser.edit') : t('newUser.title')} />
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>

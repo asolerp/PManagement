@@ -1,8 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { REGION } = require('../utils');
 
 
 const moveToRecycleBinWithSubcollection =  functions
+.region(REGION)
 .runWith({
   timeoutSeconds: 540,
   memory: '2GB',

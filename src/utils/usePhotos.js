@@ -1,23 +1,39 @@
-import {useState} from 'react';
-import {useUploadCloudinaryImage} from '../hooks/useUploadCloudinaryImage';
-import firestore, {firebase} from '@react-native-firebase/firestore';
+import { useState } from 'react';
+
+import firestore, { firebase } from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import ImageResizer from 'react-native-image-resizer';
+import { error as errorLog } from '../lib/logging';
 
-import {error as errorLog} from '../lib/logging';
+const uploadImageFromFirebase = async asset => {
+  const { uri, storageFolder, fileName, collectionRef } = asset;
 
-const uploadImageFromFirebase = async (asset) => {
-  const {uri, storageFolder, fileName} = asset;
-
-  // Create a reference to the location you want to upload to in firebase
+  const resizedImage = await ImageResizer.createResizedImage(
+    uri,
+    800,
+    600,
+    'JPEG',
+    80
+  );
+  const pathToFile = resizedImage.uri;
   const reference = storage().ref(`${storageFolder}/${fileName}`);
 
-  // Use the putFile() method to upload the image
-  await reference.putFile(uri);
+  // Subir la imagen
+  const task = reference.putFile(pathToFile);
 
-  // Get the download URL
+  task.on('state_changed', snapshot => {
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log('Upload is ' + progress + '% done');
+  });
+
+  await task;
+
+  // Obtener URL de descarga
   const url = await reference.getDownloadURL();
 
-  return url;
+  await collectionRef(url);
+
+  console.log('Image uploaded and Firestore updated!');
 };
 
 export const usePhotos = () => {
@@ -28,15 +44,15 @@ export const usePhotos = () => {
   const deleteFn = firebase.functions().httpsCallable('deletePhotoCloudinary');
 
   const removePhotos = async (imgs, setter, fbRoute) => {
-    const {collectionRef} = fbRoute;
+    const { collectionRef } = fbRoute;
     const photosToDelete = imgs.map(
-      async (photo) =>
+      async photo =>
         await collectionRef.update({
-          photos: firestore.FieldValue.arrayRemove(photo.uri),
-        }),
+          photos: firestore.FieldValue.arrayRemove(photo.uri)
+        })
     );
 
-    const photoIds = imgs.map((photo) => {
+    const photoIds = imgs.map(photo => {
       const id = photo.ref.split('.')[0];
 
       return id;
@@ -46,7 +62,7 @@ export const usePhotos = () => {
       setLoading(true);
       await Promise.all(photosToDelete);
       await deleteFn({
-        photoIds,
+        photoIds
       });
       if (setter) {
         setter([]);
@@ -55,7 +71,7 @@ export const usePhotos = () => {
       errorLog({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
       setError(err);
     } finally {
@@ -64,32 +80,29 @@ export const usePhotos = () => {
   };
 
   const uploadPhotos = async (imgs, fbRoute) => {
-    const {collectionRef, folder} = fbRoute;
+    const { collectionRef, folder } = fbRoute;
     try {
       setLoading(true);
 
-      const promises = imgs.map(
-        async (file) =>
-          await uploadImageFromFirebase({
-            uri: file.fileUri,
-            storageFolder: folder,
-            fileName: file.fileName,
-          }),
+      await Promise.all(
+        imgs.map(
+          async file =>
+            await uploadImageFromFirebase({
+              uri: file.fileUri,
+              storageFolder: folder,
+              fileName: file.fileName,
+              collectionRef: async url =>
+                await collectionRef.update({
+                  photos: firestore.FieldValue.arrayUnion(url)
+                })
+            })
+        )
       );
-
-      const imagesURLs = await Promise.all(promises);
-
-      const uploadImageFirebase = imagesURLs.map((image) =>
-        collectionRef.update({
-          photos: firestore.FieldValue.arrayUnion(image),
-        }),
-      );
-      await Promise.all(uploadImageFirebase);
     } catch (err) {
       errorLog({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
       setError(err);
     } finally {
@@ -98,53 +111,52 @@ export const usePhotos = () => {
   };
 
   const updateHousePhoto = async (img, fbRoute) => {
-
-    const {collectionRef, folder} = fbRoute;
+    const { collectionRef, folder } = fbRoute;
     try {
       setLoading(true);
 
-      const imageURL = await uploadImageFromFirebase({
+      await uploadImageFromFirebase({
         uri: img.fileUri,
         storageFolder: folder,
         fileName: img.fileName,
-      });
-
-      collectionRef.update({
-        ['houseImage.original']: imageURL,
-        ['houseImage.small']: imageURL,
+        collectionRef: async url =>
+          await collectionRef.update({
+            ['houseImage.original']: url,
+            ['houseImage.small']: url
+          })
       });
     } catch (err) {
       errorLog({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
       setError(err);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const updatePhotoProfile = async (img, fbRoute) => {
-    const {collectionRef, folder} = fbRoute;
+    const { collectionRef, folder } = fbRoute;
     try {
       setLoading(true);
 
-      const imageURL = await uploadImageFromFirebase({
+      await uploadImageFromFirebase({
         uri: img.fileUri,
         storageFolder: folder,
         fileName: img.fileName,
-      });
-
-      collectionRef.update({
-        [`profileImage.original`]: imageURL,
-        ['profileImage.small']: imageURL,
+        collectionRef: async url =>
+          await collectionRef.update({
+            [`profileImage.original`]: url,
+            ['profileImage.small']: url
+          })
       });
     } catch (err) {
       errorLog({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
       setError(err);
     } finally {
@@ -158,6 +170,6 @@ export const usePhotos = () => {
     removePhotos,
     uploadPhotos,
     updateHousePhoto,
-    updatePhotoProfile,
+    updatePhotoProfile
   };
 };

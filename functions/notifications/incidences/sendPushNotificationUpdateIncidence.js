@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { REGION } = require('../../utils');
 
-const sendPushNotificationUpdateCheckList = functions.firestore
+const sendPushNotificationUpdateCheckList = functions.region(REGION).firestore
   .document('incidences/{incidenceId}')
   .onUpdate(async (change, context) => {
     try {
@@ -32,7 +33,7 @@ const sendPushNotificationUpdateCheckList = functions.firestore
         const cleanListTokens = listTokens.filter((t) => t !== undefined);
 
         let notification = {
-          title: 'Actulaización 🚀',
+          title: 'Actualización 🚀',
           body: `Ha habido cambios en el estado de la incidencia!`,
         };
 

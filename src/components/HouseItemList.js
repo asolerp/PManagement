@@ -1,16 +1,20 @@
 import React from 'react';
 
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {DEFAULT_IMAGE} from '../constants/general';
 
 const Owner = ({owner}) => {
+
+  console.log("[[OWNER]]", owner)
+
   return (
     <View style={styles.ownerWrapper}>
-      <Image
+      <FastImage
         style={styles.ownerImage}
         source={{
           uri: owner?.profileImage?.small || DEFAULT_IMAGE,
+          priority: FastImage.priority.normal,
         }}
       />
     </View>
@@ -108,6 +112,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 3,
     borderColor: 'white',
+    backgroundColor: '#1C6885',
     zIndex: 10,
   },
   street: {
@@ -119,6 +124,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderTopLeftRadius: 20,
     borderBottomLeftRadius: 20,
+    backgroundColor: 'red'
   },
   name: {
     fontWeight: 'bold',

@@ -1,8 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken} = require('../../utils');
+const {removeUserActionToken, REGION} = require('../../utils');
 
-const sendPushNotificationNewIncidence = functions.firestore
+const sendPushNotificationNewIncidence = functions.region(REGION).firestore
   .document('incidences/{incidenceId}')
   .onCreate(async (snap, context) => {
     const incidence = snap.data();

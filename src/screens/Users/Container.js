@@ -1,55 +1,55 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Pressable,
-  SectionList,
+  SectionList
 } from 'react-native';
 
-import {useTheme} from '../../Theme';
-import {Colors} from '../../Theme/Variables';
+import { useTheme } from '../../Theme';
+import { Colors } from '../../Theme/Variables';
 
-import {SearchBar} from 'react-native-elements';
+import { SearchBar } from 'react-native-elements';
 
 import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 import Avatar from '../../components/Avatar';
-import {parseRoleName} from './utils/parsers';
-import {useTranslation} from 'react-i18next';
-import {ScreenHeader} from '../../components/Layout/ScreenHeader';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {PROFILE_SCREEN_KEY} from '../../Router/utils/routerKeys';
-import {DEFAULT_IMAGE} from '../../constants/general';
+import { parseRoleName } from './utils/parsers';
+import { useTranslation } from 'react-i18next';
+import { ScreenHeader } from '../../components/Layout/ScreenHeader';
+import { openScreenWithPush } from '../../Router/utils/actions';
+import { PROFILE_SCREEN_KEY } from '../../Router/utils/routerKeys';
+import { DEFAULT_IMAGE } from '../../constants/general';
 import theme from '../../Theme/Theme';
 import Badge from '../../components/Elements/Badge';
-import {HDivider} from '../../components/UI/HDivider';
+import { HDivider } from '../../components/UI/HDivider';
 
 const Container = () => {
-  const {Layout, Gutters, Fonts} = useTheme();
-  const {t} = useTranslation();
+  const { Gutters, Fonts } = useTheme();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [users] = useCollectionData(firestore().collection('users'), {
-    idField: 'id',
+    idField: 'id'
   });
 
   const DATA = [
     {
       title: parseRoleName('admin'),
-      data: users?.filter((user) => user.role === 'admin'),
+      data: users?.filter(user => user.role === 'admin')
     },
     {
       title: parseRoleName('owner'),
-      data: users?.filter((user) => user.role === 'owner'),
+      data: users?.filter(user => user.role === 'owner')
     },
     {
       title: parseRoleName('worker'),
-      data: users?.filter((user) => user.role === 'worker'),
-    },
+      data: users?.filter(user => user.role === 'worker')
+    }
   ];
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     const fullName = `${item.firstName} ${item.lastName}`;
     if (
       searchQuery.length > 0 &&
@@ -65,48 +65,51 @@ const Container = () => {
           onPress={() => {
             openScreenWithPush(PROFILE_SCREEN_KEY, {
               user: item,
-              mode: 'admin',
+              mode: 'admin'
             });
-          }}>
+          }}
+        >
           <View
             style={[
               theme.flexRow,
               theme.itemsCenter,
               Gutters.tinyRMargin,
               Gutters.tinyBMargin,
-              styles.userContainer,
-            ]}>
+              styles.userContainer
+            ]}
+          >
             <Avatar
               key={item.id}
               uri={item.profileImage?.small || DEFAULT_IMAGE}
               size="big"
             />
-            <View style={[theme.mL2]}>
+            <View style={theme.mL2}>
               <View
                 style={[
                   theme.flexRow,
                   theme.flexWrap,
                   theme.itemsCenter,
                   theme.justifyBetween,
-                  theme.mB2,
-                ]}>
+                  theme.mB2
+                ]}
+              >
                 <Text
                   ellipsizeMode="tail"
                   numberOfLines={2}
-                  style={[theme.textBlack, theme.mR2]}>
+                  style={[theme.textBlack, theme.mR2]}
+                >
                   {item.firstName} {item.lastName}
                 </Text>
                 {item?.phone && <Badge text={item.phone} variant="pm" />}
               </View>
-              <View style={[theme.flexCol]}>
+              <View style={theme.flexCol}>
                 <Badge text={item.email} variant="purple" />
-                { item.aditionalEmail && (
+                {item.aditionalEmail && (
                   <>
-                  <View style={[theme.pB1]} />
-                  <Badge text={item.aditionalEmail} variant="warning" />
+                    <View style={theme.pB1} />
+                    <Badge text={item.aditionalEmail} variant="warning" />
                   </>
-                )
-                }
+                )}
               </View>
             </View>
           </View>
@@ -128,21 +131,22 @@ const Container = () => {
         value={searchQuery}
       />
       {users && (
-        <View style={[theme.flex1]}>
+        <View style={theme.flex1}>
           <SectionList
             sections={DATA}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => item + index}
             renderItem={renderItem}
-            renderSectionHeader={({section: {title}}) => (
+            renderSectionHeader={({ section: { title } }) => (
               <View
                 style={[
                   styles.titleContainer,
                   Gutters.tinyVPadding,
                   Gutters.tinyHPadding,
-                  theme.mB3,
-                ]}>
-                <Text style={[Fonts.textTitle, {color: Colors.white}]}>
+                  theme.mB3
+                ]}
+              >
+                <Text style={[Fonts.textTitle, { color: Colors.white }]}>
                   {t(title)}
                 </Text>
               </View>
@@ -226,23 +230,23 @@ const Container = () => {
 };
 
 const styles = StyleSheet.create({
-  searchBarContainer: {
-    borderBottomColor: 'transparent',
-    borderTopColor: 'transparent',
-    backgroundColor: 'white',
-  },
   inputContainer: {
-    borderColor: 'red',
     backgroundColor: 'white',
+    borderColor: 'red'
+  },
+  searchBarContainer: {
+    backgroundColor: 'white',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'transparent'
   },
   titleContainer: {
     backgroundColor: Colors.pm,
-    borderRadius: 5,
+    borderRadius: 5
   },
   userContainer: {
-    paddingVertical: 10,
     paddingHorizontal: 10,
-  },
+    paddingVertical: 10
+  }
 });
 
 export default Container;

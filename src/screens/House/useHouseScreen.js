@@ -1,52 +1,53 @@
-import {useContext, useEffect, useState} from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 // Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import { useUpdateFirebase } from '../../hooks/useUpdateFirebase';
 
 import useAuth from '../../utils/useAuth';
-import {error} from '../../lib/logging';
-import {useCameraOrLibrary} from '../../hooks/useCamerOrLibrary';
-import {imageActions} from '../../utils/imageActions';
-import {useTheme} from '../../Theme';
-import {LoadingModalContext} from '../../context/loadinModalContext';
-import {firebase} from '@react-native-firebase/firestore';
-import {useDocumentData} from 'react-firebase-hooks/firestore';
+import { error } from '../../lib/logging';
+import { useCameraOrLibrary } from '../../hooks/useCamerOrLibrary';
+import { imageActions } from '../../utils/imageActions';
+import { useTheme } from '../../Theme';
+import { LoadingModalContext } from '../../context/loadinModalContext';
 import useUploadImageCheck from '../../hooks/useUploadImage';
 import { HOUSES } from '../../utils/firebaseKeys';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { fetchHouse } from '../../Services/firebase/houseServices';
 
-export const useHouseScreen = ({route}) => {
-  const {Gutters} = useTheme();
+export const useHouseScreen = ({ route }) => {
+  const { Gutters } = useTheme();
   const [infoHouse, setInfoHouse] = useState();
   const [newImage, setNewImage] = useState();
-  const {isAdmin} = useAuth();
-  const {houseId} = route.params;
+  const { isAdmin } = useAuth();
+  const { houseId } = route.params;
 
-  const houseQuery = firestore().collection('houses').doc(houseId);
+  const { setVisible } = useContext(LoadingModalContext);
+  const { data: house } = useQuery({
+    queryKey: ['house', houseId],
+    queryFn: () => fetchHouse(houseId)
+  });
+  const { updateFirebase } = useUpdateFirebase('houses');
 
-  const {setVisible} = useContext(LoadingModalContext);
-  const [house] = useDocumentData(houseQuery, {idField: 'id'});
-  const {updateFirebase} = useUpdateFirebase('houses');
-
+  const queryClient = useQueryClient();
   // Modal State
   const [modalVisible, setModalVisible] = useState(false);
-  const {onImagePress} = useCameraOrLibrary();
-  const {uploadImages} = useUploadImageCheck(HOUSES);
+  const { onImagePress } = useCameraOrLibrary();
+  const { uploadImages } = useUploadImageCheck(HOUSES);
 
-  const handlePressImage = (type) => {
+  const handlePressImage = type => {
     onImagePress({
       type,
-      options: {...imageActions[type], selectionLimit: 1},
-      callback: async (imgs) => {
+      options: { ...imageActions[type], selectionLimit: 1 },
+      callback: async imgs => {
         setNewImage(
           imgs.map((image, i) => ({
             fileBase64: image?.base64,
             fileName: image?.fileName || `image-${i}`,
             fileUri: image?.uri,
-            fileType: image?.type,
-          })),
+            fileType: image?.type
+          }))
         );
-      },
+      }
     });
   };
 
@@ -55,17 +56,20 @@ export const useHouseScreen = ({route}) => {
     try {
       if (infoHouse) {
         await updateFirebase(houseId, {
-          ...infoHouse,
+          ...infoHouse
         });
       }
       if (newImage) {
-        uploadImages(newImage, null, houseId)
+        await uploadImages(newImage, null, houseId);
       }
+
+      queryClient.invalidateQueries({ queryKey: [HOUSES] });
+      queryClient.invalidateQueries({ queryKey: ['house', houseId] });
     } catch (err) {
       error({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
     } finally {
       setNewImage(null);
@@ -91,6 +95,6 @@ export const useHouseScreen = ({route}) => {
     setInfoHouse,
     modalVisible,
     setModalVisible,
-    handlePressImage,
+    handlePressImage
   };
 };

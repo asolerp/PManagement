@@ -1,14 +1,14 @@
 import React from 'react';
-import {useRoute} from '@react-navigation/native';
-import {Image, View, Text, StyleSheet, Platform} from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import { Image, View, Text, StyleSheet, Platform } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 // Utils
 
-import {Colors} from '../Theme/Variables';
-import {useTheme} from '../Theme';
-import {TouchableWithoutFeedback} from 'react-native';
-import {isIOS} from '../utils/platform';
+import { Colors } from '../Theme/Variables';
+import { useTheme } from '../Theme';
+import { TouchableWithoutFeedback } from 'react-native';
+import { isIOS } from '../utils/platform';
 
 const TitlePage = ({
   title,
@@ -19,34 +19,35 @@ const TitlePage = ({
   subPage = false,
   background,
   onPress,
-  containerStyles,
+  containerStyles
 }) => {
   const {
-    params: {screenKey = ''},
+    params: { screenKey = '' }
   } = useRoute();
-  const {Layout, Gutters} = useTheme();
+  const { Layout, Gutters } = useTheme();
 
   const TitleWrapper = () => (
     <React.Fragment>
       {!children ? (
         <View
-          style={[Layout.flex, Layout.justifyContentCenter, containerStyles]}>
+          style={[Layout.flex, Layout.justifyContentCenter, containerStyles]}
+        >
           <View
             style={[
               Layout.row,
               Layout.alignItemsCenter,
               Layout.justifyContentSpaceBetween,
-              !isIOS && Gutters.regularTPadding,
-            ]}>
+              !isIOS && Gutters.regularTPadding
+            ]}
+          >
             <View
-              style={[
-                {
-                  width: 30,
-                },
-              ]}>
+              style={{
+                width: 30
+              }}
+            >
               {leftSide}
             </View>
-            <View style={[Layout.flexGrow]}>
+            <View style={Layout.flexGrow}>
               {title ? (
                 <TouchableWithoutFeedback onPress={onPress}>
                   <Text
@@ -54,9 +55,10 @@ const TitlePage = ({
                     style={[
                       styles.title,
                       {
-                        textAlign: 'center',
-                      },
-                    ]}>
+                        textAlign: 'center'
+                      }
+                    ]}
+                  >
                     {title}
                   </Text>
                 </TouchableWithoutFeedback>
@@ -67,15 +69,15 @@ const TitlePage = ({
                       style={{
                         ...styles.logoContent,
                         ...{
-                          paddingTop: isIOS ? 0 : 0,
-                        },
-                      }}>
+                          paddingTop: isIOS ? 0 : 0
+                        }
+                      }}
+                    >
                       <FastImage
                         style={styles.logo}
                         source={{
                           uri: 'https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png',
-                          headers: {Authorization: 'someAuthToken'},
-                          priority: FastImage.priority.normal,
+                          priority: FastImage.priority.normal
                         }}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -84,15 +86,16 @@ const TitlePage = ({
                 </View>
               )}
             </View>
-            <View style={{width: 30}}>{rightSide}</View>
+            <View style={{ width: 30 }}>{rightSide}</View>
           </View>
           <View>
             {subtitle && !subPage && (
               <Text
                 style={{
                   ...styles.subtitle,
-                  ...{marginLeft: 0},
-                }}>
+                  ...{ marginLeft: 0 }
+                }}
+              >
                 {subtitle}
               </Text>
             )}
@@ -102,9 +105,10 @@ const TitlePage = ({
                   ...{
                     textAlign: 'center',
                     fontSize: 13,
-                    marginBottom: 5,
-                  },
-                }}>
+                    marginBottom: 5
+                  }
+                }}
+              >
                 {subtitle}
               </Text>
             )}
@@ -126,8 +130,8 @@ const TitlePage = ({
           style={{
             ...styles.imageMask,
             ...{
-              backgroundColor: Colors.mediterranean,
-            },
+              backgroundColor: Colors.mediterranean
+            }
           }}
         />
         <Image source={background} style={styles.image} />
@@ -140,70 +144,71 @@ const TitlePage = ({
         ...styles.container,
         ...{
           // height: subPage ? 40 : getHightByRoute(screenKey),
-        },
-      }}>
+        }
+      }}
+    >
       <TitleWrapper />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-  },
   box: {
     flexBasis: 1,
     flexGrow: 1,
-    flexShrink: 1,
-  },
-  titleWrapper: {
-    justifyContent: 'flex-end',
-    width: '100%',
-    marginBottom: 0,
+    flexShrink: 1
   },
   childrenWrapper: {
     justifyContent: 'flex-start',
-    width: '100%',
+    width: '100%'
   },
-  logo: {
-    width: 80,
-    height: 30,
-    resizeMode: 'contain',
-  },
-  title: {
-    fontSize: 20,
-    letterSpacing: 2,
-    fontWeight: '600',
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  logoContent: {
-    alignItems: 'center',
-    marginTop: Platform.OS === 'ios' ? 0 : 20,
+  container: {
+    paddingHorizontal: 20
   },
   image: {
-    width: '100%',
-    height: 230,
     borderBottomLeftRadius: 50,
+    height: 230,
+    width: '100%'
+  },
+  imageContent: {
+    borderBottomLeftRadius: 50,
+    height: 230,
+    paddingHorizontal: 20,
+    position: 'absolute',
+    width: '100%',
+    zIndex: 11
   },
   imageMask: {
-    width: '100%',
+    borderBottomLeftRadius: 50,
     height: 230,
     opacity: 0.7,
     position: 'absolute',
-    zIndex: 10,
-    borderBottomLeftRadius: 50,
-  },
-  imageContent: {
     width: '100%',
-    height: 230,
-    position: 'absolute',
-    zIndex: 11,
-    borderBottomLeftRadius: 50,
-    paddingHorizontal: 20,
+    zIndex: 10
   },
+  logo: {
+    height: 30,
+    resizeMode: 'contain',
+    width: 80
+  },
+  logoContent: {
+    alignItems: 'center',
+    marginTop: Platform.OS === 'ios' ? 0 : 20
+  },
+  subtitle: {
+    fontSize: 20,
+    fontWeight: 'bold'
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    letterSpacing: 2
+  },
+  titleWrapper: {
+    justifyContent: 'flex-end',
+    marginBottom: 0,
+    width: '100%'
+  }
 });
 
 export default TitlePage;

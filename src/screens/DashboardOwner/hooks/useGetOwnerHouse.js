@@ -1,17 +1,17 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import firestore from '@react-native-firebase/firestore';
 
-export const useGetOwnerHouse = ({userId}) => {
+export const useGetOwnerHouse = ({ userId }) => {
   const [house, setHouse] = useState({});
   useEffect(() => {
     if (userId) {
       const unsubscribe = firestore()
         .collection('houses')
         .where('owner.id', '==', userId)
-        .onSnapshot((snapshot) => {
-          const houseData = snapshot.docs.map((doc) => ({
+        .onSnapshot(snapshot => {
+          const houseData = snapshot.docs.map(doc => ({
             id: doc.id,
-            ...doc.data(),
+            ...doc.data()
           }));
           setHouse(houseData[0]);
         });
@@ -20,6 +20,6 @@ export const useGetOwnerHouse = ({userId}) => {
   }, [userId]);
 
   return {
-    house,
+    house
   };
 };

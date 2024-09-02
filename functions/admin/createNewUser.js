@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {genPassword} = require('../utils');
+const {genPassword, REGION} = require('../utils');
 const {
   sendNewUserConfirmationEmail,
 } = require('./sendNewUserEmailConfirmation');
@@ -8,7 +8,7 @@ const {
 const DEFAULT_PHOTO_URL =
   'https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png';
 
-const createNewUser = functions
+const createNewUser = functions.region(REGION)
   .runWith({
     timeoutSeconds: 540,
     memory: '2GB',

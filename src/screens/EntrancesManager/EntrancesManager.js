@@ -13,7 +13,7 @@ const DEFAULT_COORDINATES = [2.3969, 39.5743];
 
 Mapbox.setWellKnownTileServer('Mapbox');
 Mapbox.setAccessToken(
-  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHNpdWttc3EyOWp6Mmhubzdqam1idmxoIn0.lVKFMEQKPXtJ8Fun3_JAgg',
+  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHc3a2lqN24yMXJvMmpvY2FqeWYwZ2hlIn0.E7uBdBgJGlMxLamWXp66hw',
 );
 
 const EntrancesManager = () => {

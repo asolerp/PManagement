@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const { REGION } = require('../../utils');
 
-const sendPushNotificationAsignedIncidence = functions.firestore
+const sendPushNotificationAsignedIncidence = functions.region(REGION).firestore
   .document('incidences/{incidenceId}')
   .onUpdate(async (change, context) => {
     try {

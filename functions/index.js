@@ -35,6 +35,8 @@ const {
 
 const {createJobsForQuadrant} = require('./admin/createJobsForQuadrant');
 const { restoreDocumentWithSubcollection } = require('./admin/restoreDocumentWithSubcollection');
+const { updateOwnerHouse } = require('./admin/updateOwnerHouse');
+const { REGION } = require('./utils');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -42,7 +44,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp(functions.config({
+  region: REGION
+}).firebase);
 
 /// CLOUDINARY
 
@@ -51,6 +55,7 @@ exports.uploadProfilePhoto = uploadProfilePhoto;
 
 /// ADMIN
 
+exports.updateOwnerHouse = updateOwnerHouse;
 exports.createNewUser = createNewUser;
 exports.notifyOwner = notifyOwner;
 exports.deleteUser = deleteUser;
@@ -87,37 +92,7 @@ exports.sendPushNotificationJobMessage = sendPushNotificationJobMessage;
 exports.sendPushNotificationNewJob = sendPushNotificationNewJob;
 exports.createJobsForQuadrant = createJobsForQuadrant;
 
-exports.updateHouseOwner = functions.firestore
-  .document('users/{userId}')
-  .onUpdate(async (change, context) => {
-    console.log('Updating owner');
-    const userAfter = change.after.data();
-    const batch = admin.firestore().batch();
-
-    if (userAfter.role === 'owner') {
-      try {
-        const querySnapshot = await admin
-          .firestore()
-          .collection('houses')
-          .where('owner.id', '==', context.params.userId)
-          .get();
-        querySnapshot.forEach((doc) => {
-          const house = doc.data();
-          house.owner = {
-            ...userAfter,
-            id: context.params.userId,
-          };
-          const docRef = admin.firestore().collection('houses').doc(doc.id);
-          batch.update(docRef, job);
-        });
-        await batch.commit();
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  });
-
-exports.updateProfileImage = functions.firestore
+exports.updateProfileImage = functions.region(REGION).firestore
   .document('users/{userId}')
   .onUpdate(async (change, context) => {
     console.log('Updating images');
@@ -146,7 +121,7 @@ exports.updateProfileImage = functions.firestore
     }
   });
 
-exports.updateHouseImageJobs = functions.firestore
+exports.updateHouseImageJobs = functions.region(REGION).firestore
   .document('houses/{houseId}')
   .onUpdate(async (change, context) => {
     console.log('Updating images');
@@ -173,7 +148,7 @@ exports.updateHouseImageJobs = functions.firestore
     }
   });
 
-exports.deletePhotoCloudinary = functions
+exports.deletePhotoCloudinary = functions.region(REGION)
   .runWith({
     timeoutSeconds: 540,
     memory: '2GB',
@@ -190,7 +165,8 @@ exports.deletePhotoCloudinary = functions
   });
 
 exports.recursiveDelete = functions
-  .runWith({
+.region(REGION)  
+.runWith({
     timeoutSeconds: 540,
     memory: '2GB',
   })
