@@ -1,0 +1,13 @@
+[debug] [2024-09-03T09:28:16.227Z] ----------------------------------------------------------------------
+[debug] [2024-09-03T09:28:16.228Z] Command:       /Users/alberto/.nvm/versions/node/v18.19.0/bin/node /Users/alberto/Desktop/Proyectos/PManagement/functions/node_modules/.bin/firebase functions:shell
+[debug] [2024-09-03T09:28:16.228Z] CLI Version:   10.9.2
+[debug] [2024-09-03T09:28:16.228Z] Platform:      darwin
+[debug] [2024-09-03T09:28:16.228Z] Node Version:  v18.19.0
+[debug] [2024-09-03T09:28:16.231Z] Time:          Tue Sep 03 2024 11:28:16 GMT+0200 (Central European Summer Time)
+[debug] [2024-09-03T09:28:16.231Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-09-03T09:28:16.259Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-09-03T09:28:16.259Z] > authorizing via signed-in user (albertosolpal@gmail.com)
+[debug] [2024-09-03T09:28:16.259Z] [iam] checking project port-management-9bd53 for permissions ["firebase.projects.get"]
+[debug] [2024-09-03T09:28:16.260Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/port-management-9bd53:testIamPermissions [none]
+[debug] [2024-09-03T09:28:16.260Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/port-management-9bd53:testIamPermissions {"permissions":["firebase.projects.get"]}

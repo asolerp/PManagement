@@ -1,17 +1,17 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-const {sendResumeChecklistOwner} = require('./sendResumeChecklistOwner');
+const { sendResumeChecklistOwner } = require('./sendResumeChecklistOwner');
 const { REGION } = require('../utils');
 
 const notifyOwner = functions
-.region(REGION)  
-.runWith({
+  .region(REGION)
+  .runWith({
     timeoutSeconds: 540,
-    memory: '2GB',
+    memory: '2GB'
   })
-  .https.onCall(async (data) => {
-    const {checkId} = data;
+  .https.onCall(async data => {
+    const { checkId } = data;
 
     try {
       const checklistRef = await admin
@@ -31,10 +31,10 @@ const notifyOwner = functions
         .firestore()
         .collection('checklists')
         .doc(checkId)
-        .update({finished: true});
+        .update({ finished: true });
 
       const checklist = checklistRef.data();
-      const checks = checksRef.docs.map((doc) => doc.data());
+      const checks = checksRef.docs.map(doc => doc.data());
 
       const ownerId = checklist.house[0].owner.id;
 
@@ -46,12 +46,23 @@ const notifyOwner = functions
 
       const owner = ownerRef.data();
 
-      sendResumeChecklistOwner({email: owner?.aditionalEmail ? `${owner.email},${owner.aditionalEmail}` : owner.email, checklist, checks});
+      const splitAditionalEmails = owner.aditionalEmail.split(',');
+      const aditionalEmails = splitAditionalEmails.map(email => email.trim());
+
+      const emailsSeparatedByComma = aditionalEmails.join(',');
+
+      sendResumeChecklistOwner({
+        email: owner?.aditionalEmail
+          ? `${owner.email},${emailsSeparatedByComma}`
+          : owner.email,
+        checklist,
+        checks
+      });
     } catch (err) {
       console.log(err);
     }
   });
 
 module.exports = {
-  notifyOwner,
+  notifyOwner
 };

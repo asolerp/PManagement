@@ -1,20 +1,21 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {genPassword, REGION} = require('../utils');
+const { genPassword, REGION } = require('../utils');
 const {
-  sendNewUserConfirmationEmail,
+  sendNewUserConfirmationEmail
 } = require('./sendNewUserEmailConfirmation');
 
 const DEFAULT_PHOTO_URL =
   'https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png';
 
-const createNewUser = functions.region(REGION)
+const createNewUser = functions
+  .region(REGION)
   .runWith({
     timeoutSeconds: 540,
-    memory: '2GB',
+    memory: '2GB'
   })
-  .https.onCall(async (data) => {
-    const {name, surname, email, phone, gender, language, role} = data;
+  .https.onCall(async data => {
+    const { name, surname, email, phone, gender, language, role } = data;
     const password = genPassword();
 
     try {
@@ -24,7 +25,7 @@ const createNewUser = functions.region(REGION)
         password: password,
         displayName: `${name} ${surname}`,
         photoURL: DEFAULT_PHOTO_URL,
-        disabled: false,
+        disabled: false
       });
 
       await admin
@@ -37,12 +38,15 @@ const createNewUser = functions.region(REGION)
           language,
           phone,
           gender,
-          profileImage: {original: DEFAULT_PHOTO_URL, small: DEFAULT_PHOTO_URL},
+          profileImage: {
+            original: DEFAULT_PHOTO_URL,
+            small: DEFAULT_PHOTO_URL
+          },
           role,
-          email,
+          email
         });
       if (role === 'worker') {
-        sendNewUserConfirmationEmail({email, password});
+        sendNewUserConfirmationEmail({ email, password });
       }
     } catch (err) {
       throw new Error(err);
@@ -50,5 +54,5 @@ const createNewUser = functions.region(REGION)
   });
 
 module.exports = {
-  createNewUser,
+  createNewUser
 };

@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useTheme} from '../../Theme';
-import {HDivider} from '../UI/HDivider';
+import { useTheme } from '../../Theme';
+import { HDivider } from '../UI/HDivider';
 import theme from '../../Theme/Theme';
 
 export const MenuItem = ({
@@ -10,9 +10,9 @@ export const MenuItem = ({
   textStyle,
   onPress,
   iconName,
-  iconColor = 'black',
+  iconColor = 'black'
 }) => {
-  const {Gutters, Layout, Fonts} = useTheme();
+  const { Gutters, Layout, Fonts } = useTheme();
 
   return (
     <>
@@ -22,8 +22,9 @@ export const MenuItem = ({
           Layout.row,
           Layout.justifyContentSpaceBetween,
           Layout.alignItemsCenter,
-          Gutters.smallAPadding,
-        ]}>
+          Gutters.smallAPadding
+        ]}
+      >
         <View style={[Layout.row, Layout.alignItemsCenter]}>
           <Icon name={iconName} size={25} color={iconColor} />
           <Text
@@ -31,8 +32,9 @@ export const MenuItem = ({
               Gutters.smallLMargin,
               Fonts.textSm,
               theme.textBlack,
-              textStyle,
-            ]}>
+              textStyle
+            ]}
+          >
             {title}
           </Text>
         </View>

@@ -1,30 +1,30 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useRef, useState } from 'react';
 
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view';
 
-import {useNavigation} from '@react-navigation/native';
-import {useForm} from 'react-hook-form';
+import { useNavigation } from '@react-navigation/native';
+import { useForm } from 'react-hook-form';
 
-import {StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 // UI
 import ImageLoader from '../../Elements/ImageLoader';
-import {Spacer} from '../../Elements/Spacer';
+import { Spacer } from '../../Elements/Spacer';
 import CustomInput from '../../Elements/CustomInput';
 import DynamicSelectorList from '../../DynamicSelectorList';
 import CustomButton from '../../Elements/CustomButton';
 
 // Firebase
-import {newHouse} from '../../../firebase/uploadNewHouse';
+import { newHouse } from '../../../firebase/uploadNewHouse';
 
 // Utils
 
-import {error} from '../../../lib/logging';
-import {LoadingModalContext} from '../../../context/loadinModalContext';
-import {BottomModal} from '../../Modals/BottomModal';
-import {useCameraOrLibrary} from '../../../hooks/useCamerOrLibrary';
-import {imageActions} from '../../../utils/imageActions';
-import {TextInputController} from '../TextInputController';
+import { error } from '../../../lib/logging';
+import { LoadingModalContext } from '../../../context/loadinModalContext';
+import { BottomModal } from '../../Modals/BottomModal';
+import { useCameraOrLibrary } from '../../../hooks/useCamerOrLibrary';
+import { imageActions } from '../../../utils/imageActions';
+import { TextInputController } from '../TextInputController';
 import theme from '../../../Theme/Theme';
 import useUploadImageCheck from '../../../hooks/useUploadImage';
 import { HOUSES } from '../../../utils/firebaseKeys';
@@ -35,48 +35,64 @@ const NewFormHome = () => {
   const navigation = useNavigation();
 
   const [owner, setOwner] = useState([]);
-  const {uploadImages} = useUploadImageCheck(HOUSES);
+  const { uploadImages } = useUploadImageCheck(HOUSES);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const {setVisible} = useContext(LoadingModalContext);
+  const { setVisible } = useContext(LoadingModalContext);
+
+  const houseNameRef = useRef(null);
+  const streetRef = useRef(null);
+  const municipioRef = useRef(null);
+  const cpRef = useRef(null);
+  const phoneRef = useRef(null);
 
   const {
-    control,
+    register,
+    setValue,
     handleSubmit,
     reset,
-    formState: {errors},
+    formState: { errors }
   } = useForm({
     defaultValues: {
-      houseName: '',
-    },
+      houseName: ''
+    }
   });
+
   const [houseImage, setHouseImage] = useState();
   const [loading, setLoading] = useState(false);
 
-  const {onImagePress} = useCameraOrLibrary();
+  const { onImagePress } = useCameraOrLibrary();
 
-  const handlePress = (type) => {
+  React.useEffect(() => {
+    register(houseNameRef.current, { required: true });
+    register(streetRef.current, { required: true });
+    register(municipioRef.current, { required: true });
+    register(cpRef.current, { required: true });
+    register(phoneRef.current, { required: true });
+  }, [register]);
+
+  const handlePress = type => {
     onImagePress({
       type,
-      options: {...imageActions[type], selectionLimit: 1},
-      callback: async (imgs) => {
+      options: { ...imageActions[type], selectionLimit: 1 },
+      callback: async imgs => {
         setHouseImage(
           imgs.map((image, i) => ({
             fileBase64: image?.base64,
             fileName: image?.fileName || `image-${i}`,
             fileUri: image?.uri,
-            fileType: image?.type,
-          })),
+            fileType: image?.type
+          }))
         );
-      },
+      }
     });
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async data => {
     setLoading(true);
     setVisible(true);
     try {
-      const houseId = await newHouse({...data, owner: owner[0]});
+      const houseId = await newHouse({ ...data, owner: owner[0] });
       await uploadImages(houseImage, null, houseId);
       reset();
       setHouseImage(null);
@@ -84,7 +100,7 @@ const NewFormHome = () => {
       error({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
     } finally {
       setLoading(false);
@@ -101,26 +117,27 @@ const NewFormHome = () => {
         swipeDirection={null}
         onClose={() => {
           setModalVisible(false);
-        }}>
+        }}
+      >
         <DynamicSelectorList
-          order={{field: 'firstName'}}
+          order={{ field: 'firstName' }}
           collection="users"
           where={[
             {
               label: 'role',
               operator: '==',
-              condition: 'owner',
-            },
+              condition: 'owner'
+            }
           ]}
           store="jobForm"
           searchBy="firstName"
           schema={{
             img: 'profileImage',
             name: 'firstName',
-            lastname: 'lastName',
+            lastname: 'lastName'
           }}
           get={owner}
-          set={(owners) => {
+          set={owners => {
             setOwner(owners);
           }}
           closeModal={() => setModalVisible(false)}
@@ -132,21 +149,24 @@ const NewFormHome = () => {
           image={houseImage}
         />
         <TextInputController
-          control={control}
+          ref={houseNameRef}
+          setValue={setValue}
           errors={errors}
           name="houseName"
           placeholder="Nombre de la casa"
         />
         <Spacer space={4} />
         <TextInputController
-          control={control}
+          ref={streetRef}
+          setValue={setValue}
           errors={errors}
           name="street"
           placeholder="Dirección"
         />
         <Spacer space={4} />
         <TextInputController
-          control={control}
+          ref={municipioRef}
+          setValue={setValue}
           errors={errors}
           name="municipio"
           placeholder="Municipio"
@@ -155,7 +175,8 @@ const NewFormHome = () => {
         <View style={styles.multipleLineInputs}>
           <View style={styles.multiLineElementLeft}>
             <TextInputController
-              control={control}
+              ref={cpRef}
+              setValue={setValue}
               errors={errors}
               name="cp"
               placeholder="Código postal"
@@ -163,7 +184,8 @@ const NewFormHome = () => {
           </View>
           <View style={styles.multiLineElementRight}>
             <TextInputController
-              control={control}
+              ref={phoneRef}
+              setValue={setValue}
               errors={errors}
               name="phone"
               placeholder="Teléfono"
@@ -176,8 +198,8 @@ const NewFormHome = () => {
           title="Propietario"
           subtitle={
             owner?.length > 0 && (
-              <View style={[theme.flexRow]}>
-                <View style={[theme.flexRow]}>
+              <View style={theme.flexRow}>
+                <View style={theme.flexRow}>
                   <Text style={styles.subtitle}>
                     {owner[0]?.firstName} {owner[0]?.lastName}
                   </Text>
@@ -185,15 +207,16 @@ const NewFormHome = () => {
               </View>
             )
           }
-          iconProps={{name: 'person', color: '#55A5AD'}}
+          iconProps={{ name: 'person', color: '#55A5AD' }}
           onPress={() => setModalVisible(true)}
         />
       </KeyboardAwareScrollView>
       <View
         style={{
           flexGrow: 1,
-          justifyContent: 'flex-end',
-        }}>
+          justifyContent: 'flex-end'
+        }}
+      >
         <CustomButton
           loading={loading}
           title="Crear casa"
@@ -205,34 +228,34 @@ const NewFormHome = () => {
 };
 
 const styles = StyleSheet.create({
-  multipleLineInputs: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
   multiLineElementLeft: {
     flex: 1,
-    marginRight: 10,
+    marginRight: 10
   },
   multiLineElementRight: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 10
+  },
+  multipleLineInputs: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   newHomeInput: {
     backgroundColor: 'white',
-    color: 'black',
+    color: 'black'
   },
   newHomeLabel: {
-    color: 'black',
-  },
-  titleStyle: {
-    fontSize: 20,
-    color: '#284748',
-    fontWeight: 'bold',
-    marginBottom: 20,
+    color: 'black'
   },
   subtitle: {
-    color: '#2A7BA5',
+    color: '#2A7BA5'
   },
+  titleStyle: {
+    color: '#284748',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20
+  }
 });
 
 export default NewFormHome;

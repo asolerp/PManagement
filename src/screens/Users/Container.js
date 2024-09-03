@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  SectionList
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, SectionList } from 'react-native';
 
 import { useTheme } from '../../Theme';
 import { Colors } from '../../Theme/Variables';
@@ -25,6 +18,7 @@ import { DEFAULT_IMAGE } from '../../constants/general';
 import theme from '../../Theme/Theme';
 import Badge from '../../components/Elements/Badge';
 import { HDivider } from '../../components/UI/HDivider';
+import { Spacer } from '../../components/Elements/Spacer';
 
 const Container = () => {
   const { Gutters, Fonts } = useTheme();
@@ -37,15 +31,45 @@ const Container = () => {
   const DATA = [
     {
       title: parseRoleName('admin'),
-      data: users?.filter(user => user.role === 'admin')
+      data: users
+        ?.filter(user => user.role === 'admin')
+        .sort((a, b) => {
+          if (a.firstName < b.firstName) {
+            return -1;
+          }
+          if (a.firstName > b.firstName) {
+            return 1;
+          }
+          return 0;
+        })
     },
     {
       title: parseRoleName('owner'),
-      data: users?.filter(user => user.role === 'owner')
+      data: users
+        ?.filter(user => user.role === 'owner')
+        .sort((a, b) => {
+          if (a.firstName < b.firstName) {
+            return -1;
+          }
+          if (a.firstName > b.firstName) {
+            return 1;
+          }
+          return 0;
+        })
     },
     {
       title: parseRoleName('worker'),
-      data: users?.filter(user => user.role === 'worker')
+      data: users
+        ?.filter(user => user.role === 'worker')
+        .sort((a, b) => {
+          if (a.firstName < b.firstName) {
+            return -1;
+          }
+          if (a.firstName > b.firstName) {
+            return 1;
+          }
+          return 0;
+        })
     }
   ];
 
@@ -106,8 +130,12 @@ const Container = () => {
                 <Badge text={item.email} variant="purple" />
                 {item.aditionalEmail && (
                   <>
-                    <View style={theme.pB1} />
-                    <Badge text={item.aditionalEmail} variant="warning" />
+                    {item.aditionalEmail.split(',').map((email, index) => (
+                      <>
+                        <Spacer space={1} />
+                        <Badge key={index} text={email} variant="warning" />
+                      </>
+                    ))}
                   </>
                 )}
               </View>
@@ -152,77 +180,6 @@ const Container = () => {
               </View>
             )}
           />
-          {/* <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={[Gutters.tinyTMargin]}>
-            {users &&
-              Object.entries(groupedUsersByRole)
-                .sort(([aKey], [bKey]) => aKey.localeCompare(bKey))
-                .map(([key, users]) => (
-                  <View key={key}>
-                    <View
-                      style={[
-                        styles.titleContainer,
-                        Gutters.tinyVPadding,
-                        Gutters.tinyHPadding,
-                      ]}>
-                      <Text style={[Fonts.textTitle, {color: Colors.white}]}>
-                        {t(parseRoleName(key))}
-                      </Text>
-                    </View>
-                    <View style={[Layout.col, Gutters.smallVMargin]}>
-                      {users?.map((user) => (
-                        <Pressable
-                          key={user.id}
-                          onPress={() => {
-                            openScreenWithPush(PROFILE_SCREEN_KEY, {
-                              user,
-                              mode: 'admin',
-                            });
-                          }}>
-                          <View
-                            style={[
-                              theme.flexRow,
-                              theme.itemsCenter,
-                              Gutters.tinyRMargin,
-                              Gutters.tinyBMargin,
-                              styles.userContainer,
-                            ]}>
-                            <Avatar
-                              key={user.id}
-                              uri={user.profileImage?.small || DEFAULT_IMAGE}
-                              size="big"
-                            />
-                            <View style={[theme.mL2]}>
-                              <View
-                                style={[
-                                  theme.flexRow,
-                                  theme.itemsCenter,
-                                  theme.justifyBetween,
-                                  theme.mB2,
-                                ]}>
-                                <Text
-                                  ellipsizeMode="tail"
-                                  numberOfLines={2}
-                                  style={[theme.textBlack, theme.mR4]}>
-                                  {user.firstName} {user.lastName}
-                                </Text>
-                                {user?.phone && (
-                                  <Badge text={user.phone} variant="pm" />
-                                )}
-                              </View>
-                              <View style={[theme.flexRow]}>
-                                <Badge text={user.email} variant="purple" />
-                                <View style={[theme.w3]} />
-                              </View>
-                            </View>
-                          </View>
-                        </Pressable>
-                      ))}
-                    </View>
-                  </View>
-                ))}
-          </View>
-        </ScrollView> */}
         </View>
       )}
     </>

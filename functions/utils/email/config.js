@@ -1,22 +1,21 @@
 const nodemailer = require('nodemailer');
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 
 const createTransporter = async () => {
   const oauth2Client = new OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URL,
+    process.env.REDIRECT_URL
   );
 
   oauth2Client.setCredentials({
-    refresh_token: process.env.REFRESH_TOKEN,
+    refresh_token: process.env.REFRESH_TOKEN
   });
 
   const accessToken = await new Promise((resolve, reject) => {
     oauth2Client.getAccessToken((err, token) => {
       if (err) {
-        // eslint-disable-next-line prefer-promise-reject-errors
         reject('Failed to create access token :(');
       }
       console.log('Oauth Token', token);
@@ -32,13 +31,13 @@ const createTransporter = async () => {
       accessToken,
       clientId: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      refreshToken: process.env.REFRESH_TOKEN,
-    },
+      refreshToken: process.env.REFRESH_TOKEN
+    }
   });
 
   return transporter;
 };
 
 module.exports = {
-  createTransporter,
+  createTransporter
 };

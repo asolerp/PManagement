@@ -7,5 +7,5 @@ module.exports = {
   sendPushNotificationUpdateIncidence,
   sendPushNotificationAsignedIncidence,
   sendPushNotificationNewIncidenceMessage,
-  sendPushNotificationNewIncidence,
+  sendPushNotificationNewIncidence
 };

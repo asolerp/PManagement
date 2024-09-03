@@ -1,12 +1,12 @@
-import {isDevelopment} from '../../utils/isDevelopment';
+import { isDevelopment } from '../../utils/isDevelopment';
 
-import {LOG_TYPES, TOAST_DURATION} from './constants';
+import { LOG_TYPES, TOAST_DURATION } from './constants';
 
-import {showToast} from './utils/showToast';
+import { showToast } from './utils/showToast';
 
-export {showToast, TOAST_DURATION, LOG_TYPES};
+export { showToast, TOAST_DURATION, LOG_TYPES };
 
-export const info = ({message, asToast, additionalData = '', onPress}) => {
+export const info = ({ message, asToast, additionalData = '', onPress }) => {
   if (isDevelopment()) {
     console.log(LOG_TYPES.info, message, additionalData);
   }
@@ -15,12 +15,12 @@ export const info = ({message, asToast, additionalData = '', onPress}) => {
     showToast({
       message,
       type: 'info',
-      onPress: onPress,
+      onPress: onPress
     });
   }
 };
 
-export const error = ({message, asToast, track, data}) => {
+export const error = ({ message, asToast, track, data }) => {
   if (isDevelopment()) {
     console.warn(LOG_TYPES.error, message);
   }
@@ -28,12 +28,12 @@ export const error = ({message, asToast, track, data}) => {
   if (asToast) {
     showToast({
       message,
-      type: 'error',
+      type: 'error'
     });
   }
 };
 
-export const success = ({message, asToast}) => {
+export const success = ({ message, asToast }) => {
   if (isDevelopment()) {
     console.log(LOG_TYPES.success, message);
   }
@@ -41,12 +41,12 @@ export const success = ({message, asToast}) => {
   if (asToast) {
     showToast({
       message,
-      type: 'success',
+      type: 'success'
     });
   }
 };
 
-export const warn = ({message, asToast}) => {
+export const warn = ({ message, asToast }) => {
   if (isDevelopment()) {
     console.log(LOG_TYPES.warn, message);
   }
@@ -54,12 +54,12 @@ export const warn = ({message, asToast}) => {
   if (asToast) {
     showToast({
       message,
-      type: 'warning',
+      type: 'warning'
     });
   }
 };
 
-export const trace = (message) => {
+export const trace = message => {
   console.trace(LOG_TYPES.trace, message);
 };
 

@@ -2,8 +2,9 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { REGION } = require('../../utils');
 
-const sendPushNotificationAsignedIncidence = functions.region(REGION).firestore
-  .document('incidences/{incidenceId}')
+const sendPushNotificationAsignedIncidence = functions
+  .region(REGION)
+  .firestore.document('incidences/{incidenceId}')
   .onUpdate(async (change, context) => {
     try {
       const updatedIncidence = change.after.data();
@@ -15,7 +16,7 @@ const sendPushNotificationAsignedIncidence = functions.region(REGION).firestore
         updatedIncidence.state === beforeIncidence.state
       ) {
         const asignedWorkers = updatedIncidence.workersId.filter(
-          (worker) => beforeIncidence.workersId.indexOf(worker) === -1,
+          worker => beforeIncidence.workersId.indexOf(worker) === -1
         );
 
         const adminsSnapshot = await admin
@@ -26,29 +27,29 @@ const sendPushNotificationAsignedIncidence = functions.region(REGION).firestore
 
         const workers = await Promise.all(
           asignedWorkers.map(
-            async (workerId) =>
-              await admin.firestore().collection('users').doc(workerId).get(),
-          ),
+            async workerId =>
+              await admin.firestore().collection('users').doc(workerId).get()
+          )
         );
 
         const workersTokens = workers
-          .filter((worker) => worker.data().token)
-          .map((worker) => worker.data().token);
+          .filter(worker => worker.data().token)
+          .map(worker => worker.data().token);
 
-        const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
+        const adminTokens = adminsSnapshot.docs.map(doc => doc.data().token);
         const listTokens = adminTokens.concat(workersTokens);
 
-        const cleanListTokens = listTokens.filter((t) => t !== undefined);
+        const cleanListTokens = listTokens.filter(t => t !== undefined);
 
         let notification = {
           title: 'Incidencia ⚠️',
-          body: `Se te ha asignado una incidencia!`,
+          body: `Se te ha asignado una incidencia!`
         };
 
         let data = {
           type: 'entity',
           collection: 'incidences',
-          docId: context.params.incidenceId,
+          docId: context.params.incidenceId
         };
 
         await admin.messaging().sendMulticast({
@@ -57,11 +58,11 @@ const sendPushNotificationAsignedIncidence = functions.region(REGION).firestore
           apns: {
             payload: {
               aps: {
-                sound: 'default',
-              },
-            },
+                sound: 'default'
+              }
+            }
           },
-          data,
+          data
         });
       }
     } catch (err) {

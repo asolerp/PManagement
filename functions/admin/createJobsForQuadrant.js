@@ -2,8 +2,9 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { REGION } = require('../utils');
 
-const createJobsForQuadrant = functions.region(REGION).firestore
-  .document('quadrants/{quadrantId}/jobs/{jobId}')
+const createJobsForQuadrant = functions
+  .region(REGION)
+  .firestore.document('quadrants/{quadrantId}/jobs/{jobId}')
   .onCreate(async (snap, context) => {
     const job = snap.data();
 
@@ -21,7 +22,7 @@ const createJobsForQuadrant = functions.region(REGION).firestore
         quadrantId: job.quadrantId,
         quadrantStartHour: job.startHour,
         quadrantEndHour: job.endHour,
-        house: {id: house.id, ...house.data()},
+        house: { id: house.id, ...house.data() },
         houseId: house.id,
         observations: 'Sin observaciones',
         task: {
@@ -31,17 +32,17 @@ const createJobsForQuadrant = functions.region(REGION).firestore
           locales: {
             en: {
               desc: 'Cleaning service',
-              name: 'Cleaning',
+              name: 'Cleaning'
             },
             es: {
               desc: 'Servicio de limpieza',
-              name: 'Limpieza',
-            },
+              name: 'Limpieza'
+            }
           },
-          name: 'Limpieza',
+          name: 'Limpieza'
         },
         workers: [job.worker],
-        workersId: [job.worker.id],
+        workersId: [job.worker.id]
       };
 
       const jobResponse = await admin
@@ -51,13 +52,13 @@ const createJobsForQuadrant = functions.region(REGION).firestore
 
       let notification = {
         title: 'Manos a la obra! 📝',
-        body: `Se te ha asignado al cuadrante de hoy ✅`,
+        body: `Se te ha asignado al cuadrante de hoy ✅`
       };
 
       let data = {
         type: 'entity',
         collection: 'jobs',
-        docId: jobResponse.id,
+        docId: jobResponse.id
       };
 
       if (job.worker.token) {
@@ -69,11 +70,11 @@ const createJobsForQuadrant = functions.region(REGION).firestore
               aps: {
                 'content-available': 1,
                 mutableContent: 1,
-                sound: 'default',
-              },
-            },
+                sound: 'default'
+              }
+            }
           },
-          data,
+          data
         });
       }
     } catch (err) {
@@ -81,4 +82,4 @@ const createJobsForQuadrant = functions.region(REGION).firestore
     }
   });
 
-module.exports = {createJobsForQuadrant};
+module.exports = { createJobsForQuadrant };

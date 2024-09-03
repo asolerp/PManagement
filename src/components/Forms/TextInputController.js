@@ -1,64 +1,56 @@
 import React from 'react';
-import {Controller} from 'react-hook-form';
-import {Text, TextInput, StyleSheet, View} from 'react-native';
+import { Controller } from 'react-hook-form';
+import { Text, TextInput, StyleSheet, View } from 'react-native';
 
 import theme from '../../Theme/Theme';
 
 const styles = StyleSheet.create({
-  rightContainer: {
-    position: 'absolute',
-    right: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 50,
+  input: {
+    borderRadius: 10,
     height: 50,
+    padding: 10
   },
   inputContainer: {
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
     borderColor: '#EAEAEA',
-    justifyContent: 'center',
-  },
-  input: {
-    height: 50,
     borderRadius: 10,
-    padding: 10,
+    borderWidth: 1,
+    height: 50,
+    justifyContent: 'center',
+    padding: 10
   },
+  rightContainer: {
+    alignItems: 'center',
+    height: 50,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 10,
+    width: 50
+  }
 });
 
 export const TextInputController = ({
   name,
-  control,
-  rules,
+  setValue,
+  ref,
   errors,
   placeholder,
   inputProps,
   right,
-  style,
+  style
 }) => {
   return (
     <>
-      <Controller
-        control={control}
-        rules={rules}
-        render={({field: {onChange, onBlur, value}}) => (
-          <View style={[styles.inputContainer]}>
-            <TextInput
-              autoCapitalize="none"
-              style={[styles.input, style]}
-              placeholder={placeholder}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              {...inputProps}
-            />
-            {right && <View style={styles.rightContainer}>{right()}</View>}
-          </View>
-        )}
-        name={name}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          ref={ref}
+          autoCapitalize="none"
+          style={[styles.input, style]}
+          placeholder={placeholder}
+          onChangeText={text => setValue(name, text)}
+          {...inputProps}
+        />
+        {right && <View style={styles.rightContainer}>{right()}</View>}
+      </View>
       {errors[name] && (
         <Text style={[theme.mY2, theme.textErrorDark]}>
           El campo es requerido.

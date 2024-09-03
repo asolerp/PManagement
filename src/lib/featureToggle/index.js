@@ -1,19 +1,19 @@
 import remoteConfig from '@react-native-firebase/remote-config';
 
-import {REGISTRY} from './registry';
-import {compareToggleValues, getDefaultValues} from './utils';
-export {REGISTRY};
-import {isDevelopment} from '../../utils/isDevelopment';
-import {error} from '../logging';
+import { REGISTRY } from './registry';
+import { compareToggleValues, getDefaultValues } from './utils';
+export { REGISTRY };
+import { isDevelopment } from '../../utils/isDevelopment';
+import { error } from '../logging';
 
 export const initRemoteConfig = async () => {
   try {
     await remoteConfig().setConfigSettings({
-      minimumFetchIntervalMillis: 60000,
+      minimumFetchIntervalMillis: 60000
     });
 
     await remoteConfig().setDefaults({
-      ...getDefaultValues(REGISTRY),
+      ...getDefaultValues(REGISTRY)
     });
 
     return await remoteConfig().fetchAndActivate();
@@ -22,15 +22,15 @@ export const initRemoteConfig = async () => {
       title: 'Error',
       subtitle: 'Ha ocurrido un error',
       data: {
-        error: e,
-      },
+        error: e
+      }
     });
   }
 };
 
-export const isFeatureEnabled = (registry) => {
+export const isFeatureEnabled = registry => {
   try {
-    const {key, debug} = registry;
+    const { key, debug } = registry;
     const configValue = remoteConfig().getValue(key);
 
     if (isDevelopment() && debug !== undefined) {
@@ -43,17 +43,17 @@ export const isFeatureEnabled = (registry) => {
       title: 'Error',
       subtitle: 'Ha ocurrido un error',
       data: {
-        error: e,
-      },
+        error: e
+      }
     });
   }
 
   return false;
 };
 
-export const isFeatureAppUpdateRequired = (registry) => {
+export const isFeatureAppUpdateRequired = registry => {
   try {
-    const {key} = registry;
+    const { key } = registry;
     const configValue = remoteConfig().getValue(key);
 
     return compareToggleValues(configValue.asString(), 'update');
@@ -62,15 +62,15 @@ export const isFeatureAppUpdateRequired = (registry) => {
       title: 'Error',
       subtitle: 'Ha ocurrido un error',
       data: {
-        error: e,
-      },
+        error: e
+      }
     });
   }
 };
 
-export const getFeatureConfig = (registry) => {
+export const getFeatureConfig = registry => {
   try {
-    const {key} = registry;
+    const { key } = registry;
     const configValue = remoteConfig().getValue(key).asString();
 
     if (!configValue) {
@@ -83,8 +83,8 @@ export const getFeatureConfig = (registry) => {
       title: 'Error',
       subtitle: 'Ha ocurrido un error',
       data: {
-        error: e,
-      },
+        error: e
+      }
     });
   }
 

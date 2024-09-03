@@ -1,14 +1,19 @@
-import {useContext, useState} from 'react';
+import { useContext, useState } from 'react';
 
-import {firebase} from '@react-native-firebase/firestore';
-import {error} from '../lib/logging';
-import {LoadingModalContext} from '../context/loadinModalContext';
+import { firebase } from '@react-native-firebase/firestore';
+import '@react-native-firebase/functions';
+import { error } from '../lib/logging';
+import { LoadingModalContext } from '../context/loadinModalContext';
+import { REGION } from '../firebase/utils';
 
 const useRecursiveDelete = () => {
   const [loading, setLoading] = useState(false);
-  const {setVisible} = useContext(LoadingModalContext);
-  const recursiveDelete = async ({path, collection, docId}) => {
-    const deleteFn = firebase.functions().httpsCallable('recursiveDelete');
+  const { setVisible } = useContext(LoadingModalContext);
+  const recursiveDelete = async ({ path, collection, docId }) => {
+    const deleteFn = firebase
+      .app()
+      .functions(REGION)
+      .httpsCallable('recursiveDelete');
     try {
       setLoading(true);
       setVisible(true);
@@ -16,21 +21,21 @@ const useRecursiveDelete = () => {
       await deleteFn({
         path: path,
         docId,
-        collection: collection,
+        collection: collection
       }).then(() => setVisible(false));
     } catch (err) {
       console.log('ERROR', err);
       error({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
       setVisible(false);
     }
   };
   return {
     loading,
-    recursiveDelete,
+    recursiveDelete
   };
 };
 

@@ -1,9 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken, REGION} = require('../../utils');
+const { removeUserActionToken, REGION } = require('../../utils');
 
-const sendPushNotificationNewIncidence = functions.region(REGION).firestore
-  .document('incidences/{incidenceId}')
+const sendPushNotificationNewIncidence = functions
+  .region(REGION)
+  .firestore.document('incidences/{incidenceId}')
   .onCreate(async (snap, context) => {
     const incidence = snap.data();
 
@@ -14,24 +15,24 @@ const sendPushNotificationNewIncidence = functions.region(REGION).firestore
         .where('role', '==', 'admin')
         .get();
 
-      const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
+      const adminTokens = adminsSnapshot.docs.map(doc => doc.data().token);
 
       const listTokens = removeUserActionToken(
         adminTokens,
-        incidence.user.token,
+        incidence.user.token
       );
 
-      const cleanListTokens = listTokens.filter((t) => t !== undefined);
+      const cleanListTokens = listTokens.filter(t => t !== undefined);
 
       let notification = {
         title: 'Nueva incidencia! ⚠️',
-        body: `${incidence.user.firstName} ha creado una nueva incidencia`,
+        body: `${incidence.user.firstName} ha creado una nueva incidencia`
       };
 
       let data = {
         type: 'entity',
         collection: 'incidences',
-        docId: context.params.incidenceId,
+        docId: context.params.incidenceId
       };
 
       await admin.messaging().sendMulticast({
@@ -40,11 +41,11 @@ const sendPushNotificationNewIncidence = functions.region(REGION).firestore
         apns: {
           payload: {
             aps: {
-              sound: 'default',
-            },
-          },
+              sound: 'default'
+            }
+          }
         },
-        data,
+        data
       });
     } catch (err) {
       console.log(err);

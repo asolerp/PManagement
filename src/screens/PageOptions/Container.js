@@ -1,20 +1,21 @@
 import React from 'react';
-import {View} from 'react-native';
-import {useTheme} from '../../Theme';
-import {useTranslation} from 'react-i18next';
-import {MenuItem} from '../../components/UI/MenuItem';
-import {Colors} from '../../Theme/Variables';
+import { View } from 'react-native';
+
+import { useTranslation } from 'react-i18next';
+import { MenuItem } from '../../components/UI/MenuItem';
+import { Colors } from '../../Theme/Variables';
 
 const Container = ({
   showDelete,
   onDelete,
   duplicate,
+  showRestorePassword,
+  onRestorePassword,
   onDuplicate,
   editable = true,
-  onEdit = () => {},
+  onEdit = () => {}
 }) => {
-  const {Gutters} = useTheme();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <View style={[]}>
@@ -34,9 +35,18 @@ const Container = ({
         />
       )}
 
+      {showRestorePassword && (
+        <MenuItem
+          textStyle={{ color: Colors.black }}
+          iconName="key"
+          title={t('options.restorePassword')}
+          onPress={onRestorePassword}
+        />
+      )}
+
       {showDelete && (
         <MenuItem
-          textStyle={{color: Colors.danger}}
+          textStyle={{ color: Colors.danger }}
           iconColor={Colors.danger}
           iconName="trash"
           title={t('options.delete')}

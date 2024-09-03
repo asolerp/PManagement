@@ -1,9 +1,11 @@
 import { useState } from 'react';
 
+import '@react-native-firebase/functions';
 import firestore, { firebase } from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import ImageResizer from 'react-native-image-resizer';
 import { error as errorLog } from '../lib/logging';
+import { REGION } from '../firebase/utils';
 
 const uploadImageFromFirebase = async asset => {
   const { uri, storageFolder, fileName, collectionRef } = asset;
@@ -41,7 +43,10 @@ export const usePhotos = () => {
   const [error, setError] = useState();
   // const {upload} = useUploadCloudinaryImage();
 
-  const deleteFn = firebase.functions().httpsCallable('deletePhotoCloudinary');
+  const deleteFn = firebase
+    .app()
+    .functions(REGION)
+    .httpsCallable('deletePhotoCloudinary');
 
   const removePhotos = async (imgs, setter, fbRoute) => {
     const { collectionRef } = fbRoute;

@@ -1,7 +1,7 @@
-const REGION = "europe-west1";
+const REGION = 'europe-west1';
 
 const removeUserActionToken = (list, userToken) =>
-  list.filter((token) => token !== userToken);
+  list.filter(token => token !== userToken);
 
 const genPassword = () => {
   var chars =
@@ -18,5 +18,5 @@ const genPassword = () => {
 module.exports = {
   REGION,
   genPassword,
-  removeUserActionToken,
+  removeUserActionToken
 };

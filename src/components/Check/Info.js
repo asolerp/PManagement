@@ -1,5 +1,5 @@
-import React, {useMemo} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 // Redux
 
@@ -7,89 +7,89 @@ import {View, Text, StyleSheet} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {
   useCollectionData,
-  useDocumentData,
+  useDocumentData
 } from 'react-firebase-hooks/firestore';
 
 // styles
 
-import {GREY_1, PM_COLOR} from '../../styles/colors';
+import { GREY_1, PM_COLOR } from '../../styles/colors';
 
 // utils
 import moment from 'moment';
 
 import EditableInput from '../Elements/EditableInput';
 
-import {useRoute} from '@react-navigation/core';
+import { useRoute } from '@react-navigation/core';
 import updateChecklistInput from '../../Services/updateChecklistInput';
 
 import ListOfChecks from './ListOfChecks';
-import {CHECKLISTS} from '../../utils/firebaseKeys';
-import {useTheme} from '../../Theme';
+import { CHECKLISTS } from '../../utils/firebaseKeys';
+import { useTheme } from '../../Theme';
 
 import Avatar from '../Avatar';
 
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 import Badge from '../Elements/Badge';
-import {Colors} from '../../Theme/Variables';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {HOUSE_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import { Colors } from '../../Theme/Variables';
+import { openScreenWithPush } from '../../Router/utils/actions';
+import { HOUSE_SCREEN_KEY } from '../../Router/utils/routerKeys';
 import useAuth from '../../utils/useAuth';
-import {useTranslation} from 'react-i18next';
-import {ScrollView} from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
+import { ScrollView } from 'react-native-gesture-handler';
 import theme from '../../Theme/Theme';
-import {DEFAULT_IMAGE} from '../../constants/general';
-import {normalShadow} from '../../styles/common';
+import { DEFAULT_IMAGE } from '../../constants/general';
+import { normalShadow } from '../../styles/common';
 
 const styles = StyleSheet.create({
-  checklistContainer: {
-    flex: 1,
-    marginTop: 10,
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'white',
+  buttonStyle: {
     alignItems: 'center',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: GREY_1,
-    borderRadius: 10,
-  },
-  observationsStyle: {
-    fontSize: 15,
+    backgroundColor: PM_COLOR,
+    borderRadius: 100,
+    height: 32,
+    justifyContent: 'center',
+    marginRight: 10,
+    width: 32
   },
   checkboxWrapper: {
+    flexDirection: 'row'
+  },
+  checklistContainer: {
+    flex: 1,
+    marginTop: 10
+  },
+  container: {
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderColor: GREY_1,
+    borderRadius: 10,
+    borderWidth: 1,
+    flex: 1,
     flexDirection: 'row',
+    padding: 10
+  },
+  dateStyle: {
+    color: '#2A7BA5'
   },
   infoWrapper: {
     flex: 6,
     marginLeft: 0,
-    paddingRight: 20,
+    paddingRight: 20
   },
   name: {
-    fontSize: 15,
+    fontSize: 15
   },
-  dateStyle: {
-    color: '#2A7BA5',
-  },
-  buttonStyle: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: PM_COLOR,
-    borderRadius: 100,
-    marginRight: 10,
-  },
+  observationsStyle: {
+    fontSize: 15
+  }
 });
 
-const Info = ({isCheckFinished}) => {
+const Info = ({ isCheckFinished }) => {
   const route = useRoute();
-  const {isOwner} = useAuth();
-  const {Layout, Gutters, Fonts} = useTheme();
-  const {docId} = route.params;
-  const {t} = useTranslation();
+  const { isOwner } = useAuth();
+  const { Layout, Gutters, Fonts } = useTheme();
+  const { docId } = route.params;
+  const { t } = useTranslation();
   const query = useMemo(() => {
     return firestore().collection('checklists').doc(docId).collection('checks');
   }, [docId]);
@@ -99,32 +99,34 @@ const Info = ({isCheckFinished}) => {
   }, [docId]);
 
   const [checklist, loadingChecklist] = useDocumentData(queryChecklist, {
-    idField: 'id',
+    idField: 'id'
   });
 
   const [checks, loadingChecks] = useCollectionData(query, {
-    idField: 'id',
+    idField: 'id'
   });
 
-  const doneCounter = checks?.filter((check) => check.done).length;
+  const doneCounter = checks?.filter(check => check.done).length;
 
   return (
     <ScrollView
       style={styles.checklistContainer}
-      contentContainerStyle={{paddingBottom: 50}}
-      showsVerticalScrollIndicator={false}>
-      <View style={{marginBottom: 10}}>
+      contentContainerStyle={{ paddingBottom: 50 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={{ marginBottom: 10 }}>
         {checklist?.finished && (
           <Badge text={t('checklists.checkPage.done')} variant={'success'} />
         )}
-        <View style={[Gutters.smallBMargin]}>
+        <View style={Gutters.smallBMargin}>
           <View
             style={[
               Layout.row,
               Layout.justifyContentSpaceBetween,
               Layout.alignItemsCenter,
-              Gutters.smallVMargin,
-            ]}>
+              Gutters.smallVMargin
+            ]}
+          >
             <View>
               <Badge
                 text={checklist?.house?.[0].houseName}
@@ -132,7 +134,7 @@ const Info = ({isCheckFinished}) => {
                 containerStyle={Gutters.smallBMargin}
                 onPress={() =>
                   openScreenWithPush(HOUSE_SCREEN_KEY, {
-                    houseId: checklist?.house?.[0].id,
+                    houseId: checklist?.house?.[0].id
                   })
                 }
               />
@@ -149,9 +151,10 @@ const Info = ({isCheckFinished}) => {
                 fill={(doneCounter / checklist?.total) * 100}
                 tintColor={Colors.pm}
                 backgroundColor={Colors.lowGrey}
-                backgroundWidth={2}>
+                backgroundWidth={2}
+              >
                 {() => (
-                  <Text style={{fontSize: 12, color: 'black'}}>
+                  <Text style={{ fontSize: 12, color: 'black' }}>
                     {Math.round((doneCounter / checklist?.total) * 100)}%
                   </Text>
                 )}
@@ -160,32 +163,41 @@ const Info = ({isCheckFinished}) => {
           </View>
         </View>
 
-        <View style={[Gutters.smallBMargin]}>
-          <Text style={[Gutters.smallVMargin, Fonts.textTitle, theme.textBlack]}>
+        <View style={Gutters.smallBMargin}>
+          <Text
+            style={[Gutters.smallVMargin, Fonts.textTitle, theme.textBlack]}
+          >
             {t('checklists.comments')}
           </Text>
           {isOwner ? (
-            <View style={[Gutters.smallBMargin, {width: '90%'}]}>
-              <Text style={[Gutters.regularTMargin, Gutters.tinyBMargin, theme.textBlack]}>
+            <View style={[Gutters.smallBMargin, { width: '90%' }]}>
+              <Text
+                style={[
+                  Gutters.regularTMargin,
+                  Gutters.tinyBMargin,
+                  theme.textBlack
+                ]}
+              >
                 Our team is working hard to keep your house clean and safe! 🚀🚀
               </Text>
-              <Text style={[theme.textBlack]}>
+              <Text style={theme.textBlack}>
                 Here you will see the update of the jobs made in your house
               </Text>
             </View>
           ) : (
             <View
               style={[
-                {borderWidth: 1},
+                { borderWidth: 1 },
                 theme.borderGray500,
                 theme.roundedSm,
-                theme.p4,
-              ]}>
+                theme.p4
+              ]}
+            >
               {checklist && (
                 <EditableInput
                   value={checklist?.observations || 'Sin observaciones'}
-                  onPressAccept={(change) =>
-                    updateChecklistInput(docId, {observations: change})
+                  onPressAccept={change =>
+                    updateChecklistInput(docId, { observations: change })
                   }
                 />
               )}
@@ -197,7 +209,13 @@ const Info = ({isCheckFinished}) => {
           <>
             <View style={[Layout.col, Gutters.smallVMargin]}>
               <View style={[Layout.row, Layout.justifyContentSpaceBetween]}>
-                <Text style={[Gutters.smallBMargin, Fonts.textTitle, theme.textBlack]}>
+                <Text
+                  style={[
+                    Gutters.smallBMargin,
+                    Fonts.textTitle,
+                    theme.textBlack
+                  ]}
+                >
                   {isOwner
                     ? t('checklists.checkPage.workers')
                     : t('common.asigned_workers')}
@@ -223,8 +241,9 @@ const Info = ({isCheckFinished}) => {
                         theme.textXs,
                         theme.textBlack,
                         theme.textCenter,
-                        theme.w12,
-                      ]}>
+                        theme.w12
+                      ]}
+                    >
                       {worker.firstName}
                     </Text>
                   </View>

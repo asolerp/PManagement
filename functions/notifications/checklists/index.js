@@ -7,5 +7,5 @@ module.exports = {
   sendPushNotificationUpdateCheckList,
   sendPushNotificationNewChecklistMessage,
   sendPushNotificationNewAsignedChecklist,
-  sendPushNotificationFinishedChecklist,
+  sendPushNotificationFinishedChecklist
 };

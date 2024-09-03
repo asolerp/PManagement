@@ -5,7 +5,7 @@ export default {
     forgot: 'He olvidado mi contraseña',
     reset_fail: 'Por favor, introduzca un correo electrónico correcto',
     fail: 'El email o la contraseña son incorrectos',
-    cta: 'Login',
+    cta: 'Login'
   },
   tabs: {
     dashboard: 'Home',
@@ -14,7 +14,7 @@ export default {
     incidences: 'Incidencias',
     users: 'Usuarios',
     houses: 'Casas',
-    profile: 'Perfil',
+    profile: 'Perfil'
   },
   common: {
     apply: 'Aplicar',
@@ -47,37 +47,37 @@ export default {
       today: 'Hoy',
       next: 'En {{numberOfDays}} días',
       week: 'Esta semana',
-      more_week: 'Más de una semana',
+      more_week: 'Más de una semana'
     },
     filters: {
       title: 'Filtros',
       range_time: 'Rango de tiempo',
       state: {
         resolved: 'Resueltas',
-        no_resolved: 'Sin resolver',
+        no_resolved: 'Sin resolver'
       },
       checklistState: {
         resolved: 'Terminadas',
-        no_resolved: 'Sin terminar',
+        no_resolved: 'Sin terminar'
       },
       time: {
         day: 'Hoy',
         week: 'Esta semana',
         month: 'Este mes',
         year: 'Este año',
-        all: 'Todo',
-      },
-    },
+        all: 'Todo'
+      }
+    }
   },
   welcome: 'Hoy es {{date}}',
   homeMessage: 'Estas son tus tareas asignadas para hoy 💪🏡',
   check: {
     done: 'Finalizar y enviar al propietario',
-    photos: 'Fotos',
+    photos: 'Fotos'
   },
   new_checklist: {
     title: 'Nuevo checklist',
-    check_list: 'Lista de checks',
+    check_list: 'Lista de checks'
   },
   checklists: {
     title: 'Checklists',
@@ -91,8 +91,8 @@ export default {
     checkPage: {
       done: 'Terminado',
       workers: 'Working in your hosue',
-      jobs: 'Trabajos',
-    },
+      jobs: 'Trabajos'
+    }
   },
   incidence: {
     title: 'Incidencia',
@@ -102,17 +102,17 @@ export default {
       title: 'Estado de la incidencia',
       ini: 'Iniciada',
       process: 'En proceso',
-      done: 'Finalizada',
-    },
+      done: 'Finalizada'
+    }
   },
   incidences: {
     title: 'Incidencias',
     empty: 'No se han encontrado incidencias activas en este momento',
-    no_found: 'No se han encontrado incidencias',
+    no_found: 'No se han encontrado incidencias'
   },
   newJob: {
     title: 'Nuevo trabajo',
-    desc_title: 'Nuevo trabajo de {{job}}',
+    desc_title: 'Nuevo trabajo de {{job}}'
   },
   job: {
     title: 'Trabajo',
@@ -120,11 +120,11 @@ export default {
     not_finished: 'Sin terminar',
     done: 'Abrir',
     no_done: 'Finalizar',
-    empty: 'No hay trabajos activos en estos momentos',
+    empty: 'No hay trabajos activos en estos momentos'
   },
   jobs: {
     title: 'Trabajos',
-    no_found: 'No se han encontrado trabajos',
+    no_found: 'No se han encontrado trabajos'
   },
   newIncidence: {
     title: 'Nueva Incidencia',
@@ -133,8 +133,8 @@ export default {
       title: 'Título',
       incidence: 'Descripción',
       photos: 'Fotos',
-      create: 'Crear incidencia',
-    },
+      create: 'Crear incidencia'
+    }
   },
   newUser: {
     title: 'Nuevo usuario',
@@ -147,11 +147,11 @@ export default {
       role: 'Rol usuario',
       gender: 'Género',
       create: 'Crear usuario',
-      language: 'Idioma',
-    },
+      language: 'Idioma'
+    }
   },
   users: {
-    title: 'Usuarios',
+    title: 'Usuarios'
   },
   houses: {
     title: 'Casas',
@@ -161,10 +161,10 @@ export default {
     house_municipality: 'Municipio',
     house_street: 'Calle',
     owner_name: 'Nombre del propietario',
-    owner_phone: 'Teléfono',
+    owner_phone: 'Teléfono'
   },
   photos: {
-    title: 'Fotos',
+    title: 'Fotos'
   },
   profile: {
     edit: 'Editar',
@@ -177,14 +177,15 @@ export default {
     last_name: 'Apellido',
     gender: 'Género',
     role: 'Rol',
-    language: 'Idioma',
+    language: 'Idioma'
   },
   options: {
     title: 'Opciones',
     edit: 'Editar',
     duplicate: 'Duplicar',
+    restorePassword: 'Restaurar contraseña',
     delete: 'Borrar',
-    removing: 'Eliminando...',
+    removing: 'Eliminando...'
   },
   alerts: {
     attention: 'Atención',
@@ -193,21 +194,21 @@ export default {
     incidence: {
       resolve: '¿Seguro que quieres resolver la incidencia?',
       remove: '¿Seguro que quieres eliminar la incidencia?',
-      open: '¿Seguro que quieres volver a abrir la incidencia?',
+      open: '¿Seguro que quieres volver a abrir la incidencia?'
     },
     job: {
       finish:
         '¿Seguro que quieres finalizar el trabajo? Haz una foto a la casa para que se guarde tu hora de salida',
-      open: '¿Seguro que quieres abrir el trabajo?',
+      open: '¿Seguro que quieres abrir el trabajo?'
     },
     checklist: {
       remove: '¿Seguro que quieres eliminar este checklist?',
       finish:
-        '¿Seguro que quieres finalizar y enviar el informe al propietario?',
-    },
+        '¿Seguro que quieres finalizar y enviar el informe al propietario?'
+    }
   },
   chat: {
     view_incidence: 'Ver incidencia',
-    view_checklist: 'Ver checklist',
-  },
+    view_checklist: 'Ver checklist'
+  }
 };

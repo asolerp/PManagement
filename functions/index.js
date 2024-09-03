@@ -4,49 +4,56 @@ const firebase_tools = require('firebase-tools');
 
 const cloudinary = require('cloudinary').v2;
 
-const {createNewUser} = require('./admin/createNewUser');
-const {notifyOwner} = require('./admin/notifyOwner');
-const {deleteUser} = require('./admin/deleteUser');
-const { moveToRecycleBinWithSubcollection } = require('./admin/moveToRecycleBinWithSubcollection');
+const { createNewUser } = require('./admin/createNewUser');
+const { notifyOwner } = require('./admin/notifyOwner');
+const { deleteUser } = require('./admin/deleteUser');
+const {
+  moveToRecycleBinWithSubcollection
+} = require('./admin/moveToRecycleBinWithSubcollection');
 
 // Cloudinary
 
-const {uploadHousePhoto} = require('./cloudinary/uploadHousePhoto');
-const {uploadProfilePhoto} = require('./cloudinary/uploadProfilePhoto');
+const { uploadHousePhoto } = require('./cloudinary/uploadHousePhoto');
+const { uploadProfilePhoto } = require('./cloudinary/uploadProfilePhoto');
 
 // Notifications
 const {
   sendPushNotificationFinishedChecklist,
   sendPushNotificationNewAsignedChecklist,
-  sendPushNotificationNewChecklistMessage,
+  sendPushNotificationNewChecklistMessage
 } = require('./notifications/checklists');
 
 const {
   sendPushNotificationUpdateIncidence,
   sendPushNotificationNewIncidence,
   sendPushNotificationNewIncidenceMessage,
-  sendPushNotificationAsignedIncidence,
+  sendPushNotificationAsignedIncidence
 } = require('./notifications/incidences');
 
 const {
   sendPushNotificationJobMessage,
-  sendPushNotificationNewJob,
+  sendPushNotificationNewJob
 } = require('./notifications/jobs');
 
-const {createJobsForQuadrant} = require('./admin/createJobsForQuadrant');
-const { restoreDocumentWithSubcollection } = require('./admin/restoreDocumentWithSubcollection');
+const { createJobsForQuadrant } = require('./admin/createJobsForQuadrant');
+const {
+  restoreDocumentWithSubcollection
+} = require('./admin/restoreDocumentWithSubcollection');
 const { updateOwnerHouse } = require('./admin/updateOwnerHouse');
 const { REGION } = require('./utils');
+const { sendPasswordResetEmail } = require('./admin/restoreUserPassword');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-admin.initializeApp(functions.config({
-  region: REGION
-}).firebase);
+admin.initializeApp(
+  functions.config({
+    region: REGION
+  }).firebase
+);
 
 /// CLOUDINARY
 
@@ -55,6 +62,7 @@ exports.uploadProfilePhoto = uploadProfilePhoto;
 
 /// ADMIN
 
+exports.sendPasswordResetEmail = sendPasswordResetEmail;
 exports.updateOwnerHouse = updateOwnerHouse;
 exports.createNewUser = createNewUser;
 exports.notifyOwner = notifyOwner;
@@ -92,8 +100,9 @@ exports.sendPushNotificationJobMessage = sendPushNotificationJobMessage;
 exports.sendPushNotificationNewJob = sendPushNotificationNewJob;
 exports.createJobsForQuadrant = createJobsForQuadrant;
 
-exports.updateProfileImage = functions.region(REGION).firestore
-  .document('users/{userId}')
+exports.updateProfileImage = functions
+  .region(REGION)
+  .firestore.document('users/{userId}')
   .onUpdate(async (change, context) => {
     console.log('Updating images');
     const userAfter = change.after.data();
@@ -106,12 +115,15 @@ exports.updateProfileImage = functions.region(REGION).firestore
         .collection('jobs')
         .where('workersId', 'array-contains', context.params.userId)
         .get();
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(doc => {
         const job = doc.data();
         const findUserIndex = job.workers.findIndex(
-          (w) => w.id === context.params.userId,
+          w => w.id === context.params.userId
         );
-        job.workers[findUserIndex] = {...userAfter, id: context.params.userId};
+        job.workers[findUserIndex] = {
+          ...userAfter,
+          id: context.params.userId
+        };
         const docRef = admin.firestore().collection('jobs').doc(doc.id);
         batch.update(docRef, job);
       });
@@ -121,8 +133,9 @@ exports.updateProfileImage = functions.region(REGION).firestore
     }
   });
 
-exports.updateHouseImageJobs = functions.region(REGION).firestore
-  .document('houses/{houseId}')
+exports.updateHouseImageJobs = functions
+  .region(REGION)
+  .firestore.document('houses/{houseId}')
   .onUpdate(async (change, context) => {
     console.log('Updating images');
     const houseAfter = change.after.data();
@@ -135,10 +148,10 @@ exports.updateHouseImageJobs = functions.region(REGION).firestore
         .collection('jobs')
         .where('houseId', '==', context.params.houseId)
         .get();
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(doc => {
         const job = doc.data();
         console.log('job', job);
-        job.house[0] = {...houseAfter, id: context.params.houseId};
+        job.house[0] = { ...houseAfter, id: context.params.houseId };
         const docRef = admin.firestore().collection('jobs').doc(doc.id);
         batch.update(docRef, job);
       });
@@ -148,13 +161,14 @@ exports.updateHouseImageJobs = functions.region(REGION).firestore
     }
   });
 
-exports.deletePhotoCloudinary = functions.region(REGION)
+exports.deletePhotoCloudinary = functions
+  .region(REGION)
   .runWith({
     timeoutSeconds: 540,
-    memory: '2GB',
+    memory: '2GB'
   })
-  .https.onCall(async (data) => {
-    const {photoIds} = data;
+  .https.onCall(async data => {
+    const { photoIds } = data;
 
     console.log(photoIds);
 
@@ -165,16 +179,16 @@ exports.deletePhotoCloudinary = functions.region(REGION)
   });
 
 exports.recursiveDelete = functions
-.region(REGION)  
-.runWith({
+  .region(REGION)
+  .runWith({
     timeoutSeconds: 540,
-    memory: '2GB',
+    memory: '2GB'
   })
   .https.onCall(async (data, context) => {
-    const {path, collection} = data;
+    const { path, collection } = data;
 
     console.log(
-      `User ${context.auth.uid} has requested to delete path ${path} with collection ${collection}`,
+      `User ${context.auth.uid} has requested to delete path ${path} with collection ${collection}`
     );
 
     // const collectionFolders = {
@@ -191,13 +205,13 @@ exports.recursiveDelete = functions
       recursive: true,
       yes: true,
       force: true,
-      token: process.env.FB_TOKEN,
+      token: process.env.FB_TOKEN
     });
 
     const bucket = admin.storage().bucket();
 
     await bucket.deleteFiles({
-      prefix: path, // the path of the folder
+      prefix: path // the path of the folder
     });
 
     // Delete the file from Firebase Storage.
@@ -206,6 +220,6 @@ exports.recursiveDelete = functions
     // fileRef.delete();
 
     return {
-      path: path,
+      path: path
     };
   });

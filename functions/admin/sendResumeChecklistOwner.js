@@ -1,20 +1,20 @@
-const {createTransporter} = require('../utils/email/config');
+const { createTransporter } = require('../utils/email/config');
 
 const ADMIN_EMAIL = 'recepcion@portmanagement.es';
 
-const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
-  const {observations} = checklist;
+const sendResumeChecklistOwner = async ({ email, checklist, checks }) => {
+  const { observations } = checklist;
   const {
     street,
     owner,
-    houseImage: {original} = { original: null },
+    houseImage: { original } = { original: null }
   } = checklist.house[0];
 
-  const {lastName, gender, language} = owner;
+  const { lastName, gender, language } = owner;
 
   const arrayOfEmails = email.split(',');
 
-  const generateHouseImage = (original) => {
+  const generateHouseImage = original => {
     if (original) {
       return `
           <tr>
@@ -22,14 +22,14 @@ const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
               <img src="${original}" alt="" height="300" style="display:block;border-radius: 10px; width: 100%; object-fit: cover;" />
             </td>
           </tr>
-      `
+      `;
     }
     return `
       <tr>
         <td align="left" style="padding:20px 0 130px 0;"/>
       </tr>
-    `
-  }
+    `;
+  };
 
   const generateTitle = () => (gender === 'male' ? 'Mr' : 'Mrs');
 
@@ -39,7 +39,7 @@ const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
       let checkImages = '';
       if (check.photos) {
         check.photos.length > 0 &&
-          check.photos.forEach((photo) => {
+          check.photos.forEach(photo => {
             checkImages += `
             <td>
               <a href="${photo}" style="text-decoration: none; margin: 5px;">
@@ -89,7 +89,7 @@ const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
     return checksHtml;
   };
 
-  const generateEmail = (language) => {
+  const generateEmail = language => {
     return `
     <!DOCTYPE html>
     <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -243,7 +243,7 @@ const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
           ? generateEmail('en')
           : language === 'en'
             ? generateEmail('en')
-            : generateEmail('es'),
+            : generateEmail('es')
       };
       emailTransporter.sendMail(mailOptions, (error, data) => {
         if (error) {
@@ -261,5 +261,5 @@ const sendResumeChecklistOwner = async ({email, checklist, checks}) => {
 };
 
 module.exports = {
-  sendResumeChecklistOwner,
+  sendResumeChecklistOwner
 };

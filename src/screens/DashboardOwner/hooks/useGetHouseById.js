@@ -1,72 +1,35 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-import firestore from '@react-native-firebase/firestore';
+import { CHECKLISTS, CHECKS, HOUSES } from '../../../utils/firebaseKeys';
+import { fetchHouseByOwnerId } from '../../../Services/firebase/houseServices';
+import {
+  fetchChecklistsByHouseId,
+  fetchChecksByChecklistId
+} from '../../../Services/firebase/checklistServices';
 
 export const useGetHouseById = userId => {
-  const [house, setHouse] = useState();
-  const [checklist, setChecklist] = useState();
-  const [checksFromChecklist, setChecksFromChecklist] = useState();
-  const [loading, setLoading] = useState();
+  const { data: house, isLoading: isLoadingHouse } = useQuery({
+    queryKey: [HOUSES, userId],
+    queryFn: () => fetchHouseByOwnerId(userId),
+    enabled: !!userId
+  });
 
-  const getOwnerDashboardData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const ownerHouse = await firestore()
-        .collection('houses')
-        .where('owner.id', '==', userId)
-        .get();
+  const { data: checklist, isLoading: isLoadingChecklists } = useQuery({
+    queryKey: [CHECKLISTS, house?.id],
+    queryFn: () => fetchChecklistsByHouseId(house?.id),
+    enabled: !!house?.id
+  });
 
-      const houseData = ownerHouse.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))[0];
-
-      const houseQuery = await firestore()
-        .collection('houses')
-        .doc(houseData.id)
-        .get();
-
-      await firestore()
-        .collection('checklists')
-        .where('houseId', '==', houseData.id)
-        .orderBy('date', 'desc')
-        .limit(1)
-        .get()
-        .then(async response => {
-          const document = response.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }))[0];
-          setChecklist(document);
-          const checksFromChecklistQuery = await firestore()
-            .collection('checklists')
-            .doc(document.id)
-            .collection('checks')
-            .get();
-          setChecksFromChecklist(
-            checksFromChecklistQuery.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data()
-            }))
-          );
-        });
-      setHouse({ id: houseQuery.id, ...houseQuery.data() });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    getOwnerDashboardData();
-  }, []);
+  const { data: checks, isLoading: isLoadingChecks } = useQuery({
+    queryKey: [CHECKS, checklist?.id],
+    queryFn: () => fetchChecksByChecklistId(checklist?.id),
+    enabled: !!checklist?.id
+  });
 
   return {
     house,
-    loading,
+    loading: isLoadingHouse || isLoadingChecklists || isLoadingChecks,
     checklist,
-    checksFromChecklist,
-    getOwnerDashboardData
+    checksFromChecklist: checks
   };
 };

@@ -5,7 +5,7 @@ export default {
     forgot: 'Remember password',
     reset_fail: 'Please enter a correct email',
     fail: 'Email or password are wrong',
-    cta: 'Login',
+    cta: 'Login'
   },
   tabs: {
     dashboard: 'Home',
@@ -14,7 +14,7 @@ export default {
     incidences: 'Incidences',
     users: 'Users',
     houses: 'Houses',
-    profile: 'Profile',
+    profile: 'Profile'
   },
   common: {
     apply: 'Apply',
@@ -48,7 +48,7 @@ export default {
       next: 'In {{numberOfDays}} days',
       past: '{{numberOfDays}} days ago',
       week: 'This week',
-      more_week: 'More than a week',
+      more_week: 'More than a week'
     },
     filters: {
       title: 'Filters',
@@ -58,30 +58,30 @@ export default {
         week: 'This week',
         month: 'This month',
         year: 'This year',
-        all: 'All',
+        all: 'All'
       },
       state: {
         resolved: 'Resolved',
-        no_resolved: 'No resolved',
+        no_resolved: 'No resolved'
       },
       checklistState: {
         resolved: 'Finished',
-        no_resolved: 'Unfinished',
-      },
-    },
+        no_resolved: 'Unfinished'
+      }
+    }
   },
   welcome: 'Today is {{date}} ☀️',
   homeMessage: 'These are your asigned jobs for today 💪🏡',
   check: {
     done: 'Finish and send to owner',
-    photos: 'Photos',
+    photos: 'Photos'
   },
   new_checklist: {
     title: 'New checklist',
-    check_list: 'List of checks',
+    check_list: 'List of checks'
   },
   edit_checklist: {
-    title: 'Edit checklist',
+    title: 'Edit checklist'
   },
   checklists: {
     title: 'Checklists',
@@ -93,8 +93,8 @@ export default {
     checkPage: {
       done: 'Finished!',
       workers: 'Working in your hosue',
-      jobs: 'Jobs',
-    },
+      jobs: 'Jobs'
+    }
   },
   incidence: {
     title: 'Incidence',
@@ -104,17 +104,17 @@ export default {
       title: 'Incidence status',
       ini: 'Initiate',
       process: 'In process',
-      done: 'Done',
-    },
+      done: 'Done'
+    }
   },
   incidences: {
     title: 'Incidences',
     empty: 'No active incidences in this moment',
-    no_found: 'No incidences found',
+    no_found: 'No incidences found'
   },
   newJob: {
     title: 'New Job',
-    desc_title: 'New job of {{job}}',
+    desc_title: 'New job of {{job}}'
   },
   job: {
     title: 'Job',
@@ -122,11 +122,11 @@ export default {
     not_finished: 'Unfinished',
     done: 'Open',
     no_done: 'Finish',
-    empty: 'No active jobs at the moment',
+    empty: 'No active jobs at the moment'
   },
   jobs: {
     title: 'Jobs',
-    no_found: 'No jobs found',
+    no_found: 'No jobs found'
   },
   newIncidence: {
     title: 'New Incidence',
@@ -135,8 +135,8 @@ export default {
       title: 'Title',
       incidence: 'Description',
       photos: 'Photos',
-      create: 'Create incidence',
-    },
+      create: 'Create incidence'
+    }
   },
   newUser: {
     title: 'New user',
@@ -150,11 +150,11 @@ export default {
       gender: 'Gender',
       language: 'Language',
       create: 'Create user',
-      edit: 'Edit user',
-    },
+      edit: 'Edit user'
+    }
   },
   users: {
-    title: 'Users',
+    title: 'Users'
   },
   houses: {
     title: 'Houses',
@@ -164,10 +164,10 @@ export default {
     house_municipality: 'Municipality',
     house_street: 'Street',
     owner_name: "Owner's name",
-    owner_phone: "Owner's phone",
+    owner_phone: "Owner's phone"
   },
   photos: {
-    title: 'Photos',
+    title: 'Photos'
   },
   profile: {
     edit: 'Edit',
@@ -181,14 +181,15 @@ export default {
     last_name: 'Surname',
     gender: 'Gender',
     role: 'Role',
-    language: 'Language',
+    language: 'Language'
   },
   options: {
     title: 'Options',
     edit: 'Edit',
+    restorePassword: 'Restore password',
     duplicate: 'Duplicate',
     delete: 'Delete',
-    removing: 'Removing...',
+    removing: 'Removing...'
   },
   alerts: {
     attention: 'Attention',
@@ -197,20 +198,20 @@ export default {
     incidence: {
       resolve: 'Are you sure you want to resolve the incidence?',
       remove: 'Are you sure you want to delete the incidence?',
-      open: 'Are you sure you want to open the incidence?',
+      open: 'Are you sure you want to open the incidence?'
     },
     job: {
       finish: 'Are you sure you want to finish the job?',
-      open: 'Are you sure you want to open the job?',
+      open: 'Are you sure you want to open the job?'
     },
     checklist: {
       remove: 'Are you sure you want to delete this checklist?',
       finish:
-        'Are you sure you want to finalize and send the report to the owner?',
-    },
+        'Are you sure you want to finalize and send the report to the owner?'
+    }
   },
   chat: {
     view_incidence: 'Go to incidence',
-    view_checklist: 'Go to checklist',
-  },
+    view_checklist: 'Go to checklist'
+  }
 };

@@ -1,30 +1,30 @@
-import React, {memo, useCallback} from 'react';
+import React, { memo, useCallback } from 'react';
 import CustomButton from '../../components/Elements/CustomButton';
 import PageLayout from '../../components/PageLayout';
-import {SearchBar} from 'react-native-elements';
-import {FlatList, View} from 'react-native';
+import { SearchBar } from 'react-native-elements';
+import { FlatList, View } from 'react-native';
 import theme from '../../Theme/Theme';
 
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import ItemList from '../../components/ItemList';
-import {HDivider} from '../../components/UI/HDivider';
-import {useConfirmEntrance} from './hooks/useConfirmEntrance';
-import {Variants} from '../../Theme/Variables';
+import { HDivider } from '../../components/UI/HDivider';
+import { useConfirmEntrance } from './hooks/useConfirmEntrance';
+import { Variants } from '../../Theme/Variables';
 
-const schema = {img: 'houseImage', name: 'houseName'};
+const schema = { img: 'houseImage', name: 'houseName' };
 
 const ItemMemorized = memo(ItemList, (prev, next) => {
   return prev.active === next.active;
 });
 
 const ConfirmEntranceScreen = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
-  const {fList, search, selected, setSearch, onRegisterEnter, setSelected} =
+  const { fList, search, selected, setSearch, onRegisterEnter, setSelected } =
     useConfirmEntrance();
 
   const renderItem = useCallback(
-    ({item}) => {
+    ({ item }) => {
       const handleChange = () => {
         if (item.id === selected?.[0].id) {
           setSelected(null);
@@ -40,14 +40,14 @@ const ConfirmEntranceScreen = () => {
             schema={schema}
             setter={setSelected}
             handleChange={handleChange}
-            active={selected?.some((i) => (i?.id || i?.uid) === item?.id)}
+            active={selected?.some(i => (i?.id || i?.uid) === item?.id)}
             multiple={false}
           />
           <HDivider />
         </React.Fragment>
       );
     },
-    [selected],
+    [selected]
   );
 
   return (
@@ -55,7 +55,7 @@ const ConfirmEntranceScreen = () => {
       safe
       backButton
       titleProps={{
-        subPage: true,
+        subPage: true
       }}
       footer={
         <CustomButton
@@ -66,7 +66,8 @@ const ConfirmEntranceScreen = () => {
           title={'Guardar entrada'}
           onPress={() => onRegisterEnter()}
         />
-      }>
+      }
+    >
       <SearchBar
         placeholder={t('common.search_name')}
         onChangeText={setSearch}
@@ -74,15 +75,15 @@ const ConfirmEntranceScreen = () => {
         platform="ios"
         round
         containerStyle={[theme.p0]}
-        inputStyle={{fontSize: 14, padding: 0}}
+        inputStyle={{ fontSize: 14, padding: 0 }}
       />
 
-      <View style={{flex: 8}}>
+      <View style={{ flex: 8 }}>
         <FlatList
           showsVerticalScrollIndicator={false}
           data={fList}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
         />
       </View>
     </PageLayout>

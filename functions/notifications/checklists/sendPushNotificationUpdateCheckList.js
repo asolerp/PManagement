@@ -1,9 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken, REGION} = require('../../utils');
+const { removeUserActionToken, REGION } = require('../../utils');
 
-const sendPushNotificationUpdateCheckList = functions.region(REGION).firestore
-  .document('checklists/{checklistId}/checks/{checkId}')
+const sendPushNotificationUpdateCheckList = functions
+  .region(REGION)
+  .firestore.document('checklists/{checklistId}/checks/{checkId}')
   .onUpdate(async (change, context) => {
     let workers;
     let workersTokens = [];
@@ -28,40 +29,40 @@ const sendPushNotificationUpdateCheckList = functions.region(REGION).firestore
             checklistSnapshot
               .data()
               .workersId.map(
-                async (workerId) =>
+                async workerId =>
                   await admin
                     .firestore()
                     .collection('users')
                     .doc(workerId)
-                    .get(),
-              ),
+                    .get()
+              )
           );
 
           workersTokens = workers
-            .filter((worker) => worker.data().token)
-            .map((worker) => worker.data().token);
+            .filter(worker => worker.data().token)
+            .map(worker => worker.data().token);
         }
 
-        const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
+        const adminTokens = adminsSnapshot.docs.map(doc => doc.data().token);
 
         const listTokens = removeUserActionToken(
           adminTokens.concat(workersTokens),
-          check.worker.token,
+          check.worker.token
         );
 
-        const cleanListTokens = listTokens.filter((t) => t !== undefined);
+        const cleanListTokens = listTokens.filter(t => t !== undefined);
 
         let notification = {
           title: 'Nuevo trabajo completado! 🚀',
           body: `${check.worker.firstName} ha compleatdo ${
             check.locale.es
-          } en ${checklistSnapshot.data().house[0].houseName}`,
+          } en ${checklistSnapshot.data().house[0].houseName}`
         };
 
         let data = {
           type: 'entity',
           collection: 'checklists',
-          docId: context.params.checklistId,
+          docId: context.params.checklistId
         };
 
         console.log('NOTIFY', cleanListTokens);
@@ -74,11 +75,11 @@ const sendPushNotificationUpdateCheckList = functions.region(REGION).firestore
               aps: {
                 'content-available': 1,
                 mutableContent: 1,
-                sound: 'default',
-              },
-            },
+                sound: 'default'
+              }
+            }
           },
-          data,
+          data
         });
       } catch (err) {
         console.log(err);

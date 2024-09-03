@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {useForm, Controller} from 'react-hook-form';
+import React, { useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import CustomButton from '../../Elements/CustomButton';
 
 //Firebase
@@ -9,24 +9,33 @@ import auth from '@react-native-firebase/auth';
 
 // UI
 
-import {TouchableWithoutFeedback} from 'react-native';
-import {info} from '../../../lib/logging';
-import {useTranslation} from 'react-i18next';
-import {TextInputController} from '../TextInputController';
+import { TouchableWithoutFeedback } from 'react-native';
+import { info } from '../../../lib/logging';
+import { useTranslation } from 'react-i18next';
+import { TextInputController } from '../TextInputController';
 import theme from '../../../Theme/Theme';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const LoginForm = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
+
   const {
-    control,
+    setValue,
+    register,
     handleSubmit,
     getValues,
-    formState: {errors},
+    formState: { errors }
   } = useForm();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [loadingLogin, setLoadingLogin] = useState(false);
+
+  React.useEffect(() => {
+    register(usernameRef.current, { required: true });
+    register(passwordRef.current, { required: true });
+  }, [register]);
 
   const resetPassword = async () => {
     try {
@@ -34,19 +43,19 @@ const LoginForm = () => {
     } catch (err) {
       info({
         message: t('login.reset_fail'),
-        asToast: true,
+        asToast: true
       });
     }
   };
 
-  const signIn = async (data) => {
+  const signIn = async data => {
     setLoadingLogin(true);
     try {
       await auth().signInWithEmailAndPassword(data.username, data.password);
     } catch (err) {
       info({
         message: t('login.fail'),
-        asToast: true,
+        asToast: true
       });
     } finally {
       setLoadingLogin(false);
@@ -58,26 +67,29 @@ const LoginForm = () => {
       <TextInputController
         placeholder={'Email'}
         rules={{
-          required: true,
+          required: true
         }}
-        control={control}
+        setValue={setValue}
+        ref={usernameRef}
         errors={errors}
         name="username"
-        style={[styles.input]}
+        style={styles.input}
         inputProps={{
           autoCapitalize: 'none',
-          placeholderTextColor: 'white',
+          placeholderTextColor: 'white'
         }}
       />
-      <View style={[theme.mB3]} />
+      <View style={theme.mB3} />
       <TextInputController
+        ref={passwordRef}
         placeholder={'Contraseña'}
         rules={{
-          required: true,
+          required: true
         }}
         right={() => (
           <TouchableOpacity
-            onPress={() => setPasswordVisible(!passwordVisible)}>
+            onPress={() => setPasswordVisible(!passwordVisible)}
+          >
             <Icon
               name={passwordVisible ? 'eye' : 'eye-off'}
               size={25}
@@ -85,14 +97,14 @@ const LoginForm = () => {
             />
           </TouchableOpacity>
         )}
-        control={control}
+        setValue={setValue}
         errors={errors}
         name="password"
         style={styles.input}
         inputProps={{
           autoCapitalize: 'none',
           secureTextEntry: !passwordVisible,
-          placeholderTextColor: 'white',
+          placeholderTextColor: 'white'
         }}
       />
 
@@ -111,29 +123,29 @@ const LoginForm = () => {
 };
 
 const styles = StyleSheet.create({
-  formWrapper: {
-    flex: 1,
-    justifyContent: 'flex-end',
+  buttonWrapper: {
+    marginTop: 20
+  },
+  errorMessage: {
+    color: 'white',
+    fontWeight: '400',
+    marginTop: 10
   },
   forgotText: {
     color: 'white',
-    textAlign: 'right',
+    textAlign: 'right'
   },
-  input: {
-    fontSize: 18,
-    color: 'white',
+  formWrapper: {
+    flex: 1,
+    justifyContent: 'flex-end'
   },
   gradientButton: {
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
-  buttonWrapper: {
-    marginTop: 20,
-  },
-  errorMessage: {
-    marginTop: 10,
+  input: {
     color: 'white',
-    fontWeight: '400',
-  },
+    fontSize: 18
+  }
 });
 
 export default LoginForm;

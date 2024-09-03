@@ -1,9 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken, REGION} = require('../../utils');
+const { removeUserActionToken, REGION } = require('../../utils');
 
-const sendPushNotificationNewChecklistMessage = functions.region(REGION).firestore
-  .document('incidences/{incidenceId}/messages/{messageId}')
+const sendPushNotificationNewChecklistMessage = functions
+  .region(REGION)
+  .firestore.document('incidences/{incidenceId}/messages/{messageId}')
   .onCreate(async (snap, context) => {
     const message = snap.data();
 
@@ -24,33 +25,33 @@ const sendPushNotificationNewChecklistMessage = functions.region(REGION).firesto
         incidenceSnapshot
           .data()
           .workersId.map(
-            async (workerId) =>
-              await admin.firestore().collection('users').doc(workerId).get(),
-          ),
+            async workerId =>
+              await admin.firestore().collection('users').doc(workerId).get()
+          )
       );
 
       const workersTokens = workers
-        .filter((worker) => worker.data().token)
-        .map((worker) => worker.data().token);
+        .filter(worker => worker.data().token)
+        .map(worker => worker.data().token);
 
-      const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
+      const adminTokens = adminsSnapshot.docs.map(doc => doc.data().token);
 
       const listTokens = removeUserActionToken(
         adminTokens.concat(workersTokens),
-        message.user.token,
+        message.user.token
       );
 
-      const cleanListTokens = listTokens.filter((t) => t !== undefined);
+      const cleanListTokens = listTokens.filter(t => t !== undefined);
 
       let notification = {
         title: 'Nuevo mensaje! 📣',
-        body: `${message.user.name} ha escrito en la incidencia`,
+        body: `${message.user.name} ha escrito en la incidencia`
       };
 
       let data = {
         type: 'chat',
         collection: 'incidences',
-        docId: context.params.incidenceId,
+        docId: context.params.incidenceId
       };
 
       await admin.messaging().sendMulticast({
@@ -59,11 +60,11 @@ const sendPushNotificationNewChecklistMessage = functions.region(REGION).firesto
         apns: {
           payload: {
             aps: {
-              sound: 'default',
-            },
-          },
+              sound: 'default'
+            }
+          }
         },
-        data,
+        data
       });
     } catch (err) {
       console.log(err);

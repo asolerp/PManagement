@@ -8,17 +8,17 @@ const base64Header = 'data:image/png;base64,';
 const houseImageFolder = '/PortManagement/Houses/';
 
 const uploadHousePhoto = functions
-.region(REGION)  
-.runWith({
+  .region(REGION)
+  .runWith({
     timeoutSeconds: 540,
-    memory: '2GB',
+    memory: '2GB'
   })
-  .https.onCall(async (data) => {
+  .https.onCall(async data => {
     try {
       const {
         houseId,
-        imageBase64: {fileBase64},
-        house,
+        imageBase64: { fileBase64 },
+        house
       } = data;
 
       let firestoreResult;
@@ -27,13 +27,13 @@ const uploadHousePhoto = functions
         firestoreResult = await admin
           .firestore()
           .collection('houses')
-          .add({...house});
+          .add({ ...house });
       }
 
       const options = {
         use_filename: true,
         unique_filename: true,
-        overwrite: true,
+        overwrite: true
       };
 
       const result = await cloudinary.uploader.upload(
@@ -43,9 +43,9 @@ const uploadHousePhoto = functions
           folder: houseId
             ? houseImageFolder + houseId
             : houseImageFolder + firestoreResult.id,
-          eager: [{aspect_ratio: '1.0', height: 200, crop: 'lfill'}],
-          eager_async: true,
-        },
+          eager: [{ aspect_ratio: '1.0', height: 200, crop: 'lfill' }],
+          eager_async: true
+        }
       );
 
       await admin
@@ -55,8 +55,8 @@ const uploadHousePhoto = functions
         .update({
           houseImage: {
             original: result.url,
-            small: result.eager[0].url,
-          },
+            small: result.eager[0].url
+          }
         });
     } catch (err) {
       console.log(err);
@@ -64,5 +64,5 @@ const uploadHousePhoto = functions
   });
 
 module.exports = {
-  uploadHousePhoto,
+  uploadHousePhoto
 };

@@ -1,9 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const {removeUserActionToken, REGION} = require('../../utils');
+const { removeUserActionToken, REGION } = require('../../utils');
 
-const sendPushNotificationJobMessage = functions.region(REGION).firestore
-  .document('jobs/{jobId}/messages/{messageId}')
+const sendPushNotificationJobMessage = functions
+  .region(REGION)
+  .firestore.document('jobs/{jobId}/messages/{messageId}')
   .onCreate(async (snap, context) => {
     const message = snap.data();
     try {
@@ -23,35 +24,35 @@ const sendPushNotificationJobMessage = functions.region(REGION).firestore
         jobSnapshot
           .data()
           .workersId.map(
-            async (workerId) =>
-              await admin.firestore().collection('users').doc(workerId).get(),
-          ),
+            async workerId =>
+              await admin.firestore().collection('users').doc(workerId).get()
+          )
       );
 
       const task = jobSnapshot.data().task;
 
-      const adminTokens = adminsSnapshot.docs.map((doc) => doc.data().token);
+      const adminTokens = adminsSnapshot.docs.map(doc => doc.data().token);
       const workersTokens = workers
-        .filter((worker) => worker.data().token)
-        .map((worker) => worker.data().token);
+        .filter(worker => worker.data().token)
+        .map(worker => worker.data().token);
 
       const listTokens = removeUserActionToken(
         adminTokens.concat(workersTokens),
-        message.user.token,
+        message.user.token
       );
 
-      const cleanListTokens = listTokens.filter((t) => t !== undefined);
+      const cleanListTokens = listTokens.filter(t => t !== undefined);
 
       let notification = {
         title: 'Nuevo mensaje! 📣',
-        body: `${message.user.name} ha escrito en el trabajo`,
+        body: `${message.user.name} ha escrito en el trabajo`
       };
 
       let data = {
         type: 'chat',
         collection: 'jobs',
         task: JSON.stringify(task),
-        docId: context.params.jobId,
+        docId: context.params.jobId
       };
 
       await admin.messaging().sendMulticast({
@@ -59,17 +60,17 @@ const sendPushNotificationJobMessage = functions.region(REGION).firestore
         notification,
         android: {
           notification: {
-            sound: 'default',
-          },
+            sound: 'default'
+          }
         },
         apns: {
           payload: {
             aps: {
-              sound: 'default',
-            },
-          },
+              sound: 'default'
+            }
+          }
         },
-        data,
+        data
       });
     } catch (err) {
       console.log(err);

@@ -8,22 +8,22 @@ const base64Header = 'data:image/png;base64,';
 const userImageFolder = '/PortManagement/Users/';
 
 const uploadProfilePhoto = functions
-.region(REGION)  
-.runWith({
+  .region(REGION)
+  .runWith({
     timeoutSeconds: 540,
-    memory: '2GB',
+    memory: '2GB'
   })
-  .https.onCall(async (data) => {
+  .https.onCall(async data => {
     try {
       const {
-        imageBase64: {fileBase64},
-        user,
+        imageBase64: { fileBase64 },
+        user
       } = data;
 
       const options = {
         use_filename: true,
         unique_filename: true,
-        overwrite: true,
+        overwrite: true
       };
 
       const result = await cloudinary.uploader.upload(
@@ -31,9 +31,9 @@ const uploadProfilePhoto = functions
         {
           ...options,
           folder: userImageFolder + user.id + '/Photos',
-          eager: [{aspect_ratio: '1.0', height: 200, crop: 'lfill'}],
-          eager_async: true,
-        },
+          eager: [{ aspect_ratio: '1.0', height: 200, crop: 'lfill' }],
+          eager_async: true
+        }
       );
 
       await admin
@@ -44,8 +44,8 @@ const uploadProfilePhoto = functions
           ...user,
           profileImage: {
             original: result.url,
-            small: result.eager[0].url,
-          },
+            small: result.eager[0].url
+          }
         });
     } catch (err) {
       console.log(err);
@@ -53,5 +53,5 @@ const uploadProfilePhoto = functions
   });
 
 module.exports = {
-  uploadProfilePhoto,
+  uploadProfilePhoto
 };
