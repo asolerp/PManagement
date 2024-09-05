@@ -4,7 +4,7 @@ const { REGION } = require('../utils');
 
 const restoreDocumentWithSubcollection = functions
   .region(REGION)
-  .https.onCall(async (data, context) => {
+  .https.onCall(async data => {
     // Asumiendo que 'data' incluye el 'docId' del documento a restaurar
     const docId = data.docId;
     if (!docId)

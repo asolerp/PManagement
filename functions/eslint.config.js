@@ -28,6 +28,7 @@ module.exports = [
       'no-undef': 'error',
       // Otras reglas personalizadas
       'react/display-name': 'off',
+      'no-async-promise-executor': 'off',
       'consistent-return': 'off',
       'no-redeclare': 'off',
       'simple-import-sort/imports': 'error',

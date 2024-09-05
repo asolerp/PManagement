@@ -12,6 +12,12 @@ const sendPushNotificationNewChecklistMessage = functions
 
     if (checklist.finished) {
       try {
+        const owner = await admin
+          .firestore()
+          .collection('users')
+          .doc(checklist.house[0].owner.id)
+          .get();
+
         const adminsSnapshot = await admin
           .firestore()
           .collection('users')
@@ -19,8 +25,13 @@ const sendPushNotificationNewChecklistMessage = functions
           .get();
 
         const adminTokens = adminsSnapshot.docs.map(doc => doc.data().token);
-
+        const ownerToken = owner.token;
         const cleanListTokens = adminTokens.filter(t => t !== undefined);
+
+        let ownerNotification = {
+          title: `Your checklist is ready in ${street}`,
+          body: `You can check the results in the app`
+        };
 
         let notification = {
           title: `Checklist finalizado en ${street}`,
@@ -32,6 +43,23 @@ const sendPushNotificationNewChecklistMessage = functions
           collection: 'checklists',
           docId: context.params.checklistId
         };
+
+        if (ownerToken !== undefined) {
+          await admin.messaging().sendMulticast({
+            token: ownerToken,
+            notification: ownerNotification,
+            apns: {
+              payload: {
+                aps: {
+                  'content-available': 1,
+                  mutableContent: 1,
+                  sound: 'default'
+                }
+              }
+            },
+            data
+          });
+        }
 
         await admin.messaging().sendMulticast({
           tokens: cleanListTokens,

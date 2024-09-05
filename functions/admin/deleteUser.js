@@ -5,7 +5,7 @@ const { REGION } = require('../utils');
 const deleteUser = functions
   .region(REGION)
   .firestore.document('users/{userId}')
-  .onDelete(async (snap, context) => {
+  .onDelete(async snap => {
     const deletedUser = snap.data();
     console.log('DELETED USER', deletedUser);
     await admin.auth().deleteUser(deletedUser.id);

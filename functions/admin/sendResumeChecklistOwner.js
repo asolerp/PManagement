@@ -231,7 +231,7 @@ const sendResumeChecklistOwner = async ({ email, checklist, checks }) => {
   };
 
   const sendEmail = async () => {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
       let emailTransporter = await createTransporter();
 
       const mailOptions = {
@@ -245,7 +245,7 @@ const sendResumeChecklistOwner = async ({ email, checklist, checks }) => {
             ? generateEmail('en')
             : generateEmail('es')
       };
-      emailTransporter.sendMail(mailOptions, (error, data) => {
+      emailTransporter.sendMail(mailOptions, error => {
         if (error) {
           console.log(error);
           resolve(false);

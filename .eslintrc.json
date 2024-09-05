@@ -40,6 +40,7 @@
     "no-redeclare": "off",
     // Immutable 
     // React Native
+    "no-async-promise-executor": "off",
     "react-native/no-raw-text": "off",
     "react-native/no-inline-styles": "off",
     "react-native/no-unused-styles": "off",

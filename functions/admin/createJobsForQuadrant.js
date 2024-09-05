@@ -5,7 +5,7 @@ const { REGION } = require('../utils');
 const createJobsForQuadrant = functions
   .region(REGION)
   .firestore.document('quadrants/{quadrantId}/jobs/{jobId}')
-  .onCreate(async (snap, context) => {
+  .onCreate(async snap => {
     const job = snap.data();
 
     try {

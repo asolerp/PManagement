@@ -36,7 +36,7 @@ const generateEmail = resetLink => {
 const sendResentLinkEmail = async (email, resetLink) => {
   console.log('Sending email to:', email);
   console.log('Reset link:', resetLink);
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async resolve => {
     let emailTransporter = await createTransporter();
 
     const mailOptions = {
@@ -45,7 +45,7 @@ const sendResentLinkEmail = async (email, resetLink) => {
       subject: `Restablecer contraseña / Reset password`,
       html: generateEmail(resetLink)
     };
-    emailTransporter.sendMail(mailOptions, (error, data) => {
+    emailTransporter.sendMail(mailOptions, error => {
       if (error) {
         console.log(error);
         resolve(false);

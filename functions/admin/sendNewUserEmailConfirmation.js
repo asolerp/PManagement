@@ -21,7 +21,7 @@ const sendNewUserConfirmationEmail = async ({ email, password }) => {
 
   let emailTransporter = await createTransporter();
 
-  return emailTransporter.sendMail(mailOptions, (error, data) => {
+  return emailTransporter.sendMail(mailOptions, error => {
     if (error) {
       console.log(error);
       return;
