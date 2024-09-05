@@ -11,11 +11,6 @@ const {
   moveToRecycleBinWithSubcollection
 } = require('./admin/moveToRecycleBinWithSubcollection');
 
-// Cloudinary
-
-const { uploadHousePhoto } = require('./cloudinary/uploadHousePhoto');
-const { uploadProfilePhoto } = require('./cloudinary/uploadProfilePhoto');
-
 // Notifications
 const {
   sendPushNotificationFinishedChecklist,
@@ -54,11 +49,6 @@ admin.initializeApp(
     region: REGION
   }).firebase
 );
-
-/// CLOUDINARY
-
-exports.uploadHousePhoto = uploadHousePhoto;
-exports.uploadProfilePhoto = uploadProfilePhoto;
 
 /// ADMIN
 
