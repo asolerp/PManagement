@@ -108,6 +108,8 @@ const Info = ({ isCheckFinished }) => {
 
   const doneCounter = checks?.filter(check => check.done).length;
 
+  const date = checklist?.date?._d?.toDate() || checklist?.date?.toDate();
+
   return (
     <ScrollView
       style={styles.checklistContainer}
@@ -140,7 +142,7 @@ const Info = ({ isCheckFinished }) => {
               />
               <Badge
                 label={t('common.date') + ': '}
-                text={moment(checklist?.date?.toDate()).format('LL')}
+                text={moment(date).format('LL')}
                 variant={'pm'}
               />
             </View>
@@ -223,7 +225,10 @@ const Info = ({ isCheckFinished }) => {
               </View>
               <View style={[Layout.row, theme.mL1]}>
                 {checklist?.workers?.map((worker, i) => (
-                  <View style={[theme.justifyCenter, theme.itemsCenter]}>
+                  <View
+                    key={i}
+                    style={[theme.justifyCenter, theme.itemsCenter]}
+                  >
                     <Avatar
                       enabled={!isOwner}
                       overlap={checklist?.workers?.length > 1}

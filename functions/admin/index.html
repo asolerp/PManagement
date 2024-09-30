@@ -1,25 +1,88 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="x-apple-disable-message-reformatting">
-  <title></title>
-  <style>
-    table, td, div, h1, p {font-family: Arial, sans-serif;}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist de Vivienda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif; /* Roboto con respaldo */
+            letter-spacing: 1px;
+            -webkit-text-size-adjust: 100%; /* Desactiva el ajuste automático del texto en iOS Mail */
+            -ms-text-size-adjust: 100%; /* Para Outlook en dispositivos móviles */
+        }
+        a {
+            text-decoration: underline;
+            color: #333;
+        }
+    </style>
 </head>
-<body style="margin:0;padding:0;">
-  <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;">
-    <tr>
-      <td style="padding:0 0 10px 0;color:#153643;">
-        <h1 style="font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;">Your recovery link</h1>
-        <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">Here you have the link to reset your password.</p>
-        <a href="${generateLink()}" style="background:#f9b414;text-decoration:none;font-weight:400;font-size:18px;line-height:24px;text-align:center;color:#ffffff;border-radius:4px;display:inline-block;">Reset Password</a>
-        <p style="margin:12px 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">If you didn't request this, you can ignore this email.</p>
-        <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">Thanks, Port Management.</p>
-      </td>
-    </tr>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4; color: #333;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td style="padding: 20px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="600" style="margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 20px;">
+                    <!-- Primer ítem del checklist -->
+                    <tr>
+                        <td style="padding: 10px 0 10px 0; text-align: left;">
+                            <img src="https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/other%2Fpmanagement.png?alt=media&token=432d2425-d425-4f38-9840-52e907e221fa" alt="Owner house" width="100%" height="300" style="object-fit: cover; border-radius: 0%; display: block; margin: 0 auto;">
+                            <h1 style="font-size: 28px;">Your checklist is ready!</h1>
+                            <h3 style="font-size: 22px; margin-bottom: 0;">Dear Alberto Soler</h3>
+                            <p style="font-size: 16px;">We checked the functioning and state of your villa located in <b>Julia Vicenç 22</b></p>
+                        </td>
+                    </tr>
+
+                    <!-- Segundo ítem del checklist -->
+                    <tr>
+                        <td style="padding: 10px 0;">
+                            <h3>✅ Check mailbox</h3>
+                            <table border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto" align="left">
+                                <tr>
+                                    <td style="padding: 10px; text-align: left; background-color: #26917f; width: 140px;">
+                                        <img src="https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/checklists%2FYy4SVR6HCG6iL0NX7eVe%2FCheck%2Fko7oe3Lv2sopSqW10cb1%2FPhotos%2F59775511-EADE-4632-B667-45BD66B06AA1.png?alt=media&token=528c8304-fcf3-4364-a014-bebe82f264f3" alt="Interiores de la vivienda 1" width="140" height="140" style="object-fit: cover; border-radius: 10px;">
+                                    </td>
+                                    <td style="padding: 10px; text-align: left; background-color: antiquewhite; width: 140px;">
+                                        <img src="https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/checklists%2FYy4SVR6HCG6iL0NX7eVe%2FCheck%2Fko7oe3Lv2sopSqW10cb1%2FPhotos%2F59775511-EADE-4632-B667-45BD66B06AA1.png?alt=media&token=528c8304-fcf3-4364-a014-bebe82f264f3" alt="Interiores de la vivienda 2" width="140" height="140" style="object-fit: cover; border-radius: 10px;">
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr style="margin: 20px 0">
+                        <td style="padding: 10px 0; text-align: left;">
+                          <p style="font-size: 16px;"><b>👓 Observaciones:</b></p>
+                          <p style="font-size: 16px;">${observations}</p>
+                        </td>
+                      </tr>
+                      <tr>
+
+                    <!-- Pie del email -->
+                    <tr>
+                        <td style="padding: 10px 0;">
+                            <table border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto" align="left">
+                                <tr>
+                                    <td>
+                                        <img src="https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/other%2Fcontact.png?alt=media&token=b1af96ae-7c39-442c-9e9d-4fae1d7b9d6f" alt="Contacto" width="300" height="300" style="object-fit: cover;">
+                                    </td>
+                                    <td align="center" style="margin: 0 auto; background-color: #eaeaea; color: #777;  padding: 10px; font-size: 18px;">
+                                        <p>PORT MANAGEMENT</p>
+                                        <a href="tel:+34629024171">+34 629 024 171</a>
+                                        <a href="mailto:info@portmanagement.es">info@portmanagement.es</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: #777; text-align: center; padding: 20px; font-size: 18px;">
+                          This email was automatically generated. If you have any questions, contact us. Port Management
+                        </td>
+                      </tr>
+                </table>
+            </td>
+        </tr>
     </table>
-  </body>
+</body>
 </html>

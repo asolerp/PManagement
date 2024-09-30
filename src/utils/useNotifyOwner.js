@@ -10,10 +10,12 @@ import '@react-native-firebase/functions';
 import { error } from '../lib/logging';
 import { LoadingModalContext } from '../context/loadinModalContext';
 import { REGION } from '../firebase/utils';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useNotifyOwner = () => {
   const [loading, setLoading] = useState(false);
   const { setVisible } = useContext(LoadingModalContext);
+  const queryClient = useQueryClient();
   const notifyOwner = async docId => {
     const notifyOwnerFn = firebase
       .app()
@@ -25,6 +27,7 @@ export const useNotifyOwner = () => {
       await notifyOwnerFn({
         checkId: docId
       }).then(() => setVisible(false));
+      queryClient.invalidateQueries({ queryKey: ['checklistsNotFinished'] });
       openStackWithReplace(HOME_ADMIN_STACK_KEY, MAIN_ADMIN_STACK_KEY);
     } catch (err) {
       error({

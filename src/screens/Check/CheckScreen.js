@@ -1,43 +1,42 @@
 import React from 'react';
 
-import {Info} from '../../components/Check';
-
+import { Info } from '../../components/Check';
 
 // UI
 import PageLayout from '../../components/PageLayout';
 
 import CustomButton from '../../components/Elements/CustomButton';
-import {useSelector} from 'react-redux';
-import {userSelector} from '../../Store/User/userSlice';
+import { useSelector } from 'react-redux';
+import { userSelector } from '../../Store/User/userSlice';
 
-import {sendOwnerChecklist} from '../../components/Alerts/checklist';
+import { sendOwnerChecklist } from '../../components/Alerts/checklist';
 
 import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
-import {CHECKLISTS} from '../../utils/firebaseKeys';
-import {useTranslation} from 'react-i18next';
-import {useCheck} from './hooks/useCheck';
+import { CHECKLISTS } from '../../utils/firebaseKeys';
+import { useTranslation } from 'react-i18next';
+import { useCheck } from './hooks/useCheck';
 import PageOptionsScreen from '../PageOptions/PageOptions';
-import {useNotifyOwner} from '../../utils/useNotifyOwner';
-import {error} from '../../lib/logging';
+import { useNotifyOwner } from '../../utils/useNotifyOwner';
+import { error } from '../../lib/logging';
 
-const CheckScreen = ({route}) => {
-  const {docId} = route.params;
-  const {t} = useTranslation();
+const CheckScreen = ({ route }) => {
+  const { docId } = route.params;
+  const { t } = useTranslation();
 
-  const {isCheckFinished} = useCheck({docId});
-  const {notifyOwner} = useNotifyOwner();
+  const { isCheckFinished } = useCheck({ docId });
+  const { notifyOwner } = useNotifyOwner();
   const [checks, checksLoading] = useCollectionData(
     firestore().collection(CHECKLISTS).doc(docId).collection('checks'),
     {
-      idField: 'id',
-    },
+      idField: 'id'
+    }
   );
 
   const user = useSelector(userSelector);
   const areAllChecksDone =
-    checks?.length === checks?.filter((check) => check.done).length;
+    checks?.length === checks?.filter(check => check.done).length;
 
   const handleFinishAndSend = async () => {
     try {
@@ -46,7 +45,7 @@ const CheckScreen = ({route}) => {
       error({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
     }
   };
@@ -66,7 +65,7 @@ const CheckScreen = ({route}) => {
           />
         }
         titleProps={{
-          subPage: true,
+          subPage: true
         }}
         footer={
           areAllChecksDone &&
@@ -80,7 +79,8 @@ const CheckScreen = ({route}) => {
               onPress={() => sendOwnerChecklist(() => handleFinishAndSend())}
             />
           )
-        }>
+        }
+      >
         <Info isCheckFinished={isCheckFinished} />
       </PageLayout>
     </React.Fragment>

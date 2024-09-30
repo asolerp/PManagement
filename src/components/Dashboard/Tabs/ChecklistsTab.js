@@ -1,9 +1,9 @@
 import React from 'react';
-import {useSelector} from 'react-redux';
-import {userSelector} from '../../../Store/User/userSlice';
+import { useSelector } from 'react-redux';
+import { userSelector } from '../../../Store/User/userSlice';
 
 import ChecklistList from '../../Lists/ChecklistList';
-export const ChecklistsTab = ({filters, scrollEnabled}) => {
+export const ChecklistsTab = ({ filters, scrollEnabled }) => {
   const user = useSelector(userSelector);
 
   const isAdmin = user?.role === 'admin';

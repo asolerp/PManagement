@@ -46,10 +46,10 @@ const notifyOwner = functions
 
       const owner = ownerRef.data();
 
-      const splitAditionalEmails = owner.aditionalEmail.split(',');
-      const aditionalEmails = splitAditionalEmails.map(email => email.trim());
+      const splitAditionalEmails = owner?.aditionalEmail?.split(',');
+      const aditionalEmails = splitAditionalEmails?.map(email => email.trim());
 
-      const emailsSeparatedByComma = aditionalEmails.join(',');
+      const emailsSeparatedByComma = aditionalEmails?.join(',');
 
       sendResumeChecklistOwner({
         email: owner?.aditionalEmail

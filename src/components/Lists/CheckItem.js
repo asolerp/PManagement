@@ -2,21 +2,21 @@ import React from 'react';
 
 import useNoReadMessages from '../../hooks/useNoReadMessages';
 
-import {CHECKLISTS} from '../../utils/firebaseKeys';
-import {parseDateWithText, parsePercentageDone} from '../../utils/parsers';
+import { CHECKLISTS } from '../../utils/firebaseKeys';
+import { parseDateWithText, parsePercentageDone } from '../../utils/parsers';
 import useGetChecklistStats from './hooks/useGetChecklistStats';
 
 import useAuth from '../../utils/useAuth';
 
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
-import {ListItem} from './ListItem';
-import {FinishedListItem} from './FinishedListItem';
-import {format} from 'date-fns';
+import { ListItem } from './ListItem';
+import { FinishedListItem } from './FinishedListItem';
+import { format } from 'date-fns';
 
-const CheckItem = ({item, fullWidth}) => {
-  const {isOwner} = useAuth();
-  const {t} = useTranslation();
+const CheckItem = ({ item, fullWidth }) => {
+  const { isOwner } = useAuth();
+  const { t } = useTranslation();
 
   function cutSentence(sentence) {
     if (sentence.length > 10) {
@@ -24,16 +24,17 @@ const CheckItem = ({item, fullWidth}) => {
     }
     return sentence;
   }
-  
 
-  const {noReadCounter} = useNoReadMessages({
+  const { noReadCounter } = useNoReadMessages({
     collection: CHECKLISTS,
-    docId: item.id,
+    docId: item.id
   });
 
-  const {completePercentage, loadingChecks} = useGetChecklistStats({
-    checkId: item.id,
+  const { completePercentage, loadingChecks } = useGetChecklistStats({
+    checkId: item.id
   });
+
+  const date = item?.date?._d || item?.date;
 
   if (loadingChecks) {
     return null;
@@ -43,7 +44,7 @@ const CheckItem = ({item, fullWidth}) => {
     return (
       <FinishedListItem
         withStatusBar
-        date={format(item?.date.toDate(), 'dd/MM/yyyy')}
+        date={format(date.toDate(), 'dd/MM/yyyy')}
         statusColor={parsePercentageDone(completePercentage) || 0}
         statusPercentage={completePercentage || 0}
         subtitle={
@@ -62,10 +63,10 @@ const CheckItem = ({item, fullWidth}) => {
   return (
     <ListItem
       withStatusBar
-      date={t(parseDateWithText(item?.date).text, {
-        numberOfDays: parseDateWithText(item?.date)?.metaData?.numberOfDays,
+      date={t(parseDateWithText(date).text, {
+        numberOfDays: parseDateWithText(date)?.metaData?.numberOfDays
       })}
-      dateVariant={parseDateWithText(item?.date).variant}
+      dateVariant={parseDateWithText(date).variant}
       statusColor={parsePercentageDone(completePercentage) || 0}
       statusPercentage={completePercentage || 0}
       title={item?.title}

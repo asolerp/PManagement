@@ -4,9 +4,9 @@ import i18n from '../Translations/index';
 import {
   PRIORITY_LOW,
   PRIORITY_MEDIUM,
-  PRIORITY_HEIGHT,
+  PRIORITY_HEIGHT
 } from '../constants/colors';
-import {Colors} from '../Theme/Variables';
+import { Colors } from '../Theme/Variables';
 
 import {
   CHECKLIST_SCREEN_KEY,
@@ -22,10 +22,10 @@ import {
   JOBS_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
   QUADRANT_SCREEN_KEY,
-  USERS_SCREEN_KEY,
+  USERS_SCREEN_KEY
 } from '../Router/utils/routerKeys';
-import {isIOS} from './platform';
-import {differenceInDays, format, isSameDay, subDays} from 'date-fns';
+import { isIOS } from './platform';
+import { differenceInDays, format, isSameDay, subDays } from 'date-fns';
 
 export const minimizetext = (text, numberOfCharts = 40) => {
   return text?.length > numberOfCharts
@@ -44,10 +44,10 @@ export const tabNameByScreen = {
   [INCIDENCES_SCREEN_KEY]: 'tabs.incidences',
   [JOBS_SCREEN_KEY]: 'tabs.jobs',
   [HOUSES_SCREEN_KEY]: 'tabs.houses',
-  [PROFILE_SCREEN_KEY]: 'tabs.profile',
+  [PROFILE_SCREEN_KEY]: 'tabs.profile'
 };
 
-export const getHightByRoute = (route) => {
+export const getHightByRoute = route => {
   switch (route) {
     case DASHBOARD_SCREEN_KEY:
       return isIOS ? 70 : 20;
@@ -72,7 +72,7 @@ export const getHightByRoute = (route) => {
   }
 };
 
-export const parsePriority = (priority) => {
+export const parsePriority = priority => {
   switch (priority) {
     case 'low':
       return 'Baja';
@@ -83,7 +83,7 @@ export const parsePriority = (priority) => {
   }
 };
 
-export const parsePriorityColor = (priority) => {
+export const parsePriorityColor = priority => {
   switch (priority) {
     case 'low':
       return PRIORITY_LOW;
@@ -94,7 +94,7 @@ export const parsePriorityColor = (priority) => {
   }
 };
 
-export const parsePercentageDone = (percentage) => {
+export const parsePercentageDone = percentage => {
   if (percentage <= 0.5) {
     return Colors.danger;
   } else if (percentage > 0.5 && percentage < 1) {
@@ -104,7 +104,7 @@ export const parsePercentageDone = (percentage) => {
   }
 };
 
-export const parseStateIncidecne = (state) => {
+export const parseStateIncidecne = state => {
   if (state === 'initiate') {
     return Colors.warning;
   } else if (state === 'process') {
@@ -114,99 +114,106 @@ export const parseStateIncidecne = (state) => {
   }
 };
 
-export const parsePirorityIcon = (priority) => {
+export const parsePirorityIcon = priority => {
   switch (priority) {
     case 'low':
       return {
         name: 'arrow-downward',
-        color: PRIORITY_LOW,
+        color: PRIORITY_LOW
       };
     case 'medium':
       return {
         name: 'arrow-forward',
-        color: PRIORITY_MEDIUM,
+        color: PRIORITY_MEDIUM
       };
     case 'height':
       return {
         name: 'arrow-upward',
-        color: PRIORITY_HEIGHT,
+        color: PRIORITY_HEIGHT
       };
     default:
       break;
   }
 };
 
-export const parseTimeFilter = (time) => {
+export const parseTimeFilter = time => {
   const filter = {
     all: {
       filter: 'all',
       start: moment(new Date()).subtract(5, 'year'),
-      end: moment(new Date()).add(1, 'year'),
+      end: moment(new Date()).add(1, 'year')
     },
     week: {
       filter: 'week',
       start: moment(new Date()).subtract(7, 'days'),
-      end: moment(new Date()),
+      end: moment(new Date())
     },
     month: {
       filter: 'month',
       start: moment(new Date()).subtract(1, 'month'),
-      end: moment(new Date()),
+      end: moment(new Date())
     },
     year: {
       filter: 'year',
       start: moment(new Date()).subtract(1, 'year'),
-      end: moment(new Date()),
-    },
+      end: moment(new Date())
+    }
   };
 
   return filter[time];
 };
 
-export const parseDateWithText = (date) => {
-  const inOneWeek = format(subDays(new Date(), 7), 'dd/MM/yyyy');
-  const diff = differenceInDays(date.toDate(), new Date());
+export const parseDateWithText = date => {
+  if (date && typeof date.toDate === 'function') {
+    const inOneWeek = format(subDays(new Date(), 7), 'dd/MM/yyyy');
+    const diff = differenceInDays(date?.toDate(), new Date());
 
-  if (isSameDay(date.toDate(), new Date())) {
-    return {
-      text: 'common.range_time.today',
-      variant: 'pm',
-    };
-  }
+    if (isSameDay(date?.toDate(), new Date())) {
+      return {
+        text: 'common.range_time.today',
+        variant: 'pm'
+      };
+    }
 
-  if (date.toDate() < new Date()) {
-    return {
-      text: 'common.range_time.past',
-      metaData: {numberOfDays: diff * -1 + 1},
-      variant: 'danger',
-    };
-  }
+    if (date.toDate() < new Date()) {
+      return {
+        text: 'common.range_time.past',
+        metaData: { numberOfDays: diff * -1 + 1 },
+        variant: 'danger'
+      };
+    }
 
-  if (date.toDate() > new Date()) {
-    return {
-      text: 'common.range_time.next',
-      metaData: {numberOfDays: diff + 1},
-      variant: 'pm',
-    };
-  }
-  if (date.toDate() < new Date() && date.toDate() > inOneWeek) {
-    return {
-      text: 'common.range_time.week',
-      variant: 'warning',
-    };
+    if (date.toDate() > new Date()) {
+      return {
+        text: 'common.range_time.next',
+        metaData: { numberOfDays: diff + 1 },
+        variant: 'pm'
+      };
+    }
+    if (date.toDate() < new Date() && date.toDate() > inOneWeek) {
+      return {
+        text: 'common.range_time.week',
+        variant: 'warning'
+      };
+    } else {
+      return {
+        text: 'common.range_time.more_week',
+        variant: 'danger'
+      };
+    }
   } else {
     return {
-      text: 'common.range_time.more_week',
-      variant: 'danger',
+      text: 'Error en la fecha',
+      varint: 'pm'
     };
   }
 };
 
-export const generateCalendarDots = (list) => {
+export const generateCalendarDots = list => {
   let dotsArray = [];
 
-  list.forEach((job) => {
-    const indexDotElement = dotsArray.findIndex((dotObject) => {
+  list.forEach(job => {
+    const indexDotElement = dotsArray.findIndex(dotObject => {
       return (
         moment(dotObject?.date).format('DD-MM-YYYY') ===
         moment(job?.date?.toDate()).format('DD-MM-YYYY')
@@ -216,14 +223,14 @@ export const generateCalendarDots = (list) => {
       const dotsOnFindedDate = {
         date: moment(job?.date?.toDate()),
         dots: dotsArray[indexDotElement].dots.concat([
-          {color: parsePriorityColor(job?.priority) || 'black'},
-        ]),
+          { color: parsePriorityColor(job?.priority) || 'black' }
+        ])
       };
       dotsArray[indexDotElement] = dotsOnFindedDate;
     } else {
       dotsArray.push({
         date: moment(job?.date?.toDate()),
-        dots: [{color: parsePriorityColor(job?.priority) || 'black'}],
+        dots: [{ color: parsePriorityColor(job?.priority) || 'black' }]
       });
     }
   });
@@ -231,7 +238,7 @@ export const generateCalendarDots = (list) => {
   return dotsArray;
 };
 
-export const parseDeleteTextButton = (length) => {
+export const parseDeleteTextButton = length => {
   if (length === 1) {
     return `Eliminar ${length} foto`;
   } else {
@@ -239,13 +246,13 @@ export const parseDeleteTextButton = (length) => {
   }
 };
 
-export const percentageOfComplete = (tasks) => {
-  const completedTasks = tasks?.filter((task) => task.complete).length;
+export const percentageOfComplete = tasks => {
+  const completedTasks = tasks?.filter(task => task.complete).length;
   return completedTasks / tasks?.length;
 };
 
 export const parseEntities = {
   checklists: i18n.t('checklists.title'),
   incidences: i18n.t('incidence.title'),
-  jobs: i18n.t('job.title'),
+  jobs: i18n.t('job.title')
 };

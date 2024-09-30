@@ -21,7 +21,7 @@
 		D36EAEE429CB49D300C728CB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D36EAEE329CB49D300C728CB /* GoogleService-Info.plist */; };
 		D3BCCA3928CB3793004E6A0A /* 1024.png in Resources */ = {isa = PBXBuildFile; fileRef = D3BCCA3828CB3793004E6A0A /* 1024.png */; };
 		D3C4ABE52762610E00BD231D /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3C4ABE42762610E00BD231D /* BootSplash.storyboard */; };
-		DD779D5DC171C3E917B64A9F /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		DD779D5DC171C3E917B64A9F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD779D5DC171C3E917B64A9F /* BuildFile in Frameworks */,
+				DD779D5DC171C3E917B64A9F /* (null) in Frameworks */,
 				2591F1BAD1D7EE354BD332AD /* libPods-PortManagementCommonPods-PortManagement.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -662,13 +662,13 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202412020741;
+				CURRENT_PROJECT_VERSION = 202412020742;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = portmanagement/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.9;
+				MARKETING_VERSION = 1.9.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -698,12 +698,12 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202412020741;
+				CURRENT_PROJECT_VERSION = 202412020742;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				INFOPLIST_FILE = portmanagement/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.9;
+				MARKETING_VERSION = 1.9.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -783,10 +783,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -848,10 +845,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -874,7 +868,7 @@
 				INFOPLIST_FILE = "PortManagement Development-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.9;
+				MARKETING_VERSION = 1.9.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -909,7 +903,7 @@
 				INFOPLIST_FILE = "PortManagement Development-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.8.9;
+				MARKETING_VERSION = 1.9.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
