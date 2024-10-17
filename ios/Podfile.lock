@@ -1281,7 +1281,7 @@ PODS:
     - React-Core
   - react-native-image-resizer (1.4.5):
     - React-Core
-  - react-native-maps (1.15.6):
+  - react-native-maps (1.15.4):
     - React-Core
   - react-native-orientation-locker (1.7.0):
     - React-Core
@@ -1457,7 +1457,7 @@ PODS:
     - Firebase/Storage (= 8.15.0)
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.16.2):
+  - RNGestureHandler (2.20.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNGoogleSignin (8.2.2):
@@ -1490,10 +1490,35 @@ PODS:
     - RNNotifee/NotifeeCore (= 5.7.0)
   - RNNotifee/NotifeeCore (5.7.0):
     - React-Core
-  - RNReanimated (3.12.0):
-    - RCT-Folly (= 2021.07.22.00)
+  - RNReanimated (3.3.0):
+    - DoubleConversion
+    - FBLazyVector
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-callinvoker
     - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-hermes
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTAppDelegate
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
     - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (3.31.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -1917,7 +1942,7 @@ SPEC CHECKSUMS:
   react-native-geolocation: 1279fd4390e311ec3f2fc2878279934147fdd061
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-image-resizer: d9fb629a867335bdc13230ac2a58702bb8c8828f
-  react-native-maps: 7b2c2cee95271592a92ba485eea1dec66a363a6e
+  react-native-maps: aa8d9dece9896ff1b74dd969a7bd7a5896bba832
   react-native-orientation-locker: 5819fd23ca89cbac0d736fb4314745f62716d517
   react-native-pager-view: da490aa1f902c9a5aeecf0909cc975ad0e92e53e
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
@@ -1956,13 +1981,13 @@ SPEC CHECKSUMS:
   RNFBMessaging: 3e2682ea5e15fe86da24d16d16019395a881f33c
   RNFBRemoteConfig: 6942909a1232c22cadfe8a7061b5bea5273bb02b
   RNFBStorage: 814adb8c5bf4ff86a0b0641d750a64d6d48d9a75
-  RNGestureHandler: d678f94a8f74de70ce3d9f5d23eb0f97b686e943
+  RNGestureHandler: 74c531dc20aa37fb3a8d3d8514447a0d129ddb7d
   RNGoogleSignin: 81521697b2c8f97f9a586ac7257b1a1d9b51b115
   RNImageCropPicker: 73891a709e6fd8a47d32104d942757971f220aee
   RNLocalize: d4b8af4e442d4bcca54e68fc687a2129b4d71a81
   rnmapbox-maps: df44bc1caa137659cc03d356508f16917260439a
   RNNotifee: 5155e0a5e0a97d0c839030d8192783cd63053999
-  RNReanimated: 62a6c9f90f639612b830824b25ab2cea5d65d162
+  RNReanimated: 9f7068e43b9358a46a688d94a5a3adb258139457
   RNScreens: 93ae3be2f119d955620f9bbb39ad372adb53b7a9
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: bfb663f3f7b37340cd90120151b720641523dc84

@@ -1,51 +1,53 @@
-import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
-import {useEntrancesManager} from './hooks/useEntrancesManager';
+import { useEntrancesManager } from './hooks/useEntrancesManager';
 import Avatar from '../../components/Avatar';
-import {ListOfWorkers} from './components/ListOfWorkers';
-import {EntranceInfo} from './components/EntranceInfo';
+import { ListOfWorkers } from './components/ListOfWorkers';
+import { EntranceInfo } from './components/EntranceInfo';
 
-import {DateSelector} from './components/DateSelector';
+import { DateSelector } from './components/DateSelector';
 import { DEFAULT_IMAGE } from '../../constants/general';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import theme from '../../Theme/Theme';
 
 const DEFAULT_COORDINATES = [2.3969, 39.5743];
 
 Mapbox.setWellKnownTileServer('Mapbox');
 Mapbox.setAccessToken(
-  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHc3a2lqN24yMXJvMmpvY2FqeWYwZ2hlIn0.E7uBdBgJGlMxLamWXp66hw',
+  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHc3a2lqN24yMXJvMmpvY2FqeWYwZ2hlIn0.E7uBdBgJGlMxLamWXp66hw'
 );
 
 const EntrancesManager = () => {
   const [cameraSettings, setCameraSettings] = useState({
     centerCoordinate: DEFAULT_COORDINATES, // Initial center coordinate
-    zoomLevel: 10, // Initial zoom level
+    zoomLevel: 10 // Initial zoom level
   });
 
   const [isModalInfoOpened, setIsModalInfoOpened] = useState();
   const [entranceInfo, setEntranceInfo] = useState();
   const {
+    refetch,
+    loading,
     entrances,
-    activeWorkers,
     selectedDate,
     goBackOneDay,
-    goForwardOneDay,
+    activeWorkers,
+    goForwardOneDay
   } = useEntrancesManager();
 
   // Function to update camera settings
   const updateCamera = (zoom, newCoordinates) => {
     setCameraSettings({
       zoomLevel: zoom,
-      centerCoordinate: newCoordinates,
+      centerCoordinate: newCoordinates
     });
   };
 
-  const handlePressWorkerFromList = (workerId) => {
-    const worker = entrances?.find(
-      (entrance) => entrance.worker.id === workerId,
-    );
+  const handlePressWorkerFromList = workerId => {
+    const worker = entrances?.find(entrance => entrance.worker.id === workerId);
     const workerEntrances = entrances?.filter(
-      (entrance) => entrance.worker.id === workerId,
+      entrance => entrance.worker.id === workerId
     );
     if (worker) {
       setIsModalInfoOpened(true);
@@ -73,25 +75,35 @@ const EntrancesManager = () => {
         closeModal={() => setIsModalInfoOpened(false)}
       />
       <View style={styles.container}>
+        <View style={[theme.absolute, theme.top16, theme.right5, theme.z50]}>
+          <TouchableOpacity
+            onPress={refetch}
+            style={[theme.bgPrimary, theme.p2, theme.roundedLg]}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={theme.textWhite}>Refrescar</Text>
+            )}
+          </TouchableOpacity>
+        </View>
         <Mapbox.MapView style={styles.map}>
           <Mapbox.Camera
             zoomLevel={cameraSettings.zoomLevel}
             centerCoordinate={cameraSettings.centerCoordinate}
           />
           {entrances &&
-            entrances.map((entrance) => (
+            entrances.map(entrance => (
               <Mapbox.PointAnnotation
                 key={entrance.id}
                 id={entrance.id}
                 coordinate={[
                   entrance.location.longitude,
-                  entrance.location.latitude,
-                ]}>
+                  entrance.location.latitude
+                ]}
+              >
                 <View style={styles.customMarkerStyle}>
-                  <Avatar
-                    uri={entrance?.worker?.profileImage?.small || DEFAULT_IMAGE}
-                    size="medium"
-                  />
+                  <Avatar uri={DEFAULT_IMAGE} size="medium" />
                 </View>
               </Mapbox.PointAnnotation>
             ))}
@@ -104,19 +116,19 @@ const EntrancesManager = () => {
 export default EntrancesManager;
 
 const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  container: {
+    height: '100%',
+    width: '100%'
   },
   customMarkerStyle: {
     // your custom styles
   },
-  container: {
-    height: '100%',
-    width: '100%',
-  },
   map: {
-    flex: 1,
+    flex: 1
   },
+  page: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center'
+  }
 });

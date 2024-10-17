@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Pressable,
+  ScrollView
 } from 'react-native';
 import ImageView from 'react-native-image-viewing';
 
@@ -14,69 +15,70 @@ import AddButton from '../../components/Elements/AddButton';
 import DeleteModal from '../../components/Modals/DeleteModal';
 import PageLayout from '../../components/PageLayout';
 
-import {PM_COLOR} from '../../styles/colors';
-import {parseDeleteTextButton} from '../../utils/parsers';
+import { PM_COLOR } from '../../styles/colors';
+import { parseDeleteTextButton } from '../../utils/parsers';
 
 //Firestore
 import firestore from '@react-native-firebase/firestore';
 
-import {useDocumentData} from 'react-firebase-hooks/firestore';
-import {usePhotos} from '../../utils/usePhotos';
-import {parseRef} from './utils/parseRef';
-import {CHECKLISTS} from '../../utils/firebaseKeys';
-import {ScreenHeader} from '../../components/Layout/ScreenHeader';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
+import { usePhotos } from '../../utils/usePhotos';
+import { parseRef } from './utils/parseRef';
+import { CHECKLISTS } from '../../utils/firebaseKeys';
+import { ScreenHeader } from '../../components/Layout/ScreenHeader';
+import { Spacer } from '../../components/Elements/Spacer';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
     flexWrap: 'wrap',
-    marginTop: 20,
-  },
-  deletePhotos: {
-    position: 'absolute',
-    right: 30,
-    bottom: 20,
-    zIndex: 100,
-  },
-  photo: {
-    position: 'relative',
-    width: (Dimensions.get('window').width - 65 - 10) / 3,
-    height: 100,
-    resizeMode: 'cover',
-    borderRadius: 10,
-    marginRight: 10,
-    marginBottom: 10,
-  },
-  deleteMask: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    backgroundColor: '#FFFFFF60',
-    borderRadius: 10,
-    zIndex: 5,
+    justifyContent: 'flex-start',
+    marginTop: 20
   },
   deleteMark: {
-    width: 20,
-    height: 20,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: PM_COLOR,
     borderRadius: 1000,
+    height: 20,
+    justifyContent: 'center',
     marginLeft: 5,
     marginTop: 5,
+    width: 20
   },
+  deleteMask: {
+    backgroundColor: '#FFFFFF60',
+    borderRadius: 10,
+    height: '100%',
+    position: 'absolute',
+    width: '100%',
+    zIndex: 5
+  },
+  deletePhotos: {
+    bottom: 20,
+    position: 'absolute',
+    right: 30,
+    zIndex: 100
+  },
+  photo: {
+    borderRadius: 10,
+    height: 100,
+    marginBottom: 10,
+    marginRight: 10,
+    position: 'relative',
+    resizeMode: 'cover',
+    width: (Dimensions.get('window').width - 65 - 10) / 3
+  }
 });
 
-const CheckPhotosScreen = ({route}) => {
-  const {title, checkId, checkItemId} = route.params;
+const CheckPhotosScreen = ({ route }) => {
+  const { title, checkId, checkItemId } = route.params;
   const [modal, setModal] = useState([]);
   const [photosSelected, setPhotosSelected] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
 
-  const {removePhotos} = usePhotos();
+  const { removePhotos } = usePhotos();
 
   const query = useMemo(() => {
     return firestore()
@@ -87,21 +89,21 @@ const CheckPhotosScreen = ({route}) => {
   }, [checkId, checkItemId]);
 
   const [values] = useDocumentData(query, {
-    idField: 'id',
+    idField: 'id'
   });
 
-  const handlePressPhoto = (i) => {
+  const handlePressPhoto = i => {
     setModal(true);
     setImageIndex(i);
   };
-  const handleSelectDeletePhoto = ({id, ref}) => {
-    const urlExists = photosSelected.some((photo) => photo.id === id);
-    const selectedPhotos = photosSelected.filter((photo) => photo.id !== id);
+  const handleSelectDeletePhoto = ({ id, ref }) => {
+    const urlExists = photosSelected.some(photo => photo.id === id);
+    const selectedPhotos = photosSelected.filter(photo => photo.id !== id);
 
     if (urlExists) {
       setPhotosSelected([...selectedPhotos]);
     } else {
-      setPhotosSelected([...selectedPhotos, {id, ref}]);
+      setPhotosSelected([...selectedPhotos, { id, ref }]);
     }
   };
 
@@ -112,25 +114,26 @@ const CheckPhotosScreen = ({route}) => {
       .collection('checks')
       .doc(checkItemId);
 
-    const photosWithUri = photosSelected.map((photo) => ({
+    const photosWithUri = photosSelected.map(photo => ({
       uri: photo.id,
-      ref: photo.ref,
+      ref: photo.ref
     }));
 
     await removePhotos(photosWithUri, setPhotosSelected, {
-      collectionRef: checkQuery,
+      collectionRef: checkQuery
     });
   };
 
-  const Photo = ({photo, index}) => {
+  const Photo = ({ photo, index }) => {
     return (
       <TouchableOpacity
         onLongPress={() =>
-          handleSelectDeletePhoto({id: photo, ref: parseRef(photo)})
+          handleSelectDeletePhoto({ id: photo, ref: parseRef(photo) })
         }
-        onPress={() => handlePressPhoto(index)}>
+        onPress={() => handlePressPhoto(index)}
+      >
         <View style={styles.photo}>
-          {photosSelected.some((p) => photo === p.id) && (
+          {photosSelected.some(p => photo === p.id) && (
             <View style={styles.deleteMask}>
               <View style={styles.deleteMark}>
                 <Icon name="check" color="white" size={20} />
@@ -138,9 +141,9 @@ const CheckPhotosScreen = ({route}) => {
             </View>
           )}
           <ImageBackground
-            source={{uri: photo}}
+            source={{ uri: photo }}
             style={styles.photo}
-            imageStyle={{borderRadius: 5}}
+            imageStyle={{ borderRadius: 5 }}
           />
         </View>
       </TouchableOpacity>
@@ -154,16 +157,16 @@ const CheckPhotosScreen = ({route}) => {
         <ImageView
           visible={modal}
           imageIndex={imageIndex}
-          images={values?.photos?.map((photo) => ({uri: photo}))}
+          images={values?.photos?.map(photo => ({ uri: photo }))}
           onRequestClose={() => setModal(false)}
         />
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           {photosSelected.length > 0 && (
             <View style={styles.deletePhotos}>
               <AddButton
                 iconName="delete"
                 backColor={PM_COLOR}
-                containerStyle={{right: 0, zIndex: 10}}
+                containerStyle={{ right: 0, zIndex: 10 }}
                 onPress={() => setDeleteModal(true)}
               />
             </View>
@@ -175,11 +178,21 @@ const CheckPhotosScreen = ({route}) => {
             textButton={parseDeleteTextButton(photosSelected.length)}
             handleDelete={() => handleDeletePhoto()}
           />
-          <View style={styles.container}>
+          <Spacer space={5} />
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{
+              flex: 1
+            }}
+            contentContainerStyle={{
+              flexDirection: 'row',
+              flexWrap: 'wrap'
+            }}
+          >
             {values?.photos?.map((photo, i) => (
               <Photo photo={photo} index={i} key={photo} />
             ))}
-          </View>
+          </ScrollView>
         </View>
       </React.Fragment>
     </PageLayout>

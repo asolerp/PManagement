@@ -4,26 +4,26 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
+  ActivityIndicator
 } from 'react-native';
-import {useTheme} from '../../Theme';
+import { useTheme } from '../../Theme';
 
-import {Colors, Variants} from '../../Theme/Variables';
+import { Colors, Variants } from '../../Theme/Variables';
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
   buttonWrapper: {
-    padding: 12,
+    padding: 12
   },
   clearStyle: {
-    padding: 12,
+    padding: 12
+  },
+  container: {
+    width: '100%'
   },
   titleStyle: {
-    textAlign: 'center',
     fontSize: 15,
-  },
+    textAlign: 'center'
+  }
 });
 
 const CustomButton = ({
@@ -34,9 +34,9 @@ const CustomButton = ({
   loading = false,
   disabled = false,
   containerStyle = [],
-  type,
+  type
 }) => {
-  const {Fonts, Layout} = useTheme();
+  const { Fonts, Layout } = useTheme();
 
   const parseStyled = () => {
     switch (styled) {
@@ -58,7 +58,8 @@ const CustomButton = ({
     <TouchableOpacity
       style={[styles.container, containerStyle]}
       onPress={onPress}
-      disabled={disabled}>
+      disabled={disabled}
+    >
       <View
         style={[
           Layout.rowCenter,
@@ -67,12 +68,13 @@ const CustomButton = ({
               type === 'clear' ? 'white' : color || Variants.pm.color,
             borderRadius: parseStyled(),
             borderColor: color || Colors.pm,
-            borderWidth: 1,
+            borderWidth: 1
           },
           disabled
-            ? {...styles[parseTypeStyle(type)], ...{opacity: 0.5}}
-            : {...styles[parseTypeStyle(type)]},
-        ]}>
+            ? { ...styles[parseTypeStyle(type)], ...{ opacity: 0.5 } }
+            : { ...styles[parseTypeStyle(type)] }
+        ]}
+      >
         {loading ? (
           <ActivityIndicator
             size="small"
@@ -84,10 +86,11 @@ const CustomButton = ({
               Fonts.textWhite,
               {
                 ...{
-                  color: type === 'clear' ? '#2A7BA5' : 'white',
-                },
-              },
-            ]}>
+                  color: type === 'clear' ? '#2A7BA5' : 'white'
+                }
+              }
+            ]}
+          >
             {title}
           </Text>
         )}

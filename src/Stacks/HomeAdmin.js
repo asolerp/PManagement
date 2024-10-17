@@ -1,60 +1,60 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import {View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 // Screens
-import {DashboardScreen} from '../Screens/Dashboard';
-import {HousesScreen} from '../Screens/Houses';
+import { DashboardScreen } from '../Screens/Dashboard';
+import { HousesScreen } from '../Screens/Houses';
 
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
-import {PRIORITY_HEIGHT} from '../styles/colors';
+import { PRIORITY_HEIGHT } from '../styles/colors';
 
-import {tabNameByScreen} from '../utils/parsers';
+import { tabNameByScreen } from '../utils/parsers';
 import {
   DASHBOARD_SCREEN_KEY,
   ENTRANCES_MANAGER_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
-  USERS_SCREEN_KEY,
+  USERS_SCREEN_KEY
 } from '../Router/utils/routerKeys';
-import {UsersScreen} from '../Screens/Users';
-import {useTranslation} from 'react-i18next';
-import {isIOS} from '../utils/platform';
-import {Colors} from '../Theme/Variables';
-import {EntrancesManager} from '../Screens/EntrancesManager';
+import { UsersScreen } from '../Screens/Users';
+import { useTranslation } from 'react-i18next';
+import { isIOS } from '../utils/platform';
+import { Colors } from '../Theme/Variables';
+import { EntrancesManager } from '../Screens/EntrancesManager';
 
-const {Navigator, Screen} = createBottomTabNavigator();
+const { Navigator, Screen } = createBottomTabNavigator();
 
 const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  children: {
-    position: 'relative',
-    zIndex: 10,
-  },
   badge: {
-    width: 20,
-    height: 20,
-    borderRadius: 100,
-    backgroundColor: PRIORITY_HEIGHT,
-    position: 'absolute',
-    zIndex: 999,
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: PRIORITY_HEIGHT,
+    borderRadius: 100,
+    height: 20,
+    justifyContent: 'center',
+    position: 'absolute',
     right: isIOS ? -10 : 0,
     top: isIOS ? -10 : 0,
+    width: 20,
+    zIndex: 999
   },
   badgeText: {
     color: 'white',
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
+  children: {
+    position: 'relative',
+    zIndex: 10
+  },
+  container: {
+    position: 'relative'
+  }
 });
 
-export const IconWithBadge = ({badgeCount, children}) => {
+export const IconWithBadge = ({ badgeCount, children }) => {
   return (
     <View style={styles.container}>
       {badgeCount > 0 && (
@@ -68,9 +68,9 @@ export const IconWithBadge = ({badgeCount, children}) => {
 };
 
 const HomeAdmin = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
-  const getTabBarVisible = (route) => {
+  const getTabBarVisible = route => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (
       routeName === 'NewJob' ||
@@ -88,18 +88,19 @@ const HomeAdmin = () => {
 
   return (
     <Navigator
-      options={{headerShown: false}}
+      options={{ headerShown: false }}
       screenOptions={{
         tabBarShowLabel: false,
-        headerShown: false,
-      }}>
+        headerShown: false
+      }}
+    >
       <Screen
         name={t(tabNameByScreen[DASHBOARD_SCREEN_KEY])}
-        initialParams={{screenKey: DASHBOARD_SCREEN_KEY}}
+        initialParams={{ screenKey: DASHBOARD_SCREEN_KEY }}
         component={DashboardScreen}
-        options={({route}) => ({
+        options={({ route }) => ({
           tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
+          tabBarIcon: ({ focused, color, size }) => (
             <>
               <Icon
                 name={focused ? 'speedometer' : 'speedometer-outline'}
@@ -108,16 +109,16 @@ const HomeAdmin = () => {
                 color={Colors.pm}
               />
             </>
-          ),
+          )
         })}
       />
       <Screen
         name={t(tabNameByScreen[ENTRANCES_MANAGER_SCREEN_KEY])}
-        initialParams={{screenKey: ENTRANCES_MANAGER_SCREEN_KEY}}
+        initialParams={{ screenKey: ENTRANCES_MANAGER_SCREEN_KEY }}
         component={EntrancesManager}
-        options={({route}) => ({
+        options={({ route }) => ({
           tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
+          tabBarIcon: ({ focused, color, size }) => (
             <>
               <Icon
                 name={focused ? 'grid' : 'grid-outline'}
@@ -126,7 +127,7 @@ const HomeAdmin = () => {
                 color={Colors.pm}
               />
             </>
-          ),
+          )
         })}
       />
       {/* {isFeatureEnabled(REGISTRY.FEATURE_QUADRANT) && (
@@ -151,11 +152,11 @@ const HomeAdmin = () => {
       )} */}
       <Screen
         name={t(tabNameByScreen[USERS_SCREEN_KEY])}
-        initialParams={{screenKey: USERS_SCREEN_KEY}}
+        initialParams={{ screenKey: USERS_SCREEN_KEY }}
         component={UsersScreen}
-        options={({route}) => ({
+        options={({ route }) => ({
           tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
+          tabBarIcon: ({ focused, color, size }) => (
             <>
               <Icon
                 name={focused ? 'person' : 'person-outline'}
@@ -164,16 +165,16 @@ const HomeAdmin = () => {
                 color={Colors.pm}
               />
             </>
-          ),
+          )
         })}
       />
       <Screen
         name={t(tabNameByScreen[HOUSES_SCREEN_KEY])}
-        initialParams={{screenKey: HOUSES_SCREEN_KEY}}
+        initialParams={{ screenKey: HOUSES_SCREEN_KEY }}
         component={HousesScreen}
-        options={({route}) => ({
+        options={({ route }) => ({
           tabBarVisible: getTabBarVisible(route),
-          tabBarIcon: ({focused, color, size}) => (
+          tabBarIcon: ({ focused, color, size }) => (
             <>
               <Icon
                 name={focused ? 'home' : 'home-outline'}
@@ -182,7 +183,7 @@ const HomeAdmin = () => {
                 color={Colors.pm}
               />
             </>
-          ),
+          )
         })}
       />
     </Navigator>

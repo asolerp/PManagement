@@ -99,8 +99,8 @@ android {
         applicationId "com.portmanagement"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 19
-        versionName "1.9.1"
+        versionCode 21
+        versionName "1.9.2"
     }
 
     splits {
@@ -170,6 +170,7 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation('org.jetbrains:annotations:16.0.2')
     implementation("androidx.core:core-splashscreen:1.0.0")
     implementation "com.android.support:multidex:1.0.3"
     implementation "com.google.android.gms:play-services-analytics:17.0.0"
