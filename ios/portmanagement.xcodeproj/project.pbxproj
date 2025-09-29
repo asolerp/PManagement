@@ -678,13 +678,13 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202402121470;
+				CURRENT_PROJECT_VERSION = 202402121476;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = portmanagement/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.9.8;
+				MARKETING_VERSION = 2.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -714,12 +714,12 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202402121470;
+				CURRENT_PROJECT_VERSION = 202402121476;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				INFOPLIST_FILE = portmanagement/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.9.8;
+				MARKETING_VERSION = 2.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -900,7 +900,7 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202402121470;
+				CURRENT_PROJECT_VERSION = 202402121476;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "PortManagement Development-Info.plist";
@@ -936,7 +936,7 @@
 				CODE_SIGN_ENTITLEMENTS = portmanagement/portmanagement.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202402121470;
+				CURRENT_PROJECT_VERSION = 202402121476;
 				DEVELOPMENT_TEAM = Y86MT47MC7;
 				INFOPLIST_FILE = "PortManagement Development-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";

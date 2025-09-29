@@ -19,20 +19,28 @@ platform :ios do
   desc "Push a new release build to the App Store"
   lane :release do
     increment_build_number(xcodeproj: "portmanagement.xcodeproj")
-    # Use automatic signing temporarily to avoid provisioning profile issues
+    
+    # Configurar para App Store (no TestFlight)
     update_code_signing_settings(
       use_automatic_signing: true,
       path: "portmanagement.xcodeproj",
       team_id: "Y86MT47MC7"
     )
+    
+    # Configurar build para App Store
     build_app(
       workspace: "portmanagement.xcworkspace", 
       scheme: "PortManagement",
+      configuration: "Release",
       export_method: "app-store",
+      include_bitcode: true,
+      include_symbols: true,
       xcargs: "-allowProvisioningUpdates"
     )
     upload_to_app_store(
-      skip_waiting_for_build_processing: true
+      skip_binary_upload: false,
+      submit_for_review: false,
+      username: "albertosolpal@gmail.com"
     )
     clean_build_artifacts
   end
@@ -53,7 +61,8 @@ platform :ios do
       xcargs: "-allowProvisioningUpdates"
     )
     upload_to_testflight(
-      skip_waiting_for_build_processing: true
+      skip_waiting_for_build_processing: true,
+      username: "albertosolpal@gmail.com"
     )
     clean_build_artifacts
   end
