@@ -1,5 +1,4 @@
 import React from 'react';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -15,7 +14,6 @@ import AddButton from '../../components/Elements/AddButton';
 import HouseItemList from '../../components/HouseItemList';
 import { ScreenHeader } from '../../components/Layout/ScreenHeader';
 import PageLayout from '../../components/PageLayout';
-import firestore from '@react-native-firebase/firestore';
 
 import { openScreenWithPush } from '../../Router/utils/actions';
 import {
@@ -24,23 +22,46 @@ import {
 } from '../../Router/utils/routerKeys';
 import { useTheme } from '../../Theme';
 import theme from '../../Theme/Theme';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { HOUSES } from '../../utils/firebaseKeys';
-import { fetchHouses } from '../../Services/firebase/houseServices';
+import { fetchHousesPaginated } from '../../Services/firebase/houseServices';
 
 const HousesScreen = () => {
   const { t } = useTranslation();
 
-  const { data: houses } = useQuery({
-    queryKey: [HOUSES],
-    queryFn: fetchHouses
-  });
-  const { Layout } = useTheme();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: [HOUSES],
+      queryFn: fetchHousesPaginated,
+      getNextPageParam: lastPage => {
+        return lastPage.hasMore ? lastPage.nextCursor : undefined;
+      },
+      initialPageParam: null
+    });
 
-  console.log('[[HOUSES]]', houses);
+  // Aplanar todas las páginas en un solo array
+  const houses = data?.pages?.flatMap(page => page?.houses || []) || [];
+
+  const { Layout } = useTheme();
 
   const handleNewHome = () => {
     openScreenWithPush(NEW_HOUSE_SCREEN_KEY);
+  };
+
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isFetchingNextPage) return null;
+
+    return (
+      <View style={styles.loadingFooter}>
+        <Text>Cargando más casas...</Text>
+      </View>
+    );
   };
 
   const renderItem = ({ item }) => {
@@ -80,8 +101,11 @@ const HousesScreen = () => {
                 </View>
               )}
               renderItem={renderItem}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item?.id || Math.random().toString()}
               showsVerticalScrollIndicator={false}
+              onEndReached={handleLoadMore}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={renderFooter}
               contentContainerStyle={[
                 Layout.flexGrow,
                 Layout.alignItemsCenter,
@@ -108,6 +132,10 @@ const styles = StyleSheet.create({
   },
   homesScreen: {
     paddingTop: 20
+  },
+  loadingFooter: {
+    alignItems: 'center',
+    paddingVertical: 20
   },
   scrollWrapper: {
     alignItems: 'center',

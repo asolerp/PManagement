@@ -107,6 +107,17 @@ export const useAddEditCheckist = ({ docId, edit }) => {
     } catch (err) {
       console.log(err);
     } finally {
+      // Invalidar todas las queries relacionadas con checklists
+      queryClient.invalidateQueries({
+        queryKey: ['checklistsNotFinishedPaginated']
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['checklistsFinishedPaginated']
+      });
+      queryClient.invalidateQueries({ queryKey: ['checklistsNotFinished'] });
+      queryClient.invalidateQueries({ queryKey: ['checklistsFinished'] });
+      queryClient.invalidateQueries({ queryKey: ['checklists'] });
+
       setLoading(false);
       setVisible(false);
       cleanForm();
@@ -154,7 +165,17 @@ export const useAddEditCheckist = ({ docId, edit }) => {
         text2: 'Algo ocurrió al crear el checklist, inténtalo más tarde'
       });
     } finally {
+      // Invalidar todas las queries relacionadas con checklists
+      queryClient.invalidateQueries({
+        queryKey: ['checklistsNotFinishedPaginated']
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['checklistsFinishedPaginated']
+      });
       queryClient.invalidateQueries({ queryKey: ['checklistsNotFinished'] });
+      queryClient.invalidateQueries({ queryKey: ['checklistsFinished'] });
+      queryClient.invalidateQueries({ queryKey: ['checklists'] });
+
       setLoading(false);
       setVisible(false);
       cleanForm();

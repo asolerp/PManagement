@@ -73,6 +73,7 @@ export default {
   homeMessage: 'Estas son tus tareas asignadas para hoy 💪🏡',
   check: {
     done: 'Finalizar y enviar al propietario',
+    resendEmail: 'Reenviar email al propietario',
     photos: 'Fotos'
   },
   new_checklist: {

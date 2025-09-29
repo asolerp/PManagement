@@ -4,7 +4,12 @@ const ADMIN_EMAIL = 'recepcion@portmanagement.es';
 const DEFAULT_HOUSE_IMAGE =
   'https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/other%2Fpmanagement.png?alt=media&token=432d2425-d425-4f38-9840-52e907e221fa';
 
-const sendResumeChecklistOwner = async ({ email, checklist, checks }) => {
+const sendResumeChecklistOwner = async ({
+  email,
+  checklist,
+  checks,
+  checklistId
+}) => {
   const { observations } = checklist;
   const { street, owner } = checklist.house[0];
 
@@ -225,7 +230,37 @@ const sendResumeChecklistOwner = async ({ email, checklist, checks }) => {
     });
   };
 
-  await sendEmail();
+  const emailResult = await sendEmail();
+
+  console.log('Email result:', emailResult, 'checklistId:', checklistId);
+
+  // Marcar en la base de datos si el email se envió exitosamente
+  if (emailResult && checklistId) {
+    console.log('Attempting to update database for checklist:', checklistId);
+    try {
+      const admin = require('firebase-admin');
+      await admin.firestore().collection('checklists').doc(checklistId).update({
+        send: true,
+        sendAt: admin.firestore.FieldValue.serverTimestamp(),
+        sendTo: arrayOfEmails
+      });
+      console.log(
+        'Email tracking updated successfully for checklist:',
+        checklistId
+      );
+    } catch (error) {
+      console.error('Error updating email tracking:', error);
+    }
+  } else {
+    console.log(
+      'Not updating database - emailResult:',
+      emailResult,
+      'checklistId:',
+      checklistId
+    );
+  }
+
+  return emailResult;
 };
 
 module.exports = {

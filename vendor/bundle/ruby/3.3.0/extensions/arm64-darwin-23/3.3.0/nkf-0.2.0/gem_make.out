@@ -1,0 +1,18 @@
+current directory: /Users/alberto/Desktop/Proyectos/PManagement/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+/Users/alberto/.rbenv/versions/3.3.5/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/alberto/Desktop/Proyectos/PManagement/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250918-81919-8xbvma sitelibdir\=./.gem.20250918-81919-8xbvma clean
+
+current directory: /Users/alberto/Desktop/Proyectos/PManagement/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250918-81919-8xbvma sitelibdir\=./.gem.20250918-81919-8xbvma
+compiling nkf.c
+linking shared-object nkf.bundle
+
+current directory: /Users/alberto/Desktop/Proyectos/PManagement/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250918-81919-8xbvma sitelibdir\=./.gem.20250918-81919-8xbvma install
+/usr/bin/install -c -m 0755 nkf.bundle ./.gem.20250918-81919-8xbvma
+
+current directory: /Users/alberto/Desktop/Proyectos/PManagement/vendor/bundle/ruby/3.3.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250918-81919-8xbvma sitelibdir\=./.gem.20250918-81919-8xbvma clean

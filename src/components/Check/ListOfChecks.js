@@ -1,29 +1,29 @@
 import React from 'react';
-import {View, Text, Pressable} from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 
 import ItemCheck from '../../components/ItemCheck';
 
-import {useTheme} from '../../Theme';
-import {useTranslation} from 'react-i18next';
+import { useTheme } from '../../Theme';
+import { useTranslation } from 'react-i18next';
 import Badge from '../Elements/Badge';
-import {useState} from 'react';
+import { useState } from 'react';
 
-import {useListOfChecks} from './hooks/useListOfChecks';
+import { useListOfChecks } from './hooks/useListOfChecks';
 import theme from '../../Theme/Theme';
 import useAuth from '../../utils/useAuth';
 
-const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
-  const {Layout, Fonts, Gutters} = useTheme();
+const ListOfChecks = ({ checkId, disabled, checks, isCheckFinished }) => {
+  const { Layout, Fonts, Gutters } = useTheme();
   const [noFinishFilter, setNoFinishFilter] = useState(false);
-  const {isOwner} = useAuth();
-  const {t} = useTranslation();
+  const { isOwner } = useAuth();
+  const { t } = useTranslation();
 
-  const listOfChecks = noFinishFilter ? checks?.filter((c) => !c.done) : checks;
+  const listOfChecks = noFinishFilter ? checks?.filter(c => !c.done) : checks;
 
-  const {handleCheckAll, handleRemoveAllChecks} = useListOfChecks({
+  const { handleCheckAll, handleRemoveAllChecks } = useListOfChecks({
     isCheckFinished,
     list: listOfChecks,
-    checkId,
+    checkId
   });
 
   const togleFilter = () => {
@@ -31,13 +31,14 @@ const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
   };
 
   return (
-    <View style={[Layout.fill]}>
+    <View style={Layout.fill}>
       <View
         style={[
           Layout.row,
           Layout.justifyContentSpaceBetween,
-          Gutters.smallBMargin,
-        ]}>
+          Gutters.smallBMargin
+        ]}
+      >
         <Text style={[Fonts.textTitle, Gutters.smallBPadding]}>
           {t('checklists.checkPage.jobs')}
         </Text>
@@ -56,7 +57,7 @@ const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
             variant={'pm'}
             onPress={handleCheckAll}
           />
-          <View style={[theme.mR2]} />
+          <View style={theme.mR2} />
           <Badge
             text={'Descompletar'}
             variant={'warning'}
@@ -66,7 +67,7 @@ const ListOfChecks = ({checkId, disabled, checks, isCheckFinished}) => {
       )}
       {listOfChecks
         ?.sort((a, b) => a.locale.es.localeCompare(b.locale.es))
-        ?.map((item) => {
+        ?.map(item => {
           return (
             <ItemCheck
               disabled={disabled}

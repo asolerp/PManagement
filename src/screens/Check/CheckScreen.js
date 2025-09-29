@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Info } from '../../components/Check';
 
@@ -25,8 +25,9 @@ const CheckScreen = ({ route }) => {
   const { docId } = route.params;
   const { t } = useTranslation();
 
-  const { isCheckFinished } = useCheck({ docId });
+  const { isCheckFinished, isEmailSent } = useCheck({ docId });
   const { notifyOwner } = useNotifyOwner();
+  const [isResending, setIsResending] = useState(false);
   const [checks, checksLoading] = useCollectionData(
     firestore().collection(CHECKLISTS).doc(docId).collection('checks'),
     {
@@ -50,6 +51,21 @@ const CheckScreen = ({ route }) => {
     }
   };
 
+  const handleResendEmail = async () => {
+    setIsResending(true);
+    try {
+      await notifyOwner(docId);
+    } catch (err) {
+      error({
+        message: err.message,
+        track: true,
+        asToast: true
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   return (
     <React.Fragment>
       <PageLayout
@@ -68,17 +84,26 @@ const CheckScreen = ({ route }) => {
           subPage: true
         }}
         footer={
-          areAllChecksDone &&
           user.role === 'admin' &&
           !checksLoading &&
-          !isCheckFinished && (
+          // Botón para finalizar checklist (cuando no está finalizado)
+          (areAllChecksDone && !isCheckFinished ? (
             <CustomButton
               styled="rounded"
               loading={false}
               title={t('check.done')}
               onPress={() => sendOwnerChecklist(() => handleFinishAndSend())}
             />
-          )
+          ) : // Botón para reenviar email (cuando está finalizado pero email no enviado)
+          isCheckFinished && !isEmailSent ? (
+            <CustomButton
+              styled="rounded"
+              loading={isResending}
+              title={t('check.resendEmail')}
+              onPress={handleResendEmail}
+              variant="secondary"
+            />
+          ) : null)
         }
       >
         <Info isCheckFinished={isCheckFinished} />

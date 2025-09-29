@@ -1,8 +1,4 @@
 import React from 'react';
-
-import useNoReadMessages from '../../hooks/useNoReadMessages';
-
-import { CHECKLISTS } from '../../utils/firebaseKeys';
 import { parseDateWithText, parsePercentageDone } from '../../utils/parsers';
 import useGetChecklistStats from './hooks/useGetChecklistStats';
 
@@ -18,18 +14,6 @@ const CheckItem = ({ item, fullWidth }) => {
   const { isOwner } = useAuth();
   const { t } = useTranslation();
 
-  function cutSentence(sentence) {
-    if (sentence.length > 10) {
-      return sentence.slice(0, 10) + '...';
-    }
-    return sentence;
-  }
-
-  const { noReadCounter } = useNoReadMessages({
-    collection: CHECKLISTS,
-    docId: item.id
-  });
-
   const { completePercentage, loadingChecks } = useGetChecklistStats({
     checkId: item.id
   });
@@ -43,19 +27,16 @@ const CheckItem = ({ item, fullWidth }) => {
   if (item.finished) {
     return (
       <FinishedListItem
-        withStatusBar
         date={format(date.toDate(), 'dd/MM/yyyy')}
-        statusColor={parsePercentageDone(completePercentage) || 0}
-        statusPercentage={completePercentage || 0}
+        title={item?.title}
+        house={item?.house?.[0].houseName}
+        workers={item?.workers}
+        emailSent={item?.send}
         subtitle={
           isOwner
             ? `${t('checklists.owner_text_1')}`
             : item?.observations || 'Sin observaciones'
         }
-        fullWidth={fullWidth}
-        counter={noReadCounter}
-        house={cutSentence(item?.house?.[0].houseName)}
-        workers={item?.workers}
       />
     );
   }
@@ -68,7 +49,6 @@ const CheckItem = ({ item, fullWidth }) => {
       })}
       dateVariant={parseDateWithText(date).variant}
       statusColor={parsePercentageDone(completePercentage) || 0}
-      statusPercentage={completePercentage || 0}
       title={item?.title}
       subtitle={
         isOwner
@@ -76,7 +56,6 @@ const CheckItem = ({ item, fullWidth }) => {
           : item?.observations || 'Sin observaciones'
       }
       fullWidth={fullWidth}
-      counter={noReadCounter}
       house={item?.house?.[0].houseName}
       workers={item?.workers}
     />

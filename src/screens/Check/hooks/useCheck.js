@@ -17,9 +17,12 @@ export const useCheck = ({ docId }) => {
   };
 
   const isCheckFinished = checklist?.finished;
+  const isEmailSent = checklist?.send;
 
   return {
     isCheckFinished,
-    reOpenChecklist
+    isEmailSent,
+    reOpenChecklist,
+    checklist
   };
 };

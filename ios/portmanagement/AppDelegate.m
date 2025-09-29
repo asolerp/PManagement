@@ -1,8 +1,8 @@
 #import "AppDelegate.h"
 
-#import <React/RCTBridge.h>
-#import <React/RCTBundleURLProvider.h>
-#import <React/RCTRootView.h>
+#import <RCTBridge.h>
+#import <RCTBundleURLProvider.h>
+#import <RCTRootView.h>
 #import <Firebase.h>
 #import <CodePush/CodePush.h>
 

@@ -31,7 +31,7 @@ const notifyOwner = functions
         .firestore()
         .collection('checklists')
         .doc(checkId)
-        .update({ finished: true });
+        .update({ finished: true, send: true });
 
       const checklist = checklistRef.data();
       const checks = checksRef.docs.map(doc => doc.data());
@@ -51,13 +51,24 @@ const notifyOwner = functions
 
       const emailsSeparatedByComma = aditionalEmails?.join(',');
 
-      sendResumeChecklistOwner({
+      console.log(
+        'Calling sendResumeChecklistOwner with checklistId:',
+        checkId
+      );
+
+      await sendResumeChecklistOwner({
         email: owner?.aditionalEmail
           ? `${owner.email},${emailsSeparatedByComma}`
           : owner.email,
         checklist,
-        checks
+        checks,
+        checklistId: checkId
       });
+
+      console.log(
+        'sendResumeChecklistOwner completed for checklistId:',
+        checkId
+      );
     } catch (err) {
       console.log(err);
     }

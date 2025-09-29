@@ -27,6 +27,7 @@ import useMoveToRecycleBien from '../../utils/useMoveToRecycleBin';
 import { REGION } from '../../firebase/utils';
 import { success } from '../../lib/logging';
 import { LoadingModalContext } from '../../context/loadinModalContext';
+import { useQueryClient } from '@tanstack/react-query';
 
 const PageOptionsScreen = ({
   docId,
@@ -44,6 +45,7 @@ const PageOptionsScreen = ({
   const { recursiveDelete } = useRecursiveDelete();
   const { moveToRecycleBin } = useMoveToRecycleBien();
   const { setVisible } = useContext(LoadingModalContext);
+  const queryClient = useQueryClient();
 
   const sendPasswordResetEmail = firebase
     .app()
@@ -100,26 +102,86 @@ const PageOptionsScreen = ({
             await timeout(400);
             deleteGeneric(async () => {
               try {
-                popScreen();
+                setVisible(true); // Mostrar loading
+
                 if (collection === CHECKLISTS) {
                   await moveToRecycleBin(docId);
                 }
+
                 await recursiveDelete({
                   path: `${collection}/${docId}`,
                   docId,
                   collection: collection
                 });
+
+                // Invalidar todas las queries relacionadas con checklists
+                if (collection === CHECKLISTS) {
+                  await queryClient.invalidateQueries({
+                    queryKey: ['checklistsNotFinishedPaginated']
+                  });
+                  await queryClient.invalidateQueries({
+                    queryKey: ['checklistsFinishedPaginated']
+                  });
+                  await queryClient.invalidateQueries({
+                    queryKey: ['checklists']
+                  });
+                }
+
+                // Invalidar queries de otros tipos si es necesario
+                if (collection === JOBS) {
+                  await queryClient.invalidateQueries({
+                    queryKey: ['jobs']
+                  });
+                }
+
+                if (collection === USERS) {
+                  await queryClient.invalidateQueries({
+                    queryKey: ['users']
+                  });
+                }
+
+                popScreen();
               } catch (err) {
                 console.log('ERROR', err);
+              } finally {
+                setVisible(false); // Ocultar loading
               }
             });
           }}
           duplicate={duplicate}
           onDuplicate={async () => {
-            await handleDuplicate();
-            openScreenWithPush(HOME_ADMIN_STACK_KEY, {
-              screen: backScreen
-            });
+            try {
+              setVisible(true); // Mostrar loading
+
+              await handleDuplicate();
+
+              // Invalidar queries después de duplicar
+              if (collection === CHECKLISTS) {
+                await queryClient.invalidateQueries({
+                  queryKey: ['checklistsNotFinishedPaginated']
+                });
+                await queryClient.invalidateQueries({
+                  queryKey: ['checklistsFinishedPaginated']
+                });
+                await queryClient.invalidateQueries({
+                  queryKey: ['checklists']
+                });
+              }
+
+              if (collection === JOBS) {
+                await queryClient.invalidateQueries({
+                  queryKey: ['jobs']
+                });
+              }
+
+              openScreenWithPush(HOME_ADMIN_STACK_KEY, {
+                screen: backScreen
+              });
+            } catch (err) {
+              console.log('ERROR duplicating:', err);
+            } finally {
+              setVisible(false); // Ocultar loading
+            }
           }}
         />
       </BottomModal>

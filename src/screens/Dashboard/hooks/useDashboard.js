@@ -1,5 +1,10 @@
-import React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback
+} from 'react';
 import { FiltersContext } from '../../../context/FiltersContext';
 import { useWindowDimensions } from 'react-native';
 import { useAnimatedContainer } from './useAnimatedContainer';
@@ -15,30 +20,42 @@ export const useDashboard = navigation => {
   const { isScrollActive, gestureHandler, containerStyles } =
     useAnimatedContainer();
 
-  const [routes] = useState([
-    { key: CHECKLISTS, title: 'Checklists' },
-    { key: INCIDENCES, title: 'Incidencias' }
-  ]);
+  const routes = useMemo(
+    () => [
+      { key: CHECKLISTS, title: 'Checklists' },
+      { key: INCIDENCES, title: 'Incidencias' }
+    ],
+    []
+  );
 
-  const date = moment(new Date()).format('LL').split(' ');
-  date[2] = date[2][0].toUpperCase() + date[2].slice(1);
+  const date = useMemo(() => {
+    const dateArray = moment(new Date()).format('LL').split(' ');
+    return [
+      dateArray[0],
+      dateArray[1],
+      dateArray[2][0].toUpperCase() + dateArray[2].slice(1)
+    ];
+  }, []);
 
   const layout = useWindowDimensions();
 
-  const renderScene = ({ route }) => {
-    switch (route.key) {
-      case CHECKLISTS:
-        return (
-          <ChecklistsTab filters={filters} scrollEnabled={isScrollActive} />
-        );
-      case INCIDENCES:
-        return (
-          <IncidencesTab filters={filters} scrollEnabled={isScrollActive} />
-        );
-      default:
-        return null;
-    }
-  };
+  const renderScene = useCallback(
+    ({ route }) => {
+      switch (route.key) {
+        case CHECKLISTS:
+          return (
+            <ChecklistsTab filters={filters} scrollEnabled={isScrollActive} />
+          );
+        case INCIDENCES:
+          return (
+            <IncidencesTab filters={filters} scrollEnabled={isScrollActive} />
+          );
+        default:
+          return null;
+      }
+    },
+    [filters, isScrollActive]
+  );
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -55,6 +72,7 @@ export const useDashboard = navigation => {
     routes,
     layout,
     filters,
+    date,
     setIndex,
     setFilters,
     renderScene,

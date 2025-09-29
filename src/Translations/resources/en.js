@@ -74,6 +74,7 @@ export default {
   homeMessage: 'These are your asigned jobs for today 💪🏡',
   check: {
     done: 'Finish and send to owner',
+    resendEmail: 'Resend email to owner',
     photos: 'Photos'
   },
   new_checklist: {

@@ -1,25 +1,25 @@
 import React from 'react';
 
-import {MenuItem} from '../UI/MenuItem';
-import {imageActions} from '../../utils/imageActions';
-import {useCameraOrLibrary} from '../../hooks/useCamerOrLibrary';
+import { MenuItem } from '../UI/MenuItem';
+import { imageActions } from '../../utils/imageActions';
+import { useCameraOrLibrary } from '../../hooks/useCamerOrLibrary';
 
-import {BottomModal} from './BottomModal';
+import { BottomModal } from './BottomModal';
 
 const CAPTURE_ACTION = 'capture';
 const LIBRARY_ACTION = 'library';
 
-const PhotoCameraModal = ({visible, handleVisibility, onSelectImage}) => {
-  const {onImagePress} = useCameraOrLibrary();
+const PhotoCameraModal = ({ visible, handleVisibility, onSelectImage }) => {
+  const { onImagePress } = useCameraOrLibrary();
 
-  const handlePress = (type) => {
+  const handlePress = type => {
     onImagePress({
       type,
-      options: {...imageActions[type], selectionLimit: 0},
-      callback: async (imgs) => {
+      options: { ...imageActions[type], selectionLimit: 0 },
+      callback: async imgs => {
         onSelectImage(imgs);
         handleVisibility(false);
-      },
+      }
     });
   };
 
@@ -29,7 +29,8 @@ const PhotoCameraModal = ({visible, handleVisibility, onSelectImage}) => {
       swipeDirection={null}
       onClose={() => {
         handleVisibility(false);
-      }}>
+      }}
+    >
       <MenuItem
         iconName="camera"
         title="Usar cámara"

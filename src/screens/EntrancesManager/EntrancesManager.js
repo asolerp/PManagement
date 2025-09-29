@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import Mapbox from '@rnmapbox/maps';
+import MapView, { Marker } from 'react-native-maps';
 import { useEntrancesManager } from './hooks/useEntrancesManager';
 import Avatar from '../../components/Avatar';
 import { ListOfWorkers } from './components/ListOfWorkers';
@@ -11,18 +11,15 @@ import { DEFAULT_IMAGE } from '../../constants/general';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import theme from '../../Theme/Theme';
 
-const DEFAULT_COORDINATES = [2.3969, 39.5743];
-
-Mapbox.setWellKnownTileServer('Mapbox');
-Mapbox.setAccessToken(
-  'sk.eyJ1IjoiYXNvbGVycCIsImEiOiJjbHc3a2lqN24yMXJvMmpvY2FqeWYwZ2hlIn0.E7uBdBgJGlMxLamWXp66hw'
-);
+const DEFAULT_COORDINATES = {
+  latitude: 39.5743,
+  longitude: 2.3969,
+  latitudeDelta: 0.01,
+  longitudeDelta: 0.01
+};
 
 const EntrancesManager = () => {
-  const [cameraSettings, setCameraSettings] = useState({
-    centerCoordinate: DEFAULT_COORDINATES, // Initial center coordinate
-    zoomLevel: 10 // Initial zoom level
-  });
+  const [cameraSettings, setCameraSettings] = useState(DEFAULT_COORDINATES);
 
   const [isModalInfoOpened, setIsModalInfoOpened] = useState();
   const [entranceInfo, setEntranceInfo] = useState();
@@ -37,11 +34,25 @@ const EntrancesManager = () => {
   } = useEntrancesManager();
 
   // Function to update camera settings
-  const updateCamera = (zoom, newCoordinates) => {
-    setCameraSettings({
-      zoomLevel: zoom,
-      centerCoordinate: newCoordinates
-    });
+  const updateCamera = (zoom, coordinates) => {
+    const latitudeDelta = zoom === 16 ? 0.005 : 0.01;
+    const longitudeDelta = zoom === 16 ? 0.005 : 0.01;
+
+    if (Array.isArray(coordinates)) {
+      // Convert from [longitude, latitude] to {latitude, longitude}
+      setCameraSettings({
+        latitude: coordinates[1],
+        longitude: coordinates[0],
+        latitudeDelta,
+        longitudeDelta
+      });
+    } else {
+      setCameraSettings({
+        ...coordinates,
+        latitudeDelta,
+        longitudeDelta
+      });
+    }
   };
 
   const handlePressWorkerFromList = workerId => {
@@ -87,27 +98,26 @@ const EntrancesManager = () => {
             )}
           </TouchableOpacity>
         </View>
-        <Mapbox.MapView style={styles.map}>
-          <Mapbox.Camera
-            zoomLevel={cameraSettings.zoomLevel}
-            centerCoordinate={cameraSettings.centerCoordinate}
-          />
+        <MapView
+          style={styles.map}
+          region={cameraSettings}
+          onRegionChangeComplete={setCameraSettings}
+        >
           {entrances &&
             entrances.map(entrance => (
-              <Mapbox.PointAnnotation
+              <Marker
                 key={entrance.id}
-                id={entrance.id}
-                coordinate={[
-                  entrance.location.longitude,
-                  entrance.location.latitude
-                ]}
+                coordinate={{
+                  latitude: entrance.location.latitude,
+                  longitude: entrance.location.longitude
+                }}
               >
                 <View style={styles.customMarkerStyle}>
                   <Avatar uri={DEFAULT_IMAGE} size="medium" />
                 </View>
-              </Mapbox.PointAnnotation>
+              </Marker>
             ))}
-        </Mapbox.MapView>
+        </MapView>
       </View>
     </View>
   );

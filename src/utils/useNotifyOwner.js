@@ -28,6 +28,13 @@ export const useNotifyOwner = () => {
         checkId: docId
       }).then(() => setVisible(false));
       queryClient.invalidateQueries({ queryKey: ['checklistsNotFinished'] });
+      queryClient.invalidateQueries({
+        queryKey: ['checklistsNotFinishedPaginated']
+      });
+      queryClient.invalidateQueries({ queryKey: ['checklistsFinished'] });
+      queryClient.invalidateQueries({
+        queryKey: ['checklistsFinishedPaginated']
+      });
       openStackWithReplace(HOME_ADMIN_STACK_KEY, MAIN_ADMIN_STACK_KEY);
     } catch (err) {
       error({
