@@ -1,26 +1,41 @@
-# Transform this into a `node_require` generic function:
-def node_require(script)
-  # Resolve script with node to allow for hoisting
-  require Pod::Executable.execute_command('node', ['-p',
-    "require.resolve(
-      '#{script}',
-      {paths: [process.argv[1]]},
-    )", __dir__]).strip
+# Podfile – RN 0.76.9 (Fix B + screens + folly + app C++17)
+
+require 'json'
+require 'pathname'
+
+# Resolver genérico vía Node para `require` en Ruby
+def node_require(*scripts, base_dir: __dir__)
+  scripts.each do |script|
+    resolved = Pod::Executable.execute_command(
+      'node',
+      [
+        '-e',
+        "const s=process.argv[1];" \
+        "const base=process.argv[2];" \
+        "const resolved=require.resolve(s,{paths:[base,process.cwd()]});" \
+        "process.stdout.write(resolved);",
+        script,
+        base_dir
+      ]
+    ).strip
+
+    require resolved
+  rescue => e
+    Pod::UI.puts "❌ node_require failed for '#{script}': #{e}".red
+    raise
+  end
 end
 
-# Use it to require both react-native's and this package's scripts:
+# Helpers de React Native para CocoaPods
 node_require('react-native/scripts/react_native_pods.rb')
 
-use_modular_headers!
-platform :ios, '13.0'
+platform :ios, '15.1'
 prepare_react_native_project!
 
-# Firebase static framework configuration
+# Firebase como frameworks estáticos
 $RNFirebaseAsStaticFramework = true
 
-# Disable Flipper for production builds to avoid framework conflicts
-flipper_config = FlipperConfiguration.disabled
-
+# Linkage de frameworks
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
@@ -32,88 +47,179 @@ end
 target 'PortManagement' do
   config = use_native_modules!
 
-  # Firebase pods
-  pod 'GoogleUtilities'
-  pod 'Firebase/Core'
-  pod 'Firebase/Analytics'
-  pod 'Firebase/Auth'
-  pod 'Firebase/Firestore'
-  pod 'Firebase/Functions'
-  pod 'Firebase/Messaging'
-  pod 'Firebase/RemoteConfig'
-  pod 'Firebase/Storage'
-  pod 'Firebase/InAppMessaging'
-  pod 'Firebase/Installations'
+  # --- Firebase moderno (evita Firebase/Core & GoogleUtilities directos) ---
+  pod 'FirebaseAnalytics'
+  pod 'FirebaseAuth'
+  pod 'FirebaseFirestore'
+  pod 'FirebaseFunctions'
+  pod 'FirebaseMessaging'
+  pod 'FirebaseRemoteConfig'
+  pod 'FirebaseStorage'
+  pod 'FirebaseInstallations'
 
+  # --- React Native ---
   use_react_native!(
     :path => config[:reactNativePath],
-    # Hermes is now enabled by default. Disable by setting this flag to false.
-    :hermes_enabled => true,
-    :fabric_enabled => false,
-    # Enables Flipper.
-    :flipper_configuration => flipper_config,
-    # An absolute path to your application root.
+    :hermes_enabled => true,     # Recomendado en 0.76.x
+    :fabric_enabled => false,    # Cambia a true si activas la Nueva Arquitectura
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   target 'PortManagement-Development' do
     inherit! :complete
-    # Pods for testing
   end
 
   post_install do |installer|
-    
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    # Paso estándar de RN
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
-    
-    # Fix for RCT-Folly
-    `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_15_0/' #{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h`
 
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        # Set minimum iOS deployment target to 13.0 for MapboxMaps compatibility
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
-        
-        # Enable user script sandboxing
-        config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
-        
-        # Enable dSYM generation
-        config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
-        
-        # Fix Firebase non-modular header warnings with static frameworks
-        if target.name.start_with?('RNFB') || target.name.start_with?('Firebase')
-          config.build_settings['CLANG_WARN_NON_MODULAR_INCLUDE_IN_FRAMEWORK_MODULE'] = 'NO'
-          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-          config.build_settings['DEFINES_MODULE'] = 'YES'
+    # --- Ajustes por target de Pods ---
+    installer.pods_project.targets.each do |t|
+      t.build_configurations.each do |bc|
+        # iOS mínimo alineado con RN 0.76.9
+        bc.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
+
+        # Script phases que escriben ficheros
+        bc.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+
+        # dSYM en todas las configs
+        bc.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+
+        # Reducir warnings por includes no modulares solo en Firebase/RNFB
+        if t.name.start_with?('RNFB') || t.name.start_with?('Firebase')
+          bc.build_settings['CLANG_WARN_NON_MODULAR_INCLUDE_IN_FRAMEWORK_MODULE'] = 'NO'
+          bc.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+          bc.build_settings['DEFINES_MODULE'] = 'YES'
         end
-        
-        # Fix BoringSSL-GRPC compilation issues
-        if target.name == 'BoringSSL-GRPC'
-          config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'NO'
-          config.build_settings['WARNING_CFLAGS'] = '$(inherited) -Wno-shorten-64-to-32'
-          config.build_settings['OTHER_CFLAGS'] = '$(inherited) -Wno-shorten-64-to-32'
+
+        # Afinado BoringSSL-GRPC
+        if t.name == 'BoringSSL-GRPC'
+          bc.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'NO'
+          inherited = bc.build_settings['OTHER_CFLAGS'] || '$(inherited)'
+          bc.build_settings['OTHER_CFLAGS'] = "#{inherited} -Wno-shorten-64-to-32"
+        end
+
+        # Fix B (parte 1): C++17 SOLO en gRPC
+        if ['gRPC-Core', 'gRPC-C++', 'gRPC-C++_gRPCCertificates-Cpp'].include?(t.name)
+          bc.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+        end
+
+        # RCT-Folly: desactivar coroutines por flags
+        if t.name == 'RCT-Folly'
+          defs = bc.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] || '$(inherited)'
+          defs = defs.is_a?(Array) ? defs : defs.to_s.split(/\s+/)
+          defs << 'FOLLY_HAS_COROUTINES=0' unless defs.any? { |d| d.include?('FOLLY_HAS_COROUTINES=0') }
+          bc.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = defs
+
+          cxx = bc.build_settings['OTHER_CPLUSPLUSFLAGS'] || '$(inherited)'
+          cxx = cxx.is_a?(Array) ? cxx : cxx.to_s.split(/\s+/)
+          cxx << '-DFOLLY_HAS_COROUTINES=0' unless cxx.any? { |d| d.include?('FOLLY_HAS_COROUTINES=0') }
+          bc.build_settings['OTHER_CPLUSPLUSFLAGS'] = cxx
+
+          Pod::UI.puts "🔧 RCT-Folly: FOLLY_HAS_COROUTINES=0 aplicado en #{bc.name}".green
         end
       end
-      
-      # Additional fix for BoringSSL-GRPC compiler flags at file level
-      if target.name == 'BoringSSL-GRPC'
-        target.source_build_phase.files.each do |file|
-          if file.settings && file.settings['COMPILER_FLAGS']
-            flags = file.settings['COMPILER_FLAGS'].split
-            flags.reject! { |flag| flag.include?('-GCC_WARN_INHIBIT_ALL_WARNINGS') || flag == '-G' }
-            file.settings['COMPILER_FLAGS'] = flags.join(' ')
-          end
+
+      # Limpieza flags file-level en BoringSSL-GRPC
+      if t.name == 'BoringSSL-GRPC'
+        t.source_build_phase.files.each do |f|
+          next unless f.settings && f.settings['COMPILER_FLAGS']
+          flags = f.settings['COMPILER_FLAGS'].split
+          flags.reject! { |flag| flag.include?('-GCC_WARN_INHIBIT_ALL_WARNINGS') || flag == '-G' }
+          f.settings['COMPILER_FLAGS'] = flags.uniq.join(' ')
         end
       end
     end
-    
-    # Global fix for non-modular includes in framework modules
-    installer.pods_project.build_configurations.each do |config|
-      config.build_settings["CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES"] = true
+
+    # --- FUNCIONES DE PARCHEO (definidas DENTRO de post_install) ---
+
+    # gRPC: std::result_of -> std::invoke_result_t (Fix B parte 2)
+    def patch_promise_like(path)
+      return unless File.exist?(path)
+      content = File.read(path)
+      needle  = 'typename std::result_of<F()>::type'
+      repl    = 'typename std::invoke_result_t<F>'
+      if content.include?(needle)
+        File.write(path, content.gsub(needle, repl))
+        Pod::UI.puts "🔧 Patched #{path.sub(Dir.pwd + '/', '')} (invoke_result_t)".green
+      else
+        Pod::UI.puts "ℹ️ No patch needed for #{path.sub(Dir.pwd + '/', '')}".yellow
+      end
+    end
+
+    # react-native-screens: evitar copia de ImageProps (usar referencia)
+    def patch_rnscreens_imageprops
+      root = Pod::Config.instance.installation_root # normalmente .../ios
+      file = File.expand_path(File.join(root, '..', 'node_modules', 'react-native-screens', 'ios', 'RNSScreenStackHeaderConfig.mm'))
+      unless File.exist?(file)
+        return Pod::UI.puts("ℹ️ RNSScreenStackHeaderConfig.mm no encontrado, omitido")
+      end
+
+      content = File.read(file)
+      before  = 'auto const imageProps = *std::static_pointer_cast<const react::ImageProps>(view.props);'
+      after   = 'auto const &imageProps = *std::static_pointer_cast<const react::ImageProps>(view.props);'
+
+      if content.include?(before)
+        File.write(file, content.gsub(before, after))
+        Pod::UI.puts "🔧 Patched react-native-screens ImageProps (by-reference)".green
+      else
+        Pod::UI.puts "ℹ️ Parche de ImageProps no aplicado (patrón no encontrado)".yellow
+      end
+    end
+
+    # RCT-Folly: blindar include de coroutines en Expected.h (lambda captura installer)
+    patch_folly_expected_guard = lambda do |inst|
+      path = File.join(inst.sandbox.root, 'RCT-Folly', 'folly', 'Expected.h')
+      unless File.exist?(path)
+        Pod::UI.puts "ℹ️ RCT-Folly Expected.h no encontrado, omitido"
+        next
+      end
+
+      content = File.read(path)
+
+      # 1) Proteger #include <folly/coro/Coroutine.h> con guard
+      needle = '#include <folly/coro/Coroutine.h>'
+      guard  = "#if defined(FOLLY_HAS_COROUTINES) && FOLLY_HAS_COROUTINES\n#{needle}\n#endif"
+      if content.include?(needle) && !content.include?(guard)
+        content = content.sub(needle, guard)
+        Pod::UI.puts "🔧 RCT-Folly: protegido include de folly/coro/Coroutine.h".green
+      end
+
+      # 2) Asegurar define por defecto si no está presente
+      unless content.include?('FOLLY_HAS_COROUTINES')
+        content = content.sub(/(#pragma once.*?\n)/m) do |m|
+          m + "#ifndef FOLLY_HAS_COROUTINES\n#define FOLLY_HAS_COROUTINES 0\n#endif\n"
+        end
+        Pod::UI.puts "🔧 RCT-Folly: añadido default FOLLY_HAS_COROUTINES=0".green
+      end
+
+      File.write(path, content)
+    end
+
+    # --- LLAMADAS a parches (DENTRO de post_install) ---
+    promise_like_cpp  = File.join(installer.sandbox.root, 'gRPC-C++',  'src', 'core', 'lib', 'promise', 'detail', 'promise_like.h')
+    promise_like_core = File.join(installer.sandbox.root, 'gRPC-Core', 'src', 'core', 'lib', 'promise', 'detail', 'promise_like.h')
+    patch_promise_like(promise_like_cpp)
+    patch_promise_like(promise_like_core)
+
+    patch_rnscreens_imageprops
+    patch_folly_expected_guard.call(installer)
+
+    # --- AJUSTE PROYECTO DE USUARIO (tu app): fuerza C++17 ---
+    # Útil si renombraste AppDelegate.m -> AppDelegate.mm y quieres garantizar estándar
+    installer.aggregate_targets.each do |agg|
+      proj = agg.user_project
+      proj.targets.each do |t|
+        next unless t.name == 'PortManagement' # nombre del target de la app
+        t.build_configurations.each do |bc|
+          bc.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+        end
+      end
+      proj.save
     end
   end
 end

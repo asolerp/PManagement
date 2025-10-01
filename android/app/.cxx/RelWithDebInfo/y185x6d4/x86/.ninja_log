@@ -1,0 +1,10 @@
+# ninja log v5
+10	52	1759308719360950475	build.ninja	2f4c93e211f3ed12
+0	9	0	/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/RelWithDebInfo/y185x6d4/x86/CMakeFiles/cmake.verify_globs	6305ec6b57c946fd
+1516	1567	1759221614080792309	/Users/alberto/Desktop/Proyectos/PManagement/android/app/build/intermediates/cxx/RelWithDebInfo/y185x6d4/obj/x86/libappmodules.so	4a6b0d4979e90a40
+0	7	0	clean	7bfe1f0476aa0525
+5	1327	1759221613834702360	CMakeFiles/appmodules.dir/Users/alberto/Desktop/Proyectos/PManagement/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	4b245cf2eff76165
+5	1516	1759221614025738029	CMakeFiles/appmodules.dir/OnLoad.cpp.o	fd69f22f258c9b7d
+9	52	1759308719360950475	build.ninja	2f4c93e211f3ed12
+0	9	0	/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/RelWithDebInfo/y185x6d4/x86/CMakeFiles/cmake.verify_globs	6305ec6b57c946fd
+0	8	0	clean	7bfe1f0476aa0525

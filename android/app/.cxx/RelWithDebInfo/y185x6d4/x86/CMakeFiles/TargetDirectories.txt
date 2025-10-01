@@ -1,0 +1,3 @@
+/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/RelWithDebInfo/y185x6d4/x86/CMakeFiles/appmodules.dir
+/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/RelWithDebInfo/y185x6d4/x86/CMakeFiles/edit_cache.dir
+/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/RelWithDebInfo/y185x6d4/x86/CMakeFiles/rebuild_cache.dir

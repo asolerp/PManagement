@@ -1,0 +1,31 @@
+{
+  "buildFiles": [
+    "/Users/alberto/Desktop/Proyectos/PManagement/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/alberto/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/RelWithDebInfo/y185x6d4/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/alberto/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/RelWithDebInfo/y185x6d4/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "artifactName": "appmodules",
+      "abi": "x86",
+      "output": "/Users/alberto/Desktop/Proyectos/PManagement/android/app/build/intermediates/cxx/RelWithDebInfo/y185x6d4/obj/x86/libappmodules.so",
+      "runtimeFiles": [
+        "/Users/alberto/.gradle/caches/8.10.2/transforms/0d74de02a43cfddb7763454349f10fb6/transformed/jetified-fbjni-0.6.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+        "/Users/alberto/.gradle/caches/8.10.2/transforms/f1518bedbad59d7bd47a9e542ef8ff11/transformed/jetified-react-android-0.76.9-release/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/Users/alberto/.gradle/caches/8.10.2/transforms/f1518bedbad59d7bd47a9e542ef8ff11/transformed/jetified-react-android-0.76.9-release/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
+      ]
+    }
+  }
+}

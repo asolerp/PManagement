@@ -40,7 +40,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>202402121476</string>
+	<string>202402121477</string>
 	<key>CodePushDeploymentKey</key>
 	<string>RIZvOkyp-sdgdxU2hEX8jVh3HDhEnpAdWwnsU</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -53,13 +53,8 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>NSAllowsArbitraryLoads</key>
-			<false/>
-			<key>NSAllowsLocalNetworking</key>
-			<true/>
-		</dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera to take a picture for the profile or for the jobs</string>
@@ -86,7 +81,7 @@
 	<string>BootSplash</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
 	<key>UIStatusBarStyle</key>
 	<string></string>

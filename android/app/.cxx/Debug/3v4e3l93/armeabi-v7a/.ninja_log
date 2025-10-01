@@ -1,0 +1,13 @@
+# ninja log v5
+0	7	0	clean	7bfe1f0476aa0525
+1425	1493	1759308254171182096	/Users/alberto/Desktop/Proyectos/PManagement/android/app/build/intermediates/cxx/Debug/3v4e3l93/obj/armeabi-v7a/libappmodules.so	ef5d051429b55c78
+0	1256	1759308253932996221	CMakeFiles/appmodules.dir/Users/alberto/Desktop/Proyectos/PManagement/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	e8c35fa65632672
+1	1425	1759308254098598517	CMakeFiles/appmodules.dir/OnLoad.cpp.o	1f88a984e7708d7f
+1	25	0	/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/Debug/3v4e3l93/armeabi-v7a/CMakeFiles/cmake.verify_globs	f00d0f6ba636cfb
+25	109	1759308616119218032	build.ninja	f3b6304a92010b80
+0	23	0	/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/Debug/3v4e3l93/armeabi-v7a/CMakeFiles/cmake.verify_globs	f00d0f6ba636cfb
+4	1705	1759308617861805649	CMakeFiles/appmodules.dir/Users/alberto/Desktop/Proyectos/PManagement/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	e8c35fa65632672
+4	1852	1759308618008307058	CMakeFiles/appmodules.dir/OnLoad.cpp.o	1f88a984e7708d7f
+1852	1919	1759308618080628656	/Users/alberto/Desktop/Proyectos/PManagement/android/app/build/intermediates/cxx/Debug/3v4e3l93/obj/armeabi-v7a/libappmodules.so	ef5d051429b55c78
+0	31	0	/Users/alberto/Desktop/Proyectos/PManagement/android/app/.cxx/Debug/3v4e3l93/armeabi-v7a/CMakeFiles/cmake.verify_globs	f00d0f6ba636cfb
+0	7	0	clean	7bfe1f0476aa0525

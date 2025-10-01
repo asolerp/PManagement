@@ -4,7 +4,6 @@ import AuthRouter from './Router/authRouter';
 import i18n from 'i18next';
 import Toast from 'react-native-toast-message';
 import { MenuProvider } from 'react-native-popup-menu';
-import RNBootSplash from 'react-native-bootsplash';
 
 import ErrorBoundary from 'react-native-error-boundary';
 
@@ -45,9 +44,7 @@ const App = () => {
     const init = async () => {
       moment.locale(locale);
     };
-    init().finally(async () => {
-      await RNBootSplash.hide({ fade: false });
-    });
+    init();
   }, [locale]);
 
   useEffect(() => {
