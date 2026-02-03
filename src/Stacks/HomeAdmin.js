@@ -15,15 +15,15 @@ import { PRIORITY_HEIGHT } from '../styles/colors';
 import { tabNameByScreen } from '../utils/parsers';
 import {
   DASHBOARD_SCREEN_KEY,
-  ENTRANCES_MANAGER_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
+  TIME_TRACKING_SCREEN_KEY,
   USERS_SCREEN_KEY
 } from '../Router/utils/routerKeys';
 import { UsersScreen } from '../Screens/Users';
 import { useTranslation } from 'react-i18next';
 import { isIOS } from '../utils/platform';
 import { Colors } from '../Theme/Variables';
-import { EntrancesManager } from '../Screens/EntrancesManager';
+import { TimeTrackingScreen } from '../Screens/TimeTracking';
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
@@ -113,15 +113,15 @@ const HomeAdmin = () => {
         })}
       />
       <Screen
-        name={t(tabNameByScreen[ENTRANCES_MANAGER_SCREEN_KEY])}
-        initialParams={{ screenKey: ENTRANCES_MANAGER_SCREEN_KEY }}
-        component={EntrancesManager}
+        name={t(tabNameByScreen[TIME_TRACKING_SCREEN_KEY])}
+        initialParams={{ screenKey: TIME_TRACKING_SCREEN_KEY }}
+        component={TimeTrackingScreen}
         options={({ route }) => ({
           tabBarVisible: getTabBarVisible(route),
           tabBarIcon: ({ focused, color, size }) => (
             <>
               <Icon
-                name={focused ? 'grid' : 'grid-outline'}
+                name={focused ? 'time' : 'time-outline'}
                 size={25}
                 focused={focused}
                 color={Colors.pm}

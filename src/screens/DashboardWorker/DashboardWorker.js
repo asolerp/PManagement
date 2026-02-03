@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   useWindowDimensions,
   TouchableOpacity
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 // Components
 import ProfileBar from '../../components/ProfileBar';
@@ -57,7 +58,14 @@ const DashboardWorkerScreen = () => {
   const { isScrollActive, gestureHandler, containerStyles } =
     useAnimatedContainer();
   const layout = useWindowDimensions();
-  const { entrance, onRegisterExit } = useDashboardWorker();
+  const { entrance, onRegisterExit, refresh } = useDashboardWorker();
+
+  // Refrescar datos cuando la pantalla vuelve al foco
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   const renderScene = ({ route }) => {
     switch (route.key) {
@@ -83,11 +91,13 @@ const DashboardWorkerScreen = () => {
         edges={['top']}
       >
         <ActionButtons />
-        <AddButton
-          containerStyle={[theme.left5]}
-          iconName="house"
-          onPress={() => openScreenWithPush(CONFIRM_ENTRANCE_SCREEN_KEY)}
-        />
+        {!entrance && (
+          <AddButton
+            containerStyle={[theme.left5]}
+            iconName="login"
+            onPress={() => openScreenWithPush(CONFIRM_ENTRANCE_SCREEN_KEY)}
+          />
+        )}
         <View style={[theme.flex1, theme.bgGray100]}>
           <View style={styles.profileBarContainerStyle}>
             <ProfileBar />
@@ -113,10 +123,7 @@ const DashboardWorkerScreen = () => {
                 ]}
               >
                 <View>
-                  <Text style={theme.mB1}>Trabajando en: </Text>
-                  <Text style={theme.fontSansBold}>
-                    {entrance.house.houseName}
-                  </Text>
+                  <Text style={theme.mB1}>Entrada registrada</Text>
                   <View style={[theme.flexRow, theme.mT2, theme.itemsCenter]}>
                     <Text style={theme.mR1}>Hora de entrada:</Text>
                     <Badge

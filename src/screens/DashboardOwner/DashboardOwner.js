@@ -5,7 +5,8 @@ import {
   Text,
   ImageBackground,
   Image,
-  ScrollView
+  ScrollView,
+  TouchableOpacity
 } from 'react-native';
 
 // Components
@@ -28,6 +29,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Badge from '../../components/Elements/Badge';
 import { OwnerChecks } from '../../components/Check/OwnerChecks';
 import FastImage from 'react-native-fast-image';
+import { openScreenWithPush } from '../../Router/utils/actions';
+import {
+  TIME_TRACKING_SCREEN_KEY,
+  ENTRANCES_MANAGER_SCREEN_KEY
+} from '../../Router/utils/routerKeys';
 
 const DEFAULT_BACKGROUND_IMAGE =
   'https://res.cloudinary.com/enalbis/image/upload/v1663600847/PortManagement/varios/w0n2hq4uhhgjdrlhlnns.jpg';
@@ -72,6 +78,52 @@ const DashboardOwner = () => {
               />
             </SafeAreaView>
           </ImageBackground>
+
+          {/* Time Tracking Button */}
+          <View style={theme.p4}>
+            <TouchableOpacity
+              style={styles.timeTrackingButton}
+              onPress={() => openScreenWithPush(TIME_TRACKING_SCREEN_KEY)}
+            >
+              <View style={[theme.flexRow, theme.itemsCenter]}>
+                <View style={styles.iconContainer}>
+                  <Text style={styles.iconText}>📊</Text>
+                </View>
+                <View style={theme.flex1}>
+                  <Text style={[theme.fontSansBold, theme.textBase]}>
+                    Registro de Jornada
+                  </Text>
+                  <Text style={[theme.textGray600, theme.textSm]}>
+                    Ver fichajes y exportar registros
+                  </Text>
+                </View>
+                <Text style={styles.arrow}>›</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Entrances Manager Button */}
+          <View style={[theme.pX4, theme.pB4]}>
+            <TouchableOpacity
+              style={styles.timeTrackingButton}
+              onPress={() => openScreenWithPush(ENTRANCES_MANAGER_SCREEN_KEY)}
+            >
+              <View style={[theme.flexRow, theme.itemsCenter]}>
+                <View style={styles.iconContainer}>
+                  <Text style={styles.iconText}>📍</Text>
+                </View>
+                <View style={theme.flex1}>
+                  <Text style={[theme.fontSansBold, theme.textBase]}>
+                    Entradas y Salidas
+                  </Text>
+                  <Text style={[theme.textGray600, theme.textSm]}>
+                    Ver registro de entradas y salidas de trabajadores
+                  </Text>
+                </View>
+                <Text style={styles.arrow}>›</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
           {checklist?.finished ? (
             <View style={theme.p4}>
@@ -124,8 +176,25 @@ const DashboardOwner = () => {
 };
 
 const styles = StyleSheet.create({
+  arrow: {
+    color: Colors.gray400,
+    fontSize: 32,
+    fontWeight: '300'
+  },
   container: {
     paddingHorizontal: 0
+  },
+  iconContainer: {
+    alignItems: 'center',
+    backgroundColor: Colors.pm + '20',
+    borderRadius: 24,
+    height: 48,
+    justifyContent: 'center',
+    marginRight: 12,
+    width: 48
+  },
+  iconText: {
+    fontSize: 24
   },
   indicatorStyle: {
     backgroundColor: Colors.pm,
@@ -147,6 +216,16 @@ const styles = StyleSheet.create({
   },
   tabTextStyle: {
     fontWeight: '500'
+  },
+  timeTrackingButton: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    elevation: 3,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4
   }
 });
 

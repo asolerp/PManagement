@@ -81,6 +81,10 @@ public class MainApplication extends Application implements ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       DefaultNewArchitectureEntryPoint.load();
     }
-    ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    // CRITICAL FIX: Only initialize Flipper in DEBUG builds
+    // This prevents crashes in Samsung Android 14 release builds
+    if (BuildConfig.DEBUG) {
+      ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    }
   }
 }

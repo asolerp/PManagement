@@ -26,7 +26,9 @@ export const PAGE_OPTIONS_SCREEN_KEY = 'pageOptionsScreen';
 export const CHAT_SCREEN_KEY = 'chatScreen';
 export const USERS_SCREEN_KEY = 'usersScreen';
 export const ENTRANCES_MANAGER_SCREEN_KEY = 'entrancesManagerScreen';
+export const ENTRANCE_DETAIL_SCREEN_KEY = 'entranceDetailScreen';
 export const FILTERS_SCREEN_KEY = 'filtersScreen';
+export const TIME_TRACKING_SCREEN_KEY = 'timeTrackingScreen';
 
 // STACKS
 export const CHECK_STACK_KEY = 'checkStack';

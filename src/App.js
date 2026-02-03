@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import AuthRouter from './Router/authRouter';
 import i18n from 'i18next';
 import Toast from 'react-native-toast-message';
 import { MenuProvider } from 'react-native-popup-menu';
 import RNBootSplash from 'react-native-bootsplash';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 import ErrorBoundary from 'react-native-error-boundary';
 
@@ -25,11 +26,19 @@ import { initRemoteConfig } from './lib/featureToggle';
 import theme from './Theme/Theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-const CustomFallback = props => (
+const CustomFallback = () => (
   <View style={theme.flex1}>
     <ErrorScreen />
   </View>
 );
+
+// Error handler personalizado para Crashlytics
+const errorHandler = (error, stackTrace) => {
+  console.log('Error caught by boundary:', error);
+  console.log('Stack trace:', stackTrace);
+  crashlytics().recordError(error);
+  crashlytics().log(`Error boundary caught: ${error.message}`);
+};
 
 const App = () => {
   useNotification();
@@ -37,6 +46,14 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
+      // Inicializar Crashlytics
+      await crashlytics().setCrashlyticsCollectionEnabled(true);
+
+      // Agregar información del dispositivo
+      crashlytics().setAttribute('platform', Platform.OS);
+      crashlytics().setAttribute('platform_version', String(Platform.Version));
+      crashlytics().log('App initialized');
+
       await initRemoteConfig();
     })();
   }, []);
@@ -72,7 +89,10 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
-        <ErrorBoundary FallbackComponent={CustomFallback}>
+        <ErrorBoundary
+          FallbackComponent={CustomFallback}
+          onError={errorHandler}
+        >
           <MenuProvider>
             <LoadinModalProvider>
               <Provider store={store}>

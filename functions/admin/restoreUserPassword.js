@@ -57,7 +57,7 @@ const sendResentLinkEmail = async (email, resetLink) => {
   });
 };
 
-const sendPasswordResetEmail = functions
+exports.sendPasswordResetEmail = functions
   .region(REGION)
   .https.onCall(async (data, context) => {
     // Verificar que la solicitud proviene de un administrador
@@ -84,5 +84,3 @@ const sendPasswordResetEmail = functions
       );
     }
   });
-
-module.exports = { sendPasswordResetEmail };

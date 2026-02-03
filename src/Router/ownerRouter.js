@@ -7,9 +7,10 @@ import {
   onNavigatorStateChange,
 } from './utils/actions';
 
-import {MAIN_OWNER_STACK_KEY} from './utils/routerKeys';
+import {MAIN_OWNER_STACK_KEY, TIME_TRACKING_SCREEN_KEY} from './utils/routerKeys';
 
 import {MainOwner} from '../Stacks/MainOwner';
+import {TimeTrackingScreen} from '../Screens/TimeTracking';
 
 const {Navigator, Screen} = createNativeStackNavigator();
 
@@ -24,6 +25,11 @@ const OwnerRouter = () => {
         <Screen
           name={MAIN_OWNER_STACK_KEY}
           component={MainOwner}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={TIME_TRACKING_SCREEN_KEY}
+          component={TimeTrackingScreen}
           options={{headerShown: false}}
         />
       </Navigator>

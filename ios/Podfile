@@ -12,7 +12,7 @@ end
 node_require('react-native/scripts/react_native_pods.rb')
 
 use_modular_headers!
-platform :ios, '13.0'
+platform :ios, '13.4'
 prepare_react_native_project!
 
 # Firebase static framework configuration
@@ -37,6 +37,7 @@ target 'PortManagement' do
   pod 'Firebase/Core'
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
+  pod 'Firebase/Crashlytics'
   pod 'Firebase/Firestore'
   pod 'Firebase/Functions'
   pod 'Firebase/Messaging'
@@ -70,13 +71,28 @@ target 'PortManagement' do
       :mac_catalyst_enabled => false
     )
     
-    # Fix for RCT-Folly
-    `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_15_0/' #{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h`
+    # Fix for RCT-Folly Time.h compatibility with newer Xcode/iOS SDKs
+    time_header = "#{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h"
+    if File.exist?(time_header)
+      # Make file writable
+      File.chmod(0644, time_header)
+      
+      `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_15_0/' #{time_header}`
+      
+      # Read the file content
+      time_h_content = File.read(time_header)
+      
+      # Fix clockid_t typedef conflict and CLOCK_* macro redefinitions
+      time_h_content.gsub!('#if !FOLLY_HAVE_CLOCK_GETTIME', '#if !FOLLY_HAVE_CLOCK_GETTIME && !TARGET_OS_MAC')
+      
+      # Write back the modified content
+      File.write(time_header, time_h_content)
+    end
 
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        # Set minimum iOS deployment target to 13.0 for MapboxMaps compatibility
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+        # Set minimum iOS deployment target to 13.4 for React Native 0.73 compatibility
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
         
         # Enable user script sandboxing
         config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'

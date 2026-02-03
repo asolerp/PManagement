@@ -1,24 +1,23 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-import {Colors, Variants} from '../../Theme/Variables';
+import { Colors, Variants } from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useTheme} from '../../Theme';
+import { useTheme } from '../../Theme';
 
 const styles = StyleSheet.create({
   container: {
-    alignSelf: 'flex-start',
-    borderRadius: 5,
+    borderRadius: 5
   },
   label: {
     color: Colors.darkBlue,
-    fontWeight: '500',
     fontSize: 12,
+    fontWeight: '500'
   },
   text: {
-    fontWeight: 'bold',
     fontSize: 12,
-  },
+    fontWeight: 'bold'
+  }
 });
 
 const Badge = ({
@@ -28,16 +27,16 @@ const Badge = ({
   iconName,
   onPress,
   label,
-  text,
+  text
 }) => {
-  const {Layout, Gutters} = useTheme();
+  const { Layout, Gutters } = useTheme();
   const variantSelected = Variants[variant];
 
   const isTypeNormal = type === 'normal';
 
   const BadgeComponent = () => {
     return (
-        <View
+      <View
         style={[
           Layout.row,
           Layout.alignItemsCenter,
@@ -45,39 +44,38 @@ const Badge = ({
           {
             paddingHorizontal: isTypeNormal ? 10 : 0,
             paddingVertical: isTypeNormal ? 5 : 0,
-            backgroundColor: isTypeNormal && variantSelected.backgroundColor,
+            backgroundColor: isTypeNormal && variantSelected.backgroundColor
           },
-          containerStyle,
-        ]}>
+          containerStyle
+        ]}
+      >
         {iconName && (
           <Icon
             name={iconName}
             size={18}
             color={variantSelected.color}
-            style={[Gutters.tinyRMargin]}
+            style={Gutters.tinyRMargin}
           />
         )}
         <Text>
           {label && <Text style={styles.label}>{label}</Text>}
-          <Text style={[styles.text, {color: variantSelected.color}]}>
+          <Text style={[styles.text, { color: variantSelected.color }]}>
             {text}
           </Text>
         </Text>
       </View>
-    )
-  }
+    );
+  };
 
   if (onPress) {
     return (
       <TouchableOpacity onPress={onPress}>
         <BadgeComponent />
       </TouchableOpacity>
-    )
+    );
   }
 
-  return (
-    <BadgeComponent />
-  );
+  return <BadgeComponent />;
 };
 
 export default Badge;

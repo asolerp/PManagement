@@ -48,7 +48,7 @@ export const EntranceInfo = ({
             theme.fontSansBold
           ]}
         >
-          Trabajos en casas{' '}
+          Registro de entradas y salidas
         </Text>
         {entranceInfo && (
           <ScrollView style={theme.p4}>
@@ -66,12 +66,16 @@ export const EntranceInfo = ({
                           entrance.action === 'exit' ? 'Finalizado' : 'En curso'
                         }
                       />
-                      <View style={theme.h1} />
-                      <Badge
-                        type="outline"
-                        variant="purple"
-                        text={entrance.house.houseName}
-                      />
+                      {entrance.house && (
+                        <>
+                          <View style={theme.h1} />
+                          <Badge
+                            type="outline"
+                            variant="purple"
+                            text={entrance.house.houseName}
+                          />
+                        </>
+                      )}
                     </View>
                     <View style={[theme.flexRow, theme.itemsCenter, theme.mT2]}>
                       <Text>🕒 Entrada: </Text>

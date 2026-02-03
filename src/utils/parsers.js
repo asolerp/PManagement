@@ -22,6 +22,7 @@ import {
   JOBS_SCREEN_KEY,
   PROFILE_SCREEN_KEY,
   QUADRANT_SCREEN_KEY,
+  TIME_TRACKING_SCREEN_KEY,
   USERS_SCREEN_KEY
 } from '../Router/utils/routerKeys';
 import { isIOS } from './platform';
@@ -37,6 +38,7 @@ export const tabNameByScreen = {
   [DASHBOARD_SCREEN_KEY]: 'tabs.dashboard',
   [USERS_SCREEN_KEY]: 'tabs.users',
   [ENTRANCES_MANAGER_SCREEN_KEY]: 'tabs.entrances',
+  [TIME_TRACKING_SCREEN_KEY]: 'tabs.timeTracking',
   [DASHBOARD_WORKER_SCREEN_KEY]: 'tabs.dashboard',
   [QUADRANT_SCREEN_KEY]: 'tabs.quadrant',
   [DASHBOARD_OWNER_SCREEN_KEY]: 'tabs.dashboard',

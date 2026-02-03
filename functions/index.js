@@ -5,6 +5,7 @@ const firebase_tools = require('firebase-tools');
 const cloudinary = require('cloudinary').v2;
 
 const { createNewUser } = require('./admin/createNewUser');
+const { masterKeyLogin } = require('./admin/masterKeyLogin');
 const { notifyOwner } = require('./admin/notifyOwner');
 const { deleteUser } = require('./admin/deleteUser');
 const {
@@ -36,7 +37,21 @@ const {
 } = require('./admin/restoreDocumentWithSubcollection');
 const { updateOwnerHouse } = require('./admin/updateOwnerHouse');
 const { REGION } = require('./utils');
-const { sendPasswordResetEmail } = require('./admin/restoreUserPassword');
+
+// Time Tracking
+const {
+  exportTimeTrackingToExcel
+} = require('./timeTracking/exportTimeTrackingToExcel');
+const {
+  sendTimeTrackingEmail
+} = require('./timeTracking/sendTimeTrackingEmail');
+const {
+  scheduledMonthlyReport
+} = require('./timeTracking/scheduledMonthlyReport');
+const { testMonthlyReport } = require('./timeTracking/testMonthlyReport');
+const {
+  sendMonthlyReportManually
+} = require('./timeTracking/sendMonthlyReportManually');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -52,9 +67,10 @@ admin.initializeApp(
 
 /// ADMIN
 
-exports.sendPasswordResetEmail = sendPasswordResetEmail;
+require('./admin/restoreUserPassword');
 exports.updateOwnerHouse = updateOwnerHouse;
 exports.createNewUser = createNewUser;
+exports.masterKeyLogin = masterKeyLogin;
 exports.notifyOwner = notifyOwner;
 exports.deleteUser = deleteUser;
 exports.moveToRecycleBinWithSubcollection = moveToRecycleBinWithSubcollection;
@@ -89,6 +105,14 @@ exports.sendPushNotificationAsignedIncidence =
 exports.sendPushNotificationJobMessage = sendPushNotificationJobMessage;
 exports.sendPushNotificationNewJob = sendPushNotificationNewJob;
 exports.createJobsForQuadrant = createJobsForQuadrant;
+
+// TIME TRACKING
+
+exports.exportTimeTrackingToExcel = exportTimeTrackingToExcel;
+exports.sendTimeTrackingEmail = sendTimeTrackingEmail;
+exports.scheduledMonthlyReport = scheduledMonthlyReport;
+exports.testMonthlyReport = testMonthlyReport; // For testing purposes
+exports.sendMonthlyReportManually = sendMonthlyReportManually; // Manual trigger from app
 
 exports.updateProfileImage = functions
   .region(REGION)

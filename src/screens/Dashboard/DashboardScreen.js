@@ -23,6 +23,7 @@ import Animated from 'react-native-reanimated';
 import { RECYCLE_BIN_SCREEN_KEY } from '../../Router/utils/routerKeys';
 import { openScreenWithPush } from '../../Router/utils/actions';
 import { useDashboard } from './hooks/useDashboard';
+import { CRASHLYTICS_TEST_SCREEN_KEY } from '../CrashlyticsTest';
 
 const DashboardScreen = ({ navigation }) => {
   const {
@@ -49,6 +50,12 @@ const DashboardScreen = ({ navigation }) => {
           containerStyle={[theme.left5]}
           iconName="restore-from-trash"
           onPress={() => openScreenWithPush(RECYCLE_BIN_SCREEN_KEY)}
+        />
+        {/* ⚠️ TEMPORAL: Botón para probar Crashlytics - ELIMINAR EN PRODUCCIÓN */}
+        <AddButton
+          containerStyle={[theme.left5, { bottom: 100 }]}
+          iconName="bug-report"
+          onPress={() => openScreenWithPush(CRASHLYTICS_TEST_SCREEN_KEY)}
         />
         <ActionButtons />
         <View style={[theme.flex1, theme.bgGray100]}>

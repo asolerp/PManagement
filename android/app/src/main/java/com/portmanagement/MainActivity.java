@@ -6,6 +6,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import android.os.Bundle;
 import com.zoontek.rnbootsplash.RNBootSplash;
+import androidx.core.splashscreen.SplashScreen;
 
 public class MainActivity extends ReactActivity {
 
@@ -20,7 +21,13 @@ public class MainActivity extends ReactActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        RNBootSplash.init(this, R.style.BootTheme); // ⬅️ initialize the splash screen
+        // CRITICAL: Install native SplashScreen API BEFORE super.onCreate()
+        // This fixes Samsung Android 12+ (API 31+) crashes
+        SplashScreen.installSplashScreen(this);
+        
+        // Initialize RNBootSplash after native splash
+        RNBootSplash.init(this, R.style.BootTheme);
+        
         super.onCreate(savedInstanceState); // super.onCreate(null) with react-native-screens
     }
 
