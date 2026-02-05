@@ -9,6 +9,7 @@ import {
 
 import {
   CHAT_SCREEN_KEY,
+  CHECK_PHOTO_SCREEN_KEY,
   CHECK_SCREEN_KEY,
   HOUSE_SCREEN_KEY,
   MAIN_WORKER_STACK_KEY,
@@ -20,6 +21,7 @@ import {MainWorker} from '../Stacks/MainWorker';
 import {NewIncidenceScreen} from '../Screens/NewIncidence';
 import {ChatScreen} from '../Screens/Chat';
 import {CheckScreen} from '../Screens/Check';
+import {CheckPhotosScreen} from '../Screens/CheckPhotos';
 import {PageOptionsScreen} from '../Screens/PageOptions';
 import {NewCheckListScreen} from '../Screens/NewCheckList';
 import {HouseScreen} from '../Screens/House';
@@ -50,6 +52,11 @@ const WorkerRouter = () => {
         <Screen
           name={CHECK_SCREEN_KEY}
           component={CheckScreen}
+          options={{headerShown: false}}
+        />
+        <Screen
+          name={CHECK_PHOTO_SCREEN_KEY}
+          component={CheckPhotosScreen}
           options={{headerShown: false}}
         />
         <Screen

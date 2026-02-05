@@ -1,10 +1,23 @@
-import {messageIdGenerator} from '../utils/uuid';
-import firestore from '@react-native-firebase/firestore';
-import {cloudinaryUpload} from '../cloudinary';
-import {error} from '../lib/logging';
+import { messageIdGenerator } from '../utils/uuid';
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  serverTimestamp
+} from '@react-native-firebase/firestore';
+import { cloudinaryUpload } from '../cloudinary';
+import { error } from '../lib/logging';
 
-const uploadMessagePhoto = async (collection, docId, messageImage, user) => {
+const uploadMessagePhoto = async (
+  collectionName,
+  docId,
+  messageImage,
+  user
+) => {
   try {
+    const db = getFirestore();
     const messageID = messageIdGenerator();
 
     const waitingSendImageMessage = {
@@ -12,50 +25,46 @@ const uploadMessagePhoto = async (collection, docId, messageImage, user) => {
       image:
         'https://res.cloudinary.com/enalbis/image/upload/v1614849090/PortManagement/loader_ro9a3e.gif',
       messageType: 'image',
-      createdAt: firestore.FieldValue.serverTimestamp(),
+      createdAt: serverTimestamp(),
       user: {
         _id: user?.id,
         name: user?.firstName,
         avatar: user?.profileImage?.small,
         token: user?.token,
-        role: user?.role,
-      },
+        role: user?.role
+      }
     };
 
-    const result = await firestore()
-      .collection(collection)
-      .doc(docId)
-      .collection('messages')
-      .add(waitingSendImageMessage);
+    const messagesCollection = collection(
+      doc(collection(db, collectionName), docId),
+      'messages'
+    );
+    const result = await addDoc(messagesCollection, waitingSendImageMessage);
 
     const image = await cloudinaryUpload(
       messageImage,
-      `/PortManagement/${collection}/${docId}/Photos`,
+      `/PortManagement/${collectionName}/${docId}/Photos`
     );
 
-    await firestore()
-      .collection(collection)
-      .doc(docId)
-      .collection('messages')
-      .doc(result.id)
-      .update({
-        ...waitingSendImageMessage,
-        image: image,
-      });
+    const messageRef = doc(messagesCollection, result.id);
+    await updateDoc(messageRef, {
+      ...waitingSendImageMessage,
+      image: image
+    });
 
-    await firestore()
-      .collection(collection)
-      .doc(docId)
-      .collection('photos')
-      .add({
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        image: image,
-      });
+    const photosCollection = collection(
+      doc(collection(db, collectionName), docId),
+      'photos'
+    );
+    await addDoc(photosCollection, {
+      createdAt: serverTimestamp(),
+      image: image
+    });
   } catch (err) {
     error({
       message: err.message,
       track: true,
-      asToast: true,
+      asToast: true
     });
   }
 };

@@ -1,19 +1,9 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {GREY_1} from '../styles/colors';
-
-import {useTheme} from '../Theme';
-import {Colors} from '../Theme/Variables';
 
 export const CustomSelect = ({
-  backgroundColor = `${Colors.white}`,
+  backgroundColor = '#FFFFFF',
   withBubbles = false,
   onPressBubble,
   disabled = false,
@@ -21,47 +11,24 @@ export const CustomSelect = ({
   iconName = 'chevron-forward-outline',
   label,
   placeHolder,
-  value,
+  value
 }) => {
-  const {Layout, Gutters, Fonts} = useTheme();
-
   return (
-    <View style={[styles.container]}>
-      {label && (
-        <Text style={[Gutters.smallBMargin, {color: Colors.white}]}>
-          {label}
-        </Text>
-      )}
-      <Pressable onPress={!disabled && onPress} style={{width: '100%'}}>
-        <View style={[Layout.row]}>
-          <View
-            style={[
-              Gutters.smallVPadding,
-              Gutters.smallHPadding,
-              styles.inputContainer,
-              {backgroundColor},
-            ]}>
-            <View
-              style={[
-                Layout.row,
-                Layout.alignItemsCenter,
-                Layout.justifyContentSpaceBetween,
-                {width: '100%'},
-              ]}>
+    <View style={styles.container}>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <Pressable
+        onPress={!disabled && onPress}
+        style={styles.pressableContainer}
+      >
+        <View style={styles.row}>
+          <View style={[styles.inputContainer, { backgroundColor }]}>
+            <View style={styles.contentRow}>
               {value ? (
-                <Text style={[Fonts.pageNormalText]}>{value}</Text>
+                <Text style={styles.valueText}>{value}</Text>
               ) : (
-                <Text
-                  style={[
-                    Layout.row,
-                    Layout.alignItemsCenter,
-                    Layout.justifyContentCenter,
-                    styles.placeHolder,
-                  ]}>
-                  {placeHolder}
-                </Text>
+                <Text style={styles.placeHolder}>{placeHolder}</Text>
               )}
-              <Icon name={iconName} size={30} />
+              <Icon name={iconName} size={30} color="#000000" />
             </View>
           </View>
         </View>
@@ -72,19 +39,37 @@ export const CustomSelect = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: '100%'
   },
-  bubble: {
-    marginRight: 10,
-    marginVertical: 5,
+  contentRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%'
   },
   inputContainer: {
-    width: '100%',
+    borderColor: '#EAEAEA',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: GREY_1,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    width: '100%'
+  },
+  label: {
+    color: '#FFFFFF',
+    marginBottom: 8
   },
   placeHolder: {
-    opacity: 0.5,
+    opacity: 0.5
   },
+  pressableContainer: {
+    width: '100%'
+  },
+  row: {
+    flexDirection: 'row'
+  },
+  valueText: {
+    color: '#000000',
+    fontSize: 14
+  }
 });

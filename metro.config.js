@@ -1,25 +1,12 @@
-/**
- * Metro configuration for React Native
- * https://github.com/facebook/react-native
- *
- * @format
- */
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+// Learn more https://docs.expo.dev/guides/customizing-metro
+const { getDefaultConfig } = require('expo/metro-config');
 
-config = {
-  resolver: {
-    extraNodeModules: {
-      '@': `${__dirname}/src`,
-    },
-  },
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: false,
-      },
-    }),
-  },
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+
+// Alias para imports con @
+config.resolver.extraNodeModules = {
+  '@': `${__dirname}/src`
 };
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+module.exports = config;

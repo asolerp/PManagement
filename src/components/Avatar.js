@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Text, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { openScreenWithPush } from '../Router/utils/actions';
 import { PROFILE_SCREEN_KEY } from '../Router/utils/routerKeys';
 import theme from '../Theme/Theme';
+
+const DEFAULT_AVATAR =
+  'https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/other%2Fport.png?alt=media&token=41156ea7-76a2-4a28-8625-27f779433b78';
 
 const styles = StyleSheet.create({
   ownerImage: {
@@ -20,6 +24,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start'
+  },
+  placeholderContainer: {
+    alignItems: 'center',
+    backgroundColor: '#E6F7F8',
+    borderRadius: 100,
+    justifyContent: 'center',
+    overflow: 'hidden'
+  },
+  placeholderText: {
+    color: '#55A5AD',
+    fontWeight: '700'
   }
 });
 
@@ -34,8 +49,11 @@ const Avatar = ({
   enabled = true,
   size = 'small',
   index,
-  style
+  style,
+  showName = true
 }) => {
+  const [imageError, setImageError] = useState(false);
+
   const parseSize = sizeImage => {
     switch (sizeImage) {
       case 'xxl': {
@@ -62,6 +80,27 @@ const Avatar = ({
     }
   };
 
+  const getInitials = fullName => {
+    if (!fullName) return '?';
+    const names = fullName.split(' ');
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+    }
+    return names[0][0]?.toUpperCase() || '?';
+  };
+
+  const getFontSize = sizeImage => {
+    const baseSize = parseSize(sizeImage);
+    return Math.floor(baseSize * 0.4);
+  };
+
+  const imageSize = parseSize(size);
+  const fontSize = getFontSize(size);
+
+  // Validar si la URI es válida
+  const isValidUri =
+    uri && uri.trim() !== '' && uri !== 'null' && uri !== 'undefined';
+
   const ProfileContainer = () => {
     return (
       <View style={horizontal && theme.itemsCenter}>
@@ -86,20 +125,47 @@ const Avatar = ({
               ]}
             />
           )}
-          <FastImage
-            style={[
-              styles.ownerImage,
-              { width: parseSize(size), height: parseSize(size) },
-              { marginLeft: index > 0 && overlap ? -10 : 0 },
-              { marginRight: name && !horizontal ? 15 : 0 }
-            ]}
-            source={{
-              uri: uri
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-          />
+
+          {!isValidUri || imageError ? (
+            // Mostrar placeholder con iniciales o icono
+            <View
+              style={[
+                styles.placeholderContainer,
+                {
+                  width: imageSize,
+                  height: imageSize,
+                  marginLeft: index > 0 && overlap ? -10 : 0,
+                  marginRight: name && !horizontal ? 15 : 0
+                }
+              ]}
+            >
+              {name ? (
+                <Text style={[styles.placeholderText, { fontSize }]}>
+                  {getInitials(name)}
+                </Text>
+              ) : (
+                <Icon name="person" size={fontSize * 1.5} color="#55A5AD" />
+              )}
+            </View>
+          ) : (
+            // Mostrar imagen
+            <FastImage
+              style={[
+                styles.ownerImage,
+                { width: imageSize, height: imageSize },
+                { marginLeft: index > 0 && overlap ? -10 : 0 },
+                { marginRight: name && !horizontal ? 15 : 0 }
+              ]}
+              source={{
+                uri: uri || DEFAULT_AVATAR,
+                priority: FastImage.priority.normal
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+              onError={() => setImageError(true)}
+            />
+          )}
         </View>
-        {name && <Text style={theme.textBlack}>{name}</Text>}
+        {name && showName && <Text style={theme.textBlack}>{name}</Text>}
       </View>
     );
   };

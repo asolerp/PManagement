@@ -1,28 +1,28 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import { View, Text } from 'react-native';
 
-import {Filter} from '../components/Filters/StatusTaskFilter';
+import { Filter } from '../components/Filters/StatusTaskFilter';
 
-import {useTheme} from '../Theme';
+import { useTheme } from '../Theme';
 
-import firestore from '@react-native-firebase/firestore';
-import {useTranslation} from 'react-i18next';
-import {error} from '../lib/logging';
+import { getFirestore, doc, updateDoc } from '@react-native-firebase/firestore';
+import { useTranslation } from 'react-i18next';
+import { error } from '../lib/logging';
 
-const SituationIncidence = ({incidence}) => {
-  const {Layout, Gutters, Colors, Fonts} = useTheme();
+const SituationIncidence = ({ incidence }) => {
+  const { Layout, Gutters, Colors, Fonts } = useTheme();
 
-  const {t} = useTranslation();
-  const handleStateIncidence = async (stateIncidence) => {
+  const { t } = useTranslation();
+  const handleStateIncidence = async stateIncidence => {
     try {
-      await firestore()
-        .doc(`incidences/${incidence.id}`)
-        .update({state: stateIncidence});
+      const db = getFirestore();
+      const incidenceRef = doc(db, 'incidences', incidence.id);
+      await updateDoc(incidenceRef, { state: stateIncidence });
     } catch (err) {
       error({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
     }
   };
@@ -36,8 +36,9 @@ const SituationIncidence = ({incidence}) => {
           Layout.rowCenter,
           Layout.justifyContentStart,
           Gutters.smallTMargin,
-          Gutters.regularBMargin,
-        ]}>
+          Gutters.regularBMargin
+        ]}
+      >
         <Filter
           text={t('incidence.status.ini')}
           color={Colors.warning}

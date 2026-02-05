@@ -1,29 +1,51 @@
 import React from 'react';
-import { Text, Pressable, View } from 'react-native';
+import {
+  Text,
+  Pressable,
+  View,
+  StyleSheet,
+  ActivityIndicator
+} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Utils
 import CheckItem from './CheckItem';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useTheme } from '../../Theme';
-import theme from '../../Theme/Theme';
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
 import { sortByFinished } from '../../utils/sorts';
 import { openScreenWithPush } from '../../Router/utils/actions';
-import {
-  CHECK_SCREEN_KEY,
-  CHECK_STACK_KEY
-} from '../../Router/utils/routerKeys';
-import { useTranslation } from 'react-i18next';
-import { Colors } from '../../Theme/Variables';
+import { CHECK_SCREEN_KEY } from '../../Router/utils/routerKeys';
 import {
   fetchChecklistsFinishedPaginated,
   fetchChecklistsNotFinishedPaginated
 } from '../../Services/firebase/checklistServices';
 
-const ChecklistList = ({ uid, house, houses }) => {
-  const { Gutters } = useTheme();
+// Componente para el estado vacío
+const EmptyState = () => {
   const { t } = useTranslation();
+
+  return (
+    <View style={styles.emptyContainer}>
+      <View style={styles.emptyIconWrapper}>
+        <Icon name="checklist" size={64} color="#CBD5E0" />
+      </View>
+      <Text style={styles.emptyTitle}>No hay checklists</Text>
+      <Text style={styles.emptyDescription}>{t('checklists.empty')}</Text>
+    </View>
+  );
+};
+
+// Componente para el footer de carga
+const LoadingFooter = () => (
+  <View style={styles.loadingFooter}>
+    <ActivityIndicator size="small" color="#55A5AD" />
+    <Text style={styles.loadingText}>Cargando más...</Text>
+  </View>
+);
+
+const ChecklistList = ({ uid, house, houses }) => {
   const limit = 10;
 
   // Query para checklists no finalizados
@@ -62,6 +84,24 @@ const ChecklistList = ({ uid, house, houses }) => {
     enabled: shouldShowFinished // Solo ejecutar la query si debe mostrar finalizados
   });
 
+  // Helper para convertir cualquier formato de fecha a Date
+  const getDate = dateValue => {
+    if (!dateValue) return new Date(0);
+
+    // Si es un Firestore Timestamp
+    if (dateValue.toDate && typeof dateValue.toDate === 'function') {
+      return dateValue.toDate();
+    }
+
+    // Si es un objeto Moment
+    if (dateValue._isAMomentObject && dateValue.toDate) {
+      return dateValue.toDate();
+    }
+
+    // Si es string o cualquier otro formato
+    return new Date(dateValue);
+  };
+
   // Combinar y aplanar todos los checklists
   const allNotFinished =
     notFinishedData?.pages?.flatMap(page => page?.checklists || []) || [];
@@ -69,54 +109,16 @@ const ChecklistList = ({ uid, house, houses }) => {
     ? finishedData?.pages?.flatMap(page => page?.checklists || []) || []
     : [];
 
-  // Ordenar cada grupo por fecha (más recientes primero) y luego combinar
+  // Ordenar cada grupo por fecha (más recientes primero)
   const sortedNotFinished = allNotFinished.sort((a, b) => {
-    // Función helper para convertir cualquier formato de fecha a Date
-    const getDate = dateValue => {
-      if (!dateValue) return new Date(0); // Fecha muy antigua para elementos sin fecha
-
-      // Si es un Firestore Timestamp
-      if (dateValue.toDate && typeof dateValue.toDate === 'function') {
-        return dateValue.toDate();
-      }
-
-      // Si es un objeto Moment
-      if (dateValue._isAMomentObject && dateValue.toDate) {
-        return dateValue.toDate();
-      }
-
-      // Si es string o cualquier otro formato
-      return new Date(dateValue);
-    };
-
     const dateA = getDate(a.date);
     const dateB = getDate(b.date);
-
     return dateB - dateA;
   });
 
   const sortedFinished = allFinished.sort((a, b) => {
-    // Función helper para convertir cualquier formato de fecha a Date
-    const getDate = dateValue => {
-      if (!dateValue) return new Date(0); // Fecha muy antigua para elementos sin fecha
-
-      // Si es un Firestore Timestamp
-      if (dateValue.toDate && typeof dateValue.toDate === 'function') {
-        return dateValue.toDate();
-      }
-
-      // Si es un objeto Moment
-      if (dateValue._isAMomentObject && dateValue.toDate) {
-        return dateValue.toDate();
-      }
-
-      // Si es string o cualquier otro formato
-      return new Date(dateValue);
-    };
-
     const dateA = getDate(a.date);
     const dateB = getDate(b.date);
-
     return dateB - dateA;
   });
 
@@ -140,8 +142,7 @@ const ChecklistList = ({ uid, house, houses }) => {
 
   const renderItem = ({ item }) => {
     const handlePressIncidence = () => {
-      openScreenWithPush(CHECK_STACK_KEY, {
-        screen: CHECK_SCREEN_KEY,
+      openScreenWithPush(CHECK_SCREEN_KEY, {
         docId: item.id
       });
     };
@@ -149,7 +150,8 @@ const ChecklistList = ({ uid, house, houses }) => {
     return (
       <Pressable
         onPress={() => handlePressIncidence()}
-        style={Gutters.tinyHMargin}
+        style={styles.itemContainer}
+        activeOpacity={0.7}
       >
         <CheckItem item={item} fullWidth />
       </Pressable>
@@ -163,33 +165,25 @@ const ChecklistList = ({ uid, house, houses }) => {
 
     if (!isLoadingMore) return null;
 
-    return (
-      <View style={{ padding: 20, alignItems: 'center' }}>
-        <Text style={[{ color: Colors.pm }, theme.fontSansBold]}>
-          Cargando más...
-        </Text>
-      </View>
-    );
+    return <LoadingFooter />;
   };
 
   return (
-    <View style={theme.flexGrow}>
+    <View style={styles.container}>
       {isLoadingFinished || isLoadingNotFinished ? (
         <DashboardSectionSkeleton />
       ) : (
         <FlatList
           scrollEnabled={true}
-          ListEmptyComponent={
-            <Text style={theme.textBlack}>{t('checklists.empty')}</Text>
-          }
+          ListEmptyComponent={<EmptyState />}
           showsVerticalScrollIndicator={false}
           ListFooterComponent={renderFooter}
           contentInset={{ bottom: 150 }}
           data={sortByFinished(allChecklists)}
           renderItem={renderItem}
           keyExtractor={item => item?.id || Math.random().toString()}
-          style={theme.mT3}
-          contentContainerStyle={{ paddingBottom: 50 }}
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           extraData={houses}
@@ -198,5 +192,63 @@ const ChecklistList = ({ uid, house, houses }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1
+  },
+  // Empty State
+  emptyContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    paddingTop: 80
+  },
+  emptyDescription: {
+    color: '#718096',
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center'
+  },
+  emptyIconWrapper: {
+    alignItems: 'center',
+    backgroundColor: '#F7FAFC',
+    borderRadius: 60,
+    height: 120,
+    justifyContent: 'center',
+    marginBottom: 24,
+    width: 120
+  },
+  emptyTitle: {
+    color: '#2D3748',
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 12,
+    textAlign: 'center'
+  },
+  itemContainer: {
+    marginHorizontal: 4
+  },
+  list: {
+    marginTop: 12
+  },
+  listContent: {
+    paddingBottom: 50
+  },
+  // Loading Footer
+  loadingFooter: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'center',
+    paddingVertical: 20
+  },
+  loadingText: {
+    color: '#718096',
+    fontSize: 14,
+    fontWeight: '500'
+  }
+});
 
 export default ChecklistList;

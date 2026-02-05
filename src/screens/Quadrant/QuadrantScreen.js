@@ -6,7 +6,7 @@ import {ScreenHeader} from '../../components/Layout/ScreenHeader';
 import {capitalizeText} from '../../utils/capitalize';
 import {today} from '../../utils/dates';
 import {useQuadrant} from './hooks/useQuadrant';
-import {RefreshControl, ScrollView, Text, View} from 'react-native';
+import {RefreshControl, ScrollView, Text, View, useWindowDimensions} from 'react-native';
 import theme from '../../Theme/Theme';
 import CustomButton from '../../components/Elements/CustomButton';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -16,7 +16,6 @@ import {Row} from '../../components/Quadrant/Row';
 import {NormalModal} from '../../components/Modals/NormalModal';
 import {Colors} from '../../Theme/Variables';
 import {NEW_QUADRANT_SCREEN_KEY} from '../NewQuadrant';
-import {useOrientationChange, PORTRAIT} from 'react-native-orientation-locker';
 import Badge from '../../components/Elements/Badge';
 import {useFocusEffect} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
@@ -45,12 +44,8 @@ const QuadrantScreen = ({navigation}) => {
   } = useQuadrant();
 
   const user = useSelector(userSelector);
-
-  const [isPortrait, setIsPortrait] = useState(false);
-
-  useOrientationChange((o) => {
-    setIsPortrait(o === PORTRAIT);
-  });
+  const {width, height} = useWindowDimensions();
+  const isPortrait = height > width;
 
   useFocusEffect(
     useCallback(() => {

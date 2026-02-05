@@ -1,6 +1,11 @@
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../../Store/User/userSlice';
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  query,
+  where
+} from '@react-native-firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useConfirmEntrance } from '../../ConfirmEntrance/hooks/useConfirmEntrance';
@@ -24,18 +29,21 @@ export const useDashboardWorker = () => {
     return end;
   }
 
-  const query = useMemo(
+  const db = getFirestore();
+
+  const entrancesQuery = useMemo(
     () =>
-      firestore()
-        .collection('entrances')
-        .where('worker.id', '==', user?.id)
-        .where('action', '==', 'enter')
-        .where('date', '>=', getStartOfToday())
-        .where('date', '<=', getEndOfToday()),
-    [user?.id, refreshKey]
+      query(
+        collection(db, 'entrances'),
+        where('worker.id', '==', user?.id),
+        where('action', '==', 'enter'),
+        where('date', '>=', getStartOfToday()),
+        where('date', '<=', getEndOfToday())
+      ),
+    [user?.id, refreshKey, db]
   );
 
-  const [values, loading] = useCollectionData(query, {
+  const [values, loading] = useCollectionData(entrancesQuery, {
     idField: 'id'
   });
 

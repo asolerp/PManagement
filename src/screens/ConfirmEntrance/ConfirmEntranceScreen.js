@@ -15,7 +15,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../../Theme/Variables';
 import Modal from 'react-native-modal';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy
+} from '@react-native-firebase/firestore';
 import FastImage from 'react-native-fast-image';
 import { DEFAULT_IMAGE } from '../../constants/general';
 
@@ -28,9 +33,11 @@ const ConfirmEntranceScreen = () => {
   const [showHouseModal, setShowHouseModal] = useState(false);
   const [selectedHouse, setSelectedHouse] = useState(null);
 
-  const housesQuery = firestore()
-    .collection('houses')
-    .orderBy('houseName', 'asc');
+  const db = getFirestore();
+  const housesQuery = query(
+    collection(db, 'houses'),
+    orderBy('houseName', 'asc')
+  );
 
   const [houses] = useCollectionData(housesQuery, { idField: 'id' });
 

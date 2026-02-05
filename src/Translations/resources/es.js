@@ -39,10 +39,22 @@ export default {
     clean: 'Limpiar',
     save: 'Guardar',
     edit: 'Editar',
+    delete: 'Eliminar',
+    cancel: 'Cancelar',
+    photo: 'foto',
+    photos: 'fotos',
+    selected: 'seleccionadas',
     search_name: 'Busca por nombre...',
     informer: 'Informador',
     asigned_to: 'Asignado a',
     asigned_workers: 'Trabajadores asignados',
+    today: 'Hoy',
+    tomorrow: 'Mañana',
+    next_week: 'Próxima semana',
+    select: 'Seleccionar',
+    select_date: 'Seleccionar fecha',
+    select_time: 'Seleccionar hora',
+    no_results: 'No se encontraron resultados',
     range_time: {
       today: 'Hoy',
       next: 'En {{numberOfDays}} días',
@@ -75,6 +87,14 @@ export default {
     done: 'Finalizar y enviar al propietario',
     resendEmail: 'Reenviar email al propietario',
     photos: 'Fotos'
+  },
+  checkPhotos: {
+    noPhotos: 'Sin fotos',
+    noPhotosDescription: 'Aún no se han añadido fotos a este check',
+    deleteTitle: '¿Eliminar fotos?',
+    deleteDescriptionSingle: 'Esta foto se eliminará permanentemente.',
+    deleteDescriptionMultiple: 'Se eliminarán {{count}} fotos permanentemente.',
+    deleteWarning: 'Esta acción no se puede deshacer'
   },
   new_checklist: {
     title: 'Nuevo checklist',
@@ -139,16 +159,25 @@ export default {
   },
   newUser: {
     title: 'Nuevo usuario',
+    subtitle: 'Completa la información para crear un nuevo usuario',
     edit: 'Editar usuario',
+    editSubtitle: 'Modifica la información del usuario',
+    sections: {
+      personal: 'Información personal',
+      contact: 'Contacto',
+      role: 'Rol y permisos'
+    },
     form: {
       name: 'Nombre',
       surname: 'Apellido',
       email: 'Email',
       phone: 'Teléfono',
-      role: 'Rol usuario',
+      role: 'Rol',
       gender: 'Género',
       create: 'Crear usuario',
-      language: 'Idioma'
+      edit: 'Guardar cambios',
+      language: 'Idioma',
+      photoHint: 'Toca para cambiar la foto'
     }
   },
   users: {
@@ -156,6 +185,18 @@ export default {
   },
   houses: {
     title: 'Casas',
+    newHouse: 'Nueva casa',
+    createHouse: 'Crear casa',
+    basicInfo: 'Información básica',
+    houseName: 'Nombre de la casa',
+    address: 'Dirección',
+    street: 'Calle y número',
+    city: 'Municipio',
+    postalCode: 'Código postal',
+    phone: 'Teléfono',
+    addPhoto: 'Añadir foto',
+    addPhotoHint: 'Toca para seleccionar una imagen',
+    selectOwner: 'Seleccionar propietario',
     house_data: 'Datos de la propiedad',
     house_address: 'Dirección',
     house_name: 'Nombre',
@@ -165,20 +206,33 @@ export default {
     owner_phone: 'Teléfono'
   },
   photos: {
-    title: 'Fotos'
+    title: 'Fotos',
+    add_photo: 'Añadir foto',
+    add_photo_description: 'Selecciona cómo quieres añadir la foto',
+    take_photo: 'Hacer foto',
+    take_photo_description: 'Usa la cámara del dispositivo',
+    from_gallery: 'Elegir de galería',
+    from_gallery_description: 'Selecciona fotos existentes'
   },
   profile: {
     edit: 'Editar',
     personal_data: 'Datos personales',
+    personalInfo: 'Información personal',
+    contactInfo: 'Información de contacto',
+    security: 'Seguridad',
     title: 'Perfil',
     phone: 'Teléfono',
     email: 'Email',
-    logout: 'Desconectarse',
+    aditionalEmail: 'Email adicional',
+    logout: 'Cerrar sesión',
     name: 'Nombre',
     last_name: 'Apellido',
     gender: 'Género',
     role: 'Rol',
-    language: 'Idioma'
+    language: 'Idioma',
+    oldPassword: 'Contraseña actual',
+    newPassword: 'Nueva contraseña',
+    changePassword: 'Cambiar contraseña'
   },
   options: {
     title: 'Opciones',
@@ -211,5 +265,8 @@ export default {
   chat: {
     view_incidence: 'Ver incidencia',
     view_checklist: 'Ver checklist'
+  },
+  validation: {
+    required: 'Este campo es obligatorio'
   }
 };

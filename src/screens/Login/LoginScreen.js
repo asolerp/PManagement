@@ -30,9 +30,9 @@ const LoginScreen = () => {
 
   return (
     <LinearGradient colors={['#126D9B', '#67B26F']} style={styles.gradient}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
-          style={{ flex: 1, paddingBottom: isAndroid ? 20 : 0 }}
+          style={[styles.keyboardView, isAndroid && styles.keyboardViewAndroid]}
           behavior={Platform.OS === 'ios' ? 'padding' : null}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -50,7 +50,6 @@ const LoginScreen = () => {
                 <Text style={styles.welcomeTextSub}>{t('login.login')}</Text>
               </View>
               <LoginForm />
-              {/* <View style={styles.inputsWrapper} /> */}
             </View>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -60,21 +59,18 @@ const LoginScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  bottomWrapper: {
-    flex: 1,
-    justifyContent: 'center'
-  },
   container: {
     flex: 1,
     justifyContent: 'center'
   },
   gradient: {
-    flex: 1,
-    paddingHorizontal: 30
+    flex: 1
   },
-  inputsWrapper: {
-    backgroundColor: 'red',
-    flexGrow: 1
+  keyboardView: {
+    flex: 1
+  },
+  keyboardViewAndroid: {
+    paddingBottom: 20
   },
   logo: {
     resizeMode: 'contain',
@@ -85,9 +81,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center'
   },
-  signUpText: {
-    color: 'white',
-    textAlign: 'center'
+  safeArea: {
+    flex: 1,
+    paddingHorizontal: 30
   },
   welcomeText: {
     color: 'white',
@@ -100,7 +96,6 @@ const styles = StyleSheet.create({
   },
   welcomeWrapper: {
     flex: 1
-    // marginBottom: '40%',
   }
 });
 

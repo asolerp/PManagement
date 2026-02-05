@@ -13,8 +13,11 @@ import { NewCheckListScreen } from '../Screens/NewCheckList';
 import NewJob from '../Stacks/NewJob';
 import { NewIncidenceScreen } from '../Screens/NewIncidence';
 import { NewHouseScreen } from '../Screens/NewHouse';
+import { CheckPhotosScreen } from '../Screens/CheckPhotos';
 import {
   CHAT_SCREEN_KEY,
+  CHECK_PHOTO_SCREEN_KEY,
+  CHECK_SCREEN_KEY,
   MAIN_ADMIN_STACK_KEY,
   NEW_CHECKLIST_SCREEN,
   NEW_HOUSE_SCREEN_KEY,
@@ -35,6 +38,7 @@ import { NewJobQuadrantScreen } from '../Screens/NewJobQuadrant/NewJobQuadrantSc
 import { TimeTrackingScreen } from '../Screens/TimeTracking';
 import CrashlyticsTestScreen from '../Screens/CrashlyticsTest/CrashlyticsTestScreen';
 import { CRASHLYTICS_TEST_SCREEN_KEY } from '../Screens/CrashlyticsTest';
+import { CheckScreen } from '../Screens/Check';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -102,6 +106,16 @@ const AdminRouter = () => {
         <Screen
           name={TIME_TRACKING_SCREEN_KEY}
           component={TimeTrackingScreen}
+          options={{ headerShown: false }}
+        />
+        <Screen
+          name={CHECK_SCREEN_KEY}
+          component={CheckScreen}
+          options={{ headerShown: false }}
+        />
+        <Screen
+          name={CHECK_PHOTO_SCREEN_KEY}
+          component={CheckPhotosScreen}
           options={{ headerShown: false }}
         />
         <Screen

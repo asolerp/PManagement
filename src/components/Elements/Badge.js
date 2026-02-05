@@ -1,24 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-
-import { Colors, Variants } from '../../Theme/Variables';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useTheme } from '../../Theme';
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 5
+const VARIANT_COLORS = {
+  pm: {
+    backgroundColor: '#E6F7F7',
+    color: '#55A5AD'
   },
-  label: {
-    color: Colors.darkBlue,
-    fontSize: 12,
-    fontWeight: '500'
+  success: {
+    backgroundColor: '#E6F5ED',
+    color: '#10B981'
   },
-  text: {
-    fontSize: 12,
-    fontWeight: 'bold'
+  warning: {
+    backgroundColor: '#FEF3E6',
+    color: '#F59E0B'
+  },
+  error: {
+    backgroundColor: '#FEE6E6',
+    color: '#EF4444'
+  },
+  info: {
+    backgroundColor: '#E6F2FE',
+    color: '#3B82F6'
   }
-});
+};
 
 const Badge = ({
   type = 'normal',
@@ -29,17 +34,13 @@ const Badge = ({
   label,
   text
 }) => {
-  const { Layout, Gutters } = useTheme();
-  const variantSelected = Variants[variant];
-
+  const variantSelected = VARIANT_COLORS[variant] || VARIANT_COLORS.pm;
   const isTypeNormal = type === 'normal';
 
   const BadgeComponent = () => {
     return (
       <View
         style={[
-          Layout.row,
-          Layout.alignItemsCenter,
           styles.container,
           {
             paddingHorizontal: isTypeNormal ? 10 : 0,
@@ -54,7 +55,7 @@ const Badge = ({
             name={iconName}
             size={18}
             color={variantSelected.color}
-            style={Gutters.tinyRMargin}
+            style={styles.icon}
           />
         )}
         <Text>
@@ -77,5 +78,25 @@ const Badge = ({
 
   return <BadgeComponent />;
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    borderRadius: 5,
+    flexDirection: 'row'
+  },
+  icon: {
+    marginRight: 4
+  },
+  label: {
+    color: '#1E3A8A',
+    fontSize: 12,
+    fontWeight: '500'
+  },
+  text: {
+    fontSize: 12,
+    fontWeight: 'bold'
+  }
+});
 
 export default Badge;

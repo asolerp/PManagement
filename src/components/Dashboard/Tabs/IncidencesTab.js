@@ -1,18 +1,15 @@
 import React from 'react';
-import {View} from 'react-native';
-import {useSelector} from 'react-redux';
-import {userSelector} from '../../../Store/User/userSlice';
-
-import theme from '../../../Theme/Theme';
-
+import { View, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { userSelector } from '../../../Store/User/userSlice';
 import IncidencesList from '../../Lists/IncidencesList';
-export const IncidencesTab = ({filters, scrollEnabled}) => {
-  const user = useSelector(userSelector);
 
+export const IncidencesTab = ({ filters, scrollEnabled }) => {
+  const user = useSelector(userSelector);
   const isAdmin = user?.role === 'admin';
 
   return (
-    <View style={[theme.flex1]}>
+    <View style={styles.container}>
       <IncidencesList
         scrollEnabled={scrollEnabled}
         uid={!isAdmin && user?.id}
@@ -25,3 +22,9 @@ export const IncidencesTab = ({filters, scrollEnabled}) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  }
+});

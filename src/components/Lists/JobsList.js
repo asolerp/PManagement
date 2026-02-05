@@ -1,61 +1,68 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
-import {Pressable, Text, View} from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 //Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
+import {
+  getFirestore,
+  collection,
+  query,
+  where
+} from '@react-native-firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import DashboardSectionSkeleton from '../Skeleton/DashboardSectionSkeleton';
-import {sortByDone} from '../../utils/sorts';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import { sortByDone } from '../../utils/sorts';
+import { openScreenWithPush } from '../../Router/utils/actions';
+import { JOB_SCREEN_KEY } from '../../Router/utils/routerKeys';
 
-import {JOBS} from '../../utils/firebaseKeys';
+import { JOBS } from '../../utils/firebaseKeys';
 import JobItem from './JobItem';
 
-import {useTheme} from '../../Theme';
+import { useTheme } from '../../Theme';
 
-import {useTranslation} from 'react-i18next';
-import {useFilters} from './hooks/useFilters';
+import { useTranslation } from 'react-i18next';
+import { useFilters } from './hooks/useFilters';
 import theme from '../../Theme/Theme';
 
-const JobsList = ({uid, houses, workers, scrollEnabled}) => {
-  const {Gutters} = useTheme();
-  const {t} = useTranslation();
+const JobsList = ({ uid, houses, workers, scrollEnabled }) => {
+  const { Gutters } = useTheme();
+  const { t } = useTranslation();
+
+  const db = getFirestore();
+  const jobsRef = collection(db, JOBS);
 
   let firestoreQuery;
   if (uid) {
-    firestoreQuery = firestore()
-      .collection(JOBS)
-      .where('workersId', 'array-contains', uid);
+    firestoreQuery = query(jobsRef, where('workersId', 'array-contains', uid));
   }
   if (!uid) {
-    firestoreQuery = firestore().collection(JOBS);
+    firestoreQuery = jobsRef;
   }
 
   const [values, loading] = useCollectionData(firestoreQuery, {
-    idField: 'id',
+    idField: 'id'
   });
 
   const filters = {
     houses,
-    workers,
+    workers
   };
 
-  const {filteredList} = useFilters({list: values, filters});
-  const renderItem = ({item}) => {
+  const { filteredList } = useFilters({ list: values, filters });
+  const renderItem = ({ item }) => {
     const handlePressIncidence = () => {
       openScreenWithPush(JOB_SCREEN_KEY, {
-        jobId: item.id,
+        jobId: item.id
       });
     };
 
     return (
       <Pressable
         style={[Gutters.tinyHMargin]}
-        onPress={() => handlePressIncidence()}>
+        onPress={() => handlePressIncidence()}
+      >
         <JobItem item={item} fullWidth />
       </Pressable>
     );
@@ -67,15 +74,17 @@ const JobsList = ({uid, houses, workers, scrollEnabled}) => {
       <FlatList
         scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={<Text style={[theme.textBlack]}>{t('job.empty')}</Text>}
+        ListEmptyComponent={
+          <Text style={[theme.textBlack]}>{t('job.empty')}</Text>
+        }
         nestedScrollEnabled
         showsHorizontalScrollIndicator={false}
         data={
           filteredList &&
-          sortByDone(filteredList?.filter((item) => item.id !== 'stats'))
+          sortByDone(filteredList?.filter(item => item.id !== 'stats'))
         }
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         style={[Gutters.regularTMargin]}
       />
     </>

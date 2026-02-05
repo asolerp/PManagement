@@ -1,8 +1,8 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {Text, View, TextInput, StyleSheet} from 'react-native';
+import { Text, View, TextInput, StyleSheet } from 'react-native';
 
 import InputGroup from '../../../components/Elements/InputGroup';
 import DynamicSelectorList from '../../../components/DynamicSelectorList';
@@ -11,7 +11,12 @@ import moment from 'moment';
 import 'moment/locale/es';
 
 // Firebase
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc
+} from '@react-native-firebase/firestore';
 import DateSelector from './DateSelector';
 import CustomInput from '../../Elements/CustomInput';
 import {
@@ -20,68 +25,68 @@ import {
   observationsSelector,
   setForm,
   setEditableForm,
-  workersSelector,
+  workersSelector
 } from '../../../Store/JobForm/jobFormSlice';
-import {JOBS} from '../../../utils/firebaseKeys';
-import {useTranslation} from 'react-i18next';
-import {BottomModal} from '../../Modals/BottomModal';
-import {Spacer} from '../../Elements/Spacer';
-import {commonStyles} from '../../../styles/input';
+import { JOBS } from '../../../utils/firebaseKeys';
+import { useTranslation } from 'react-i18next';
+import { BottomModal } from '../../Modals/BottomModal';
+import { Spacer } from '../../Elements/Spacer';
+import { commonStyles } from '../../../styles/input';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   subtitle: {
-    color: '#2A7BA5',
+    color: '#2A7BA5'
   },
   newJobScreen: {
     flex: 1,
     height: '100%',
     paddingTop: 20,
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-start'
   },
   asignList: {},
   inputRecurrenteWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingRight: 10,
+    paddingRight: 10
   },
   inputRecurrente: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   cleanButton: {
     textAlign: 'right',
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#4F8AA3',
+    color: '#4F8AA3'
   },
   newJob: {
     textAlign: 'center',
     backgroundColor: 'red',
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#4F8AA3',
-  },
+    color: '#4F8AA3'
+  }
 });
 
-const JobForm = ({docId, edit}) => {
+const JobForm = ({ docId, edit }) => {
   const dispatch = useDispatch();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const house = useSelector(houseSelector);
   const workers = useSelector(workersSelector);
   const date = useSelector(dateSelector);
   const observations = useSelector(observationsSelector);
 
   const setInputFormAction = useCallback(
-    (label, value) => dispatch(setForm({label, value})),
-    [dispatch],
+    (label, value) => dispatch(setForm({ label, value })),
+    [dispatch]
   );
 
   const setEditableFormAction = useCallback(
-    (jobToEdit) => dispatch(setEditableForm(jobToEdit)),
-    [dispatch],
+    jobToEdit => dispatch(setEditableForm(jobToEdit)),
+    [dispatch]
   );
 
   // Form State
@@ -90,17 +95,19 @@ const JobForm = ({docId, edit}) => {
 
   useEffect(() => {
     const getJob = async () => {
-      const jobToEdit = await firestore().collection(JOBS).doc(docId).get();
-      const {date, house, workers, observations} = jobToEdit.data();
+      const db = getFirestore();
+      const jobRef = doc(collection(db, JOBS), docId);
+      const jobToEdit = await getDoc(jobRef);
+      const { date, house, workers, observations } = jobToEdit.data();
       setEditableFormAction({
         date: date.toDate(),
         house: {
-          value: house,
+          value: house
         },
         workers: {
-          value: workers,
+          value: workers
         },
-        observations,
+        observations
       });
     };
     if (edit) {
@@ -108,7 +115,7 @@ const JobForm = ({docId, edit}) => {
     }
   }, [edit, docId, setEditableFormAction]);
 
-  const modalSwitcher = (modal) => {
+  const modalSwitcher = modal => {
     switch (modal) {
       case 'houses': {
         return ListDynamicHouse();
@@ -128,7 +135,7 @@ const JobForm = ({docId, edit}) => {
   const DateTimeSelector = () => (
     <DateSelector
       get={date || null}
-      set={(date) => setInputFormAction('date', date)}
+      set={date => setInputFormAction('date', date)}
       closeModal={() => setModalVisible(false)}
     />
   );
@@ -138,9 +145,9 @@ const JobForm = ({docId, edit}) => {
       collection="houses"
       store="jobForm"
       searchBy="houseName"
-      schema={{img: 'houseImage', name: 'houseName'}}
+      schema={{ img: 'houseImage', name: 'houseName' }}
       get={house?.value || []}
-      set={(house) => setInputFormAction('house', {...house, value: house})}
+      set={house => setInputFormAction('house', { ...house, value: house })}
       closeModal={() => setModalVisible(false)}
     />
   );
@@ -153,14 +160,14 @@ const JobForm = ({docId, edit}) => {
         {
           label: 'role',
           operator: '==',
-          condition: 'worker',
-        },
+          condition: 'worker'
+        }
       ]}
       searchBy="firstName"
-      schema={{img: 'profileImage', name: 'firstName'}}
+      schema={{ img: 'profileImage', name: 'firstName' }}
       get={workers?.value}
-      set={(workers) =>
-        setInputFormAction('workers', {...workers, value: workers})
+      set={workers =>
+        setInputFormAction('workers', { ...workers, value: workers })
       }
       multiple={true}
       closeModal={() => setModalVisible(false)}
@@ -172,10 +179,11 @@ const JobForm = ({docId, edit}) => {
       <BottomModal
         isFixedBottom={modalContent === 'date'}
         isVisible={modalVisible}
-        onClose={(event) => {
+        onClose={event => {
           setModalVisible(false);
         }}
-        swipeDirection={null}>
+        swipeDirection={null}
+      >
         {modalContent && modalSwitcher(modalContent)}
       </BottomModal>
 
@@ -186,7 +194,7 @@ const JobForm = ({docId, edit}) => {
             <Text style={styles.subtitle}>{moment(date).format('LLL')}</Text>
           )
         }
-        iconProps={{name: 'alarm', color: '#55A5AD'}}
+        iconProps={{ name: 'alarm', color: '#55A5AD' }}
         onPress={() => {
           setModalContent('date');
           setModalVisible(true);
@@ -197,9 +205,9 @@ const JobForm = ({docId, edit}) => {
         title={t('common.asigned_to')}
         subtitle={
           workers && (
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
               {workers?.value?.map((worker, i) => (
-                <View key={worker.id} style={{flexDirection: 'row'}}>
+                <View key={worker.id} style={{ flexDirection: 'row' }}>
                   <Text style={styles.subtitle}>{worker.firstName}</Text>
                   {workers?.value?.length - 1 !== i && (
                     <Text style={styles.subtitle}> & </Text>
@@ -209,7 +217,7 @@ const JobForm = ({docId, edit}) => {
             </View>
           )
         }
-        iconProps={{name: 'alarm', color: '#55A5AD'}}
+        iconProps={{ name: 'alarm', color: '#55A5AD' }}
         onPress={() => {
           setModalContent('workers');
           setModalVisible(true);
@@ -221,7 +229,7 @@ const JobForm = ({docId, edit}) => {
         title={t('common.house')}
         subtitle={
           house && (
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
               {house?.value?.map((house, i) => (
                 <View key={house.id}>
                   <Text style={styles.subtitle}>{house.houseName}</Text>
@@ -230,7 +238,7 @@ const JobForm = ({docId, edit}) => {
             </View>
           )
         }
-        iconProps={{name: 'house', color: '#55A5AD'}}
+        iconProps={{ name: 'house', color: '#55A5AD' }}
         onPress={() => {
           setModalContent('houses');
           setModalVisible(true);
@@ -241,9 +249,9 @@ const JobForm = ({docId, edit}) => {
       <TextInput
         multiline
         numberOfLines={10}
-        style={[commonStyles.input, {height: 120}]}
+        style={[commonStyles.input, { height: 120 }]}
         placeholder={t('common.observations')}
-        onChangeText={(text) => setInputFormAction('observations', text)}
+        onChangeText={text => setInputFormAction('observations', text)}
         value={observations}
       />
     </View>

@@ -39,10 +39,22 @@ export default {
     clean: 'Clean',
     save: 'Save',
     edit: 'Edit',
+    delete: 'Delete',
+    cancel: 'Cancel',
+    photo: 'photo',
+    photos: 'photos',
+    selected: 'selected',
     search_name: 'Search by name...',
     informer: 'Informer',
     asigned_to: 'Asigned to',
     asigned_workers: 'Asigned workers',
+    today: 'Today',
+    tomorrow: 'Tomorrow',
+    next_week: 'Next week',
+    select: 'Select',
+    select_date: 'Select date',
+    select_time: 'Select time',
+    no_results: 'No results found',
     range_time: {
       today: 'Today',
       next: 'In {{numberOfDays}} days',
@@ -76,6 +88,14 @@ export default {
     done: 'Finish and send to owner',
     resendEmail: 'Resend email to owner',
     photos: 'Photos'
+  },
+  checkPhotos: {
+    noPhotos: 'No photos',
+    noPhotosDescription: 'No photos have been added to this check yet',
+    deleteTitle: 'Delete photos?',
+    deleteDescriptionSingle: 'This photo will be permanently deleted.',
+    deleteDescriptionMultiple: '{{count}} photos will be permanently deleted.',
+    deleteWarning: 'This action cannot be undone'
   },
   new_checklist: {
     title: 'New checklist',
@@ -141,17 +161,25 @@ export default {
   },
   newUser: {
     title: 'New user',
+    subtitle: 'Fill in the information to create a new user',
     edit: 'Edit user',
+    editSubtitle: 'Modify user information',
+    sections: {
+      personal: 'Personal information',
+      contact: 'Contact',
+      role: 'Role and permissions'
+    },
     form: {
       name: 'Name',
       surname: 'Surname',
       email: 'Email',
       phone: 'Phone',
-      role: 'User role',
+      role: 'Role',
       gender: 'Gender',
       language: 'Language',
       create: 'Create user',
-      edit: 'Edit user'
+      edit: 'Save changes',
+      photoHint: 'Tap to change photo'
     }
   },
   users: {
@@ -159,8 +187,20 @@ export default {
   },
   houses: {
     title: 'Houses',
+    newHouse: 'New house',
+    createHouse: 'Create house',
+    basicInfo: 'Basic information',
+    houseName: 'House name',
+    address: 'Address',
+    street: 'Street and number',
+    city: 'City',
+    postalCode: 'Postal code',
+    phone: 'Phone',
+    addPhoto: 'Add photo',
+    addPhotoHint: 'Tap to select an image',
+    selectOwner: 'Select owner',
     house_data: 'House data',
-    house_address: 'Addresss',
+    house_address: 'Address',
     house_name: 'Name',
     house_municipality: 'Municipality',
     house_street: 'Street',
@@ -168,21 +208,33 @@ export default {
     owner_phone: "Owner's phone"
   },
   photos: {
-    title: 'Photos'
+    title: 'Photos',
+    add_photo: 'Add photo',
+    add_photo_description: 'Choose how to add the photo',
+    take_photo: 'Take photo',
+    take_photo_description: 'Use device camera',
+    from_gallery: 'Choose from gallery',
+    from_gallery_description: 'Select existing photos'
   },
   profile: {
     edit: 'Edit',
-    aditionalEmail: 'Aditional email',
+    aditionalEmail: 'Additional email',
     personal_data: 'Personal data',
+    personalInfo: 'Personal information',
+    contactInfo: 'Contact information',
+    security: 'Security',
     title: 'Profile',
     phone: 'Phone',
     email: 'Email',
-    logout: 'Logout',
+    logout: 'Log out',
     name: 'Name',
     last_name: 'Surname',
     gender: 'Gender',
     role: 'Role',
-    language: 'Language'
+    language: 'Language',
+    oldPassword: 'Current password',
+    newPassword: 'New password',
+    changePassword: 'Change password'
   },
   options: {
     title: 'Options',
@@ -214,5 +266,8 @@ export default {
   chat: {
     view_incidence: 'Go to incidence',
     view_checklist: 'Go to checklist'
+  },
+  validation: {
+    required: 'This field is required'
   }
 };

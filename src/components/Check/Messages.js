@@ -1,67 +1,75 @@
-import React, {useState, useCallback, useEffect, useMemo} from 'react';
-import {useRoute} from '@react-navigation/native';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { useRoute } from '@react-navigation/native';
 import {
   GiftedChat,
   Actions,
   Bubble,
   InputToolbar,
   CustomView,
-  Send,
+  Send
 } from 'react-native-gifted-chat';
-import {View, Text, ActivityIndicator} from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 //Chat
 import RenderDay from '../Chat/RenderDay';
 
 // Redux
-import {useSelector, shallowEqual} from 'react-redux';
-import {useAddFirebase} from '../../hooks/useAddFirebase';
+import { useSelector, shallowEqual } from 'react-redux';
+import { useAddFirebase } from '../../hooks/useAddFirebase';
 
 // Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useGetDocFirebase} from '../../hooks/useGetDocFIrebase';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
+import {
+  getFirestore,
+  collection,
+  doc,
+  query,
+  orderBy,
+  serverTimestamp
+} from '@react-native-firebase/firestore';
+import { useGetDocFirebase } from '../../hooks/useGetDocFIrebase';
+import { useUpdateFirebase } from '../../hooks/useUpdateFirebase';
 
-import {setMessagesAsRead} from '../../firebase/setMessagesAsRead';
+import { setMessagesAsRead } from '../../firebase/setMessagesAsRead';
 
 // Utils
-import {launchImage} from '../../utils/imageFunctions';
-import {cloudinaryUpload} from '../../cloudinary/index';
-import {messageIdGenerator} from '../../utils/uuid';
+import { launchImage } from '../../utils/imageFunctions';
+import { cloudinaryUpload } from '../../cloudinary/index';
+import { messageIdGenerator } from '../../utils/uuid';
 
-import {userSelector} from '../../Store/User/userSlice';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
+import { userSelector } from '../../Store/User/userSlice';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 const Messages = () => {
   const route = useRoute();
-  const {docId} = route.params;
+  const { docId } = route.params;
 
   const [messageImage, setMessageImage] = useState(null);
 
   const [local, setLocal] = useState([]);
 
-  const query = useMemo(
+  const db = getFirestore();
+
+  const messagesQuery = useMemo(
     () =>
-      firestore()
-        .collection('checklists')
-        .doc(docId)
-        .collection('messages')
-        .orderBy('createdAt', 'desc'),
-    [docId],
+      query(
+        collection(doc(collection(db, 'checklists'), docId), 'messages'),
+        orderBy('createdAt', 'desc')
+      ),
+    [docId, db]
   );
 
-  const [messages] = useCollectionData(query, {
-    idField: 'id',
+  const [messages] = useCollectionData(messagesQuery, {
+    idField: 'id'
   });
 
   const user = useSelector(userSelector, shallowEqual);
-  const {document: userLoggedIn} = useGetDocFirebase('users', user.uid);
-  const {addFirebase: addMessage} = useAddFirebase();
+  const { document: userLoggedIn } = useGetDocFirebase('users', user.uid);
+  const { addFirebase: addMessage } = useAddFirebase();
 
-  const {updateFirebase} = useUpdateFirebase('jobs');
+  const { updateFirebase } = useUpdateFirebase('jobs');
 
-  const {addFirebase: addPhoto, loading: loadingAddPhoto} = useAddFirebase();
+  const { addFirebase: addPhoto, loading: loadingAddPhoto } = useAddFirebase();
 
   const onSendImage = () => {
     launchImage(setMessageImage);
@@ -71,12 +79,12 @@ const Messages = () => {
     (messages = []) => {
       addMessage(`checklists/${docId}/messages`, {
         ...messages[0],
-        createdAt: firestore.FieldValue.serverTimestamp(),
+        createdAt: serverTimestamp(),
         sent: true,
-        received: false,
+        received: false
       });
     },
-    [addMessage, docId],
+    [addMessage, docId]
   );
 
   useEffect(() => {
@@ -94,34 +102,34 @@ const Messages = () => {
         image:
           'https://res.cloudinary.com/enalbis/image/upload/v1614849090/PortManagement/loader_ro9a3e.gif',
         messageType: 'image',
-        createdAt: firestore.FieldValue.serverTimestamp(),
+        createdAt: serverTimestamp(),
         user: {
           _id: userLoggedIn?.id,
           name: userLoggedIn?.firstName,
           avatar: userLoggedIn?.profileImage?.small,
           token: userLoggedIn?.token,
-          role: userLoggedIn?.role,
-        },
+          role: userLoggedIn?.role
+        }
       };
 
       const result = await addMessage(
         `checklists/${docId}/messages`,
-        waitingSendImageMessage,
+        waitingSendImageMessage
       );
 
       const image = await cloudinaryUpload(
         messageImage,
-        `/PortManagement/Checks/${docId}/Photos`,
+        `/PortManagement/Checks/${docId}/Photos`
       );
 
       updateFirebase(`${docId}/messages/${result.id}`, {
         ...waitingSendImageMessage,
-        image: image,
+        image: image
       });
 
       addPhoto(`checklists/${docId}/photos`, {
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        image: image,
+        createdAt: serverTimestamp(),
+        image: image
       });
     };
     if (messageImage !== null) {
@@ -129,7 +137,7 @@ const Messages = () => {
     }
   }, [messageImage, addMessage, addPhoto, docId, updateFirebase, userLoggedIn]);
 
-  const renderCustomView = (props) => {
+  const renderCustomView = props => {
     return <CustomView {...props} />;
   };
 
@@ -138,23 +146,23 @@ const Messages = () => {
       <GiftedChat
         bottomOffset={-3}
         isLoadingEarlier={loadingAddPhoto}
-        renderBubble={(props) => (
+        renderBubble={props => (
           <Bubble
             {...props}
             textStyle={{
               right: {
-                color: 'white',
-              },
+                color: 'white'
+              }
             }}
             wrapperStyle={{
               right: {
-                backgroundColor: '#5BAB9C',
-              },
+                backgroundColor: '#5BAB9C'
+              }
             }}
           />
         )}
         renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
-        renderInputToolbar={(props) => (
+        renderInputToolbar={props => (
           <InputToolbar
             {...props}
             onPressActionButton={() => onSendImage()}
@@ -164,13 +172,13 @@ const Messages = () => {
               borderRadius: 20,
               borderWidth: 1,
               borderColor: '#cccccc',
-              marginBottom: 15,
+              marginBottom: 15
             }}
           />
         )}
         messages={GiftedChat.append(messages, local)}
-        messagesContainerStyle={{paddingBottom: 20}}
-        renderActions={(props) => (
+        messagesContainerStyle={{ paddingBottom: 20 }}
+        renderActions={props => (
           <Actions
             {...props}
             icon={() => (
@@ -178,26 +186,27 @@ const Messages = () => {
             )}
           />
         )}
-        renderDay={(props) => <RenderDay message={props} />}
-        renderTime={(props) => (
+        renderDay={props => <RenderDay message={props} />}
+        renderTime={props => (
           <View style={props.containerStyle}>
             <Text
               style={{
                 marginHorizontal: 10,
                 marginBottom: 5,
-                color: props.position === 'left' ? 'black' : 'white',
-              }}>
+                color: props.position === 'left' ? 'black' : 'white'
+              }}
+            >
               {`${props.currentMessage.createdAt
                 .toDate()
                 .toLocaleString('es-ES', {
                   hour: 'numeric',
                   minute: 'numeric',
-                  hour12: false,
+                  hour12: false
                 })}`}
             </Text>
           </View>
         )}
-        renderSend={(props) => {
+        renderSend={props => {
           return (
             <Send
               {...props}
@@ -205,20 +214,21 @@ const Messages = () => {
                 borderWidth: 0,
                 flexDirection: 'column',
                 justifyContent: 'center',
-                marginRight: 20,
-              }}>
-              <Icon name="send" color={'#4F8AA3'} style={{borderWidth: 0}} />
+                marginRight: 20
+              }}
+            >
+              <Icon name="send" color={'#4F8AA3'} style={{ borderWidth: 0 }} />
             </Send>
           );
         }}
         showUserAvatar
-        onSend={(messages) => onSend(messages)}
+        onSend={messages => onSend(messages)}
         user={{
           _id: userLoggedIn?.id,
           name: userLoggedIn?.firstName,
           avatar: userLoggedIn?.profileImage?.small,
           token: userLoggedIn?.token,
-          role: userLoggedIn?.role,
+          role: userLoggedIn?.role
         }}
       />
     </View>

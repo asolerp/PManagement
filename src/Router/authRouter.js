@@ -1,57 +1,57 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 
 // Redux
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import {View, StyleSheet, Dimensions} from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 
 import SignOutRouter from '../Router/signOutRouter';
 import Modal from '../components/Modal';
 
-import {userSelector} from '../Store/User/userSlice';
+import { userSelector } from '../Store/User/userSlice';
 
 import AdminRouter from '../Router/adminRouter';
 import WorkerRouter from '../Router/workerRouter';
 import OwnerRouter from '../Router/ownerRouter';
-import {useRedirectNotification} from '../lib/notification/notificationHooks';
-import {useInAppNotification} from '../lib/notification/useInAppNotification';
-import {useAuth} from './hooks/useAuth';
-import {LoadingModal} from '../components/Modals/LoadingModal';
-import {LoadingModalContext} from '../context/loadinModalContext';
+import { useRedirectNotification } from '../lib/notification/notificationHooks';
+import { useInAppNotification } from '../lib/notification/useInAppNotification';
+import { useAuth } from './hooks/useAuth';
+import { LoadingModal } from '../components/Modals/LoadingModal';
+import { LoadingModalContext } from '../context/loadinModalContext';
 
 const styles = StyleSheet.create({
   appBackground: {
-    flex: 1,
-  },
-  topBar: {
-    height: Dimensions.get('window').height / 10,
-    backgroundColor: 'transparent',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flex: 1
   },
   background: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'flex-start',
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+    flex: 1,
+    height: '100%',
+    justifyContent: 'flex-start',
+    position: 'absolute',
+    resizeMode: 'cover',
+    width: '100%'
   },
   contentWrapper: {
-    flex: 1,
+    flex: 1
   },
   logo: {
     flex: 1,
-    width: 80,
-    resizeMode: 'contain',
     margin: 0,
     marginTop: 40,
+    resizeMode: 'contain',
+    width: 80
   },
+  topBar: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    height: Dimensions.get('window').height / 10,
+    justifyContent: 'flex-start'
+  }
 });
 
-const getUserSignInStack = (role) => {
+const getUserSignInStack = role => {
   if (role === 'admin') {
     return <AdminRouter />;
   }
@@ -69,13 +69,12 @@ const AuthRouter = () => {
   useInAppNotification();
   useAuth();
 
-  const {visible} = useContext(LoadingModalContext);
+  const { visible } = useContext(LoadingModalContext);
   const user = useSelector(userSelector);
 
   if (!user) {
     return null;
   }
-  
 
   if (!user?.loggedIn) {
     return <SignOutRouter />;

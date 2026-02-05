@@ -1,12 +1,20 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import crashlytics from '@react-native-firebase/crashlytics';
+import {
+  getCrashlytics,
+  log,
+  recordError,
+  crash,
+  setAttribute
+} from '@react-native-firebase/crashlytics';
 
 /**
  * Componente temporal para probar Crashlytics
  * ⚠️ ELIMINAR ANTES DE PRODUCCIÓN ⚠️
  */
 const CrashlyticsTestScreen = () => {
+  const crashlyticsInstance = getCrashlytics();
+
   // 1. Crash fatal (cierra la app)
   const testFatalCrash = () => {
     Alert.alert('Crash Fatal', '¿Estás seguro? Esto cerrará la app.', [
@@ -15,8 +23,8 @@ const CrashlyticsTestScreen = () => {
         text: 'Crashear',
         style: 'destructive',
         onPress: () => {
-          crashlytics().log('User triggered fatal crash');
-          crashlytics().crash();
+          log(crashlyticsInstance, 'User triggered fatal crash');
+          crash(crashlyticsInstance);
         }
       }
     ]);
@@ -27,17 +35,17 @@ const CrashlyticsTestScreen = () => {
     try {
       throw new Error('Test: Error no fatal desde Crashlytics Test');
     } catch (error) {
-      crashlytics().recordError(error);
-      crashlytics().log('Non-fatal error triggered by user');
+      recordError(crashlyticsInstance, error);
+      log(crashlyticsInstance, 'Non-fatal error triggered by user');
       Alert.alert('Error Registrado', 'El error fue enviado a Crashlytics');
     }
   };
 
   // 3. Error con contexto adicional
   const testErrorWithContext = () => {
-    crashlytics().log('User is testing error with context');
-    crashlytics().setAttribute('test_type', 'error_with_context');
-    crashlytics().setAttribute('user_action', 'button_press');
+    log(crashlyticsInstance, 'User is testing error with context');
+    setAttribute(crashlyticsInstance, 'test_type', 'error_with_context');
+    setAttribute(crashlyticsInstance, 'user_action', 'button_press');
 
     try {
       // Simular un error con más contexto
@@ -45,7 +53,7 @@ const CrashlyticsTestScreen = () => {
       // Esto causará un error porque fakeData es null
       console.log(fakeData.property);
     } catch (error) {
-      crashlytics().recordError(error);
+      recordError(crashlyticsInstance, error);
       Alert.alert(
         'Error con Contexto',
         'Error registrado con información adicional'
@@ -55,7 +63,7 @@ const CrashlyticsTestScreen = () => {
 
   // 4. Error asíncrono
   const testAsyncError = async () => {
-    crashlytics().log('Testing async error');
+    log(crashlyticsInstance, 'Testing async error');
 
     try {
       // Simular una llamada asíncrona que falla
@@ -65,8 +73,8 @@ const CrashlyticsTestScreen = () => {
         }, 1000);
       });
     } catch (error) {
-      crashlytics().recordError(error);
-      crashlytics().log('Async error caught and recorded');
+      recordError(crashlyticsInstance, error);
+      log(crashlyticsInstance, 'Async error caught and recorded');
       Alert.alert(
         'Error Asíncrono',
         'Error asíncrono registrado en Crashlytics'
@@ -79,9 +87,9 @@ const CrashlyticsTestScreen = () => {
     const error = new Error('Test: Simulated authentication error');
     error.code = 'auth/user-not-found';
 
-    crashlytics().recordError(error);
-    crashlytics().log('Simulated auth error');
-    crashlytics().setAttribute('error_type', 'authentication');
+    recordError(crashlyticsInstance, error);
+    log(crashlyticsInstance, 'Simulated auth error');
+    setAttribute(crashlyticsInstance, 'error_type', 'authentication');
 
     Alert.alert('Error de Auth Simulado', 'Error de autenticación registrado');
   };
@@ -91,25 +99,25 @@ const CrashlyticsTestScreen = () => {
     const error = new Error('Test: Network request failed');
     error.code = 'NETWORK_ERROR';
 
-    crashlytics().recordError(error);
-    crashlytics().log('Simulated network error');
-    crashlytics().setAttribute('error_type', 'network');
-    crashlytics().setAttribute('endpoint', '/api/test');
+    recordError(crashlyticsInstance, error);
+    log(crashlyticsInstance, 'Simulated network error');
+    setAttribute(crashlyticsInstance, 'error_type', 'network');
+    setAttribute(crashlyticsInstance, 'endpoint', '/api/test');
 
     Alert.alert('Error de Red Simulado', 'Error de red registrado');
   };
 
   // 7. Crear múltiples logs antes de un error
   const testWithMultipleLogs = () => {
-    crashlytics().log('Step 1: User opened test screen');
-    crashlytics().log('Step 2: User clicked test button');
-    crashlytics().log('Step 3: Processing data...');
-    crashlytics().log('Step 4: About to cause error');
+    log(crashlyticsInstance, 'Step 1: User opened test screen');
+    log(crashlyticsInstance, 'Step 2: User clicked test button');
+    log(crashlyticsInstance, 'Step 3: Processing data...');
+    log(crashlyticsInstance, 'Step 4: About to cause error');
 
     try {
       throw new Error('Test: Error after multiple logs');
     } catch (error) {
-      crashlytics().recordError(error);
+      recordError(crashlyticsInstance, error);
       Alert.alert('Error con Logs', 'Error registrado con historial de logs');
     }
   };

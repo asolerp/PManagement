@@ -1,16 +1,14 @@
-import { firebase } from '@react-native-firebase/firestore';
-import '@react-native-firebase/functions';
+import { getApp } from '@react-native-firebase/app';
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
 import { error } from '../lib/logging';
 import { REGION } from '../firebase/utils';
 
 const deleteCheckList = async path => {
   try {
-    const deleteFn = firebase
-      .app()
-      .functions(REGION)
-      .httpsCallable('recursiveDelete');
+    const app = getApp();
+    const functions = getFunctions(app, REGION);
+    const deleteFn = httpsCallable(functions, 'recursiveDelete');
     await deleteFn(path);
-    // await firestore().collection('checklists').doc(checkId).delete();
   } catch (err) {
     error({
       message: err.message,

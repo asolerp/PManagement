@@ -1,28 +1,28 @@
-import React, {useState, useCallback, useEffect} from 'react';
-
-import {Text, View, TextInput, StyleSheet} from 'react-native';
-
-// Redux
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Text, View, TextInput, StyleSheet, Pressable } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import moment from 'moment';
+import 'moment/locale/es';
+import * as Localization from 'expo-localization';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // UI
 import DynamicSelectorList from '../../DynamicSelectorList';
 import DateSelector from '../Jobs/DateSelector';
-import CustomInput from '../../Elements/CustomInput';
-import CheckBox from '@react-native-community/checkbox';
-
-// Utils
-import moment from 'moment';
-import 'moment/locale/es';
-import {useTheme} from '../../../Theme';
-
-// Styles
-import {defaultLabel} from '../../../styles/common';
+import { BottomModal } from '../../Modals/BottomModal';
 
 // Firebase
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  getDocs
+} from '@react-native-firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
-import {DARK_BLUE, PM_COLOR} from '../../../styles/colors';
+// Redux
 import {
   houseSelector,
   observationsSelector,
@@ -33,27 +33,100 @@ import {
   setCheck,
   setEditableChecks,
   setAllChecks,
-  dateSelector,
+  dateSelector
 } from '../../../Store/CheckList/checkListSlice';
-import {Colors} from '../../../Theme/Variables';
-import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
-import Label from '../../Elements/Label';
 
-import {CHECKLISTS} from '../../../utils/firebaseKeys';
-import {useTranslation} from 'react-i18next';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {BottomModal} from '../../Modals/BottomModal';
+// Utils
+import { CHECKLISTS } from '../../../utils/firebaseKeys';
 
-import {getLocales} from 'react-native-localize';
-import {Spacer} from '../../Elements/Spacer';
+// Componente para un campo de selección moderno
+const SelectField = ({ icon, title, subtitle, onPress, isEmpty }) => (
+  <Pressable
+    style={[styles.selectField, isEmpty && styles.selectFieldEmpty]}
+    onPress={onPress}
+  >
+    <View style={styles.selectFieldContent}>
+      <View style={styles.iconContainer}>
+        <Icon name={icon} size={20} color="#55A5AD" />
+      </View>
+      <View style={styles.selectFieldText}>
+        <Text style={styles.selectFieldTitle}>{title}</Text>
+        {subtitle ? (
+          <View style={styles.subtitleContainer}>{subtitle}</View>
+        ) : (
+          <Text style={styles.selectFieldPlaceholder}>Seleccionar...</Text>
+        )}
+      </View>
+    </View>
+    <Icon name="chevron-right" size={24} color="#CBD5E0" />
+  </Pressable>
+);
 
-const CheckListForm = ({edit, docId}) => {
+// Componente para el campo de observaciones
+const ObservationsField = ({ value, onChange, t }) => (
+  <View style={styles.section}>
+    <View style={styles.sectionHeader}>
+      <View style={styles.iconContainer}>
+        <Icon name="chat-bubble-outline" size={18} color="#55A5AD" />
+      </View>
+      <View>
+        <Text style={styles.sectionTitle}>{t('common.observations')}</Text>
+        <Text style={styles.sectionSubtitle}>Opcional</Text>
+      </View>
+    </View>
+    <TextInput
+      multiline
+      numberOfLines={6}
+      style={styles.textArea}
+      placeholder="Añade cualquier observación o nota adicional sobre este checklist..."
+      placeholderTextColor="#9CA3AF"
+      onChangeText={onChange}
+      value={value}
+    />
+  </View>
+);
+
+// Componente de checkbox nativo
+const NativeCheckbox = ({ checked, onToggle }) => (
+  <Pressable
+    style={[styles.checkbox, checked && styles.checkboxChecked]}
+    onPress={onToggle}
+  >
+    {checked && <Icon name="check" size={16} color="#FFFFFF" />}
+  </Pressable>
+);
+
+// Componente para un item de check individual
+const CheckItemComponent = ({ item, isChecked, onToggle }) => {
+  const checkText =
+    item?.locale?.[Localization.getLocales()[0]?.languageCode || 'en'] ||
+    item?.locale?.en;
+
+  return (
+    <Pressable
+      style={[styles.checkItem, isChecked && styles.checkItemSelected]}
+      onPress={() => onToggle({ ...item, originalId: item.id }, !isChecked)}
+    >
+      <NativeCheckbox
+        checked={isChecked}
+        onToggle={() => onToggle({ ...item, originalId: item.id }, !isChecked)}
+      />
+      <Text style={[styles.checkText, isChecked && styles.checkTextSelected]}>
+        {checkText}
+      </Text>
+    </Pressable>
+  );
+};
+
+const CheckListForm = ({ edit, docId }) => {
   const dispatch = useDispatch();
-  const {Layout} = useTheme();
-  const [list] = useCollectionData(firestore().collection('checks'), {
-    idField: 'id',
+  const { t } = useTranslation();
+  const db = getFirestore();
+  const checksCollection = collection(db, 'checks');
+  const [list] = useCollectionData(checksCollection, {
+    idField: 'id'
   });
-  const {t} = useTranslation();
+
   const house = useSelector(houseSelector);
   const workers = useSelector(workersSelector);
   const observations = useSelector(observationsSelector);
@@ -61,40 +134,41 @@ const CheckListForm = ({edit, docId}) => {
   const date = useSelector(dateSelector);
 
   const setInputFormAction = useCallback(
-    (label, value) => dispatch(setForm({label, value})),
-    [dispatch],
+    (label, value) => dispatch(setForm({ label, value })),
+    [dispatch]
   );
 
   const setInputFormEditable = useCallback(
-    (form) => dispatch(setEditableForm(form)),
-    [dispatch],
+    form => dispatch(setEditableForm(form)),
+    [dispatch]
   );
 
   const setChecksEditable = useCallback(
-    (checkEditableList) => dispatch(setEditableChecks(checkEditableList)),
-    [dispatch],
+    checkEditableList => dispatch(setEditableChecks(checkEditableList)),
+    [dispatch]
   );
 
   const setToggleCheckBox = useCallback(
     (item, newValue) => {
-      dispatch(setCheck({check: item, checkState: newValue}));
+      dispatch(setCheck({ check: item, checkState: newValue }));
     },
-    [dispatch],
+    [dispatch]
   );
 
   const allChecks = list?.reduce(
     (acc, check) => ({
       ...acc,
-      [check.id]: {...check, check: true, originalId: check.id},
+      [check.id]: { ...check, check: true, originalId: check.id }
     }),
-    {},
+    {}
   );
+
   const setAllChecksActions = useCallback(() => {
-    dispatch(setAllChecks({checks: allChecks}));
+    dispatch(setAllChecks({ checks: allChecks }));
   }, [dispatch, allChecks]);
 
   const removeAllChecksActions = useCallback(() => {
-    dispatch(setAllChecks({checks: {}}));
+    dispatch(setAllChecks({ checks: {} }));
   }, [dispatch]);
 
   // Form State
@@ -103,53 +177,50 @@ const CheckListForm = ({edit, docId}) => {
 
   useEffect(() => {
     const getDocument = async () => {
-      const checkToEdit = await firestore()
-        .collection(CHECKLISTS)
-        .doc(docId)
-        .get();
-      const checks = await firestore()
-        .collection(CHECKLISTS)
-        .doc(docId)
-        .collection('checks')
-        .get();
+      const db = getFirestore();
+      const checklistRef = doc(collection(db, CHECKLISTS), docId);
+      const checkToEdit = await getDoc(checklistRef);
+
+      const checksCollection = collection(checklistRef, 'checks');
+      const checks = await getDocs(checksCollection);
 
       const checksDocs = checks.docs
-        .map((doc) => doc.data())
-        .map((check) => ({
+        .map(docSnap => docSnap.data())
+        .map(check => ({
           originalId: check.originalId,
           check: true,
           done: check.done,
           id: check.id,
           locale: check.locale,
-          photos: check.photos,
+          photos: check.photos
         }))
         .reduce((acc, checkDoc) => {
           return {
             ...acc,
-            [checkDoc.originalId]: checkDoc,
+            [checkDoc.originalId]: checkDoc
           };
         }, {});
 
-      const {date, house, workers, observations} = checkToEdit.data();
+      const { date, house, workers, observations } = checkToEdit.data();
 
       setInputFormEditable({
         date: date.toDate(),
         house: {
-          value: house,
+          value: house
         },
         workers: {
-          value: workers,
+          value: workers
         },
-        observations,
+        observations
       });
-      setChecksEditable({checks: checksDocs});
+      setChecksEditable({ checks: checksDocs });
     };
     if (edit) {
       getDocument();
     }
   }, [edit, docId, setInputFormEditable, setChecksEditable]);
 
-  const modalSwitcher = (modal) => {
+  const modalSwitcher = modal => {
     switch (modal) {
       case 'houses': {
         return ListDynamicHouse();
@@ -169,7 +240,7 @@ const CheckListForm = ({edit, docId}) => {
   const DateTimeSelector = () => (
     <DateSelector
       get={date || null}
-      set={(date) => setInputFormAction('date', date)}
+      set={date => setInputFormAction('date', date)}
       closeModal={() => setModalVisible(false)}
     />
   );
@@ -179,11 +250,11 @@ const CheckListForm = ({edit, docId}) => {
       collection="houses"
       store="jobForm"
       searchBy="houseName"
-      order={{field: 'houseName', type: 'asc'}}
-      schema={{img: 'houseImage', name: 'houseName'}}
+      order={{ field: 'houseName', type: 'asc' }}
+      schema={{ img: 'houseImage', name: 'houseName' }}
       get={house?.value || []}
-      set={(house) => {
-        setInputFormAction('house', {...house, value: house});
+      set={house => {
+        setInputFormAction('house', { ...house, value: house });
         setModalVisible(false);
       }}
       closeModal={() => setModalVisible(false)}
@@ -198,14 +269,14 @@ const CheckListForm = ({edit, docId}) => {
         {
           label: 'role',
           operator: '==',
-          condition: 'worker',
-        },
+          condition: 'worker'
+        }
       ]}
       searchBy="firstName"
-      schema={{img: 'profileImage', name: 'firstName'}}
+      schema={{ img: 'profileImage', name: 'firstName' }}
       get={workers?.value}
-      set={(ws) => {
-        setInputFormAction('workers', {...workers, value: ws});
+      set={ws => {
+        setInputFormAction('workers', { ...workers, value: ws });
         setModalVisible(false);
       }}
       multiple={true}
@@ -213,192 +284,311 @@ const CheckListForm = ({edit, docId}) => {
     />
   );
 
-  const CheckItem = useCallback(
-    ({item}) => {
-      return (
-        <View style={styles.checkWrapper}>
-          <CheckBox
-            onTintColor={Colors.leftBlue}
-            onCheckColor={Colors.leftBlue}
-            disabled={false}
-            value={checks?.[item.id]?.check || false}
-            boxType="square"
-            onValueChange={(newValue) =>
-              setToggleCheckBox({...item, originalId: item.id}, newValue)
-            }
-          />
-          <Text style={styles.checkStyle}>
-            {item?.locale?.[getLocales()[0].languageCode] || item?.locale?.en}
-          </Text>
-        </View>
-      );
-    },
-    [checks, setToggleCheckBox],
-  );
+  const selectedCount = Object.values(checks || {}).filter(c => c.check).length;
+  const totalCount = list?.length || 0;
 
   return (
-    <View style={[styles.newJobScreen]}>
+    <View style={styles.container}>
       <BottomModal
         isFixedBottom={modalContent === 'date'}
         swipeDirection={null}
         onClose={() => setModalVisible(false)}
-        isVisible={modalVisible}>
+        isVisible={modalVisible}
+      >
         {modalContent && modalSwitcher(modalContent)}
       </BottomModal>
 
-      <CustomInput
+      {/* Fecha */}
+      <SelectField
+        icon="event"
         title={t('common.date')}
         subtitle={
           date && (
-            <Text style={styles.subtitle}>{moment(date).format('LLL')}</Text>
+            <Text style={styles.selectedValue}>
+              {moment(date).format('LL')}
+            </Text>
           )
         }
-        iconProps={{name: 'alarm', color: '#55A5AD'}}
+        isEmpty={!date}
         onPress={() => {
           setModalContent('date');
           setModalVisible(true);
         }}
       />
-      <Spacer space={4} />
-      <CustomInput
+
+      {/* Casa */}
+      <SelectField
+        icon="home"
         title={t('common.house')}
         subtitle={
           house?.value && (
-            <View style={{flexDirection: 'row'}}>
-              {house?.value?.map((house, i) => (
-                <View key={house.id}>
-                  <Text style={styles.subtitle}>{house.houseName}</Text>
-                  {house?.value?.length > 1 && (
-                    <Text style={styles.subtitle}> & </Text>
-                  )}
-                </View>
+            <View style={styles.multiValueContainer}>
+              {house?.value?.map((h, i) => (
+                <Text key={h.id} style={styles.selectedValue}>
+                  {h.houseName}
+                  {i < house?.value?.length - 1 && ' & '}
+                </Text>
               ))}
             </View>
           )
         }
-        iconProps={{name: 'house', color: '#55A5AD'}}
+        isEmpty={!house?.value || house?.value?.length === 0}
         onPress={() => {
           setModalContent('houses');
           setModalVisible(true);
         }}
       />
-      <Spacer space={4} />
-      <CustomInput
+
+      {/* Trabajadores */}
+      <SelectField
+        icon="people"
         title={t('common.worker')}
         subtitle={
           workers?.value &&
           workers?.value.length > 0 && (
-            <View style={{flexDirection: 'row'}}>
+            <View style={styles.multiValueContainer}>
               {workers?.value?.map((worker, i) => (
-                <View key={worker.id} style={[Layout.row]}>
-                  <Text style={styles.subtitle}>{worker.firstName}</Text>
-                  {workers?.value?.length - 1 !== i && (
-                    <Text style={styles.subtitle}> & </Text>
-                  )}
-                </View>
+                <Text key={worker.id} style={styles.selectedValue}>
+                  {worker.firstName}
+                  {i < workers?.value?.length - 1 && ' & '}
+                </Text>
               ))}
             </View>
           )
         }
-        iconProps={{name: 'people', color: '#55A5AD'}}
+        isEmpty={!workers?.value || workers?.value?.length === 0}
         onPress={() => {
           setModalContent('worker');
           setModalVisible(true);
         }}
       />
-      <Spacer space={4} />
-      <TextInput
-        multiline
-        numberOfLines={10}
-        style={{height: 120}}
-        placeholder={t('common.observations')}
-        onChangeText={(text) => setInputFormAction('observations', text)}
+
+      {/* Observaciones */}
+      <ObservationsField
         value={observations}
+        onChange={text => setInputFormAction('observations', text)}
+        t={t}
       />
-      <View
-        style={[
-          Layout.fill,
-          Layout.rowCenter,
-          Layout.justifyContentSpaceBetween,
-        ]}>
-        <Text style={{...defaultLabel, marginTop: 10}}>
-          {t('new_checklist.check_list')}
-        </Text>
-        <View style={[Layout.rowCenter, Layout.justifyContentCenter]}>
-          <TouchableOpacity
-            onPress={() => setAllChecksActions()}
-            style={styles.labelWrapper}>
-            <Label title={t('common.all')} color={Colors.pm} active={true} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => removeAllChecksActions()}
-            style={styles.labelWrapper}>
-            <Label
-              title={t('common.neither')}
-              color={Colors.danger}
-              active={true}
-            />
-          </TouchableOpacity>
+
+      {/* Lista de checks */}
+      <View style={styles.checksSection}>
+        <View style={styles.checksSectionHeader}>
+          <View>
+            <Text style={styles.checksSectionTitle}>
+              {t('new_checklist.check_list')}
+            </Text>
+            <Text style={styles.checksSectionSubtitle}>
+              {selectedCount} de {totalCount} seleccionados
+            </Text>
+          </View>
+          <View style={styles.checksActions}>
+            <Pressable
+              style={styles.actionButton}
+              onPress={() => setAllChecksActions()}
+            >
+              <Icon name="check-circle" size={18} color="#55A5AD" />
+              <Text style={styles.actionButtonText}>{t('common.all')}</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.actionButton, styles.actionButtonDanger]}
+              onPress={() => removeAllChecksActions()}
+            >
+              <Icon name="cancel" size={18} color="#EF4444" />
+              <Text
+                style={[styles.actionButtonText, styles.actionButtonDangerText]}
+              >
+                {t('common.neither')}
+              </Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
-      <ScrollView style={styles.checkListWrapper}>
-        {list?.map((check) => (
-          <CheckItem item={check} key={check.id} />
+
+        {list?.map(check => (
+          <CheckItemComponent
+            key={check.id}
+            item={check}
+            isChecked={checks?.[check.id]?.check || false}
+            onToggle={setToggleCheckBox}
+          />
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  actionButton: {
+    alignItems: 'center',
+    backgroundColor: '#F0FDFA',
+    borderRadius: 8,
+    flexDirection: 'row',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8
+  },
+  actionButtonDanger: {
+    backgroundColor: '#FEF2F2'
+  },
+  actionButtonDangerText: {
+    color: '#EF4444'
+  },
+  actionButtonText: {
+    color: '#55A5AD',
+    fontSize: 13,
+    fontWeight: '600'
+  },
+  checkItem: {
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 8,
+    padding: 14
+  },
+  checkItemSelected: {
+    backgroundColor: '#F0FDFA',
+    borderColor: '#55A5AD'
+  },
+  checkText: {
+    color: '#6B7280',
     flex: 1,
+    fontSize: 15,
+    lineHeight: 20
   },
-  subtitle: {
-    color: '#2A7BA5',
+  checkTextSelected: {
+    color: '#374151',
+    fontWeight: '500'
   },
-  newJobScreen: {
-    flex: 1,
-    height: '100%',
-    paddingTop: 20,
-    justifyContent: 'flex-start',
+  checkbox: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#CBD5E0',
+    borderRadius: 6,
+    borderWidth: 2,
+    height: 24,
+    justifyContent: 'center',
+    width: 24
   },
-  asignList: {},
-  inputRecurrenteWrapper: {
+  checkboxChecked: {
+    backgroundColor: '#55A5AD',
+    borderColor: '#55A5AD'
+  },
+  checksActions: {
+    flexDirection: 'row',
+    gap: 8
+  },
+  checksScroll: {
+    maxHeight: 400
+  },
+  checksSection: {
+    marginTop: 24
+  },
+  checksSectionHeader: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingRight: 10,
+    marginBottom: 16
   },
-  inputRecurrente: {
-    flexDirection: 'row',
+  checksSectionSubtitle: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    marginTop: 2
+  },
+  checksSectionTitle: {
+    color: '#374151',
+    fontSize: 16,
+    fontWeight: '700'
+  },
+  container: {
+    flex: 1
+  },
+  iconContainer: {
     alignItems: 'center',
+    backgroundColor: '#F0FDFA',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    width: 40
   },
-  cleanButton: {
-    textAlign: 'right',
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#4F8AA3',
-  },
-  checkListWrapper: {
-    marginTop: 20,
-    paddingHorizontal: 10,
-  },
-  checkWrapper: {
+  multiValueContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  section: {
+    marginTop: 16
+  },
+  sectionHeader: {
     alignItems: 'center',
-    marginVertical: 5,
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 12
   },
-  checkDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 100,
-    backgroundColor: PM_COLOR,
+  sectionSubtitle: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    marginTop: 2
   },
-  checkStyle: {
-    marginLeft: 10,
-    fontSize: 18,
-    color: DARK_BLUE,
+  sectionTitle: {
+    color: '#374151',
+    fontSize: 16,
+    fontWeight: '700'
   },
+  selectField: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    padding: 14
+  },
+  selectFieldContent: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 12
+  },
+  selectFieldEmpty: {
+    backgroundColor: '#F9FAFB'
+  },
+  selectFieldPlaceholder: {
+    color: '#9CA3AF',
+    fontSize: 14
+  },
+  selectFieldText: {
+    flex: 1
+  },
+  selectFieldTitle: {
+    color: '#374151',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2
+  },
+  selectedValue: {
+    color: '#55A5AD',
+    fontSize: 14,
+    fontWeight: '500'
+  },
+  subtitleContainer: {
+    marginTop: 2
+  },
+  textArea: {
+    backgroundColor: '#F9FAFB',
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    borderWidth: 1,
+    color: '#374151',
+    fontSize: 14,
+    lineHeight: 20,
+    minHeight: 100,
+    padding: 14,
+    textAlignVertical: 'top'
+  }
 });
 
 export default CheckListForm;

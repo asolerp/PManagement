@@ -8,8 +8,6 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-// Firebase
-
 import AddButton from '../../components/Elements/AddButton';
 import HouseItemList from '../../components/HouseItemList';
 import { ScreenHeader } from '../../components/Layout/ScreenHeader';
@@ -20,8 +18,6 @@ import {
   HOUSE_SCREEN_KEY,
   NEW_HOUSE_SCREEN_KEY
 } from '../../Router/utils/routerKeys';
-import { useTheme } from '../../Theme';
-import theme from '../../Theme/Theme';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { HOUSES } from '../../utils/firebaseKeys';
 import { fetchHousesPaginated } from '../../Services/firebase/houseServices';
@@ -42,8 +38,6 @@ const HousesScreen = () => {
   // Aplanar todas las páginas en un solo array
   const houses = data?.pages?.flatMap(page => page?.houses || []) || [];
 
-  const { Layout } = useTheme();
-
   const handleNewHome = () => {
     openScreenWithPush(NEW_HOUSE_SCREEN_KEY);
   };
@@ -59,7 +53,7 @@ const HousesScreen = () => {
 
     return (
       <View style={styles.loadingFooter}>
-        <Text>Cargando más casas...</Text>
+        <Text style={styles.loadingText}>Cargando más casas...</Text>
       </View>
     );
   };
@@ -67,7 +61,7 @@ const HousesScreen = () => {
   const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
-        style={theme.wFull}
+        style={styles.itemContainer}
         onPress={() =>
           openScreenWithPush(HOUSE_SCREEN_KEY, {
             houseId: item.id
@@ -79,67 +73,81 @@ const HousesScreen = () => {
     );
   };
 
+  const renderEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>
+        No hay creada ninguna casa. Crear tu primera casa para poder empezar a
+        asignar trabajos a tus trabajadores
+      </Text>
+    </View>
+  );
+
   return (
-    <React.Fragment>
-      <PageLayout safe titleLefSide={true} edges={['top']}>
-        <AddButton
-          iconName="add"
-          onPress={() => handleNewHome()}
-          containerStyle={{ right: 0, bottom: 30 }}
-        />
-        <View style={styles.container}>
-          <ScreenHeader title={t('houses.title')} />
-          <View style={styles.homesScreen}>
-            <FlatList
-              data={houses}
-              ListEmptyComponent={() => (
-                <View style={[theme.wFull, theme.mT10]}>
-                  <Text style={theme.fontSans}>
-                    No hay creada ninguna casa. Crear tu primera casa para poder
-                    empezar a asignar trabajos a tus trabajadores
-                  </Text>
-                </View>
-              )}
-              renderItem={renderItem}
-              keyExtractor={item => item?.id || Math.random().toString()}
-              showsVerticalScrollIndicator={false}
-              onEndReached={handleLoadMore}
-              onEndReachedThreshold={0.1}
-              ListFooterComponent={renderFooter}
-              contentContainerStyle={[
-                Layout.flexGrow,
-                Layout.alignItemsCenter,
-                theme.pB10
-              ]}
-            />
-          </View>
+    <PageLayout safe titleLefSide={true} edges={['top']}>
+      <AddButton
+        iconName="add"
+        onPress={handleNewHome}
+        containerStyle={styles.addButtonPosition}
+      />
+      <View style={styles.container}>
+        <ScreenHeader title={t('houses.title')} />
+        <View style={styles.listContainer}>
+          <FlatList
+            data={houses}
+            ListEmptyComponent={renderEmptyComponent}
+            renderItem={renderItem}
+            keyExtractor={item => item?.id || Math.random().toString()}
+            showsVerticalScrollIndicator={false}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={renderFooter}
+            contentContainerStyle={styles.listContent}
+          />
         </View>
-      </PageLayout>
-    </React.Fragment>
+      </View>
+    </PageLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  addButton: {
-    bottom: 40,
-    position: 'absolute',
-    right: 30,
-    zIndex: 10
+  addButtonPosition: {
+    bottom: 30,
+    right: 0
   },
   container: {
     flex: 1,
     marginBottom: 15
   },
-  homesScreen: {
+  emptyContainer: {
+    marginTop: 40,
+    paddingHorizontal: 20,
+    width: '100%'
+  },
+  emptyText: {
+    color: '#2d3748',
+    fontFamily: 'System',
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center'
+  },
+  itemContainer: {
+    width: '100%'
+  },
+  listContainer: {
     paddingTop: 20
+  },
+  listContent: {
+    alignItems: 'center',
+    flexGrow: 1,
+    paddingBottom: 40
   },
   loadingFooter: {
     alignItems: 'center',
     paddingVertical: 20
   },
-  scrollWrapper: {
-    alignItems: 'center',
-    flex: 1
+  loadingText: {
+    color: '#4a5568',
+    fontSize: 14
   }
 });
 

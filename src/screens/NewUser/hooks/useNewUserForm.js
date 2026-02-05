@@ -46,17 +46,22 @@ export const useNewUserForm = docId => {
         phone: form?.phone,
         role: form?.role
       });
-      popScreen();
+      // Cerrar el modal y esperar un momento antes de navegar
+      setLoading(false);
+      setVisible(false);
+      // Usar setTimeout para asegurar que el modal se cierre antes de navegar
+      setTimeout(() => {
+        popScreen();
+      }, 100);
     } catch (err) {
       console.log('ERROR', err);
+      setLoading(false);
+      setVisible(false);
       error({
         message: 'Comprueba que el email es correcto y no está en uso',
         track: true,
         asToast: true
       });
-    } finally {
-      setLoading(false);
-      setVisible(false);
     }
   };
 
@@ -76,16 +81,21 @@ export const useNewUserForm = docId => {
       } else {
         await updateFirebase(userId, { ...user });
       }
-      popScreen();
+      // Cerrar el modal y esperar un momento antes de navegar
+      setLoading(false);
+      setVisible(false);
+      // Usar setTimeout para asegurar que el modal se cierre antes de navegar
+      setTimeout(() => {
+        popScreen();
+      }, 100);
     } catch (err) {
+      setLoading(false);
+      setVisible(false);
       error({
         message: 'Comprueba que el email es correcto y no está en uso',
         track: true,
         asToast: true
       });
-    } finally {
-      setVisible(false);
-      setLoading(false);
     }
   };
 

@@ -1,15 +1,21 @@
-//BLUE
-export const DARK_BLUE = '#284748';
-export const PM_COLOR = '#3E93A8';
+/**
+ * @deprecated Usar Colors de Theme/Variables.js en su lugar
+ * Este archivo se mantiene por compatibilidad con código legacy
+ */
+import { Colors } from '../Theme/Variables';
 
-//GREY
-export const LOW_GREY = '#F8F8F8';
-export const GREY = '#9D9D9D';
-export const GREY_1 = '#EAEAEA';
-export const MEDIUM_GREY = '#888888';
+// BLUE
+export const DARK_BLUE = Colors.darkBlue;
+export const PM_COLOR = Colors.pm;
 
-//COLORS
-export const PRIORITY_LOW = '#61C0CD';
-export const PRIORITY_MEDIUM = '#F5C66D';
-export const PRIORITY_HEIGHT = '#ED7A7A';
-export const CHECKLIST_DONE = '#6bd847';
+// GREY
+export const LOW_GREY = Colors.lowGrey;
+export const GREY = Colors.gray400;
+export const GREY_1 = Colors.grey;
+export const MEDIUM_GREY = Colors.darkGrey;
+
+// COLORS
+export const PRIORITY_LOW = Colors.priorityLow;
+export const PRIORITY_MEDIUM = Colors.priorityMedium;
+export const PRIORITY_HEIGHT = Colors.priorityHigh;
+export const CHECKLIST_DONE = Colors.success;

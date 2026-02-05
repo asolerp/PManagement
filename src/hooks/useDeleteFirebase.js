@@ -1,22 +1,29 @@
-import firestore from '@react-native-firebase/firestore';
-import {error as errorLog} from '../lib/logging';
+import {
+  getFirestore,
+  collection,
+  doc,
+  deleteDoc
+} from '@react-native-firebase/firestore';
+import { error as errorLog } from '../lib/logging';
 
-import {useState} from 'react';
+import { useState } from 'react';
 
 export const useDeleteFirebase = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
 
-  const deleteFirebase = async (coll, doc) => {
+  const deleteFirebase = async (coll, docId) => {
     setLoading(true);
     try {
-      await firestore().collection(coll).doc(doc).delete();
+      const db = getFirestore();
+      const docRef = doc(collection(db, coll), docId);
+      await deleteDoc(docRef);
       setLoading(false);
     } catch (err) {
       errorLog({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
       setError(err);
       setLoading(false);
@@ -26,6 +33,6 @@ export const useDeleteFirebase = () => {
   return {
     deleteFirebase,
     loading,
-    error,
+    error
   };
 };

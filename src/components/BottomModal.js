@@ -1,10 +1,7 @@
 import React from 'react';
 import Modal from 'react-native-modal';
-import {View, StyleSheet} from 'react-native';
-import {useTheme} from '../Theme';
-import {Colors} from '../Theme/Variables';
+import { View, StyleSheet } from 'react-native';
 import CustomButton from './Elements/CustomButton';
-import theme from '../Theme/Theme';
 
 export const BottomModal = ({
   isVisible,
@@ -16,16 +13,14 @@ export const BottomModal = ({
   onCTA,
   ...props
 }) => {
-  const {Layout, Gutters} = useTheme();
-
   return (
     <Modal isVisible={isVisible} style={styles.modal} {...props}>
-      <View style={[styles.modalContainer]}>
+      <View style={styles.modalContainer}>
         <View style={styles.downLine} />
-        <View style={[Gutters.smallHPadding, styles.pickerContainer]}>
+        <View style={styles.pickerContainer}>
           {children}
           {onCTA && (
-            <View style={[Layout.row]}>
+            <View style={styles.buttonRow}>
               <CustomButton
                 title={ctaText}
                 onPress={onCTA}
@@ -40,32 +35,30 @@ export const BottomModal = ({
 };
 
 const styles = StyleSheet.create({
-  modal: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  modalContainer: {
-    backgroundColor: 'white',
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderTopRightRadius: 35,
-    borderTopLeftRadius: 35,
-    paddingBottom: 30,
-  },
-  closeContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 10,
-  },
-  pickerContainer: {
-    width: '100%',
+  buttonRow: {
+    flexDirection: 'row'
   },
   downLine: {
-    width: 40,
-    backgroundColor: Colors.grey,
-    height: 2.5,
+    backgroundColor: '#9CA3AF',
     borderRadius: 10,
+    height: 2.5,
+    width: 40
   },
+  modal: {
+    justifyContent: 'flex-end',
+    margin: 0
+  },
+  modalContainer: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 35,
+    borderTopRightRadius: 35,
+    justifyContent: 'center',
+    padding: 10,
+    paddingBottom: 30
+  },
+  pickerContainer: {
+    paddingHorizontal: 12,
+    width: '100%'
+  }
 });

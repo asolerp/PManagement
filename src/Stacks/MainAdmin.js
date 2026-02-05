@@ -6,7 +6,9 @@ import { IncidenceScreen } from '../Screens/Incidence';
 
 import Check from './Check';
 import { HouseScreen } from '../Screens/House';
+import { CheckPhotosScreen } from '../Screens/CheckPhotos';
 import {
+  CHECK_PHOTO_SCREEN_KEY,
   CHECK_STACK_KEY,
   ENTRANCE_DETAIL_SCREEN_KEY,
   FILTERS_SCREEN_KEY,
@@ -59,6 +61,7 @@ export const MainAdmin = ({ route }) => {
         }}
       />
       <Screen name={HOUSE_SCREEN_KEY} component={HouseScreen} />
+      <Screen name={CHECK_PHOTO_SCREEN_KEY} component={CheckPhotosScreen} />
       <Screen
         name={ENTRANCE_DETAIL_SCREEN_KEY}
         component={EntranceDetailScreen}

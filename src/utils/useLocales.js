@@ -1,21 +1,24 @@
 import {useState, useEffect} from 'react';
-import {NativeModules, Platform} from 'react-native';
+import * as Localization from 'expo-localization';
 
 export const useLocales = () => {
   const [locale, setLocale] = useState();
 
   useEffect(() => {
-    if (Platform.OS === 'ios') {
-      setLocale(
-        NativeModules.SettingsManager.settings.AppleLocale ||
-          NativeModules.SettingsManager.settings.AppleLanguages[0],
-      );
-    } else {
-      setLocale(NativeModules.I18nManager.localeIdentifier);
+    try {
+      const locales = Localization.getLocales();
+      if (locales && locales[0]) {
+        setLocale(locales[0].languageCode);
+      } else {
+        setLocale('en');
+      }
+    } catch (error) {
+      console.warn('Failed to get locale:', error);
+      setLocale('en');
     }
   }, []);
 
   return {
-    locale: locale?.split('_')[0],
+    locale: locale || 'en',
   };
 };

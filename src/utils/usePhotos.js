@@ -1,8 +1,13 @@
 import { useState } from 'react';
 
-import '@react-native-firebase/functions';
-import firestore, { firebase } from '@react-native-firebase/firestore';
+import { getApp } from '@react-native-firebase/app';
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
 import storage from '@react-native-firebase/storage';
+import {
+  arrayRemove,
+  arrayUnion,
+  updateDoc
+} from '@react-native-firebase/firestore';
 import ImageResizer from 'react-native-image-resizer';
 import { error as errorLog } from '../lib/logging';
 import { REGION } from '../firebase/utils';
@@ -21,14 +26,7 @@ const uploadImageFromFirebase = async asset => {
   const reference = storage().ref(`${storageFolder}/${fileName}`);
 
   // Subir la imagen
-  const task = reference.putFile(pathToFile);
-
-  task.on('state_changed', snapshot => {
-    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    console.log('Upload is ' + progress + '% done');
-  });
-
-  await task;
+  await reference.putFile(pathToFile);
 
   // Obtener URL de descarga
   const url = await reference.getDownloadURL();
@@ -41,19 +39,17 @@ const uploadImageFromFirebase = async asset => {
 export const usePhotos = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
-  // const {upload} = useUploadCloudinaryImage();
 
-  const deleteFn = firebase
-    .app()
-    .functions(REGION)
-    .httpsCallable('deletePhotoCloudinary');
+  const app = getApp();
+  const functions = getFunctions(app, REGION);
+  const deleteFn = httpsCallable(functions, 'deletePhotoCloudinary');
 
   const removePhotos = async (imgs, setter, fbRoute) => {
     const { collectionRef } = fbRoute;
     const photosToDelete = imgs.map(
       async photo =>
-        await collectionRef.update({
-          photos: firestore.FieldValue.arrayRemove(photo.uri)
+        await updateDoc(collectionRef, {
+          photos: arrayRemove(photo.uri)
         })
     );
 
@@ -97,8 +93,8 @@ export const usePhotos = () => {
               storageFolder: folder,
               fileName: file.fileName,
               collectionRef: async url =>
-                await collectionRef.update({
-                  photos: firestore.FieldValue.arrayUnion(url)
+                await updateDoc(collectionRef, {
+                  photos: arrayUnion(url)
                 })
             })
         )
@@ -125,7 +121,7 @@ export const usePhotos = () => {
         storageFolder: folder,
         fileName: img.fileName,
         collectionRef: async url =>
-          await collectionRef.update({
+          await updateDoc(collectionRef, {
             ['houseImage.original']: url,
             ['houseImage.small']: url
           })
@@ -152,7 +148,7 @@ export const usePhotos = () => {
         storageFolder: folder,
         fileName: img.fileName,
         collectionRef: async url =>
-          await collectionRef.update({
+          await updateDoc(collectionRef, {
             [`profileImage.original`]: url,
             ['profileImage.small']: url
           })

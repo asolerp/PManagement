@@ -1,56 +1,16 @@
 import React from 'react';
-
-import {View, StyleSheet, TouchableOpacity, StatusBar} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-
-// UI
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  StatusBar,
+  Platform
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import TitlePage from './TitlePage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-import {popScreen} from '../Router/utils/actions';
-import {Colors} from '../Theme/Variables';
-import {Platform} from 'react-native';
-import {isIOS} from '../utils/platform';
-import theme from '../Theme/Theme';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.white,
-  },
-  pageWrapper: {
-    flexGrow: 1,
-  },
-  pageBackScreen: {
-    flex: 1,
-  },
-  pageScreen: {
-    flex: 1,
-    flexGrow: 1,
-  },
-  bottomScreen: {
-    justifyContent: 'flex-start',
-    width: '100%',
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    marginBottom: isIOS ? 0 : 20,
-  },
-  iconWrapper: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowOffset: {
-      height: 0,
-      width: 0,
-    },
-    shadowColor: '#BCBCBC',
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-  },
-});
+import { popScreen } from '../Router/utils/actions';
+import { isIOS } from '../utils/platform';
 
 const Container = ({
   titleProps,
@@ -61,10 +21,10 @@ const Container = ({
   withTitle = true,
   withPadding = true,
   children,
-  footer,
+  footer
 }) => {
   return (
-    <React.Fragment>
+    <>
       {withTitle && (
         <TitlePage
           {...titleProps}
@@ -73,26 +33,32 @@ const Container = ({
               <TouchableOpacity
                 onPress={() => {
                   popScreen();
-                }}>
-                <View>
-                  <Icon name="arrow-back" size={25} color="#284748" />
-                </View>
+                }}
+                style={styles.backButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Icon name="arrow-back" size={25} color="#284748" />
               </TouchableOpacity>
             ) : (
               titleLefSide
             )
           }
           rightSide={titleRightSide}
-          align="center">
+          align="center"
+        >
           {titleChildren}
         </TitlePage>
       )}
       <View
-        style={[styles.pageWrapper, {paddingHorizontal: withPadding ? 20 : 0}]}>
-        <View style={[styles.pageScreen]}>{children}</View>
+        style={[
+          styles.pageWrapper,
+          { paddingHorizontal: withPadding ? 20 : 0 }
+        ]}
+      >
+        <View style={styles.pageScreen}>{children}</View>
       </View>
       {footer && <View style={styles.bottomScreen}>{footer}</View>}
-    </React.Fragment>
+    </>
   );
 };
 
@@ -110,16 +76,12 @@ const PageLayout = ({
   withPadding,
   withTitle = true,
   edges = ['top', 'bottom'],
-  safe = false,
+  safe = false
 }) => {
   if (safe && Platform.OS === 'ios') {
     return (
       <SafeAreaView style={[styles.container, containerStyles]} edges={edges}>
-        {
-          Platform.OS === 'ios' && (
-            <StatusBar barStyle={statusBar} />
-          )
-        }
+        {Platform.OS === 'ios' && <StatusBar barStyle={statusBar} />}
         <Container
           white={white}
           withPadding={withPadding}
@@ -138,11 +100,7 @@ const PageLayout = ({
 
   return (
     <View style={[styles.container, containerStyles]}>
-      {
-        Platform.OS === 'ios' && (
-          <StatusBar barStyle={statusBar} />
-        )
-      }
+      {Platform.OS === 'ios' && <StatusBar barStyle={statusBar} />}
       <Container
         white={white}
         withTitle={withTitle}
@@ -158,5 +116,32 @@ const PageLayout = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  backButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 44,
+    minHeight: 44
+  },
+  bottomScreen: {
+    justifyContent: 'flex-start',
+    marginBottom: isIOS ? 0 : 20,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    width: '100%'
+  },
+  container: {
+    backgroundColor: '#FFFFFF',
+    flex: 1
+  },
+  pageScreen: {
+    flex: 1,
+    flexGrow: 1
+  },
+  pageWrapper: {
+    flexGrow: 1
+  }
+});
 
 export default PageLayout;

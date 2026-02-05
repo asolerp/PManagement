@@ -2,6 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {
+  CHECK_PHOTO_SCREEN_KEY,
   CHECK_STACK_KEY,
   CONFIRM_ENTRANCE_SCREEN_KEY,
   HOME_WORKER_STACK_KEY,
@@ -16,6 +17,7 @@ import {JobScreen} from '../Screens/Job';
 import Check from './Check';
 import {ProfileScreen} from '../Screens/Profile';
 import {ConfirmEntranceScreen} from '../Screens/ConfirmEntrance';
+import {CheckPhotosScreen} from '../Screens/CheckPhotos';
 
 const {Navigator, Screen} = createNativeStackNavigator();
 
@@ -53,5 +55,6 @@ export const MainWorker = ({route}) => (
         docId: route?.params?.docId,
       }}
     />
+    <Screen name={CHECK_PHOTO_SCREEN_KEY} component={CheckPhotosScreen} />
   </Navigator>
 );

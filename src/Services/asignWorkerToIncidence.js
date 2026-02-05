@@ -1,6 +1,13 @@
-import {INCIDENCES} from '../utils/firebaseKeys';
-import firestore from '@react-native-firebase/firestore';
+import { INCIDENCES } from '../utils/firebaseKeys';
+import {
+  getFirestore,
+  collection,
+  doc,
+  updateDoc
+} from '@react-native-firebase/firestore';
 
 export const asignWorkerToIncidence = async (incidenceId, update) => {
-  await firestore().collection(INCIDENCES).doc(incidenceId).update(update);
+  const db = getFirestore();
+  const docRef = doc(collection(db, INCIDENCES), incidenceId);
+  await updateDoc(docRef, update);
 };

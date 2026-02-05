@@ -1,15 +1,26 @@
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+  doc,
+  getDoc,
+  where,
+  startAfter
+} from '@react-native-firebase/firestore';
 
 const fetchHouses = async () => {
   try {
-    const snapshot = await firestore()
-      .collection('houses')
-      .orderBy('houseName')
-      .get();
+    const db = getFirestore();
+    const housesRef = collection(db, 'houses');
+    const q = query(housesRef, orderBy('houseName'));
+    const snapshot = await getDocs(q);
 
-    const houses = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const houses = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
     return houses;
   } catch (error) {
@@ -18,23 +29,31 @@ const fetchHouses = async () => {
   }
 };
 
-const fetchHousesPaginated = async ({ pageParam = null, limit = 10 }) => {
+const fetchHousesPaginated = async ({
+  pageParam = null,
+  limit: limitCount = 10
+}) => {
   try {
-    let query = firestore()
-      .collection('houses')
-      .orderBy('houseName')
-      .limit(limit);
+    const db = getFirestore();
+    const housesRef = collection(db, 'houses');
+
+    let q = query(housesRef, orderBy('houseName'), limit(limitCount));
 
     // Si hay un cursor, continuar desde ahí
     if (pageParam) {
-      query = query.startAfter(pageParam);
+      q = query(
+        housesRef,
+        orderBy('houseName'),
+        startAfter(pageParam),
+        limit(limitCount)
+      );
     }
 
-    const snapshot = await query.get();
+    const snapshot = await getDocs(q);
 
-    const houses = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const houses = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     // Obtener el último documento para el siguiente cursor
@@ -43,7 +62,7 @@ const fetchHousesPaginated = async ({ pageParam = null, limit = 10 }) => {
     return {
       houses: houses || [],
       nextCursor: lastDoc || null,
-      hasMore: snapshot.docs.length === limit
+      hasMore: snapshot.docs.length === limitCount
     };
   } catch (error) {
     console.error('Error fetching paginated houses: ', error);
@@ -58,11 +77,13 @@ const fetchHousesPaginated = async ({ pageParam = null, limit = 10 }) => {
 
 const fetchHouse = async houseId => {
   try {
-    const doc = await firestore().collection('houses').doc(houseId).get();
+    const db = getFirestore();
+    const houseDoc = doc(db, 'houses', houseId);
+    const docSnap = await getDoc(houseDoc);
 
     return {
-      id: doc.id,
-      ...doc.data()
+      id: docSnap.id,
+      ...docSnap.data()
     };
   } catch (error) {
     console.error('Error fetching house: ', error);
@@ -72,14 +93,14 @@ const fetchHouse = async houseId => {
 
 const fetchHouseByOwnerId = async userId => {
   try {
-    const snapshot = await firestore()
-      .collection('houses')
-      .where('owner.id', '==', userId)
-      .get();
+    const db = getFirestore();
+    const housesRef = collection(db, 'houses');
+    const q = query(housesRef, where('owner.id', '==', userId));
+    const snapshot = await getDocs(q);
 
-    const houses = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const houses = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     return houses[0];

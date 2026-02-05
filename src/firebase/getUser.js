@@ -1,12 +1,19 @@
 //Firebase
 
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc
+} from '@react-native-firebase/firestore';
 import { error } from '../lib/logging';
 
 export const getUser = async uuid => {
   try {
-    const userRef = await firestore().collection('users').doc(uuid).get();
-    return userRef;
+    const db = getFirestore();
+    const userRef = doc(collection(db, 'users'), uuid);
+    const userDoc = await getDoc(userRef);
+    return userDoc;
   } catch (err) {
     error({
       message: err.message,

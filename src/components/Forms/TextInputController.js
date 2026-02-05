@@ -1,61 +1,96 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import { Text, TextInput, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
-import theme from '../../Theme/Theme';
-
-const styles = StyleSheet.create({
-  input: {
-    borderRadius: 10,
-    height: 50,
-    padding: 10
-  },
-  inputContainer: {
-    borderColor: '#EAEAEA',
-    borderRadius: 10,
-    borderWidth: 1,
-    height: 50,
-    justifyContent: 'center',
-    padding: 10
-  },
-  rightContainer: {
-    alignItems: 'center',
-    height: 50,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: 10,
-    width: 50
-  }
-});
+import {
+  Colors,
+  FontSize,
+  FontWeight,
+  Spacing,
+  BorderRadius
+} from '../../Theme/Variables';
 
 export const TextInputController = ({
   name,
-  setValue,
-  ref,
+  control,
   errors,
   placeholder,
   inputProps,
   right,
-  style
+  style,
+  rules,
+  label
 }) => {
+  const { t } = useTranslation();
+  const hasError = errors?.[name];
+
   return (
-    <>
-      <View style={styles.inputContainer}>
-        <TextInput
-          ref={ref}
-          autoCapitalize="none"
-          style={[styles.input, style]}
-          placeholder={placeholder}
-          onChangeText={text => setValue(name, text)}
-          {...inputProps}
+    <View>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <View style={[styles.inputContainer, hasError && styles.inputContainerError]}>
+        <Controller
+          control={control}
+          name={name}
+          rules={rules}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              autoCapitalize="none"
+              style={[styles.input, style]}
+              placeholder={placeholder}
+              placeholderTextColor={Colors.gray400}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              value={value}
+              {...inputProps}
+            />
+          )}
         />
         {right && <View style={styles.rightContainer}>{right()}</View>}
       </View>
-      {errors[name] && (
-        <Text style={[theme.mY2, theme.textErrorDark]}>
-          El campo es requerido.
-        </Text>
+      {hasError && (
+        <Text style={styles.errorText}>{t('validation.required')}</Text>
       )}
-    </>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  errorText: {
+    color: Colors.danger,
+    fontSize: FontSize.xs,
+    marginTop: Spacing.xs
+  },
+  input: {
+    color: Colors.gray800,
+    flex: 1,
+    fontSize: FontSize.base,
+    height: '100%',
+    padding: 0
+  },
+  inputContainer: {
+    backgroundColor: Colors.gray50,
+    borderColor: Colors.gray200,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    height: 48,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.md
+  },
+  inputContainerError: {
+    borderColor: Colors.danger
+  },
+  label: {
+    color: Colors.gray600,
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.medium,
+    marginBottom: Spacing.xs
+  },
+  rightContainer: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    right: Spacing.md
+  }
+});

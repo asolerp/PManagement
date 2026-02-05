@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  updateDoc,
+  Timestamp
+} from '@react-native-firebase/firestore';
 
 import { error } from '../lib/logging';
 
@@ -10,17 +17,17 @@ export const useManualExit = () => {
     try {
       setLoading(true);
 
-      // Crear un Timestamp con la fecha de entrada pero la hora de salida seleccionada
-      const entranceDoc = await firestore()
-        .collection('entrances')
-        .doc(entranceId)
-        .get();
+      const db = getFirestore();
+      const entranceDocRef = doc(collection(db, 'entrances'), entranceId);
 
-      if (!entranceDoc.exists) {
+      // Crear un Timestamp con la fecha de entrada pero la hora de salida seleccionada
+      const entranceDocSnap = await getDoc(entranceDocRef);
+
+      if (!entranceDocSnap.exists()) {
         throw new Error('Entrada no encontrada');
       }
 
-      const entranceData = entranceDoc.data();
+      const entranceData = entranceDocSnap.data();
       const entryDate = entranceData.date.toDate();
 
       // Combinar la fecha de entrada con la hora de salida seleccionada
@@ -33,16 +40,13 @@ export const useManualExit = () => {
       }
 
       // Actualizar el documento
-      await firestore()
-        .collection('entrances')
-        .doc(entranceId)
-        .update({
-          action: 'exit',
-          exitDate: firestore.Timestamp.fromDate(exitDate),
-          exitLocation: entranceData.location, // Usar la misma ubicación de entrada
-          markedManually: true, // Indicador de que fue marcado manualmente
-          markedBy: 'owner' // Quien lo marcó
-        });
+      await updateDoc(entranceDocRef, {
+        action: 'exit',
+        exitDate: Timestamp.fromDate(exitDate),
+        exitLocation: entranceData.location, // Usar la misma ubicación de entrada
+        markedManually: true, // Indicador de que fue marcado manualmente
+        markedBy: 'owner' // Quien lo marcó
+      });
 
       setLoading(false);
       return true;

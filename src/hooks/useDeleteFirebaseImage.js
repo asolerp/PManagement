@@ -1,20 +1,21 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import storage from '@react-native-firebase/storage';
-import {error as errorLog} from '../lib/logging';
+import { error as errorLog } from '../lib/logging';
 
 export const useDeleteFirebaseImage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
 
-  const deleteImage = async (ref) => {
+  const deleteImage = async refPath => {
     try {
       setLoading(true);
-      await storage().ref(ref).delete();
+      const reference = storage().ref(refPath);
+      await reference.delete();
     } catch (err) {
       errorLog({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
       setError(err);
     } finally {
@@ -25,6 +26,6 @@ export const useDeleteFirebaseImage = () => {
   return {
     deleteImage,
     loading,
-    error,
+    error
   };
 };

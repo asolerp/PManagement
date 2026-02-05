@@ -1,28 +1,26 @@
 import React from 'react';
 import {View} from 'react-native';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import CustomSkeleton from './CustomSkeleton';
 import {useTheme} from '../../Theme';
 
 const DashboardSectionSkeleton = () => {
   const {Gutters} = useTheme();
   return (
     <View style={[Gutters.regularVMargin]}>
-      <SkeletonPlaceholder>
-        <SkeletonPlaceholder.Item flexDirection="row" alignItems="center">
-          <SkeletonPlaceholder.Item
-            width={200}
-            height={150}
-            borderRadius={20}
-            marginRight={20}
-          />
-          <SkeletonPlaceholder.Item
-            width={200}
-            height={150}
-            borderRadius={20}
-            marginRight={20}
-          />
-        </SkeletonPlaceholder.Item>
-      </SkeletonPlaceholder>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <CustomSkeleton
+          width={200}
+          height={150}
+          borderRadius={20}
+          style={{marginRight: 20}}
+        />
+        <CustomSkeleton
+          width={200}
+          height={150}
+          borderRadius={20}
+          style={{marginRight: 20}}
+        />
+      </View>
     </View>
   );
 };

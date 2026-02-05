@@ -1,16 +1,22 @@
 //Firebase
 
-import firestore from '@react-native-firebase/firestore';
-import {error} from '../lib/logging';
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from '@react-native-firebase/firestore';
+import { error } from '../lib/logging';
 
-export const newJob = async (job) => {
+export const newJob = async job => {
   try {
-    await firestore().collection('jobs').add(job);
+    const db = getFirestore();
+    const jobsCollection = collection(db, 'jobs');
+    await addDoc(jobsCollection, job);
   } catch (err) {
     error({
       message: 'Algo salió mal, lo sentimos...',
       track: true,
-      asToast: true,
+      asToast: true
     });
   }
 };

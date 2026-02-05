@@ -1,5 +1,10 @@
 import { useContext, useState } from 'react';
-import auth from '@react-native-firebase/auth';
+import {
+  getAuth,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword
+} from '@react-native-firebase/auth';
 import { popScreen } from '../../../Router/utils/actions';
 import { error, success } from '../../../lib/logging';
 import { LoadingModalContext } from '../../../context/loadinModalContext';
@@ -7,7 +12,6 @@ import { LoadingModalContext } from '../../../context/loadinModalContext';
 import { useUpdateFirebase } from '../../../hooks/useUpdateFirebase';
 import { timeout } from '../../../utils/timeout';
 
-import { firebase } from '@react-native-firebase/firestore';
 import useUploadImageCheck from '../../../hooks/useUploadImage';
 import { USERS } from '../../../utils/firebaseKeys';
 
@@ -21,9 +25,10 @@ export const useProfileForm = () => {
   const { updateFirebase } = useUpdateFirebase('users');
 
   const reauthenticate = currentPassword => {
-    var user = auth().currentUser;
-    var cred = auth.EmailAuthProvider.credential(user.email, currentPassword);
-    return user.reauthenticateWithCredential(cred);
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const cred = EmailAuthProvider.credential(user.email, currentPassword);
+    return reauthenticateWithCredential(user, cred);
   };
 
   const handleEdit = async userId => {
@@ -51,9 +56,9 @@ export const useProfileForm = () => {
     reauthenticate(currentPassword)
       .then(() => {
         setLoading(true);
-        var user = auth().currentUser;
-        user
-          .updatePassword(newPassword)
+        const auth = getAuth();
+        const user = auth.currentUser;
+        updatePassword(user, newPassword)
           .then(() => {
             console.log('Password updated!');
           })

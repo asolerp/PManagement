@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection, query, where, Timestamp, limit, startAfter, getDocs } from '@react-native-firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 const PAGE_SIZE = 20; // Number of records per page
@@ -34,17 +34,18 @@ export const useTimeTracking = () => {
 
   // Query base for entrances
   const getBaseQuery = useCallback(() => {
-    const startTimestamp = firestore.Timestamp.fromDate(startDate);
-    const endTimestamp = firestore.Timestamp.fromDate(endDate);
+    const db = getFirestore();
+    const startTimestamp = Timestamp.fromDate(startDate);
+    const endTimestamp = Timestamp.fromDate(endDate);
 
-    let baseQuery = firestore()
-      .collection('entrances')
-      .where('date', '>=', startTimestamp)
-      .where('date', '<=', endTimestamp)
-      .orderBy('date', 'desc');
+    let baseQuery = query(
+      collection(db, 'entrances'),
+      where('date', '>=', startTimestamp),
+      where('date', '<=', endTimestamp)
+    );
 
     if (selectedWorkerId) {
-      baseQuery = baseQuery.where('worker.id', '==', selectedWorkerId);
+      baseQuery = query(baseQuery, where('worker.id', '==', selectedWorkerId));
     }
 
     return baseQuery;
@@ -52,8 +53,8 @@ export const useTimeTracking = () => {
 
   const loadTotalStats = useCallback(async () => {
     try {
-      const query = getBaseQuery();
-      const snapshot = await query.get();
+      const queryRef = getBaseQuery();
+      const snapshot = await getDocs(queryRef);
 
       let totalCount = 0;
       let completedCount = 0;
@@ -97,12 +98,9 @@ export const useTimeTracking = () => {
       setHasMore(true);
 
       // Load stats and data in parallel
-      const [statsPromise, dataQuery] = [
-        loadTotalStats(),
-        getBaseQuery().limit(PAGE_SIZE).get()
-      ];
-
-      const snapshot = await dataQuery;
+      const statsPromise = loadTotalStats();
+      const dataQuery = query(getBaseQuery(), limit(PAGE_SIZE));
+      const snapshot = await getDocs(dataQuery);
       await statsPromise;
 
       const docs = snapshot.docs.map(doc => ({
@@ -128,9 +126,9 @@ export const useTimeTracking = () => {
     try {
       setLoadingMore(true);
 
-      const query = getBaseQuery().startAfter(lastDoc).limit(PAGE_SIZE);
+      const moreQuery = query(getBaseQuery(), startAfter(lastDoc), limit(PAGE_SIZE));
 
-      const snapshot = await query.get();
+      const snapshot = await getDocs(moreQuery);
 
       const docs = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -153,9 +151,10 @@ export const useTimeTracking = () => {
   }, [loadInitialData]);
 
   // Query for all workers
+  const db = getFirestore();
   const workersQuery = useMemo(
-    () => firestore().collection('users').where('role', '==', 'worker'),
-    []
+    () => query(collection(db, 'users'), where('role', '==', 'worker')),
+    [db]
   );
 
   const [workers, workersLoading] = useCollectionData(workersQuery, {
@@ -221,8 +220,8 @@ export const useTimeTracking = () => {
         id: `mock-entrance-1-${i}`,
         action: 'enter',
         worker: mockWorkers[0],
-        date: firestore.Timestamp.fromDate(date),
-        exitDate: firestore.Timestamp.fromDate(exitDate),
+        date: Timestamp.fromDate(date),
+        exitDate: Timestamp.fromDate(exitDate),
         location: {
           latitude: 40.4168 + Math.random() * 0.01,
           longitude: -3.7038 + Math.random() * 0.01
@@ -255,8 +254,8 @@ export const useTimeTracking = () => {
         id: `mock-entrance-2-${i}`,
         action: 'enter',
         worker: mockWorkers[1],
-        date: firestore.Timestamp.fromDate(date),
-        exitDate: firestore.Timestamp.fromDate(exitDate),
+        date: Timestamp.fromDate(date),
+        exitDate: Timestamp.fromDate(exitDate),
         location: {
           latitude: 40.4168 + Math.random() * 0.01,
           longitude: -3.7038 + Math.random() * 0.01
@@ -284,7 +283,7 @@ export const useTimeTracking = () => {
       id: 'mock-entrance-2-pending',
       action: 'enter',
       worker: mockWorkers[1],
-      date: firestore.Timestamp.fromDate(pendingDate),
+      date: Timestamp.fromDate(pendingDate),
       exitDate: null,
       location: {
         latitude: 40.4168 + Math.random() * 0.01,
@@ -310,8 +309,8 @@ export const useTimeTracking = () => {
         id: `mock-entrance-3-${i}`,
         action: 'enter',
         worker: mockWorkers[2],
-        date: firestore.Timestamp.fromDate(date),
-        exitDate: firestore.Timestamp.fromDate(exitDate),
+        date: Timestamp.fromDate(date),
+        exitDate: Timestamp.fromDate(exitDate),
         location: {
           latitude: 40.4168 + Math.random() * 0.01,
           longitude: -3.7038 + Math.random() * 0.01
@@ -338,7 +337,7 @@ export const useTimeTracking = () => {
       id: 'mock-entrance-3-pending',
       action: 'enter',
       worker: mockWorkers[2],
-      date: firestore.Timestamp.fromDate(pendingDate2),
+      date: Timestamp.fromDate(pendingDate2),
       exitDate: null,
       location: {
         latitude: 40.4168 + Math.random() * 0.01,

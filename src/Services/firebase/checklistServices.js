@@ -1,51 +1,65 @@
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+  doc,
+  startAfter
+} from '@react-native-firebase/firestore';
 
 const fetchChecklistsNotFinished = async params => {
   const queryKey = params?.queryKey;
 
   const uid = queryKey[1];
   const house = queryKey[2];
-  const limit = queryKey[3] || 10;
+  const limitCount = queryKey[3] || 10;
   const filterHouses = queryKey[4];
 
   try {
-    let snapshot;
+    const db = getFirestore();
+    const checklistsRef = collection(db, 'checklists');
+    let q;
 
     if (house?.id) {
-      snapshot = await firestore()
-        .collection('checklists')
-        .where('finished', '==', false)
-        .where('houseId', '==', house?.id)
-        .orderBy('date', 'desc')
-        .limit(limit)
-        .get();
+      q = query(
+        checklistsRef,
+        where('finished', '==', false),
+        where('houseId', '==', house?.id),
+        orderBy('date', 'desc'),
+        limit(limitCount)
+      );
     } else if (uid) {
-      snapshot = await firestore()
-        .collection('checklists')
-        .where('finished', '==', false)
-        .where('workersId', 'array-contains', uid)
-        .orderBy('date', 'desc')
-        .limit(limit)
-        .get();
+      q = query(
+        checklistsRef,
+        where('finished', '==', false),
+        where('workersId', 'array-contains', uid),
+        orderBy('date', 'desc'),
+        limit(limitCount)
+      );
     } else if (filterHouses?.length) {
-      snapshot = await firestore()
-        .collection('checklists')
-        .where('finished', '==', false)
-        .where('houseId', 'in', filterHouses)
-        .orderBy('date', 'desc')
-        .limit(limit)
-        .get();
+      q = query(
+        checklistsRef,
+        where('finished', '==', false),
+        where('houseId', 'in', filterHouses),
+        orderBy('date', 'desc'),
+        limit(limitCount)
+      );
     } else {
-      snapshot = await firestore()
-        .collection('checklists')
-        .where('finished', '==', false)
-        .orderBy('date', 'desc')
-        .get();
+      q = query(
+        checklistsRef,
+        where('finished', '==', false),
+        orderBy('date', 'desc')
+      );
     }
 
-    const checklists = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const snapshot = await getDocs(q);
+
+    const checklists = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     return checklists;
@@ -59,40 +73,44 @@ const fetchChecklistsFinished = async params => {
   const queryKey = params?.queryKey;
 
   const uid = queryKey[1];
-  const limit = queryKey[2];
+  const limitCount = queryKey[2];
   const filterHouses = queryKey[3];
 
   try {
-    let snapshot;
+    const db = getFirestore();
+    const checklistsRef = collection(db, 'checklists');
+    let q;
 
     if (uid) {
-      snapshot = await firestore()
-        .collection('checklists')
-        .where('finished', '==', true)
-        .where('workersId', 'array-contains', uid)
-        .orderBy('date', 'desc')
-        .limit(limit)
-        .get();
+      q = query(
+        checklistsRef,
+        where('finished', '==', true),
+        where('workersId', 'array-contains', uid),
+        orderBy('date', 'desc'),
+        limit(limitCount)
+      );
     } else if (filterHouses?.length) {
-      snapshot = await firestore()
-        .collection('checklists')
-        .where('finished', '==', true)
-        .where('houseId', 'in', filterHouses)
-        .orderBy('date', 'desc')
-        .limit(limit)
-        .get();
+      q = query(
+        checklistsRef,
+        where('finished', '==', true),
+        where('houseId', 'in', filterHouses),
+        orderBy('date', 'desc'),
+        limit(limitCount)
+      );
     } else {
-      snapshot = await firestore()
-        .collection('checklists')
-        .where('finished', '==', true)
-        .orderBy('date', 'desc')
-        .limit(limit)
-        .get();
+      q = query(
+        checklistsRef,
+        where('finished', '==', true),
+        orderBy('date', 'desc'),
+        limit(limitCount)
+      );
     }
 
-    const checklists = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const snapshot = await getDocs(q);
+
+    const checklists = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     return checklists;
@@ -104,16 +122,19 @@ const fetchChecklistsFinished = async params => {
 
 const fetchChecklistsByHouseId = async houseId => {
   try {
-    const snapshot = await firestore()
-      .collection('checklists')
-      .where('houseId', '==', houseId)
-      .orderBy('date', 'desc')
-      .limit(1)
-      .get();
+    const db = getFirestore();
+    const checklistsRef = collection(db, 'checklists');
+    const q = query(
+      checklistsRef,
+      where('houseId', '==', houseId),
+      orderBy('date', 'desc'),
+      limit(1)
+    );
+    const snapshot = await getDocs(q);
 
-    const checklists = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const checklists = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     return checklists[0];
@@ -125,15 +146,16 @@ const fetchChecklistsByHouseId = async houseId => {
 
 const fetchChecksByChecklistId = async checklistId => {
   try {
-    const snapshot = await firestore()
-      .collection('checklists')
-      .doc(checklistId)
-      .collection('checks')
-      .get();
+    const db = getFirestore();
+    const checksRef = collection(
+      doc(collection(db, 'checklists'), checklistId),
+      'checks'
+    );
+    const snapshot = await getDocs(checksRef);
 
-    const checks = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const checks = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     return checks;
@@ -150,35 +172,39 @@ const fetchChecklistsNotFinishedPaginated = async ({
 }) => {
   const uid = queryKey[1];
   const house = queryKey[2];
-  const limit = queryKey[3] || 10;
+  const limitCount = queryKey[3] || 10;
   const houses = queryKey[4];
 
   try {
-    let query = firestore()
-      .collection('checklists')
-      .where('finished', '==', false);
+    const db = getFirestore();
+    const checklistsRef = collection(db, 'checklists');
+
+    let queryConstraints = [where('finished', '==', false)];
 
     // Aplicar filtros según los parámetros
     if (house?.id) {
-      query = query.where('houseId', '==', house.id);
+      queryConstraints.push(where('houseId', '==', house.id));
     } else if (uid && uid !== false) {
-      query = query.where('workersId', 'array-contains', uid);
+      queryConstraints.push(where('workersId', 'array-contains', uid));
     } else if (houses?.length) {
-      query = query.where('houseId', 'in', houses);
+      queryConstraints.push(where('houseId', 'in', houses));
     }
 
     // Ordenar y aplicar límite
-    query = query.orderBy('date', 'desc').limit(limit);
+    queryConstraints.push(orderBy('date', 'desc'));
+    queryConstraints.push(limit(limitCount));
 
     // Si hay cursor, continuar desde ahí
     if (pageParam) {
-      query = query.startAfter(pageParam);
+      queryConstraints.push(startAfter(pageParam));
     }
 
-    const snapshot = await query.get();
-    const checklists = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const q = query(checklistsRef, ...queryConstraints);
+    const snapshot = await getDocs(q);
+
+    const checklists = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     const lastDoc = snapshot.docs[snapshot.docs.length - 1];
@@ -186,7 +212,7 @@ const fetchChecklistsNotFinishedPaginated = async ({
     return {
       checklists: checklists || [],
       nextCursor: lastDoc || null,
-      hasMore: snapshot.docs.length === limit
+      hasMore: snapshot.docs.length === limitCount
     };
   } catch (error) {
     console.error('Error fetching paginated not finished checklists: ', error);
@@ -204,33 +230,37 @@ const fetchChecklistsFinishedPaginated = async ({
   queryKey
 }) => {
   const uid = queryKey[1];
-  const limit = queryKey[2];
+  const limitCount = queryKey[2];
   const houses = queryKey[3];
 
   try {
-    let query = firestore()
-      .collection('checklists')
-      .where('finished', '==', true);
+    const db = getFirestore();
+    const checklistsRef = collection(db, 'checklists');
+
+    let queryConstraints = [where('finished', '==', true)];
 
     // Aplicar filtros según los parámetros
     if (uid && uid !== false) {
-      query = query.where('workersId', 'array-contains', uid);
+      queryConstraints.push(where('workersId', 'array-contains', uid));
     } else if (houses?.length) {
-      query = query.where('houseId', 'in', houses);
+      queryConstraints.push(where('houseId', 'in', houses));
     }
 
     // Ordenar y aplicar límite
-    query = query.orderBy('date', 'desc').limit(limit);
+    queryConstraints.push(orderBy('date', 'desc'));
+    queryConstraints.push(limit(limitCount));
 
     // Si hay cursor, continuar desde ahí
     if (pageParam) {
-      query = query.startAfter(pageParam);
+      queryConstraints.push(startAfter(pageParam));
     }
 
-    const snapshot = await query.get();
-    const checklists = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const q = query(checklistsRef, ...queryConstraints);
+    const snapshot = await getDocs(q);
+
+    const checklists = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
     }));
 
     const lastDoc = snapshot.docs[snapshot.docs.length - 1];
@@ -238,7 +268,7 @@ const fetchChecklistsFinishedPaginated = async ({
     return {
       checklists: checklists || [],
       nextCursor: lastDoc || null,
-      hasMore: snapshot.docs.length === limit
+      hasMore: snapshot.docs.length === limitCount
     };
   } catch (error) {
     console.error('Error fetching paginated finished checklists: ', error);

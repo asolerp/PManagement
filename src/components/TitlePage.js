@@ -1,13 +1,13 @@
 import React from 'react';
 import { useRoute } from '@react-navigation/native';
-import { Image, View, Text, StyleSheet, Platform } from 'react-native';
+import {
+  Image,
+  View,
+  Text,
+  StyleSheet,
+  TouchableWithoutFeedback
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
-
-// Utils
-
-import { Colors } from '../Theme/Variables';
-import { useTheme } from '../Theme';
-import { TouchableWithoutFeedback } from 'react-native';
 import { isIOS } from '../utils/platform';
 
 const TitlePage = ({
@@ -24,40 +24,26 @@ const TitlePage = ({
   const {
     params: { screenKey = '' }
   } = useRoute();
-  const { Layout, Gutters } = useTheme();
 
   const TitleWrapper = () => (
-    <React.Fragment>
+    <>
       {!children ? (
-        <View
-          style={[Layout.flex, Layout.justifyContentCenter, containerStyles]}
-        >
+        <View style={[styles.flex, styles.justifyCenter, containerStyles]}>
           <View
             style={[
-              Layout.row,
-              Layout.alignItemsCenter,
-              Layout.justifyContentSpaceBetween,
-              !isIOS && Gutters.regularTPadding
+              styles.row,
+              styles.alignCenter,
+              styles.spaceBetween,
+              !isIOS && styles.paddingTop
             ]}
           >
-            <View
-              style={{
-                width: 30
-              }}
-            >
-              {leftSide}
-            </View>
-            <View style={Layout.flexGrow}>
+            <View style={styles.sideBox}>{leftSide}</View>
+            <View style={styles.flexGrow}>
               {title ? (
                 <TouchableWithoutFeedback onPress={onPress}>
                   <Text
                     numberOfLines={2}
-                    style={[
-                      styles.title,
-                      {
-                        textAlign: 'center'
-                      }
-                    ]}
+                    style={[styles.title, styles.textCenter]}
                   >
                     {title}
                   </Text>
@@ -66,12 +52,10 @@ const TitlePage = ({
                 <View>
                   {subPage && (
                     <View
-                      style={{
-                        ...styles.logoContent,
-                        ...{
-                          paddingTop: isIOS ? 0 : 0
-                        }
-                      }}
+                      style={[
+                        styles.logoContent,
+                        !isIOS && styles.logoContentAndroid
+                      ]}
                     >
                       <FastImage
                         style={styles.logo}
@@ -86,84 +70,59 @@ const TitlePage = ({
                 </View>
               )}
             </View>
-            <View style={{ width: 30 }}>{rightSide}</View>
+            <View style={styles.sideBox}>{rightSide}</View>
           </View>
           <View>
             {subtitle && !subPage && (
-              <Text
-                style={{
-                  ...styles.subtitle,
-                  ...{ marginLeft: 0 }
-                }}
-              >
-                {subtitle}
-              </Text>
+              <Text style={styles.subtitle}>{subtitle}</Text>
             )}
             {subtitle && subPage && (
-              <Text
-                style={{
-                  ...{
-                    textAlign: 'center',
-                    fontSize: 13,
-                    marginBottom: 5
-                  }
-                }}
-              >
-                {subtitle}
-              </Text>
+              <Text style={styles.subtitleSubPage}>{subtitle}</Text>
             )}
           </View>
         </View>
       ) : (
         <View style={styles.childrenWrapper}>{children}</View>
       )}
-    </React.Fragment>
+    </>
   );
 
   if (background) {
     return (
-      <React.Fragment>
+      <>
         <View style={styles.imageContent}>
           <TitleWrapper />
         </View>
-        <View
-          style={{
-            ...styles.imageMask,
-            ...{
-              backgroundColor: Colors.mediterranean
-            }
-          }}
-        />
+        <View style={styles.imageMask} />
         <Image source={background} style={styles.image} />
-      </React.Fragment>
+      </>
     );
   }
+
   return (
-    <View
-      style={{
-        ...styles.container,
-        ...{
-          // height: subPage ? 40 : getHightByRoute(screenKey),
-        }
-      }}
-    >
+    <View style={styles.container}>
       <TitleWrapper />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  box: {
-    flexBasis: 1,
-    flexGrow: 1,
-    flexShrink: 1
+  alignCenter: {
+    alignItems: 'center'
   },
   childrenWrapper: {
     justifyContent: 'flex-start',
     width: '100%'
   },
   container: {
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    paddingVertical: 12
+  },
+  flex: {
+    flex: 1
+  },
+  flexGrow: {
+    flexGrow: 1
   },
   image: {
     borderBottomLeftRadius: 50,
@@ -179,12 +138,16 @@ const styles = StyleSheet.create({
     zIndex: 11
   },
   imageMask: {
+    backgroundColor: '#55A5AD',
     borderBottomLeftRadius: 50,
     height: 230,
     opacity: 0.7,
     position: 'absolute',
     width: '100%',
     zIndex: 10
+  },
+  justifyCenter: {
+    justifyContent: 'center'
   },
   logo: {
     height: 30,
@@ -193,21 +156,40 @@ const styles = StyleSheet.create({
   },
   logoContent: {
     alignItems: 'center',
-    marginTop: Platform.OS === 'ios' ? 0 : 20
+    marginTop: 0
+  },
+  logoContentAndroid: {
+    marginTop: 20
+  },
+  paddingTop: {
+    paddingTop: 16
+  },
+  row: {
+    flexDirection: 'row'
+  },
+  sideBox: {
+    width: 50
+  },
+  spaceBetween: {
+    justifyContent: 'space-between'
   },
   subtitle: {
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    marginLeft: 0
+  },
+  subtitleSubPage: {
+    fontSize: 13,
+    marginBottom: 5,
+    textAlign: 'center'
+  },
+  textCenter: {
+    textAlign: 'center'
   },
   title: {
     fontSize: 20,
     fontWeight: '600',
     letterSpacing: 2
-  },
-  titleWrapper: {
-    justifyContent: 'flex-end',
-    marginBottom: 0,
-    width: '100%'
   }
 });
 

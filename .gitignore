@@ -60,3 +60,7 @@ buck-out/
 /ios/portmanagement.app.dSYM.zip
 
 *.hprof
+# Expo
+.expo
+dist/
+web-build/

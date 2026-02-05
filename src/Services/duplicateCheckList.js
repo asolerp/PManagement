@@ -1,55 +1,60 @@
-import firestore from '@react-native-firebase/firestore';
-import {error} from '../lib/logging';
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc
+} from '@react-native-firebase/firestore';
+import { error } from '../lib/logging';
 
-const duplicateCheckList = async (checkId) => {
+const duplicateCheckList = async checkId => {
   try {
-    const checklist = await firestore()
-      .collection('checklists')
-      .doc(checkId)
-      .get();
+    const db = getFirestore();
+    const checklistRef = doc(collection(db, 'checklists'), checkId);
+    const checklist = await getDoc(checklistRef);
 
-    const checks = await firestore()
-      .collection('checklists')
-      .doc(checkId)
-      .collection('checks')
-      .get();
+    const checksCollection = collection(checklistRef, 'checks');
+    const checks = await getDocs(checksCollection);
 
     const duplicatedCheck = {
-      ...checklist._data,
+      ...checklist.data(),
       date: new Date(),
       done: 0,
-      finished: false,
+      finished: false
     };
 
     delete duplicatedCheck.id;
 
-    const duplicatedCheckList = await firestore()
-      .collection('checklists')
-      .add(duplicatedCheck);
+    const checklistsCollection = collection(db, 'checklists');
+    const duplicatedCheckList = await addDoc(
+      checklistsCollection,
+      duplicatedCheck
+    );
 
-    const duplicatedListOfChecks = checks._docs.map((doc) => ({
-      ...doc._data,
+    const duplicatedListOfChecks = checks.docs.map(docSnap => ({
+      ...docSnap.data(),
       done: false,
       date: null,
       numberOfPhotos: 0,
       worker: null,
-      photos: null,
+      photos: null
     }));
 
     await Promise.all(
-      duplicatedListOfChecks.map((check) =>
-        firestore()
-          .collection('checklists')
-          .doc(duplicatedCheckList.id)
-          .collection('checks')
-          .add(check),
-      ),
+      duplicatedListOfChecks.map(check => {
+        const duplicatedChecksCollection = collection(
+          doc(collection(db, 'checklists'), duplicatedCheckList.id),
+          'checks'
+        );
+        return addDoc(duplicatedChecksCollection, check);
+      })
     );
   } catch (err) {
     error({
       message: err.message,
       track: true,
-      asToast: true,
+      asToast: true
     });
   }
 };

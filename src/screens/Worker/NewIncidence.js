@@ -16,7 +16,7 @@ import CustomButton from '../../components/Elements/CustomButton';
 import {useAddFirebase} from '../../hooks/useAddFirebase';
 import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
 import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
-import {firebase} from '@react-native-firebase/firestore';
+import { increment } from '@react-native-firebase/firestore';
 import {defaultLabel, marginBottom, marginTop} from '../../styles/common';
 import {userSelector} from '../../Store/User/userSlice';
 import {
@@ -106,7 +106,7 @@ const NewIncidence = () => {
     try {
       setLo(true);
       await updateFirebase('stats', {
-        count: firebase.firestore.FieldValue.increment(1),
+        count: increment(1),
       });
       const newIncidence = await addFirebase('incidences', {
         ...incidence,

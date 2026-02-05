@@ -9,38 +9,36 @@ import {useAddFirebase} from '../../../hooks/useAddFirebase';
 import uploadMessagePhoto from '../../../Services/uploadMessagePhoto';
 import {userSelector} from '../../../Store/User/userSlice';
 import {launchImage} from '../../../utils/imageFunctions';
-import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection, doc, query, orderBy } from '@react-native-firebase/firestore';
 import {useCameraOrLibrary} from '../../../hooks/useCamerOrLibrary';
 
-const useChat = ({collection, docId}) => {
-  const [entity] = useDocumentData(
-    firestore().collection(collection).doc(docId),
-    {
-      idField: 'id',
-    },
+const useChat = ({collection: collectionName, docId}) => {
+  const db = getFirestore();
+  const entityRef = doc(collection(db, collectionName), docId);
+  
+  const [entity] = useDocumentData(entityRef, {
+    idField: 'id',
+  });
+
+  const messagesQuery = query(
+    collection(entityRef, 'messages'),
+    orderBy('createdAt', 'desc')
   );
 
-  const [messages] = useCollectionData(
-    firestore()
-      .collection(collection)
-      .doc(docId)
-      .collection('messages')
-      .orderBy('createdAt', 'desc'),
-    {
-      idField: 'id',
-    },
-  );
+  const [messages] = useCollectionData(messagesQuery, {
+    idField: 'id',
+  });
 
   const user = useSelector(userSelector);
   const {addFirebase: addMessage} = useAddFirebase();
 
   const onSendImage = async (messageImage) => {
-    await uploadMessagePhoto(collection, docId, messageImage, user);
+    await uploadMessagePhoto(collectionName, docId, messageImage, user);
   };
 
   const onSend = useCallback(
     (messages = []) => {
-      addMessage(`${collection}/${docId}/messages`, {
+      addMessage(`${collectionName}/${docId}/messages`, {
         ...messages[0],
         createdAt: new Date(),
         sent: true,
@@ -53,14 +51,14 @@ const useChat = ({collection, docId}) => {
         ),
       });
     },
-    [addMessage, collection, docId, entity],
+    [addMessage, collectionName, docId, entity],
   );
 
   useEffect(() => {
     if (messages?.length > 0) {
-      setMessagesAsRead(docId, user.id, collection);
+      setMessagesAsRead(docId, user.id, collectionName);
     }
-  }, [messages, docId, collection, user.id]);
+  }, [messages, docId, collectionName, user.id]);
 
   return {
     messages,

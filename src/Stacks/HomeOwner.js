@@ -1,9 +1,6 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-// Screens
-
-import { AnimatedTabBarNavigator } from 'react-native-animated-nav-tab-bar';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Platform } from 'react-native';
 
 import { DASHBOARD_OWNER_SCREEN_KEY } from '../Router/utils/routerKeys';
@@ -11,29 +8,26 @@ import { DashboardOwner } from '../Screens/DashboardOwner';
 import { tabNameByScreen } from '../utils/parsers';
 import { useTranslation } from 'react-i18next';
 
-const Tabs = AnimatedTabBarNavigator();
+const Tabs = createBottomTabNavigator();
 
 const HomeOwner = () => {
   const { t } = useTranslation();
 
   return (
     <Tabs.Navigator
-      tabBarOptions={{
-        activeTintColor: 'white',
-        inactiveTintColor: 'white',
-        activeBackgroundColor: '#3E93A8',
-        tabStyle: {
+      screenOptions={{
+        tabBarActiveTintColor: 'white',
+        tabBarInactiveTintColor: 'white',
+        tabBarActiveBackgroundColor: '#3E93A8',
+        tabBarStyle: {
           marginTop: 0,
           paddingBottom: Platform.OS === 'ios' ? 20 : 0,
           borderTopWidth: 1,
           borderBottomWidth: 0,
-          borderTopColor: '#dbdbdb'
-        }
-      }}
-      appearence={{
-        floating: false,
-        shadow: true,
-        tabBarBackground: 'white'
+          borderTopColor: '#dbdbdb',
+          backgroundColor: 'white'
+        },
+        headerShown: false
       }}
     >
       <Tabs.Screen
@@ -41,7 +35,6 @@ const HomeOwner = () => {
         initialParams={{ screenKey: DASHBOARD_OWNER_SCREEN_KEY }}
         component={DashboardOwner}
         options={{
-          tabBarVisible: false,
           tabBarIcon: ({ focused, color, size }) => (
             <Icon
               name="dashboard"

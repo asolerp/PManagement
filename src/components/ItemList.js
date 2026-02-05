@@ -1,58 +1,95 @@
 import React from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { DEFAULT_IMAGE } from '../constants/general';
 
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
-import {DEFAULT_IMAGE} from '../constants/general';
-
-//Ui
+// UI
 import Avatar from './Avatar';
-import theme from '../Theme/Theme';
 
-const ItemList = ({item, schema, handleChange, active}) => {
+const ItemList = ({ item, schema, handleChange, active }) => {
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={() => handleChange(!active)}>
+    <Pressable
+      style={({ pressed }) => [
+        styles.container,
+        active && styles.containerActive,
+        pressed && styles.containerPressed
+      ]}
+      onPress={() => handleChange(!active)}
+    >
       <Avatar uri={item?.[schema?.img]?.small || DEFAULT_IMAGE} size="big" />
+
       <View style={styles.infoWrapper}>
-        <Text style={[styles.name, theme.textBlack]}>{item?.[schema.name]}</Text>
-        {
-          schema?.lastname && (
-            <Text style={[styles.name, theme.textBlack]}>{item?.[schema.lastname]}</Text>
-          )
-        }
+        <Text style={styles.name} numberOfLines={1}>
+          {item?.[schema.name]}
+        </Text>
+        {schema?.lastname && item?.[schema.lastname] && (
+          <Text style={styles.lastname} numberOfLines={1}>
+            {item?.[schema.lastname]}
+          </Text>
+        )}
       </View>
+
       <View style={styles.checkboxWrapper}>
-        <CheckBox disabled={false} value={active} />
+        <View style={[styles.radioButton, active && styles.radioButtonActive]}>
+          {active && <View style={styles.radioButtonInner} />}
+        </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'white',
+  checkboxWrapper: {
     alignItems: 'center',
-    padding: 10,
+    justifyContent: 'center',
+    marginLeft: 'auto',
+    minWidth: 30
   },
-  avatarWrapper: {
-    flex: 1,
+  container: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 14
+  },
+  containerActive: {
+    backgroundColor: '#F0FDFA'
+  },
+  containerPressed: {
+    backgroundColor: '#F9FAFB'
   },
   infoWrapper: {
-    flex: 6,
-    marginLeft: 10,
+    flex: 1,
+    marginLeft: 12
   },
-  avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    resizeMode: 'cover',
+  lastname: {
+    color: '#9CA3AF',
+    fontSize: 13,
+    marginTop: 2
   },
   name: {
+    color: '#111827',
     fontSize: 15,
+    fontWeight: '500'
   },
+  radioButton: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#CBD5E0',
+    borderRadius: 12,
+    borderWidth: 2,
+    height: 24,
+    justifyContent: 'center',
+    width: 24
+  },
+  radioButtonActive: {
+    borderColor: '#55A5AD'
+  },
+  radioButtonInner: {
+    backgroundColor: '#55A5AD',
+    borderRadius: 8,
+    height: 12,
+    width: 12
+  }
 });
 
 export default ItemList;

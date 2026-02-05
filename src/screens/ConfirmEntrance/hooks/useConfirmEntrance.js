@@ -6,7 +6,7 @@ import { LoadingModalContext } from '../../../context/loadinModalContext';
 import useUploadImageCheck from '../../../hooks/useUploadImage';
 import { ENTRANCES } from '../../../utils/firebaseKeys';
 import { imageActions } from '../../../utils/imageActions';
-import { firebase } from '@react-native-firebase/firestore';
+import { Timestamp } from '@react-native-firebase/firestore';
 
 import Geolocation from '@react-native-community/geolocation';
 import { useSelector } from 'react-redux';
@@ -118,7 +118,7 @@ export const useConfirmEntrance = () => {
           try {
             await updateFirebase(docId, {
               action: 'exit',
-              exitDate: firebase.firestore.Timestamp.fromDate(new Date()),
+              exitDate: Timestamp.fromDate(new Date()),
               exitLocation: {
                 latitude: info.coords.latitude,
                 longitude: info.coords.longitude
@@ -170,7 +170,7 @@ export const useConfirmEntrance = () => {
                 latitude: info.coords.latitude,
                 longitude: info.coords.longitude
               },
-              date: firebase.firestore.Timestamp.fromDate(new Date())
+              date: Timestamp.fromDate(new Date())
             };
 
             const newEntrance = await addFirebase('entrances', data);

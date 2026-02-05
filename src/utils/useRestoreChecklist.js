@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 
-import { firebase } from '@react-native-firebase/firestore';
-import '@react-native-firebase/functions';
+import { getApp } from '@react-native-firebase/app';
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
 import { error } from '../lib/logging';
 import { LoadingModalContext } from '../context/loadinModalContext';
 import { REGION } from '../firebase/utils';
@@ -10,10 +10,12 @@ const useRestoreChecklist = () => {
   const [loading, setLoading] = useState(false);
   const { setVisible } = useContext(LoadingModalContext);
   const restoreChecklist = async docId => {
-    const restoreFn = firebase
-      .app()
-      .functions(REGION)
-      .httpsCallable('restoreDocumentWithSubcollection');
+    const app = getApp();
+    const functions = getFunctions(app, REGION);
+    const restoreFn = httpsCallable(
+      functions,
+      'restoreDocumentWithSubcollection'
+    );
     try {
       setLoading(true);
       setVisible(true);

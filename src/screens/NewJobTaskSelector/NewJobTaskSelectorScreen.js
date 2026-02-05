@@ -1,27 +1,27 @@
-import React, {useCallback, useEffect, useMemo} from 'react';
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 
 // UI
-import {View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 // Firebase
-import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection } from '@react-native-firebase/firestore';
 
 import TaskItem from '../../components/Elements/TaskItem';
 import PageLayout from '../../components/PageLayout';
-import {resetForm, setTask} from '../../Store/JobForm/jobFormSlice';
-import {openScreenWithPush} from '../../Router/utils/actions';
-import {NEW_JOB_SCREEN_KEY} from '../../Router/utils/routerKeys';
+import { resetForm, setTask } from '../../Store/JobForm/jobFormSlice';
+import { openScreenWithPush } from '../../Router/utils/actions';
+import { NEW_JOB_SCREEN_KEY } from '../../Router/utils/routerKeys';
 
-import {useTranslation} from 'react-i18next';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {useLocales} from '../../utils/useLocales';
-import {ScreenHeader} from '../../components/Layout/ScreenHeader';
-import {TASKS} from '../../utils/firebaseKeys';
+import { useTranslation } from 'react-i18next';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { useLocales } from '../../utils/useLocales';
+import { ScreenHeader } from '../../components/Layout/ScreenHeader';
+import { TASKS } from '../../utils/firebaseKeys';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   iconWrapper: {
     width: 30,
@@ -31,14 +31,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowOffset: {
       height: 0,
-      width: 0,
+      width: 0
     },
     shadowColor: '#BCBCBC',
     shadowOpacity: 0.5,
-    shadowRadius: 4,
+    shadowRadius: 4
   },
   taskSelectorBackScreen: {
-    flex: 1,
+    flex: 1
   },
   taskSelectorScreen: {
     flex: 1,
@@ -48,44 +48,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopRightRadius: 50,
     height: '100%',
-    paddingTop: 30,
-  },
+    paddingTop: 30
+  }
 });
 
-const NewJobTaskSelectorScreen = ({route}) => {
-  const {t} = useTranslation();
+const NewJobTaskSelectorScreen = ({ route }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
+  const db = getFirestore();
   const queryTasks = useMemo(() => {
-    return firestore().collection(TASKS);
-  }, []);
+    return collection(db, TASKS);
+  }, [db]);
 
-  const {job} = useSelector(({jobForm: {job}}) => ({job}), shallowEqual);
-  const {locale} = useLocales();
+  const { job } = useSelector(
+    ({ jobForm: { job } }) => ({ job }),
+    shallowEqual
+  );
+  const { locale } = useLocales();
   const [tasks, loadingTasks] = useCollectionData(queryTasks, {
-    idField: 'id',
+    idField: 'id'
   });
 
   console.log('tasks', tasks, loadingTasks);
 
   const setTaskAction = useCallback(
-    (task) => dispatch(setTask({task})),
-    [dispatch],
+    task => dispatch(setTask({ task })),
+    [dispatch]
   );
 
-  const taskName = (task) =>
+  const taskName = task =>
     task?.locales?.[locale]?.name || task?.locales?.en?.name || task?.name;
 
-  const handlerTaskClick = (task) => {
+  const handlerTaskClick = task => {
     setTaskAction(task);
     openScreenWithPush(NEW_JOB_SCREEN_KEY, {
-      taskName: task.name,
+      taskName: task.name
     });
   };
 
-  const tasksByLocale = tasks?.map((task) => ({
+  const tasksByLocale = tasks?.map(task => ({
     ...task,
-    name: taskName(task),
+    name: taskName(task)
   }));
 
   const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
@@ -118,7 +122,7 @@ const NewJobTaskSelectorScreen = ({route}) => {
                 }
                 return 0;
               })
-              .map((task) => (
+              .map(task => (
                 <TaskItem
                   key={task.id}
                   icon={task?.icon}

@@ -6,25 +6,13 @@ import {
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
-import { useTheme } from '../../Theme';
-
-import { Colors, Variants } from '../../Theme/Variables';
-
-const styles = StyleSheet.create({
-  buttonWrapper: {
-    padding: 12
-  },
-  clearStyle: {
-    padding: 12
-  },
-  container: {
-    width: '100%'
-  },
-  titleStyle: {
-    fontSize: 15,
-    textAlign: 'center'
-  }
-});
+import {
+  Colors,
+  FontSize,
+  FontWeight,
+  Spacing,
+  BorderRadius
+} from '../../Theme/Variables';
 
 const CustomButton = ({
   styled,
@@ -34,69 +22,89 @@ const CustomButton = ({
   loading = false,
   disabled = false,
   containerStyle = [],
-  type
+  type,
+  variant = 'primary' // primary, secondary, outline, danger
 }) => {
-  const { Fonts, Layout } = useTheme();
+  const borderRadius = styled || BorderRadius.lg;
+  const isClearType = type === 'clear' || variant === 'outline';
 
-  const parseStyled = () => {
-    switch (styled) {
-      default:
-        return 12;
+  // Colores según variante
+  const getColors = () => {
+    if (isClearType) {
+      return {
+        backgroundColor: Colors.white,
+        borderColor: color || Colors.pm,
+        textColor: color || Colors.pm
+      };
     }
+    if (variant === 'secondary') {
+      return {
+        backgroundColor: Colors.gray100,
+        borderColor: Colors.gray200,
+        textColor: Colors.gray700
+      };
+    }
+    if (variant === 'danger') {
+      return {
+        backgroundColor: Colors.danger,
+        borderColor: Colors.danger,
+        textColor: Colors.white
+      };
+    }
+    // primary
+    return {
+      backgroundColor: color || Colors.pm,
+      borderColor: color || Colors.pm,
+      textColor: Colors.white
+    };
   };
 
-  const parseTypeStyle = () => {
-    switch (type) {
-      case 'clear':
-        return 'clearStyle';
-      default:
-        return 'buttonWrapper';
-    }
-  };
+  const { backgroundColor, borderColor, textColor } = getColors();
 
   return (
     <TouchableOpacity
       style={[styles.container, containerStyle]}
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || loading}
+      activeOpacity={0.8}
     >
       <View
         style={[
-          Layout.rowCenter,
+          styles.buttonBase,
           {
-            backgroundColor:
-              type === 'clear' ? 'white' : color || Variants.pm.color,
-            borderRadius: parseStyled(),
-            borderColor: color || Colors.pm,
-            borderWidth: 1
-          },
-          disabled
-            ? { ...styles[parseTypeStyle(type)], ...{ opacity: 0.5 } }
-            : { ...styles[parseTypeStyle(type)] }
+            backgroundColor,
+            borderRadius,
+            borderColor,
+            opacity: disabled ? 0.5 : 1
+          }
         ]}
       >
         {loading ? (
-          <ActivityIndicator
-            size="small"
-            color={type === 'clear' ? '#2A7BA5' : 'white'}
-          />
+          <ActivityIndicator size="small" color={textColor} />
         ) : (
-          <Text
-            style={[
-              Fonts.textWhite,
-              {
-                ...{
-                  color: type === 'clear' ? '#2A7BA5' : 'white'
-                }
-              }
-            ]}
-          >
-            {title}
-          </Text>
+          <Text style={[styles.title, { color: textColor }]}>{title}</Text>
         )}
       </View>
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonBase: {
+    alignItems: 'center',
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: Spacing.md
+  },
+  container: {
+    width: '100%'
+  },
+  title: {
+    fontSize: FontSize.md,
+    fontWeight: FontWeight.semibold,
+    textAlign: 'center'
+  }
+});
 
 export default CustomButton;

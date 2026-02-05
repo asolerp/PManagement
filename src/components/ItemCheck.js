@@ -1,88 +1,125 @@
 import React, { useContext, useState } from 'react';
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  StyleSheet,
-  TouchableOpacity
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 
-import CheckBox from '@react-native-community/checkbox';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Avatar from '../components/Avatar';
 
-import { GREY_1, PM_COLOR } from '../styles/colors';
-
 import moment from 'moment';
-import { firebase } from '@react-native-firebase/firestore';
+import { increment } from '@react-native-firebase/firestore';
 
-import { Colors, FontSize } from '../Theme/Variables';
-import { useTheme } from '../Theme';
 import PhotoCameraModal from './Modals/PhotoCameraModal';
-import Badge from './Elements/Badge';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../Store/User/userSlice';
 import { useUpdateFirebase } from '../hooks/useUpdateFirebase';
 import { error } from '../lib/logging';
-
-import { useTranslation } from 'react-i18next';
 import { openScreenWithPush } from '../Router/utils/actions';
 import { CHECK_PHOTO_SCREEN_KEY } from '../Router/utils/routerKeys';
 
-import { getLocales } from 'react-native-localize';
+import * as Localization from 'expo-localization';
 import useUploadImageCheck from '../hooks/useUploadImage';
 import { CHECKLISTS } from '../utils/firebaseKeys';
 import { LoadingModalContext } from '../context/loadinModalContext';
 import { timeout } from '../utils/timeout';
-import theme from '../Theme/Theme';
+import { useQueryClient } from '@tanstack/react-query';
 
-const styles = StyleSheet.create({
-  buttonStyle: {
-    alignItems: 'center',
-    backgroundColor: PM_COLOR,
-    borderRadius: 100,
-    height: 32,
-    justifyContent: 'center',
-    marginRight: 10,
-    width: 32
-  },
-  checkInfo: {
-    maxWidth: 230
-  },
-  checkboxWrapper: {
-    flexDirection: 'row',
-    flexGrow: 1,
-    justifyContent: 'flex-end'
-  },
-  container: {
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderBottomColor: GREY_1,
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    padding: 10
-  },
-  dateStyle: {
-    color: Colors.darkBlue,
-    fontSize: FontSize.tiny
-  },
-  infoWrapper: {
-    marginLeft: 0,
-    paddingRight: 20
-  },
-  name: {
-    fontSize: FontSize.small,
-    width: '80%'
-  }
-});
+// Checkbox personalizado con Pressable
+const CustomCheckbox = ({ checked, onPress, disabled }) => (
+  <Pressable
+    onPress={onPress}
+    disabled={disabled}
+    style={({ pressed }) => [
+      styles.customCheckbox,
+      checked && styles.customCheckboxChecked,
+      disabled && styles.customCheckboxDisabled,
+      pressed && styles.customCheckboxPressed
+    ]}
+  >
+    {checked && <Icon name="check" size={18} color="#FFFFFF" />}
+  </Pressable>
+);
+
+// Componente para la sección de información del check
+const CheckInfo = ({ check, onPress }) => {
+  const locale = Localization.getLocales()[0]?.languageCode || 'en';
+  const title = check?.locale?.[locale];
+  const isDone = check.done;
+
+  return (
+    <Pressable onPress={onPress} style={styles.checkInfoContainer}>
+      <Text
+        style={[styles.checkTitle, isDone && styles.checkTitleDone]}
+        numberOfLines={2}
+      >
+        {title}
+      </Text>
+      {check?.date && (
+        <View style={styles.dateContainer}>
+          <Icon name="check-circle" size={14} color="#10B981" />
+          <Text style={styles.dateText}>
+            {moment(check?.date?.toDate()).format('LL')}
+          </Text>
+        </View>
+      )}
+    </Pressable>
+  );
+};
+
+// Componente para mostrar trabajador y fotos
+const CheckMetadata = ({ check }) => {
+  const hasWorker = check?.worker;
+  const hasPhotos = check?.photos?.length > 0;
+
+  if (!hasWorker && !hasPhotos) return null;
+
+  return (
+    <View style={styles.metadataContainer}>
+      {hasWorker && (
+        <Avatar
+          key={check?.worker?.uid}
+          uri={check?.worker?.profileImage?.small}
+          size="small"
+          showName={false}
+        />
+      )}
+      {hasPhotos && (
+        <View style={styles.photoBadge}>
+          <Icon name="photo-camera" size={14} color="#F59E0B" />
+          <Text style={styles.photoCount}>{check?.photos?.length}</Text>
+        </View>
+      )}
+    </View>
+  );
+};
+
+// Componente para el botón de cámara
+const CameraButton = ({ onPress, hasPhotos, disabled }) => (
+  <Pressable
+    onPress={onPress}
+    disabled={disabled}
+    style={({ pressed }) => [
+      styles.cameraButton,
+      hasPhotos && styles.cameraButtonWithPhotos,
+      pressed && styles.buttonPressed
+    ]}
+  >
+    <Icon name="camera-alt" size={18} color="#FFFFFF" />
+  </Pressable>
+);
 
 const ItemCheck = ({ check, checklistId, disabled, isCheckFinished }) => {
-  const { Layout, Gutters } = useTheme();
   const [photoCameraModal, setPhotoCameraModal] = useState(false);
+  const [optimisticDone, setOptimisticDone] = useState(check.done);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { updateFirebase } = useUpdateFirebase(CHECKLISTS);
-
+  const queryClient = useQueryClient();
   const { uploadImages } = useUploadImageCheck(CHECKLISTS);
   const { setVisible } = useContext(LoadingModalContext);
+  const user = useSelector(userSelector);
+
+  // Sincronizar estado optimista con check.done cuando cambie desde Firestore
+  React.useEffect(() => {
+    setOptimisticDone(check.done);
+  }, [check.done]);
 
   const handleSelectImage = async imgs => {
     try {
@@ -97,126 +134,212 @@ const ItemCheck = ({ check, checklistId, disabled, isCheckFinished }) => {
     }
   };
 
-  const { t } = useTranslation();
-  const user = useSelector(userSelector);
+  const handleCheck = async () => {
+    const newStatus = !optimisticDone;
 
-  const handleCheck = async status => {
+    // Prevenir cambios si el estado ya es el mismo
+    if (check.done === newStatus) {
+      console.warn(`⚠️ Check ya está en estado ${newStatus}, ignorando cambio`);
+      return;
+    }
+
+    // Prevenir doble click
+    if (isUpdating) {
+      console.warn('⚠️ Ya se está actualizando el check, ignorando');
+      return;
+    }
+
+    // Actualización optimista: cambiar el UI inmediatamente
+    setOptimisticDone(newStatus);
+    setIsUpdating(true);
+
     try {
       await updateFirebase(`${checklistId}/checks/${check?.id}`, {
         ...check,
-        date: !status ? null : new Date(),
-        done: status,
-        worker: status ? user : null
+        date: !newStatus ? null : new Date(),
+        done: newStatus,
+        worker: newStatus ? user : null
       });
       await updateFirebase(`${checklistId}`, {
-        done: status
-          ? firebase.firestore.FieldValue.increment(1)
-          : firebase.firestore.FieldValue.increment(-1)
+        done: newStatus ? increment(1) : increment(-1)
+      });
+
+      // Invalidar queries de checklists para actualizar la lista
+      queryClient.invalidateQueries({
+        queryKey: ['checklistsNotFinishedPaginated']
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['checklistsFinishedPaginated']
       });
     } catch (err) {
+      // Si falla, revertir el estado optimista
+      setOptimisticDone(check.done);
       error({
         message: err.message,
         track: true,
         asToast: true
       });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handlePressInfo = () => {
+    if (check?.photos?.length > 0) {
+      const locale = Localization.getLocales()[0]?.languageCode || 'en';
+      openScreenWithPush(CHECK_PHOTO_SCREEN_KEY, {
+        checkId: checklistId,
+        checkItemId: check.id,
+        title: check.locale[locale],
+        date: check.date
+      });
     }
   };
 
   return (
-    <React.Fragment>
+    <>
       <PhotoCameraModal
         visible={photoCameraModal}
         handleVisibility={setPhotoCameraModal}
-        onSelectImage={imgs => handleSelectImage(imgs)}
+        onSelectImage={handleSelectImage}
       />
-      <View style={{ ...styles.container }}>
-        <CheckBox
-          disabled={disabled}
-          value={check.done}
-          onTintColor={Colors.leftBlue}
-          onCheckColor={Colors.leftBlue}
-          onValueChange={e => handleCheck(e)}
-        />
-        <TouchableOpacity
-          onPress={
-            check?.photos?.length > 0
-              ? () =>
-                  openScreenWithPush(CHECK_PHOTO_SCREEN_KEY, {
-                    checkId: checklistId,
-                    checkItemId: check.id,
-                    title: check.locale[getLocales()[0].languageCode],
-                    date: check.date
-                  })
-              : null
-          }
-        >
-          <View style={[styles.checkInfo, Gutters.smallLMargin, Layout.fill]}>
-            <Text
-              style={[
-                styles.name,
-                theme.textBlack,
-                check.done && { textDecorationLine: 'line-through' }
-              ]}
-            >
-              {check?.locale?.[getLocales()[0].languageCode]}
-            </Text>
-            {check?.date && (
-              <Text style={[styles.dateStyle, theme.textBlack]}>
-                {moment(check?.date?.toDate()).format('LL')}
-              </Text>
-            )}
-            <View
-              style={[Layout.row, Layout.alignItemsCenter, Gutters.tinyTMargin]}
-            >
-              {check?.worker && (
-                <View style={Gutters.tinyRMargin}>
-                  <Avatar
-                    key={check?.worker?.uid}
-                    uri={check?.worker?.profileImage?.small}
-                    size="small"
-                  />
-                </View>
-              )}
-              {check?.photos?.length > 0 && (
-                <View
-                  style={[
-                    Layout.fill,
-                    Layout.column,
-                    Layout.justifyContentStart
-                  ]}
-                >
-                  {check?.photos?.length > 0 && (
-                    <Badge
-                      label={t('check.photos') + ': '}
-                      text={check?.photos?.length}
-                      variant="warning"
-                    />
-                  )}
-                </View>
-              )}
-            </View>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.checkboxWrapper}>
-          <TouchableOpacity
-            onPress={() => !isCheckFinished && setPhotoCameraModal(true)}
-          >
-            <View
-              style={[
-                styles.buttonStyle,
-                {
-                  backgroundColor:
-                    check?.photos?.length > 0 ? Colors.warning : Colors.pm
-                }
-              ]}
-            >
-              <Icon name="camera-alt" size={18} color="white" />
-            </View>
-          </TouchableOpacity>
+
+      <View style={styles.container}>
+        {/* Checkbox Personalizado */}
+        <View style={styles.checkboxContainer}>
+          <CustomCheckbox
+            checked={optimisticDone}
+            onPress={handleCheck}
+            disabled={disabled || isUpdating}
+          />
         </View>
+
+        {/* Información del check */}
+        <View style={styles.contentContainer}>
+          <CheckInfo
+            check={{ ...check, done: optimisticDone }}
+            onPress={handlePressInfo}
+          />
+          <CheckMetadata check={check} />
+        </View>
+
+        {/* Botón de cámara */}
+        <CameraButton
+          onPress={() => !isCheckFinished && setPhotoCameraModal(true)}
+          hasPhotos={check?.photos?.length > 0}
+          disabled={isCheckFinished}
+        />
       </View>
-    </React.Fragment>
+    </>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonPressed: {
+    opacity: 0.7
+  },
+  // Camera Button
+  cameraButton: {
+    alignItems: 'center',
+    backgroundColor: '#55A5AD',
+    borderRadius: 8,
+    height: 40,
+    justifyContent: 'center',
+    width: 40
+  },
+  cameraButtonWithPhotos: {
+    backgroundColor: '#F59E0B'
+  },
+  // Check Info
+  checkInfoContainer: {
+    flex: 1
+  },
+  checkTitle: {
+    color: '#374151',
+    fontSize: 15,
+    fontWeight: '500',
+    lineHeight: 20,
+    marginBottom: 4
+  },
+  checkTitleDone: {
+    color: '#9CA3AF',
+    textDecorationLine: 'line-through'
+  },
+  checkboxContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: 12
+  },
+  container: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderBottomColor: '#E5E7EB',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    minHeight: 70,
+    paddingHorizontal: 16,
+    paddingVertical: 12
+  },
+  contentContainer: {
+    flex: 1,
+    gap: 8,
+    marginRight: 12
+  },
+  // Custom Checkbox
+  customCheckbox: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#D1D5DB',
+    borderRadius: 6,
+    borderWidth: 2,
+    height: 24,
+    justifyContent: 'center',
+    width: 24
+  },
+  customCheckboxChecked: {
+    backgroundColor: '#55A5AD',
+    borderColor: '#55A5AD'
+  },
+  customCheckboxDisabled: {
+    opacity: 0.5
+  },
+  customCheckboxPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.95 }]
+  },
+  // Date
+  dateContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6
+  },
+  dateText: {
+    color: '#10B981',
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  // Metadata
+  metadataContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8
+  },
+  photoBadge: {
+    alignItems: 'center',
+    backgroundColor: '#FEF3C7',
+    borderColor: '#FDE68A',
+    borderRadius: 6,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4
+  },
+  photoCount: {
+    color: '#D97706',
+    fontSize: 12,
+    fontWeight: '700'
+  }
+});
 
 export default ItemCheck;

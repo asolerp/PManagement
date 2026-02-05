@@ -1,6 +1,6 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import storage from '@react-native-firebase/storage';
-import {error as errorLog} from '../lib/logging';
+import { error as errorLog } from '../lib/logging';
 
 export const useUploadFirebaseStorageImage = () => {
   const [loading, setLoading] = useState(false);
@@ -9,20 +9,20 @@ export const useUploadFirebaseStorageImage = () => {
   const uploadImageToStorage = async (path, name) => {
     try {
       setLoading(true);
-      let reference = storage().ref(name);
-      let task = reference.putFile(path);
-      await task;
+      const reference = storage().ref(name);
+      await reference.putFile(path);
       setLoading(false);
       setStatus('Image uploaded successfully');
+      const downloadURL = await reference.getDownloadURL();
       return {
         name: name,
-        downloadURL: await storage().ref(name).getDownloadURL(),
+        downloadURL: downloadURL
       };
     } catch (err) {
       errorLog({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
     } finally {
       setLoading(false);
@@ -32,6 +32,6 @@ export const useUploadFirebaseStorageImage = () => {
   return {
     uploadImageToStorage,
     loading,
-    status,
+    status
   };
 };

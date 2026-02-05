@@ -5,13 +5,13 @@ import {
   StyleSheet,
   Text,
   FlatList,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
 
-import {Colors} from '../../Theme/Variables';
+import { Colors } from '../../Theme/Variables';
 
-import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
+import { getFirestore, collection } from '@react-native-firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 const heightFilter = 100;
 const heightImage = 95;
@@ -19,24 +19,24 @@ const widthFilter = 90;
 
 const styles = StyleSheet.create({
   filterWrapper: {
-    marginTop: 10,
+    marginTop: 10
   },
   container: {
     width: '100%',
     marginTop: 10,
-    paddingLeft: 0,
+    paddingLeft: 0
   },
   titleFilter: {
     color: Colors.darkBlue,
     fontSize: 25,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   houseFilter: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
     width: widthFilter,
-    height: heightFilter,
+    height: heightFilter
   },
   avatarContainer: {
     position: 'absolute',
@@ -45,19 +45,19 @@ const styles = StyleSheet.create({
     padding: 0,
     width: '100%',
     height: heightFilter,
-    zIndex: 1,
+    zIndex: 1
   },
   maskContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: heightFilter,
+    height: heightFilter
   },
   activeFilter: {
     width: 94,
     borderWidth: 2,
     borderColor: Colors.success,
     borderRadius: 15,
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent'
   },
   textWrapper: {
     justifyContent: 'flex-end',
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: '100%',
     height: heightFilter,
-    zIndex: 3,
+    zIndex: 3
   },
   maskWrapper: {
     position: 'absolute',
@@ -75,27 +75,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 85,
     height: heightImage,
-    zIndex: 2,
+    zIndex: 2
   },
   textStyle: {
     textAlign: 'left',
     fontSize: 14,
     color: 'white',
-    fontWeight: 'bold',
-  },
+    fontWeight: 'bold'
+  }
 });
 
-const HouseFilter = ({houses, onClickHouse}) => {
-  const [values] = useCollectionData(firestore().collection('houses'), {
-    idField: 'id',
+const HouseFilter = ({ houses, onClickHouse }) => {
+  const db = getFirestore();
+  const housesCollection = collection(db, 'houses');
+  const [values] = useCollectionData(housesCollection, {
+    idField: 'id'
   });
-  const isInArray = (id) => {
-    return houses?.find((idHouse) => idHouse === id);
+  const isInArray = id => {
+    return houses?.find(idHouse => idHouse === id);
   };
 
-  const handleSetHouse = (house) => {
+  const handleSetHouse = house => {
     if (isInArray(house.id)) {
-      const housesWithoutID = houses?.filter((id) => {
+      const housesWithoutID = houses?.filter(id => {
         return id !== house.id;
       });
       onClickHouse(housesWithoutID);
@@ -104,23 +106,24 @@ const HouseFilter = ({houses, onClickHouse}) => {
     }
   };
 
-  const renderItem = ({item}) => (
+  const renderItem = ({ item }) => (
     <TouchableOpacity
       key={item.id}
       onPress={() => handleSetHouse(item)}
       style={[
         isInArray(item.id) && styles.activeFilter,
-        {marginHorizontal: 5},
-      ]}>
+        { marginHorizontal: 5 }
+      ]}
+    >
       <View style={[styles.houseFilter]}>
         <View style={[styles.avatarContainer]}>
           <Image
             style={[
               styles.ownerImage,
-              {width: 85, height: heightImage, borderRadius: 10},
+              { width: 85, height: heightImage, borderRadius: 10 }
             ]}
             source={{
-              uri: item.houseImage,
+              uri: item.houseImage
             }}
           />
         </View>
@@ -138,7 +141,7 @@ const HouseFilter = ({houses, onClickHouse}) => {
       showsHorizontalScrollIndicator={false}
       data={values}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={item => item.id}
     />
   );
 };

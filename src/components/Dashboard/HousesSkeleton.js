@@ -1,40 +1,40 @@
 import React from 'react';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import {View} from 'react-native';
+import CustomSkeleton from '../Skeleton/CustomSkeleton';
+
 export const HousesSkeleton = () => {
   return (
-    <SkeletonPlaceholder>
-      <SkeletonPlaceholder.Item flexDirection="row" alignItems="center">
-        <SkeletonPlaceholder.Item
-          width={60}
-          height={60}
-          borderRadius={50}
-          marginRight={10}
-        />
-        <SkeletonPlaceholder.Item
-          width={60}
-          height={60}
-          borderRadius={50}
-          marginRight={10}
-        />
-        <SkeletonPlaceholder.Item
-          width={60}
-          height={60}
-          borderRadius={50}
-          marginRight={10}
-        />
-        <SkeletonPlaceholder.Item
-          width={60}
-          height={60}
-          borderRadius={50}
-          marginRight={10}
-        />
-        <SkeletonPlaceholder.Item
-          width={60}
-          height={60}
-          borderRadius={50}
-          marginRight={10}
-        />
-      </SkeletonPlaceholder.Item>
-    </SkeletonPlaceholder>
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <CustomSkeleton
+        width={60}
+        height={60}
+        borderRadius={50}
+        style={{marginRight: 10}}
+      />
+      <CustomSkeleton
+        width={60}
+        height={60}
+        borderRadius={50}
+        style={{marginRight: 10}}
+      />
+      <CustomSkeleton
+        width={60}
+        height={60}
+        borderRadius={50}
+        style={{marginRight: 10}}
+      />
+      <CustomSkeleton
+        width={60}
+        height={60}
+        borderRadius={50}
+        style={{marginRight: 10}}
+      />
+      <CustomSkeleton
+        width={60}
+        height={60}
+        borderRadius={50}
+        style={{marginRight: 10}}
+      />
+    </View>
   );
 };

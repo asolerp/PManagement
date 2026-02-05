@@ -1,14 +1,21 @@
-import firestore from '@react-native-firebase/firestore';
-import {error} from '../lib/logging';
+import {
+  getFirestore,
+  collection,
+  doc,
+  updateDoc
+} from '@react-native-firebase/firestore';
+import { error } from '../lib/logging';
 
 const updateJobStatus = async (jobId, update) => {
   try {
-    await firestore().collection('jobs').doc(jobId).update(update);
+    const db = getFirestore();
+    const docRef = doc(collection(db, 'jobs'), jobId);
+    await updateDoc(docRef, update);
   } catch (err) {
     error({
       message: err.message,
       track: true,
-      asToast: true,
+      asToast: true
     });
     return err;
   }

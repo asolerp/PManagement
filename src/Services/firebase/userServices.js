@@ -1,42 +1,46 @@
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  getDocs,
+  doc,
+  getDoc
+} from '@react-native-firebase/firestore';
 
 const fetchUsers = async () => {
-    try {
-      const snapshot = await firestore()
-        .collection('users')
-        .orderBy('name')
-        .get();
-  
-      const users = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-  
-      return users;
-    } catch (error) {
-      console.error("Error fetching users: ", error);
-      throw error; // o manejar el error como prefieras
-    }
-  };
+  try {
+    const db = getFirestore();
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, orderBy('name'));
+    const snapshot = await getDocs(q);
 
-  const fetchUser = async (userId) => {
-    try {
-      const doc = await firestore()
-        .collection('users')
-        .doc(userId)
-        .get();
-  
-      return {
-        id: doc.id,
-        ...doc.data(),
-      };
-    } catch (error) {
-      console.error("Error fetching user: ", error);
-      throw error; // o manejar el error como prefieras
-    }
-  }
+    const users = snapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
+    }));
 
-  export {
-        fetchUsers,
-        fetchUser
+    return users;
+  } catch (error) {
+    console.error('Error fetching users: ', error);
+    throw error; // o manejar el error como prefieras
   }
+};
+
+const fetchUser = async userId => {
+  try {
+    const db = getFirestore();
+    const userDoc = doc(db, 'users', userId);
+    const docSnap = await getDoc(userDoc);
+
+    return {
+      id: docSnap.id,
+      ...docSnap.data()
+    };
+  } catch (error) {
+    console.error('Error fetching user: ', error);
+    throw error; // o manejar el error como prefieras
+  }
+};
+
+export { fetchUsers, fetchUser };

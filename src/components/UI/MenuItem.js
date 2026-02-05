@@ -1,46 +1,43 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useTheme } from '../../Theme';
 import { HDivider } from '../UI/HDivider';
-import theme from '../../Theme/Theme';
 
 export const MenuItem = ({
   title,
   textStyle,
   onPress,
   iconName,
-  iconColor = 'black'
+  iconColor = '#000000'
 }) => {
-  const { Gutters, Layout, Fonts } = useTheme();
-
   return (
     <>
-      <TouchableOpacity
-        onPress={onPress}
-        style={[
-          Layout.row,
-          Layout.justifyContentSpaceBetween,
-          Layout.alignItemsCenter,
-          Gutters.smallAPadding
-        ]}
-      >
-        <View style={[Layout.row, Layout.alignItemsCenter]}>
+      <TouchableOpacity onPress={onPress} style={styles.container}>
+        <View style={styles.leftContent}>
           <Icon name={iconName} size={25} color={iconColor} />
-          <Text
-            style={[
-              Gutters.smallLMargin,
-              Fonts.textSm,
-              theme.textBlack,
-              textStyle
-            ]}
-          >
-            {title}
-          </Text>
+          <Text style={[styles.title, textStyle]}>{title}</Text>
         </View>
-        <Icon name="chevron-forward" size={25} color="black" />
+        <Icon name="chevron-forward" size={25} color="#000000" />
       </TouchableOpacity>
       <HDivider />
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 12
+  },
+  leftContent: {
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  title: {
+    color: '#000000',
+    fontSize: 14,
+    marginLeft: 12
+  }
+});

@@ -16,7 +16,7 @@ import Toast from 'react-native-toast-message';
 import { openScreenWithPush, popScreen } from '../../../Router/utils/actions';
 import { useQueryClient } from '@tanstack/react-query';
 
-import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection, doc, addDoc } from '@react-native-firebase/firestore';
 import { useContext } from 'react';
 import { LoadingModalContext } from '../../../context/loadinModalContext';
 import { MAIN_ADMIN_STACK_KEY } from '../../../Router/utils/routerKeys';
@@ -76,6 +76,12 @@ export const useAddEditCheckist = ({ docId, edit }) => {
         collection: CHECKLISTS
       });
 
+      const db = getFirestore();
+      const checksCollection = collection(
+        doc(collection(db, 'checklists'), docId),
+        'checks'
+      );
+
       const newChecks = Object.entries(checks)
         .filter(([, value]) => value.check)
         .map(([, value]) => ({
@@ -89,13 +95,7 @@ export const useAddEditCheckist = ({ docId, edit }) => {
         }));
 
       await Promise.all(
-        newChecks.map(c =>
-          firestore()
-            .collection('checklists')
-            .doc(docId)
-            .collection('checks')
-            .add(c)
-        )
+        newChecks.map(c => addDoc(checksCollection, c))
       );
 
       Toast.show({

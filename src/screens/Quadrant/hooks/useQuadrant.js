@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {HOUSES} from '../../../utils/entities';
-import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, doc } from '@react-native-firebase/firestore';
 import {groupBy} from '../../../utils/arrayManipulations';
 
 export const useQuadrant = () => {
@@ -30,31 +30,35 @@ export const useQuadrant = () => {
   const getQuadrantsWithJobs = async () => {
     try {
       setLoading(true);
-      const responseQuadrant = await firestore()
-        .collection('quadrants')
-        .where('date', '>=', getStartOfToday())
-        .where('date', '<=', getEndOfToday())
-
-        .get();
+      const db = getFirestore();
+      const quadrantsQuery = query(
+        collection(db, 'quadrants'),
+        where('date', '>=', getStartOfToday()),
+        where('date', '<=', getEndOfToday())
+      );
+      
+      const responseQuadrant = await getDocs(quadrantsQuery);
+      
       if (!responseQuadrant.docs.length) {
         return setIsModalVisible(true);
       }
 
       const quadrant = {
         id: responseQuadrant.docs[0]?.id,
-        ...responseQuadrant.docs[0]?.data,
+        ...responseQuadrant.docs[0]?.data(),
       };
 
       setQuadrantId(quadrant.id);
 
-      const responseJobs = await firestore()
-        .collection('quadrants')
-        .doc(quadrant.id)
-        .collection('jobs')
-        .get();
-      const jobs = responseJobs.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
+      const jobsCollection = collection(
+        doc(collection(db, 'quadrants'), quadrant.id),
+        'jobs'
+      );
+      const responseJobs = await getDocs(jobsCollection);
+      
+      const jobs = responseJobs.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data(),
       }));
       const groupedJobsById = groupBy(jobs, 'houseId');
       setJobs(groupedJobsById);

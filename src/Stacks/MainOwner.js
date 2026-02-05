@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import {
+  CHECK_PHOTO_SCREEN_KEY,
   CHECK_STACK_KEY,
   ENTRANCES_MANAGER_SCREEN_KEY,
   ENTRANCE_DETAIL_SCREEN_KEY,
@@ -9,6 +10,7 @@ import {
 } from '../Router/utils/routerKeys';
 import HomeOwner from './HomeOwner';
 import Check from './Check';
+import { CheckPhotosScreen } from '../Screens/CheckPhotos';
 import { EntrancesManager } from '../Screens/EntrancesManager';
 import EntranceDetailScreen from '../Screens/EntrancesManager/EntranceDetailScreen';
 
@@ -24,6 +26,7 @@ export const MainOwner = () => (
     <Screen name={HOME_OWNER_STACK_KEY} component={HomeOwner} />
     <Screen name={CHECK_STACK_KEY} component={Check} />
     <Screen name={ENTRANCES_MANAGER_SCREEN_KEY} component={EntrancesManager} />
+    <Screen name={CHECK_PHOTO_SCREEN_KEY} component={CheckPhotosScreen} />
     <Screen
       name={ENTRANCE_DETAIL_SCREEN_KEY}
       component={EntranceDetailScreen}

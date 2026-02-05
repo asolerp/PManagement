@@ -1,9 +1,16 @@
-import firestore from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  doc
+} from '@react-native-firebase/firestore';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { useUpdateFirebase } from '../../../hooks/useUpdateFirebase';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useCheck = ({ docId }) => {
-  const query = firestore().collection('checklists').doc(docId);
+  const db = getFirestore();
+  const query = doc(collection(db, 'checklists'), docId);
+  const queryClient = useQueryClient();
 
   const { updateFirebase } = useUpdateFirebase('checklists');
   const [checklist] = useDocumentData(query, {
@@ -13,6 +20,14 @@ export const useCheck = ({ docId }) => {
   const reOpenChecklist = async () => {
     await updateFirebase(docId, {
       finished: false
+    });
+
+    // Invalidar queries de checklists para actualizar la lista
+    queryClient.invalidateQueries({
+      queryKey: ['checklistsNotFinishedPaginated']
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['checklistsFinishedPaginated']
     });
   };
 

@@ -1,25 +1,34 @@
-import firestore from '@react-native-firebase/firestore';
-import {error} from '../lib/logging';
-import {JOBS} from '../utils/firebaseKeys';
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  addDoc
+} from '@react-native-firebase/firestore';
+import { error } from '../lib/logging';
+import { JOBS } from '../utils/firebaseKeys';
 
-const duplicateJob = async (jobId) => {
+const duplicateJob = async jobId => {
   try {
-    const job = await firestore().collection(JOBS).doc(jobId).get();
+    const db = getFirestore();
+    const jobRef = doc(collection(db, JOBS), jobId);
+    const job = await getDoc(jobRef);
 
     const duplicatedJob = {
-      ...job._data,
+      ...job.data(),
       date: new Date(),
-      done: false,
+      done: false
     };
 
     delete duplicatedJob.id;
 
-    await firestore().collection(JOBS).add(duplicatedJob);
+    const jobsCollection = collection(db, JOBS);
+    await addDoc(jobsCollection, duplicatedJob);
   } catch (err) {
     error({
       message: err.message,
       track: true,
-      asToast: true,
+      asToast: true
     });
   }
 };

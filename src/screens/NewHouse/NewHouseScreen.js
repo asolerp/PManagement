@@ -1,19 +1,20 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import NewFormHome from '../../components/Forms/Homes/NewHomeForm';
-import {ScreenHeader} from '../../components/Layout/ScreenHeader';
+import { ScreenHeader } from '../../components/Layout/ScreenHeader';
 import PageLayout from '../../components/PageLayout';
-import {useTheme} from '../../Theme';
+import { Spacing } from '../../Theme/Variables';
 
-const NewHouseScreen = ({navigation}) => {
-  const {Gutters} = useTheme();
+const NewHouseScreen = () => {
+  const { t } = useTranslation();
 
   return (
-    <PageLayout safe backButton>
-      <View style={styles.newHomeScreen}>
-        <View style={[Gutters.regularBMargin]}>
-          <ScreenHeader title="Nueva casa" />
+    <PageLayout safe backButton edges={['top', 'bottom']}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <ScreenHeader title={t('houses.newHouse')} />
         </View>
         <NewFormHome />
       </View>
@@ -22,9 +23,12 @@ const NewHouseScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  newHomeScreen: {
-    flexGrow: 1,
+  container: {
+    flex: 1
   },
+  header: {
+    marginBottom: Spacing.lg
+  }
 });
 
 export default NewHouseScreen;

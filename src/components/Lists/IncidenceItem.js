@@ -1,52 +1,35 @@
-import {format} from 'date-fns';
+import { format } from 'date-fns';
 import React from 'react';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import useNoReadMessages from '../../hooks/useNoReadMessages';
 
-import {INCIDENCES} from '../../utils/firebaseKeys';
-import {parseDateWithText, parseStateIncidecne} from '../../utils/parsers';
-import {FinishedListItem} from './FinishedListItem';
+import { INCIDENCES } from '../../utils/firebaseKeys';
+import { parseDateWithText } from '../../utils/parsers';
+import ModernIncidenceCard from './ModernIncidenceCard';
 
-import {ListItem} from './ListItem';
-
-const IncidenceItem = ({item, fullWidth}) => {
-  const {t} = useTranslation();
-  const {noReadCounter} = useNoReadMessages({
+const IncidenceItem = ({ item, fullWidth, onPress }) => {
+  const { t } = useTranslation();
+  const { noReadCounter } = useNoReadMessages({
     collection: INCIDENCES,
-    docId: item.id,
+    docId: item.id
   });
 
-  if (item.done) {
-    return (
-      <FinishedListItem
-        withStatusBar
-        date={format(item?.date.toDate(), 'dd/MM/yyyy')}
-        statusColor={parseStateIncidecne(item?.state)}
-        statusPercentage={1}
-        title={item?.title}
-        subtitle={item?.incidence}
-        counter={noReadCounter}
-        house={item?.house?.houseName}
-        workers={item?.workers}
-      />
-    );
-  }
+  const dateInfo = parseDateWithText(item?.date);
 
   return (
-    <ListItem
-      date={t(parseDateWithText(item?.date).text, {
-        numberOfDays: parseDateWithText(item?.date)?.metaData?.numberOfDays,
-      })}
-      fullWidth={fullWidth}
-      dateVariant={parseDateWithText(item?.date).variant}
-      statusColor={parseStateIncidecne(item?.state)}
-      statusPercentage={1}
+    <ModernIncidenceCard
       title={item?.title}
-      subtitle={item?.incidence}
-      counter={noReadCounter}
+      description={item?.incidence}
+      state={item?.state || 'iniciada'}
       house={item?.house?.houseName}
-      workers={item?.workers}
+      workers={item?.workers || []}
+      date={t(dateInfo.text, {
+        numberOfDays: dateInfo?.metaData?.numberOfDays
+      })}
+      dateVariant={dateInfo.variant}
+      unreadCount={noReadCounter}
+      onPress={onPress}
     />
   );
 };

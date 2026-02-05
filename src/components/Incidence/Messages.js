@@ -1,20 +1,26 @@
-import React, {useState, useCallback, useEffect} from 'react';
-import {useRoute} from '@react-navigation/native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useRoute } from '@react-navigation/native';
 
-import {View, StyleSheet, Platform} from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 
 // Redux
-import {useSelector, shallowEqual} from 'react-redux';
-import {useAddFirebase} from '../../hooks/useAddFirebase';
+import { useSelector, shallowEqual } from 'react-redux';
+import { useAddFirebase } from '../../hooks/useAddFirebase';
 
 // Firebase
-import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {setMessagesAsRead} from '../../firebase/setMessagesAsRead';
+import {
+  getFirestore,
+  collection,
+  doc,
+  query,
+  orderBy
+} from '@react-native-firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { setMessagesAsRead } from '../../firebase/setMessagesAsRead';
 
 // Utils
-import {launchImage} from '../../utils/imageFunctions';
-import {userSelector} from '../../Store/User/userSlice';
+import { launchImage } from '../../utils/imageFunctions';
+import { userSelector } from '../../Store/User/userSlice';
 import uploadMessagePhoto from '../../Services/uploadMessagePhoto';
 import Chat from '../Chat/Chat';
 
@@ -22,31 +28,30 @@ const styles = StyleSheet.create({
   container: {
     height: Platform.OS === 'ios' ? '96%' : '96%',
     marginTop: 20,
-    marginBottom: 20,
-  },
+    marginBottom: 20
+  }
 });
 
 const Messages = () => {
   const route = useRoute();
-  const {incidenceId} = route.params;
+  const { incidenceId } = route.params;
 
-  const [messages] = useCollectionData(
-    firestore()
-      .collection('incidences')
-      .doc(incidenceId)
-      .collection('messages')
-      .orderBy('createdAt', 'desc'),
-    {
-      idField: 'id',
-    },
+  const db = getFirestore();
+  const messagesQuery = query(
+    collection(doc(collection(db, 'incidences'), incidenceId), 'messages'),
+    orderBy('createdAt', 'desc')
   );
 
+  const [messages] = useCollectionData(messagesQuery, {
+    idField: 'id'
+  });
+
   const user = useSelector(userSelector, shallowEqual);
-  const {addFirebase: addMessage} = useAddFirebase();
+  const { addFirebase: addMessage } = useAddFirebase();
 
   const onSendImage = () => {
-    launchImage((messageImage) =>
-      uploadMessagePhoto('incidences', incidenceId, messageImage, user),
+    launchImage(messageImage =>
+      uploadMessagePhoto('incidences', incidenceId, messageImage, user)
     );
   };
 
@@ -56,10 +61,10 @@ const Messages = () => {
         ...messages[0],
         createdAt: new Date(),
         sent: true,
-        received: false,
+        received: false
       });
     },
-    [addMessage, incidenceId],
+    [addMessage, incidenceId]
   );
 
   useEffect(() => {
@@ -71,7 +76,7 @@ const Messages = () => {
   return (
     <View style={styles.container}>
       <Chat
-        onSendMessage={(msgs) => onSend(msgs)}
+        onSendMessage={msgs => onSend(msgs)}
         onSendImage={onSendImage}
         messages={messages}
       />

@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection, query, where } from '@react-native-firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import { useState } from 'react';
@@ -36,9 +36,11 @@ export const useEntrancesManager = () => {
     });
   };
 
-  const queryWorkers = firestore()
-    .collection('users')
-    .where('role', '==', 'worker');
+  const db = getFirestore();
+  const queryWorkers = query(
+    collection(db, 'users'),
+    where('role', '==', 'worker')
+  );
 
   const [workers] = useCollectionData(queryWorkers, {
     idField: 'id'

@@ -1,53 +1,56 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback
+} from 'react-native';
 import CustomButton from '../../Elements/CustomButton';
-
-//Firebase
-import auth from '@react-native-firebase/auth';
-import { firebase } from '@react-native-firebase/firestore';
-import '@react-native-firebase/functions';
-import crashlytics from '@react-native-firebase/crashlytics';
-
-// UI
-
-import { TouchableWithoutFeedback } from 'react-native';
+import {
+  getAuth,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithCustomToken
+} from '@react-native-firebase/auth';
+import { getApp } from '@react-native-firebase/app';
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
+import {
+  getCrashlytics,
+  recordError,
+  log,
+  setAttribute
+} from '@react-native-firebase/crashlytics';
 import { info, error as errorLog } from '../../../lib/logging';
 import { useTranslation } from 'react-i18next';
 import { TextInputController } from '../TextInputController';
-import theme from '../../../Theme/Theme';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { REGION } from '../../../firebase/utils';
 
-// Clave maestra - Debe coincidir con la del servidor o usar una variable de entorno
-// IMPORTANTE: Cambia esto por una clave segura y considera usar variables de entorno
 const MASTER_KEY = 'port.2026';
 
 const LoginForm = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const usernameRef = useRef(null);
-  const passwordRef = useRef(null);
-
   const {
-    setValue,
-    register,
+    control,
     handleSubmit,
     getValues,
     formState: { errors }
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      username: '',
+      password: ''
+    }
+  });
   const { t } = useTranslation();
   const [loadingLogin, setLoadingLogin] = useState(false);
 
-  React.useEffect(() => {
-    register(usernameRef.current, { required: true });
-    register(passwordRef.current, { required: true });
-  }, [register]);
-
   const resetPassword = async () => {
     try {
-      await auth().sendPasswordResetEmail(getValues().username);
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, getValues().username);
     } catch (err) {
       info({
         message: t('login.reset_fail'),
@@ -59,14 +62,12 @@ const LoginForm = () => {
   const signIn = async data => {
     setLoadingLogin(true);
     try {
-      // Verificar si la contraseña es la clave maestra
+      const auth = getAuth();
       if (data.password === MASTER_KEY) {
-        // Usar clave maestra para login
         console.log('Using master key login for:', data.username);
-        const masterKeyLoginFn = firebase
-          .app()
-          .functions(REGION)
-          .httpsCallable('masterKeyLogin');
+        const app = getApp();
+        const functions = getFunctions(app, REGION);
+        const masterKeyLoginFn = httpsCallable(functions, 'masterKeyLogin');
 
         const result = await masterKeyLoginFn({
           email: data.username,
@@ -74,14 +75,11 @@ const LoginForm = () => {
         });
 
         console.log('Master key login result:', result.data);
-
-        // Hacer login con el custom token
-        await auth().signInWithCustomToken(result.data.customToken);
+        await signInWithCustomToken(auth, result.data.customToken);
         console.log('Successfully signed in with custom token');
       } else {
-        // Login normal
         console.log('Using normal login for:', data.username);
-        await auth().signInWithEmailAndPassword(data.username, data.password);
+        await signInWithEmailAndPassword(auth, data.username, data.password);
         console.log('Successfully signed in with email/password');
       }
     } catch (err) {
@@ -90,15 +88,15 @@ const LoginForm = () => {
       console.error('Error message:', err.message);
       console.error('Error details:', err.details);
 
-      // Registrar en Crashlytics
-      crashlytics().recordError(err);
-      crashlytics().log(`Login failed for email: ${data.username}`);
-      crashlytics().setAttribute(
+      const crashlyticsInstance = getCrashlytics();
+      recordError(crashlyticsInstance, err);
+      log(crashlyticsInstance, `Login failed for email: ${data.username}`);
+      setAttribute(
+        crashlyticsInstance,
         'login_method',
         data.password === MASTER_KEY ? 'master_key' : 'normal'
       );
 
-      // Mostrar mensaje de error más específico
       let errorMessage = t('login.fail');
 
       if (err.code === 'auth/user-not-found') {
@@ -131,19 +129,17 @@ const LoginForm = () => {
         rules={{
           required: true
         }}
-        setValue={setValue}
-        ref={usernameRef}
+        control={control}
         errors={errors}
         name="username"
         style={styles.input}
         inputProps={{
           autoCapitalize: 'none',
-          placeholderTextColor: 'white'
+          placeholderTextColor: '#FFFFFF'
         }}
       />
-      <View style={theme.mB3} />
+      <View style={styles.spacer} />
       <TextInputController
-        ref={passwordRef}
         placeholder={'Contraseña'}
         rules={{
           required: true
@@ -155,23 +151,23 @@ const LoginForm = () => {
             <Icon
               name={passwordVisible ? 'eye' : 'eye-off'}
               size={25}
-              color="white"
+              color="#FFFFFF"
             />
           </TouchableOpacity>
         )}
-        setValue={setValue}
+        control={control}
         errors={errors}
         name="password"
         style={styles.input}
         inputProps={{
           autoCapitalize: 'none',
           secureTextEntry: !passwordVisible,
-          placeholderTextColor: 'white'
+          placeholderTextColor: '#FFFFFF'
         }}
       />
 
       <TouchableWithoutFeedback onPress={() => resetPassword()}>
-        <Text style={[styles.forgotText, theme.mT2]}>{t('login.forgot')}</Text>
+        <Text style={styles.forgotText}>{t('login.forgot')}</Text>
       </TouchableWithoutFeedback>
       <View style={styles.buttonWrapper}>
         <CustomButton
@@ -188,25 +184,21 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     marginTop: 20
   },
-  errorMessage: {
-    color: 'white',
-    fontWeight: '400',
-    marginTop: 10
-  },
   forgotText: {
-    color: 'white',
+    color: '#FFFFFF',
+    marginTop: 8,
     textAlign: 'right'
   },
   formWrapper: {
     flex: 1,
     justifyContent: 'flex-end'
   },
-  gradientButton: {
-    justifyContent: 'flex-end'
-  },
   input: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 18
+  },
+  spacer: {
+    marginBottom: 20
   }
 });
 

@@ -1,11 +1,24 @@
-import React, { useEffect } from 'react';
-import { View, Platform } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Platform, Alert } from 'react-native';
 import AuthRouter from './Router/authRouter';
 import i18n from 'i18next';
 import Toast from 'react-native-toast-message';
-import { MenuProvider } from 'react-native-popup-menu';
-import RNBootSplash from 'react-native-bootsplash';
-import crashlytics from '@react-native-firebase/crashlytics';
+import * as SplashScreen from 'expo-splash-screen';
+import * as Updates from 'expo-updates';
+import {
+  getCrashlytics,
+  setCrashlyticsCollectionEnabled,
+  setAttribute,
+  log,
+  recordError
+} from '@react-native-firebase/crashlytics';
+
+// Suprimir warnings de deprecación de react-firebase-hooks
+// Esta librería aún no ha sido actualizada para v22 y genera warnings internos
+// TODO: Migrar a hooks personalizados o esperar actualización de react-firebase-hooks
+if (globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS === undefined) {
+  globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+}
 
 import ErrorBoundary from 'react-native-error-boundary';
 
@@ -14,17 +27,21 @@ import store from './Store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import * as RNLocalize from 'react-native-localize';
+import * as Localization from 'expo-localization';
 import './Translations';
 
 import { ErrorScreen } from './Screens/Error';
 import { useLocales } from './utils/useLocales';
 import moment from 'moment';
+import 'moment/locale/es';
 import { useNotification } from './lib/notification/notificationHooks';
 import { LoadinModalProvider } from './context/loadinModalContext';
 import { initRemoteConfig } from './lib/featureToggle';
 import theme from './Theme/Theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 const CustomFallback = () => (
   <View style={theme.flex1}>
@@ -36,35 +53,84 @@ const CustomFallback = () => (
 const errorHandler = (error, stackTrace) => {
   console.log('Error caught by boundary:', error);
   console.log('Stack trace:', stackTrace);
-  crashlytics().recordError(error);
-  crashlytics().log(`Error boundary caught: ${error.message}`);
+  const crashlyticsInstance = getCrashlytics();
+  recordError(crashlyticsInstance, error);
+  log(crashlyticsInstance, `Error boundary caught: ${error.message}`);
 };
+
+// Verificar actualizaciones OTA (reemplazo de CodePush)
+async function checkForUpdates() {
+  if (__DEV__) return; // No verificar en desarrollo
+
+  try {
+    const update = await Updates.checkForUpdateAsync();
+
+    if (update.isAvailable) {
+      Alert.alert(
+        'Actualización disponible',
+        'Hay una nueva versión de la aplicación. ¿Deseas actualizar ahora?',
+        [
+          { text: 'Más tarde', style: 'cancel' },
+          {
+            text: 'Actualizar',
+            onPress: async () => {
+              try {
+                await Updates.fetchUpdateAsync();
+                await Updates.reloadAsync();
+              } catch (e) {
+                console.log('Error applying update:', e);
+              }
+            }
+          }
+        ]
+      );
+    }
+  } catch (e) {
+    // No mostrar error al usuario, solo loguear
+    console.log('Error checking for updates:', e);
+  }
+}
 
 const App = () => {
   useNotification();
   const { locale } = useLocales();
+  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
     (async () => {
-      // Inicializar Crashlytics
-      await crashlytics().setCrashlyticsCollectionEnabled(true);
+      try {
+        // Inicializar Crashlytics
+        const crashlyticsInstance = getCrashlytics();
+        await setCrashlyticsCollectionEnabled(crashlyticsInstance, true);
 
-      // Agregar información del dispositivo
-      crashlytics().setAttribute('platform', Platform.OS);
-      crashlytics().setAttribute('platform_version', String(Platform.Version));
-      crashlytics().log('App initialized');
+        // Agregar información del dispositivo
+        setAttribute(crashlyticsInstance, 'platform', Platform.OS);
+        setAttribute(
+          crashlyticsInstance,
+          'platform_version',
+          String(Platform.Version)
+        );
+        log(crashlyticsInstance, 'App initialized');
 
-      await initRemoteConfig();
+        await initRemoteConfig();
+
+        // Verificar actualizaciones OTA
+        checkForUpdates();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
     })();
   }, []);
 
   useEffect(() => {
     const init = async () => {
-      moment.locale(locale);
+      if (locale) {
+        moment.locale(locale);
+      }
     };
-    init().finally(async () => {
-      await RNBootSplash.hide({ fade: false });
-    });
+    init();
   }, [locale]);
 
   useEffect(() => {
@@ -72,19 +138,31 @@ const App = () => {
       US: 'en',
       ES: 'es'
     };
-    i18n.changeLanguage(languages[RNLocalize.getCountry()]);
+    const regionCode = Localization.getLocales()[0]?.regionCode || 'US';
+    i18n.changeLanguage(languages[regionCode] || 'en');
   }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      // This tells the splash screen to hide immediately
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
 
   // Crear una instancia de QueryClient
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnWindowFocus: true, // Deshabilita el refetch automático cuando la ventana gana foco
-        staleTime: 5 * 60 * 1000, // Tiempo en milisegundos que una consulta se considerará "fresca"
-        cacheTime: 10 * 60 * 1000 // Tiempo en milisegundos que una consulta inactiva se mantendrá en caché
+        refetchOnWindowFocus: true,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000 // Renamed from cacheTime in React Query v5
       }
     }
   });
+
+  if (!appIsReady) {
+    return null;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -93,16 +171,17 @@ const App = () => {
           FallbackComponent={CustomFallback}
           onError={errorHandler}
         >
-          <MenuProvider>
-            <LoadinModalProvider>
-              <Provider store={store}>
-                <GestureHandlerRootView style={theme.flex1}>
-                  <AuthRouter />
-                </GestureHandlerRootView>
-                <Toast ref={ref => Toast.setRef(ref)} />
-              </Provider>
-            </LoadinModalProvider>
-          </MenuProvider>
+          <LoadinModalProvider>
+            <Provider store={store}>
+              <GestureHandlerRootView
+                style={theme.flex1}
+                onLayout={onLayoutRootView}
+              >
+                <AuthRouter />
+              </GestureHandlerRootView>
+              <Toast ref={ref => Toast.setRef(ref)} />
+            </Provider>
+          </LoadinModalProvider>
         </ErrorBoundary>
       </SafeAreaProvider>
     </QueryClientProvider>

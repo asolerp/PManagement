@@ -1,98 +1,57 @@
-import React, {useState, useCallback, useEffect} from 'react';
-import {useSelector, useDispatch, shallowEqual} from 'react-redux';
-import {useTranslation} from 'react-i18next';
-
-import {View, Text, StyleSheet} from 'react-native';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 // UI
-
 import PageLayout from '../../components/PageLayout';
+import CustomButton from '../../components/Elements/CustomButton';
+import { ScreenHeader } from '../../components/Layout/ScreenHeader';
 import NewIncidenceForm from '../../components/Forms/Incidence/NewIncidenceForm';
 import MultipleImageSelector from '../../components/MultipleImageSelector';
-import CustomButton from '../../components/Elements/CustomButton';
+import { DismissKeyboard } from '../../components/DismissKeyboard';
 
 // Firebase
-import {useAddFirebase} from '../../hooks/useAddFirebase';
-import {useUpdateFirebase} from '../../hooks/useUpdateFirebase';
-import {useUploadCloudinaryImage} from '../../hooks/useUploadCloudinaryImage';
+import { useAddFirebase } from '../../hooks/useAddFirebase';
+import useUploadImageCheck from '../../hooks/useUploadImage';
 
-import {userSelector} from '../../Store/User/userSlice';
+// Redux
+import { userSelector } from '../../Store/User/userSlice';
 import {
   resetForm,
-  setImages,
+  setImages
 } from '../../Store/IncidenceForm/incidenceFormSlice';
-import {popScreen} from '../../Router/utils/actions';
 
-import {error} from '../../lib/logging';
-
-import {DismissKeyboard} from '../../components/DismissKeyboard';
-import {LoadingModalContext} from '../../context/loadinModalContext';
-import {useContext} from 'react';
-import {ScreenHeader} from '../../components/Layout/ScreenHeader';
-import {useTheme} from '../../Theme';
-import useUploadImageCheck from '../../hooks/useUploadImage';
-import {INCIDENCES} from '../../utils/firebaseKeys';
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 0,
-  },
-  iconWrapper: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowOffset: {
-      height: 0,
-      width: 0,
-    },
-    shadowColor: '#BCBCBC',
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-  },
-  label: {
-    fontSize: 20,
-    width: '90%',
-    color: '#284748',
-    fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  actionsWrapper: {
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    marginTop: 10,
-  },
-});
+// Utils
+import { popScreen } from '../../Router/utils/actions';
+import { error } from '../../lib/logging';
+import { LoadingModalContext } from '../../context/loadinModalContext';
+import { INCIDENCES } from '../../utils/firebaseKeys';
 
 const NewIncidenceScreen = () => {
   const dispatch = useDispatch();
-  const {t} = useTranslation();
-  const [lo, setLo] = useState(false);
+  const { t } = useTranslation();
+  const { setVisible } = useContext(LoadingModalContext);
+  const [loading, setLoading] = useState(false);
 
   const user = useSelector(userSelector, shallowEqual);
-  const {Gutters} = useTheme();
-  const {incidence, incidenceImages} = useSelector(
-    ({incidenceForm: {incidence, incidenceImages}}) => ({
+  const { incidence, incidenceImages } = useSelector(
+    ({ incidenceForm: { incidence, incidenceImages } }) => ({
       incidence,
-      incidenceImages,
+      incidenceImages
     }),
-    shallowEqual,
+    shallowEqual
   );
 
-  const {uploadImages} = useUploadImageCheck(INCIDENCES);
-  const {addFirebase} = useAddFirebase();
+  const { uploadImages } = useUploadImageCheck(INCIDENCES);
+  const { addFirebase } = useAddFirebase();
 
   const setImagesAction = useCallback(
-    (images) => dispatch(setImages({images})),
-    [dispatch],
+    images => dispatch(setImages({ images })),
+    [dispatch]
   );
 
   const resetFormAction = useCallback(() => dispatch(resetForm()), [dispatch]);
-
-  const {setVisible} = useContext(LoadingModalContext);
 
   const hasFormFilled =
     !!incidence?.title &&
@@ -101,7 +60,7 @@ const NewIncidenceScreen = () => {
 
   const createIncidence = async () => {
     try {
-      setLo(true);
+      setLoading(true);
       setVisible(true);
 
       const newIncidence = await addFirebase('incidences', {
@@ -113,7 +72,7 @@ const NewIncidenceScreen = () => {
         workersId: [user.id],
         state: 'initiate',
         date: new Date(),
-        done: false,
+        done: false
       });
 
       if (incidenceImages?.length > 0) {
@@ -126,11 +85,11 @@ const NewIncidenceScreen = () => {
       error({
         message: err.message,
         track: true,
-        asToast: true,
+        asToast: true
       });
     } finally {
       setVisible(false);
-      setLo(false);
+      setLoading(false);
     }
   };
 
@@ -138,38 +97,89 @@ const NewIncidenceScreen = () => {
     resetFormAction();
   }, []);
 
+  const renderFooterButton = () => (
+    <CustomButton
+      disabled={!hasFormFilled}
+      styled="rounded"
+      loading={loading}
+      title={t('newIncidence.form.create')}
+      onPress={createIncidence}
+    />
+  );
+
   return (
     <PageLayout
       safe
       backButton
-      footer={
-        <CustomButton
-          disabled={!hasFormFilled}
-          styled="rounded"
-          loading={lo}
-          title={t('newIncidence.form.create')}
-          onPress={() => createIncidence()}
-        />
-      }>
-      <>
-        <ScreenHeader title={t('newIncidence.title')} />
-        <DismissKeyboard>
-          <View style={[Gutters.regularBMargin, styles.container]}>
-            <View style={[Gutters.regularTMargin]}>
-              <View>
-                <NewIncidenceForm />
-              </View>
-              <Text style={styles.label}>{t('newIncidence.form.photos')}</Text>
-              <MultipleImageSelector
-                images={incidenceImages}
-                setImages={setImagesAction}
-              />
-            </View>
+      titleProps={{
+        subPage: true
+      }}
+      footer={renderFooterButton()}
+    >
+      <DismissKeyboard>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+        >
+          <ScreenHeader
+            title={t('newIncidence.title')}
+            subtitle="Reporta un problema o incidencia encontrada"
+          />
+
+          <View style={styles.formContainer}>
+            <NewIncidenceForm />
           </View>
-        </DismissKeyboard>
-      </>
+
+          <View style={styles.photosSection}>
+            <View style={styles.photosSectionHeader}>
+              <Text style={styles.photosSectionTitle}>
+                {t('newIncidence.form.photos')}
+              </Text>
+              <Text style={styles.photosSectionSubtitle}>
+                {incidenceImages?.length > 0
+                  ? `${incidenceImages.length} ${incidenceImages.length === 1 ? 'foto seleccionada' : 'fotos seleccionadas'}`
+                  : 'Opcional'}
+              </Text>
+            </View>
+            <MultipleImageSelector
+              images={incidenceImages}
+              setImages={setImagesAction}
+            />
+          </View>
+        </ScrollView>
+      </DismissKeyboard>
     </PageLayout>
   );
 };
+
+const styles = StyleSheet.create({
+  formContainer: {
+    marginTop: 24
+  },
+  photosSection: {
+    marginTop: 24
+  },
+  photosSectionHeader: {
+    gap: 4,
+    marginBottom: 16
+  },
+  photosSectionSubtitle: {
+    color: '#9CA3AF',
+    fontSize: 13
+  },
+  photosSectionTitle: {
+    color: '#374151',
+    fontSize: 16,
+    fontWeight: '700'
+  },
+  scrollContent: {
+    paddingBottom: 30
+  },
+  scrollView: {
+    flex: 1,
+    paddingTop: 10
+  }
+});
 
 export default NewIncidenceScreen;

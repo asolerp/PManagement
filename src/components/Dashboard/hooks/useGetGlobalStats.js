@@ -3,17 +3,18 @@ import { fetchChecklistsNotFinished } from '../../../Services/firebase/checklist
 import { fetchIncidences } from '../../../Services/firebase/indicendesServices';
 
 export const useGetGlobalStats = ({ uid }) => {
-  const { data: checks } = useQuery({
+  const { data: checksData } = useQuery({
     queryKey: ['checklistsNotFinished', uid, null],
-    queryFn: fetchChecklistsNotFinished
+    queryFn: context => fetchChecklistsNotFinished(context)
   });
-  const { data: incidences } = useQuery({
+
+  const { data: incidencesData } = useQuery({
     queryKey: ['incidencesNotFinished', uid, false],
-    queryFn: fetchIncidences
+    queryFn: context => fetchIncidences(context)
   });
 
   return {
-    checks: checks?.length,
-    incidences: incidences?.length
+    checks: checksData?.length || 0,
+    incidences: incidencesData?.length || 0
   };
 };

@@ -1,10 +1,15 @@
-import {useState, useEffect} from 'react';
-import {Platform, UIManager} from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
-import {userSelector} from '../Store/User/userSlice';
+import { useState, useEffect } from 'react';
+import { Platform, UIManager } from 'react-native';
+import {
+  getFirestore,
+  collection,
+  doc,
+  onSnapshot
+} from '@react-native-firebase/firestore';
+import { useSelector } from 'react-redux';
+import { userSelector } from '../Store/User/userSlice';
 
-const useNoReadMessages = ({collection, docId}) => {
+const useNoReadMessages = ({ collection: collectionName, docId }) => {
   const user = useSelector(userSelector);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,31 +20,33 @@ const useNoReadMessages = ({collection, docId}) => {
   }
 
   useEffect(() => {
-    const onResult = (QuerySnapshot) => {
+    const onResult = QuerySnapshot => {
       setLoading(false);
       setNoReadCounter(
         QuerySnapshot.docs
-          .map((doc) => ({...doc.data(), id: doc.id}))
-          ?.filter((message) => !message?.received?.[user?.id])
-          ?.filter((message) => message?.user._id !== user.id).length,
+          .map(docSnap => ({ ...docSnap.data(), id: docSnap.id }))
+          ?.filter(message => !message?.received?.[user?.id])
+          ?.filter(message => message?.user._id !== user.id).length
       );
     };
-    const onError = (err) => {
+    const onError = err => {
       setLoading(false);
       setError(err);
     };
 
-    const collectionDocs = firestore().collection(collection);
-    const doc = collectionDocs.doc(docId);
-    const messagesQuery = doc.collection('messages');
-    const subscriber = messagesQuery.onSnapshot(onResult, onError);
+    const db = getFirestore();
+    const messagesRef = collection(
+      doc(collection(db, collectionName), docId),
+      'messages'
+    );
+    const subscriber = onSnapshot(messagesRef, onResult, onError);
     return () => subscriber();
-  }, [collection, docId, user.id]);
+  }, [collectionName, docId, user.id]);
 
   return {
     loading,
     error,
-    noReadCounter,
+    noReadCounter
   };
 };
 

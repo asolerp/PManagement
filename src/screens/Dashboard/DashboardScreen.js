@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Pressable } from 'react-native';
 
 // Components
 import ProfileBar from '../../components/ProfileBar';
@@ -7,36 +7,41 @@ import ProfileBar from '../../components/ProfileBar';
 // UI
 import PageLayout from '../../components/PageLayout';
 
-import { TabView, TabBar } from 'react-native-tab-view';
-
 import { ActionButtons } from '../../components/Dashboard/ActionButtons';
 import AddButton from '../../components/Elements/AddButton';
 
-import { Colors } from '../../Theme/Variables';
-import { GlobalStats } from '../../components/Dashboard/GlobalStats';
+import {
+  Colors,
+  FontSize,
+  FontWeight,
+  Spacing,
+  BorderRadius
+} from '../../Theme/Variables';
 import { HousesFilter } from '../../components/Dashboard/HousesFilter';
-import theme from '../../Theme/Theme';
 import { HDivider } from '../../components/UI/HDivider';
 
-import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { RECYCLE_BIN_SCREEN_KEY } from '../../Router/utils/routerKeys';
 import { openScreenWithPush } from '../../Router/utils/actions';
 import { useDashboard } from './hooks/useDashboard';
-import { CRASHLYTICS_TEST_SCREEN_KEY } from '../CrashlyticsTest';
+import { useGetGlobalStats } from '../../components/Dashboard/hooks/useGetGlobalStats';
+import { useSelector } from 'react-redux';
+import { userSelector } from '../../Store/User/userSlice';
 
-const DashboardScreen = ({ navigation }) => {
+const DashboardScreen = () => {
+  const user = useSelector(userSelector);
+  const statsUid = user?.role === 'admin' ? null : user?.id;
+  const { checks, incidences } = useGetGlobalStats({ uid: statsUid });
+
   const {
     index,
     routes,
-    layout,
     filters,
     setIndex,
     setFilters,
     renderScene,
-    gestureHandler,
     containerStyles
-  } = useDashboard(navigation);
+  } = useDashboard();
 
   return (
     <>
@@ -47,25 +52,17 @@ const DashboardScreen = ({ navigation }) => {
         edges={['top']}
       >
         <AddButton
-          containerStyle={[theme.left5]}
+          containerStyle={styles.recycleBinButton}
           iconName="restore-from-trash"
           onPress={() => openScreenWithPush(RECYCLE_BIN_SCREEN_KEY)}
         />
-        {/* ⚠️ TEMPORAL: Botón para probar Crashlytics - ELIMINAR EN PRODUCCIÓN */}
-        <AddButton
-          containerStyle={[theme.left5, { bottom: 100 }]}
-          iconName="bug-report"
-          onPress={() => openScreenWithPush(CRASHLYTICS_TEST_SCREEN_KEY)}
-        />
+
         <ActionButtons />
-        <View style={[theme.flex1, theme.bgGray100]}>
+        <View style={styles.mainContainer}>
           <View style={styles.profileBarContainerStyle}>
             <ProfileBar />
           </View>
-          <View style={[[theme.flex1], styles.container]}>
-            <View style={theme.pX4}>
-              <GlobalStats onPressStat={setIndex} />
-            </View>
+          <View style={styles.contentContainer}>
             <HousesFilter
               houses={filters.houses}
               onClickHouse={houses => {
@@ -75,56 +72,80 @@ const DashboardScreen = ({ navigation }) => {
                 }));
               }}
             />
-            <HDivider style={theme.mY4} />
-            <PanGestureHandler onGestureEvent={gestureHandler}>
-              <Animated.View
-                style={[
-                  theme.flexGrow,
-                  theme.bgGray100,
-                  // theme.bgWarning,
-                  theme.pX4,
-                  containerStyles
+            <HDivider style={styles.divider} />
+
+            {/* Custom Simple Tabs */}
+            <View style={styles.tabsHeader}>
+              <Pressable
+                onPress={() => setIndex(0)}
+                style={({ pressed }) => [
+                  styles.tabButton,
+                  index === 0 && styles.tabButtonActive,
+                  pressed && styles.tabButtonPressed
                 ]}
               >
-                <View style={[theme.itemsCenter, theme.mT2]}>
-                  <View
+                <Text
+                  style={[styles.tabText, index === 0 && styles.tabTextActive]}
+                >
+                  Checklists
+                </Text>
+                <View
+                  style={[
+                    styles.tabBadge,
+                    index === 0 && styles.tabBadgeActive
+                  ]}
+                >
+                  <Text
                     style={[
-                      theme.w8,
-                      theme.h2,
-                      theme.bgGray400,
-                      theme.roundedSm
+                      styles.tabBadgeText,
+                      index === 0 && styles.tabBadgeTextActive
                     ]}
-                  />
+                  >
+                    {checks || 0}
+                  </Text>
                 </View>
-                <TabView
-                  renderTabBar={props => (
-                    <TabBar
-                      {...props}
-                      style={styles.tabBarContainerStyle}
-                      indicatorStyle={styles.indicatorStyle}
-                      renderLabel={({ route, focused }) => {
-                        return (
-                          <Text
-                            style={[
-                              { color: focused ? Colors.pm : Colors.gray800 },
-                              styles.tabTextStyle
-                            ]}
-                          >
-                            {route.title}
-                          </Text>
-                        );
-                      }}
-                    />
-                  )}
-                  navigationState={{ index, routes }}
-                  renderScene={renderScene}
-                  onIndexChange={setIndex}
-                  initialLayout={{ width: layout.width, height: layout.height }}
-                  sceneContainerStyle={{ flex: 1 }}
-                  style={[theme.flexGrow, { marginBottom: -130 }]}
-                />
-              </Animated.View>
-            </PanGestureHandler>
+                {index === 0 && <View style={styles.tabIndicator} />}
+              </Pressable>
+
+              <Pressable
+                onPress={() => setIndex(1)}
+                style={({ pressed }) => [
+                  styles.tabButton,
+                  index === 1 && styles.tabButtonActive,
+                  pressed && styles.tabButtonPressed
+                ]}
+              >
+                <Text
+                  style={[styles.tabText, index === 1 && styles.tabTextActive]}
+                >
+                  Incidencias
+                </Text>
+                <View
+                  style={[
+                    styles.tabBadge,
+                    index === 1 && styles.tabBadgeActive
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.tabBadgeText,
+                      index === 1 && styles.tabBadgeTextActive
+                    ]}
+                  >
+                    {incidences || 0}
+                  </Text>
+                </View>
+                {index === 1 && <View style={styles.tabIndicator} />}
+              </Pressable>
+            </View>
+
+            {/* Tab Content */}
+
+            <Animated.View style={[styles.tabContent, containerStyles]}>
+              <View style={styles.sceneContainer}>
+                {renderScene({ route: routes[index] })}
+              </View>
+            </Animated.View>
           </View>
         </View>
       </PageLayout>
@@ -133,24 +154,101 @@ const DashboardScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  contentContainer: {
+    flex: 1,
     paddingHorizontal: 0
   },
-  indicatorStyle: {
-    backgroundColor: Colors.pm,
-    borderRadius: 5,
-    height: 3
+  divider: {
+    marginVertical: Spacing.md
+  },
+  handleIndicator: {
+    backgroundColor: Colors.gray300,
+    borderRadius: BorderRadius.sm,
+    height: 8,
+    width: 32
+  },
+  handleIndicatorContainer: {
+    alignItems: 'center',
+    marginTop: Spacing.sm
+  },
+  mainContainer: {
+    backgroundColor: Colors.gray100,
+    flex: 1
   },
   profileBarContainerStyle: {
     backgroundColor: Colors.greenLight,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30
+    borderBottomLeftRadius: BorderRadius['3xl'],
+    borderBottomRightRadius: BorderRadius['3xl']
   },
-  tabBarContainerStyle: {
-    backgroundColor: null
+  recycleBinButton: {
+    left: 30,
+    right: undefined
   },
-  tabTextStyle: {
-    fontWeight: '500'
+  sceneContainer: {
+    flex: 1
+  },
+  tabBadge: {
+    backgroundColor: Colors.gray200,
+    borderRadius: BorderRadius.md,
+    marginLeft: Spacing.sm,
+    minWidth: 24,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2
+  },
+  tabBadgeActive: {
+    backgroundColor: Colors.pm
+  },
+  tabBadgeText: {
+    color: Colors.gray500,
+    fontSize: FontSize.xs,
+    fontWeight: FontWeight.bold,
+    textAlign: 'center'
+  },
+  tabBadgeTextActive: {
+    color: Colors.white
+  },
+  tabButton: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingBottom: Spacing.md,
+    paddingTop: Spacing.md,
+    position: 'relative'
+  },
+  tabButtonActive: {
+    // Active tab styles handled by text and badge
+  },
+  tabButtonPressed: {
+    opacity: 0.7
+  },
+  tabContent: {
+    backgroundColor: Colors.gray100,
+    flex: 1,
+    paddingHorizontal: Spacing.base
+  },
+  tabIndicator: {
+    backgroundColor: Colors.pm,
+    borderRadius: BorderRadius.sm,
+    bottom: 0,
+    height: 3,
+    left: 0,
+    position: 'absolute',
+    right: 0
+  },
+  tabText: {
+    color: Colors.gray800,
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.medium
+  },
+  tabTextActive: {
+    color: Colors.pm,
+    fontWeight: FontWeight.semibold
+  },
+  tabsHeader: {
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.base
   }
 });
 

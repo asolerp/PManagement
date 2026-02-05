@@ -1,24 +1,20 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useMemo,
-  useCallback
-} from 'react';
-import { FiltersContext } from '../../../context/FiltersContext';
+import React from 'react';
+import { useContext, useState, useMemo, useCallback } from 'react';
 import { useWindowDimensions } from 'react-native';
-import { useAnimatedContainer } from './useAnimatedContainer';
 import moment from 'moment';
+
+import { FiltersContext } from '../../../context/FiltersContext';
+import { useAnimatedContainer } from './useAnimatedContainer';
 import { ChecklistsTab } from '../../../components/Dashboard/Tabs/ChecklistsTab';
 import { IncidencesTab } from '../../../components/Dashboard/Tabs/IncidencesTab';
-import Orientation from 'react-native-orientation-locker';
 import { CHECKLISTS, INCIDENCES } from '../../../utils/firebaseKeys';
 
-export const useDashboard = navigation => {
+export const useDashboard = () => {
   const [index, setIndex] = useState(0);
   const { filters, setFilters } = useContext(FiltersContext);
   const { isScrollActive, gestureHandler, containerStyles } =
     useAnimatedContainer();
+  const layout = useWindowDimensions();
 
   const routes = useMemo(
     () => [
@@ -29,15 +25,17 @@ export const useDashboard = navigation => {
   );
 
   const date = useMemo(() => {
-    const dateArray = moment(new Date()).format('LL').split(' ');
+    const formattedDate = moment().format('LL');
+    const dateArray = formattedDate.split(' ');
+
+    if (dateArray.length < 3) return dateArray;
+
     return [
       dateArray[0],
       dateArray[1],
-      dateArray[2][0].toUpperCase() + dateArray[2].slice(1)
+      dateArray[2].charAt(0).toUpperCase() + dateArray[2].slice(1)
     ];
   }, []);
-
-  const layout = useWindowDimensions();
 
   const renderScene = useCallback(
     ({ route }) => {
@@ -56,16 +54,6 @@ export const useDashboard = navigation => {
     },
     [filters, isScrollActive]
   );
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      Orientation.unlockAllOrientations();
-      Orientation.lockToPortrait();
-    });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-  }, [navigation]);
 
   return {
     index,

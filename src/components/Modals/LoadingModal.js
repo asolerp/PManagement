@@ -1,21 +1,29 @@
 import React from 'react';
-
 import Modal from 'react-native-modal';
-import {View, ActivityIndicator, Image} from 'react-native';
-import {useTheme} from '../../Theme';
+import { View, ActivityIndicator, Image, StyleSheet } from 'react-native';
 
-export const LoadingModal = ({visible}) => {
-  const {Layout} = useTheme();
+export const LoadingModal = ({ visible }) => {
   return (
     <Modal isVisible={visible} backdropOpacity={0.9}>
-      <View style={Layout.colCenter}>
+      <View style={styles.container}>
         <Image
           source={require('../../assets/images/logo_pm_servicios.png')}
           resizeMode="contain"
-          style={{width: 150}}
+          style={styles.logo}
         />
-        <ActivityIndicator color="white" size="large" />
+        <ActivityIndicator color="#FFFFFF" size="large" />
       </View>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  },
+  logo: {
+    width: 150
+  }
+});

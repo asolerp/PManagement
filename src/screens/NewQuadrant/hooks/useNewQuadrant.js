@@ -1,7 +1,7 @@
 import {useCollectionDataOnce} from 'react-firebase-hooks/firestore';
 import {popScreen} from '../../../Router/utils/actions';
 import {HOUSES} from '../../../utils/entities';
-import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection, doc, getDocs, deleteDoc, updateDoc, addDoc, query, where } from '@react-native-firebase/firestore';
 
 export const useNewQuadrant = () => {
   const [houses] = useCollectionDataOnce(HOUSES, {
@@ -14,33 +14,37 @@ export const useNewQuadrant = () => {
       [],
     );
     try {
-      const colRef = firestore()
-        .collection('quadrants')
-        .doc(quadrantId)
-        .collection('jobs');
-      colRef.get().then(async (querySnapshot) => {
-        await Promise.all(querySnapshot.docs.map((d) => d.ref.delete()));
-      });
-      const colRefJobs = firestore()
-        .collection('jobs')
-        .where('quadrantId', '==', quadrantId);
-      colRefJobs.get().then(async (querySnapshot) => {
-        await Promise.all(querySnapshot.docs.map((d) => d.ref.delete()));
-      });
-      await firestore().collection('quadrants').doc(quadrantId).update({date});
+      const db = getFirestore();
+      
+      // Delete existing jobs in quadrant subcollection
+      const colRef = collection(doc(collection(db, 'quadrants'), quadrantId), 'jobs');
+      const jobsSnapshot = await getDocs(colRef);
+      await Promise.all(jobsSnapshot.docs.map((d) => deleteDoc(d.ref)));
+      
+      // Delete jobs with this quadrantId
+      const colRefJobs = query(
+        collection(db, 'jobs'),
+        where('quadrantId', '==', quadrantId)
+      );
+      const mainJobsSnapshot = await getDocs(colRefJobs);
+      await Promise.all(mainJobsSnapshot.docs.map((d) => deleteDoc(d.ref)));
+      
+      // Update quadrant date
+      const quadrantRef = doc(collection(db, 'quadrants'), quadrantId);
+      await updateDoc(quadrantRef, {date});
+      
+      // Add new jobs
       await Promise.all(
         jobs.map(
-          async (job) =>
-            await firestore()
-              .collection('quadrants')
-              .doc(quadrantId)
-              .collection('jobs')
-              .add({
-                ...job,
-                quadrantId,
-                startHour: job?.startHour?._i || job?.startHour,
-                endHour: job?.endHour?._i || job?.endHour,
-              }),
+          async (job) => {
+            const jobsCollection = collection(quadrantRef, 'jobs');
+            return await addDoc(jobsCollection, {
+              ...job,
+              quadrantId,
+              startHour: job?.startHour?._i || job?.startHour,
+              endHour: job?.endHour?._i || job?.endHour,
+            });
+          }
         ),
       );
     } catch (err) {
@@ -57,22 +61,24 @@ export const useNewQuadrant = () => {
     );
 
     try {
-      const response = await firestore().collection('quadrants').add({
-        date,
-      });
+      const db = getFirestore();
+      const quadrantsCollection = collection(db, 'quadrants');
+      const response = await addDoc(quadrantsCollection, {date});
+      
       await Promise.all(
         jobs.map(
-          async (job) =>
-            await firestore()
-              .collection('quadrants')
-              .doc(response.id)
-              .collection('jobs')
-              .add({
-                ...job,
-                quadrantId: response.id,
-                startHour: job?.startHour?._i,
-                endHour: job?.endHour?._i,
-              }),
+          async (job) => {
+            const jobsCollection = collection(
+              doc(collection(db, 'quadrants'), response.id),
+              'jobs'
+            );
+            return await addDoc(jobsCollection, {
+              ...job,
+              quadrantId: response.id,
+              startHour: job?.startHour?._i,
+              endHour: job?.endHour?._i,
+            });
+          }
         ),
       );
     } catch (err) {

@@ -1,25 +1,29 @@
-import {openScreenWithPush} from '../../../Router/utils/actions';
+import { openScreenWithPush } from '../../../Router/utils/actions';
 import {
-  CHECK_STACK_KEY,
+  CHECK_SCREEN_KEY,
   INCIDENCE_SCREEN_KEY,
-  JOB_SCREEN_KEY,
+  JOB_SCREEN_KEY
 } from '../../../Router/utils/routerKeys';
-import {CHECKLISTS, INCIDENCES, JOBS} from '../../../utils/firebaseKeys';
-import firestore from '@react-native-firebase/firestore';
-import {useDocumentDataOnce} from 'react-firebase-hooks/firestore';
-import {useTranslation} from 'react-i18next';
-import {parseEntities} from '../../../utils/parsers';
+import { CHECKLISTS, INCIDENCES, JOBS } from '../../../utils/firebaseKeys';
+import {
+  getFirestore,
+  collection,
+  doc
+} from '@react-native-firebase/firestore';
+import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
+import { useTranslation } from 'react-i18next';
+import { parseEntities } from '../../../utils/parsers';
 
-const {useLocales} = require('../../../utils/useLocales');
+const { useLocales } = require('../../../utils/useLocales');
 
 export const useConfigChatByNotification = ({
-  collection,
+  collection: collectionName,
   task,
   docId,
-  notification,
+  notification
 }) => {
-  const {t} = useTranslation();
-  const {locale} = useLocales();
+  const { t } = useTranslation();
+  const { locale } = useLocales();
   let header;
 
   if (task) {
@@ -30,41 +34,41 @@ export const useConfigChatByNotification = ({
   }
 
   const handlerOnPressByNotification = () => {
-    if (collection === JOBS) {
+    if (collectionName === JOBS) {
       return () => {
         openScreenWithPush(JOB_SCREEN_KEY, {
-          jobId: docId,
+          jobId: docId
         });
       };
     }
-    if (collection === CHECKLISTS) {
+    if (collectionName === CHECKLISTS) {
       return () => {
-        openScreenWithPush(CHECK_STACK_KEY, {
-          docId,
+        openScreenWithPush(CHECK_SCREEN_KEY, {
+          docId
         });
       };
     }
-    if (collection === INCIDENCES) {
+    if (collectionName === INCIDENCES) {
       return () => {
         openScreenWithPush(INCIDENCE_SCREEN_KEY, {
-          incidenceId: docId,
+          incidenceId: docId
         });
       };
     }
   };
 
-  const [chat] = useDocumentDataOnce(
-    firestore().collection(collection).doc(docId),
-    {
-      idField: 'id',
-    },
-  );
+  const db = getFirestore();
+  const docRef = doc(collection(db, collectionName), docId);
+
+  const [chat] = useDocumentDataOnce(docRef, {
+    idField: 'id'
+  });
 
   const headerChat = () => {
-    if (collection === INCIDENCES) {
+    if (collectionName === INCIDENCES) {
       return t('chat.view_incidence');
     }
-    if (collection === CHECKLISTS) {
+    if (collectionName === CHECKLISTS) {
       return t('chat.view_checklist');
     }
   };
@@ -72,8 +76,8 @@ export const useConfigChatByNotification = ({
   return {
     header: notification
       ? header || headerChat()
-      : `${parseEntities[collection]} chat`,
+      : `${parseEntities[collectionName]} chat`,
     onPressHeader: handlerOnPressByNotification(),
-    chat,
+    chat
   };
 };

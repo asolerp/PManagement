@@ -1,6 +1,6 @@
 import React, {useContext, useMemo} from 'react';
 
-import firestore from '@react-native-firebase/firestore';
+import { getFirestore, collection, doc } from '@react-native-firebase/firestore';
 import {useDocumentData} from 'react-firebase-hooks/firestore';
 
 // UI
@@ -36,9 +36,11 @@ const JobScreen = ({route}) => {
   const {setVisible} = useContext(LoadingModalContext);
   const type = 'capture';
   const {jobId} = route.params;
+  
+  const db = getFirestore();
   const query = useMemo(() => {
-    return firestore().collection(JOBS).doc(jobId);
-  }, [jobId]);
+    return doc(collection(db, JOBS), jobId);
+  }, [jobId, db]);
 
   const [job] = useDocumentData(query, {
     idField: 'id',
@@ -61,8 +63,10 @@ const JobScreen = ({route}) => {
             fileUri: image?.uri,
             fileType: image?.type,
           }));
+          const db = getFirestore();
+          const jobRef = doc(collection(db, JOBS), jobId);
           await uploadFinishPhoto(images[0], {
-            collectionRef: firestore().collection(JOBS).doc(jobId),
+            collectionRef: jobRef,
             cloudinaryFolder: `/PortManagement/${JOBS}/${jobId}/Photos`,
             docId: jobId,
           });

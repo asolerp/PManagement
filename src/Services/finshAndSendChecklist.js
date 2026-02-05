@@ -1,17 +1,21 @@
-import firestore from '@react-native-firebase/firestore';
-import {error} from '../lib/logging';
+import {
+  getFirestore,
+  collection,
+  doc,
+  updateDoc
+} from '@react-native-firebase/firestore';
+import { error } from '../lib/logging';
 
-const finishAndSendChecklist = async (checkId) => {
+const finishAndSendChecklist = async checkId => {
   try {
-    await firestore()
-      .collection('checklists')
-      .doc(checkId)
-      .update({finished: true, send: true});
+    const db = getFirestore();
+    const docRef = doc(collection(db, 'checklists'), checkId);
+    await updateDoc(docRef, { finished: true, send: true });
   } catch (err) {
     error({
       message: err.message,
       track: true,
-      asToast: true,
+      asToast: true
     });
   }
 };

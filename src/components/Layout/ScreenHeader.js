@@ -1,19 +1,29 @@
 import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Colors, FontSize, FontWeight, Spacing } from '../../Theme/Variables';
 
-import {Text} from 'react-native';
-import {useTheme} from '../../Theme';
-import {Colors} from '../../Theme/Variables';
-
-export const ScreenHeader = ({title, subtitle}) => {
-  const {Fonts} = useTheme();
+export const ScreenHeader = ({ title, subtitle }) => {
   return (
-    <>
-      <Text style={[Fonts.textXl, Fonts.textBold, {color: Colors.darkBlue}]}>
-        {title}
-      </Text>
-      {subtitle && (
-        <Text style={[Fonts.textXs, {color: Colors.gray800}]}>{subtitle}</Text>
-      )}
-    </>
+    <View style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
+      {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    gap: Spacing.xs
+  },
+  subtitle: {
+    color: Colors.gray500,
+    fontSize: FontSize.base,
+    lineHeight: 20
+  },
+  title: {
+    color: Colors.gray900,
+    fontSize: FontSize['3xl'],
+    fontWeight: FontWeight.bold,
+    lineHeight: 32
+  }
+});

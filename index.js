@@ -1,17 +1,8 @@
 import 'react-native-gesture-handler';
-
-import {AppRegistry} from 'react-native';
+import { registerRootComponent } from 'expo';
 import App from './src/App';
-import CodePush from 'react-native-code-push';
 
-import {name as appName} from './app.json';
-
-let CodePushOptions = {
-  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
-  mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
-  updateDialog: true,
-};
-
-const AppWithCodePush = CodePush(CodePushOptions)(App);
-
-AppRegistry.registerComponent(appName, () => AppWithCodePush);
+// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
+// It also ensures that whether you load the app in Expo Go or in a native build,
+// the environment is set up appropriately
+registerRootComponent(App);

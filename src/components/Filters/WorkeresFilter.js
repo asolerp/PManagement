@@ -5,38 +5,43 @@ import {
   StyleSheet,
   Text,
   FlatList,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
 
-import {Colors} from '../../Theme/Variables';
+import { Colors } from '../../Theme/Variables';
 
-import firestore from '@react-native-firebase/firestore';
-import {useCollectionData} from 'react-firebase-hooks/firestore';
-import {useTheme} from '../../Theme';
+import {
+  getFirestore,
+  collection,
+  query,
+  where
+} from '@react-native-firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { useTheme } from '../../Theme';
 
 const heightFilter = 60;
 const widthFilter = 60;
 
 const styles = StyleSheet.create({
   filterWrapper: {
-    marginTop: 10,
+    marginTop: 10
   },
   container: {
     width: '100%',
     marginTop: 10,
-    paddingLeft: 0,
+    paddingLeft: 0
   },
   titleFilter: {
     color: Colors.darkBlue,
     fontSize: 25,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   houseFilter: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
     width: widthFilter,
-    height: 60,
+    height: 60
   },
   avatarContainer: {
     position: 'absolute',
@@ -45,19 +50,19 @@ const styles = StyleSheet.create({
     padding: 0,
     width: '100%',
     height: heightFilter,
-    zIndex: 1,
+    zIndex: 1
   },
   maskContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 60,
+    height: 60
   },
   activeFilter: {
     width: 64,
     borderWidth: 2,
     borderColor: Colors.success,
     borderRadius: 100,
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent'
   },
   textWrapper: {
     justifyContent: 'flex-end',
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     width: '100%',
     height: heightFilter,
-    zIndex: 3,
+    zIndex: 3
   },
   maskWrapper: {
     position: 'absolute',
@@ -74,31 +79,33 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     width: '100%',
     height: heightFilter,
-    zIndex: 2,
+    zIndex: 2
   },
   textStyle: {
     textAlign: 'left',
     fontSize: 12,
     color: 'white',
-    fontWeight: 'bold',
-  },
+    fontWeight: 'bold'
+  }
 });
 
-const WorkersFilter = ({workers, onClickWorker}) => {
-  const {Gutters, Layout, Fonts} = useTheme();
-  const [values] = useCollectionData(
-    firestore().collection('users').where('role', '==', 'worker'),
-    {
-      idField: 'id',
-    },
+const WorkersFilter = ({ workers, onClickWorker }) => {
+  const { Gutters, Layout, Fonts } = useTheme();
+  const db = getFirestore();
+  const workersQuery = query(
+    collection(db, 'users'),
+    where('role', '==', 'worker')
   );
-  const isInArray = (id) => {
-    return workers?.find((idHouse) => idHouse === id);
+  const [values] = useCollectionData(workersQuery, {
+    idField: 'id'
+  });
+  const isInArray = id => {
+    return workers?.find(idHouse => idHouse === id);
   };
 
-  const handleSetWorker = (house) => {
+  const handleSetWorker = house => {
     if (isInArray(house.id)) {
-      const housesWithoutID = workers?.filter((id) => {
+      const housesWithoutID = workers?.filter(id => {
         return id !== house.id;
       });
       onClickWorker(housesWithoutID);
@@ -107,7 +114,7 @@ const WorkersFilter = ({workers, onClickWorker}) => {
     }
   };
 
-  const renderItem = ({item}) => (
+  const renderItem = ({ item }) => (
     <View style={[Layout.colCenter, Layout.justifyContentCenter]}>
       <TouchableOpacity
         key={item.id}
@@ -116,17 +123,18 @@ const WorkersFilter = ({workers, onClickWorker}) => {
           Layout.colCenter,
           Layout.justifyContentCenter,
           isInArray(item.id) && styles.activeFilter,
-          {marginHorizontal: 5},
-        ]}>
+          { marginHorizontal: 5 }
+        ]}
+      >
         <View style={[styles.houseFilter]}>
           <View style={[styles.avatarContainer]}>
             <Image
               style={[
                 styles.ownerImage,
-                {width: 55, height: 55, borderRadius: 100},
+                { width: 55, height: 55, borderRadius: 100 }
               ]}
               source={{
-                uri: item.profileImage?.small,
+                uri: item.profileImage?.small
               }}
             />
           </View>
@@ -145,7 +153,7 @@ const WorkersFilter = ({workers, onClickWorker}) => {
         showsHorizontalScrollIndicator={false}
         data={values}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
       />
     </View>
   );
