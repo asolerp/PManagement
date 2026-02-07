@@ -53,6 +53,19 @@ const {
   sendMonthlyReportManually
 } = require('./timeTracking/sendMonthlyReportManually');
 
+// Work Shifts
+const {
+  onEntranceCreated,
+  onEntranceUpdated,
+  getWorkShifts,
+  getWorkShiftStats,
+  getWorkers,
+  createWorkShift,
+  updateWorkShift,
+  deleteWorkShift,
+  migrateEntrancesToWorkShifts
+} = require('./workShifts');
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -113,6 +126,17 @@ exports.sendTimeTrackingEmail = sendTimeTrackingEmail;
 exports.scheduledMonthlyReport = scheduledMonthlyReport;
 exports.testMonthlyReport = testMonthlyReport; // For testing purposes
 exports.sendMonthlyReportManually = sendMonthlyReportManually; // Manual trigger from app
+
+// WORK SHIFTS
+exports.onEntranceCreated = onEntranceCreated;
+exports.onEntranceUpdated = onEntranceUpdated;
+exports.getWorkShifts = getWorkShifts;
+exports.getWorkShiftStats = getWorkShiftStats;
+exports.getWorkers = getWorkers;
+exports.createWorkShift = createWorkShift;
+exports.updateWorkShift = updateWorkShift;
+exports.deleteWorkShift = deleteWorkShift;
+exports.migrateEntrancesToWorkShifts = migrateEntrancesToWorkShifts;
 
 exports.updateProfileImage = functions
   .region(REGION)

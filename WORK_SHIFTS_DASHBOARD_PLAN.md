@@ -250,31 +250,13 @@ if (claims.role !== 'admin') {
 
 ---
 
-## Parte 4: Decisiones Pendientes
+## Parte 4: Decisiones Tomadas
 
-### Preguntas para el cliente:
-
-1. **Jornadas incompletas**: ¿Qué hacer si un trabajador no registra salida?
-   - [ ] Marcar como incompleta y alertar
-   - [ ] Asumir hora de cierre (ej: 20:00)
-   - [ ] Permitir corrección manual
-
-2. **Múltiples entradas/salidas**: ¿Permitir pausas (ej: almuerzo)?
-   - [ ] Solo primera entrada y última salida
-   - [ ] Registrar todas las pausas
-   
-3. **Acceso al dashboard**: ¿Quién puede ver las jornadas?
-   - [ ] Solo administradores
-   - [ ] También propietarios (owners)
-   
-4. **Histórico**: ¿Migrar datos existentes de `entrances` a `workShifts`?
-   - [ ] Sí, crear script de migración
-   - [ ] No, solo datos nuevos
-
-5. **Hosting**: ¿Dónde alojar el dashboard?
-   - [ ] Firebase Hosting (recomendado)
-   - [ ] Vercel
-   - [ ] Otro
+1. **Jornadas incompletas**: ✅ Admin puede corregir/añadir manualmente desde el panel
+2. **Múltiples entradas/salidas**: ✅ Primera entrada del día → Última salida del día
+3. **Acceso al dashboard**: ✅ Solo administradores
+4. **Histórico**: ✅ Migrar datos existentes de `entrances` a `workShifts`
+5. **Hosting**: Firebase Hosting
 
 ---
 

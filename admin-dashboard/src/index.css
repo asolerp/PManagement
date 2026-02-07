@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #126D9B;
+  --primary-dark: #0E5A82;
+  --secondary: #3B8D7A;
+  --accent: #67B26F;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #F9FAFB;
+}
