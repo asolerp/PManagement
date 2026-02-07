@@ -158,7 +158,7 @@ const ConfirmEntranceScreen = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <View style={styles.modalHeaderContent}>
-                <Icon name="home" size={24} color={Colors.pm} />
+                <Icon name="home" size={24} color={Colors.primary} />
                 <Text style={styles.modalTitle}>Seleccionar casa</Text>
               </View>
               <TouchableOpacity

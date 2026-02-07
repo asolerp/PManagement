@@ -6,7 +6,7 @@ import {
   updatePassword
 } from '@react-native-firebase/auth';
 import { popScreen } from '../../../Router/utils/actions';
-import { error, success } from '../../../lib/logging';
+import { Logger, error, success } from '../../../lib/logging';
 import { LoadingModalContext } from '../../../context/loadinModalContext';
 
 import { useUpdateFirebase } from '../../../hooks/useUpdateFirebase';
@@ -60,10 +60,10 @@ export const useProfileForm = () => {
         const user = auth.currentUser;
         updatePassword(user, newPassword)
           .then(() => {
-            console.log('Password updated!');
+            Logger.info('Password updated successfully');
           })
-          .catch(error => {
-            console.log(error);
+          .catch(err => {
+            Logger.error('Error updating password', err);
           });
       })
       .catch(error => {

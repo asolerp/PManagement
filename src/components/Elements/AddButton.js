@@ -9,7 +9,7 @@ const AddButton = ({
   badgeCount,
   iconName,
   bottom = 30,
-  backColor = Colors.pm,
+  backColor = Colors.primary,
   containerStyle,
   onPress,
 }) => {

@@ -3,6 +3,7 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import {HOUSES} from '../../../utils/entities';
 import { getFirestore, collection, query, where, getDocs, doc } from '@react-native-firebase/firestore';
 import {groupBy} from '../../../utils/arrayManipulations';
+import {Logger} from '../../../lib/logging';
 
 export const useQuadrant = () => {
   const [loading, setLoading] = useState(false);
@@ -63,7 +64,7 @@ export const useQuadrant = () => {
       const groupedJobsById = groupBy(jobs, 'houseId');
       setJobs(groupedJobsById);
     } catch (err) {
-      console.log(err);
+      Logger.error('Error getting quadrants with jobs', err, {quadrantId});
     } finally {
       setLoading(false);
     }

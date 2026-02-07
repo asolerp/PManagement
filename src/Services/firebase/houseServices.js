@@ -11,6 +11,8 @@ import {
   startAfter
 } from '@react-native-firebase/firestore';
 
+import { Logger } from '../../lib/logging';
+
 const fetchHouses = async () => {
   try {
     const db = getFirestore();
@@ -24,7 +26,7 @@ const fetchHouses = async () => {
     }));
     return houses;
   } catch (error) {
-    console.error('Error fetching houses: ', error);
+    Logger.error('Error fetching houses', error, { service: 'houseServices' });
     throw error; // o manejar el error como prefieras
   }
 };
@@ -65,7 +67,7 @@ const fetchHousesPaginated = async ({
       hasMore: snapshot.docs.length === limitCount
     };
   } catch (error) {
-    console.error('Error fetching paginated houses: ', error);
+    Logger.error('Error fetching paginated houses', error, { service: 'houseServices' });
     // Retornar estructura vacía en caso de error para evitar crashes
     return {
       houses: [],
@@ -86,7 +88,7 @@ const fetchHouse = async houseId => {
       ...docSnap.data()
     };
   } catch (error) {
-    console.error('Error fetching house: ', error);
+    Logger.error('Error fetching house', error, { service: 'houseServices' });
     throw error; // o manejar el error como prefieras
   }
 };
@@ -105,7 +107,7 @@ const fetchHouseByOwnerId = async userId => {
 
     return houses[0];
   } catch (error) {
-    console.error('Error fetching houses: ', error);
+    Logger.error('Error fetching houses', error, { service: 'houseServices' });
     throw error; // o manejar el error como prefieras
   }
 };

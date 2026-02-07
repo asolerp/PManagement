@@ -144,7 +144,7 @@ const Filters = ({
             <Text
               style={[
                 Gutters.smallBMargin,
-                {textAlign: 'center', color: Colors.pm},
+                {textAlign: 'center', color: Colors.primary},
               ]}>
               {t('common.clean')}
             </Text>

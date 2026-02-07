@@ -206,7 +206,7 @@ export const DateRangePicker = ({
           onPress={onToday}
           activeOpacity={0.7}
         >
-          <Icon name="today" size={16} color={Colors.pm} />
+          <Icon name="today" size={16} color={Colors.primary} />
           <Text style={styles.presetButtonText}>Hoy</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -214,7 +214,7 @@ export const DateRangePicker = ({
           onPress={onThisWeek}
           activeOpacity={0.7}
         >
-          <Icon name="date-range" size={16} color={Colors.pm} />
+          <Icon name="date-range" size={16} color={Colors.primary} />
           <Text style={styles.presetButtonText}>Semana</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -222,7 +222,7 @@ export const DateRangePicker = ({
           onPress={onThisMonth}
           activeOpacity={0.7}
         >
-          <Icon name="calendar-month" size={16} color={Colors.pm} />
+          <Icon name="calendar-month" size={16} color={Colors.primary} />
           <Text style={styles.presetButtonText}>Mes</Text>
         </TouchableOpacity>
       </View>
@@ -241,7 +241,7 @@ export const DateRangePicker = ({
                 <Text style={styles.dateLabel}>Desde</Text>
                 <Text style={styles.dateValue}>{formatDate(startDate)}</Text>
               </View>
-              <Icon name="calendar-today" size={20} color={Colors.pm} />
+              <Icon name="calendar-today" size={20} color={Colors.primary} />
             </View>
           </TouchableOpacity>
 
@@ -259,7 +259,7 @@ export const DateRangePicker = ({
                 <Text style={styles.dateLabel}>Hasta</Text>
                 <Text style={styles.dateValue}>{formatDate(endDate)}</Text>
               </View>
-              <Icon name="calendar-today" size={20} color={Colors.pm} />
+              <Icon name="calendar-today" size={20} color={Colors.primary} />
             </View>
           </TouchableOpacity>
         </View>
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     width: 80
   },
   modalCancelText: {
-    color: Colors.pm,
+    color: Colors.primary,
     fontSize: 16
   },
   modalConfirmButton: {
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     width: 80
   },
   modalConfirmText: {
-    color: Colors.pm,
+    color: Colors.primary,
     fontSize: 16,
     fontWeight: '600'
   },

@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import * as Localization from 'expo-localization';
+import { Logger } from '../lib/logging';
 
 export const useLocales = () => {
   const [locale, setLocale] = useState();
@@ -13,7 +14,8 @@ export const useLocales = () => {
         setLocale('en');
       }
     } catch (error) {
-      console.warn('Failed to get locale:', error);
+      const errorObj = error instanceof Error ? error : new Error(String(error));
+      Logger.warn('Failed to get locale', errorObj);
       setLocale('en');
     }
   }, []);

@@ -5,6 +5,7 @@ import {
   doc,
   writeBatch
 } from '@react-native-firebase/firestore';
+import { Logger } from '../lib/logging';
 
 /**
  * Script simple para ejecutar desde consola o App.js
@@ -15,7 +16,7 @@ import {
  */
 
 export const repairNow = async () => {
-  console.log('🔧 Iniciando reparación de contadores...\n');
+  Logger.info('🔧 Iniciando reparación de contadores...');
 
   try {
     const db = getFirestore();
@@ -45,9 +46,11 @@ export const repairNow = async () => {
       if (currentDoneCount < 0 || currentDoneCount !== actualDoneCount) {
         const houseName = checklistData.house?.[0]?.houseName || 'Sin nombre';
 
-        console.log(`🔧 Reparando: ${houseName}`);
-        console.log(`   ID: ${checklistId}`);
-        console.log(`   Contador: ${currentDoneCount} → ${actualDoneCount}\n`);
+        Logger.info(`🔧 Reparando: ${houseName}`, {
+          checklistId,
+          before: currentDoneCount,
+          after: actualDoneCount
+        });
 
         const checklistDocRef = doc(db, 'checklists', checklistId);
         batch.update(checklistDocRef, { done: actualDoneCount });
@@ -66,17 +69,12 @@ export const repairNow = async () => {
     if (repairedCount > 0) {
       await batch.commit();
 
-      console.log('✅ REPARACIÓN COMPLETADA\n');
-      console.log(`📊 Resumen:`);
-      console.log(`   Total checklists: ${checklistsSnapshot.docs.length}`);
-      console.log(`   Reparados: ${repairedCount}`);
-      console.log(
-        `   Porcentaje: ${((repairedCount / checklistsSnapshot.docs.length) * 100).toFixed(1)}%\n`
-      );
-
-      console.log('📋 Detalles de reparaciones:');
-      repairs.forEach(r => {
-        console.log(`   • ${r.house}: ${r.before} → ${r.after}`);
+      const percentage = ((repairedCount / checklistsSnapshot.docs.length) * 100).toFixed(1);
+      Logger.info('✅ REPARACIÓN COMPLETADA', {
+        total: checklistsSnapshot.docs.length,
+        repaired: repairedCount,
+        percentage: `${percentage}%`,
+        repairs
       });
 
       return {
@@ -86,10 +84,9 @@ export const repairNow = async () => {
         repairs
       };
     } else {
-      console.log('✅ Todos los contadores están correctos!\n');
-      console.log(
-        `📊 Total checklists revisados: ${checklistsSnapshot.docs.length}`
-      );
+      Logger.info('✅ Todos los contadores están correctos!', {
+        total: checklistsSnapshot.docs.length
+      });
 
       return {
         success: true,
@@ -98,7 +95,8 @@ export const repairNow = async () => {
       };
     }
   } catch (err) {
-    console.error('❌ ERROR durante la reparación:', err);
+    const errorObj = err instanceof Error ? err : new Error(String(err));
+    Logger.error('❌ ERROR durante la reparación', errorObj);
     throw err;
   }
 };
@@ -109,7 +107,7 @@ if (
   typeof window !== 'undefined' &&
   window.location?.search?.includes('repair')
 ) {
-  console.log('🚀 Auto-ejecutando reparación...\n');
+  Logger.info('🚀 Auto-ejecutando reparación...');
   repairNow();
 }
 

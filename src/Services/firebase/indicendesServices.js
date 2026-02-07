@@ -5,6 +5,8 @@ import {
   where,
   getDocs
 } from '@react-native-firebase/firestore';
+
+import { Logger } from '../../lib/logging';
 import { INCIDENCES } from '../../utils/firebaseKeys';
 
 const fetchIncidences = async params => {
@@ -37,7 +39,7 @@ const fetchIncidences = async params => {
 
     return incidences;
   } catch (error) {
-    console.error('Error fetching incidences: ', error);
+    Logger.error('Error fetching incidences', error, { service: 'incidencesServices' });
     throw error; // o manejar el error como prefieras
   }
 };

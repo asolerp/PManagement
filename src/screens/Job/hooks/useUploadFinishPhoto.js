@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useUploadCloudinaryImage } from '../../../hooks/useUploadCloudinaryImage';
 
 import { error as errorLog } from '../../../lib/logging';
+import { Logger } from '../../../lib/logging';
 
 export const useUploadFinishPhoto = () => {
   const [loading, setLoading] = useState();
@@ -13,7 +14,7 @@ export const useUploadFinishPhoto = () => {
     try {
       setLoading(true);
       const imageURL = await upload(img, cloudinaryFolder);
-      console.log('IMAGEURL', imageURL);
+      Logger.debug('Finish photo uploaded', {imageURL, cloudinaryFolder});
       await collectionRef.update({
         photoFinish: imageURL,
         photoFinishDate: new Date(),

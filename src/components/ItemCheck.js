@@ -11,7 +11,7 @@ import PhotoCameraModal from './Modals/PhotoCameraModal';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../Store/User/userSlice';
 import { useUpdateFirebase } from '../hooks/useUpdateFirebase';
-import { error } from '../lib/logging';
+import { error, Logger } from '../lib/logging';
 import { openScreenWithPush } from '../Router/utils/actions';
 import { CHECK_PHOTO_SCREEN_KEY } from '../Router/utils/routerKeys';
 
@@ -128,7 +128,11 @@ const ItemCheck = ({ check, checklistId, disabled, isCheckFinished }) => {
       setVisible(true);
       await uploadImages(imgs, check, checklistId);
     } catch (err) {
-      console.log(err);
+      Logger.error(
+        'Failed to upload images',
+        err instanceof Error ? err : new Error(String(err)),
+        { checkId: check?.id, checklistId }
+      );
     } finally {
       setVisible(false);
     }
@@ -139,13 +143,16 @@ const ItemCheck = ({ check, checklistId, disabled, isCheckFinished }) => {
 
     // Prevenir cambios si el estado ya es el mismo
     if (check.done === newStatus) {
-      console.warn(`⚠️ Check ya está en estado ${newStatus}, ignorando cambio`);
+      Logger.debug('Check already in same state, ignoring', {
+        checkId: check.id,
+        newStatus
+      });
       return;
     }
 
     // Prevenir doble click
     if (isUpdating) {
-      console.warn('⚠️ Ya se está actualizando el check, ignorando');
+      Logger.debug('Check update in progress, ignoring duplicate click');
       return;
     }
 

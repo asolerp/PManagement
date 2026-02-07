@@ -8,10 +8,10 @@ import * as Updates from 'expo-updates';
 import {
   getCrashlytics,
   setCrashlyticsCollectionEnabled,
-  setAttribute,
-  log,
-  recordError
+  setAttribute as crashSetAttribute,
+  log as crashLog
 } from '@react-native-firebase/crashlytics';
+import { Logger } from './lib/logging';
 
 // Suprimir warnings de deprecación de react-firebase-hooks
 // Esta librería aún no ha sido actualizada para v22 y genera warnings internos
@@ -51,11 +51,9 @@ const CustomFallback = () => (
 
 // Error handler personalizado para Crashlytics
 const errorHandler = (error, stackTrace) => {
-  console.log('Error caught by boundary:', error);
-  console.log('Stack trace:', stackTrace);
-  const crashlyticsInstance = getCrashlytics();
-  recordError(crashlyticsInstance, error);
-  log(crashlyticsInstance, `Error boundary caught: ${error.message}`);
+  Logger.fatal('Error caught by boundary', error, {
+    stackTrace: stackTrace?.substring(0, 500)
+  });
 };
 
 // Verificar actualizaciones OTA (reemplazo de CodePush)
@@ -66,6 +64,7 @@ async function checkForUpdates() {
     const update = await Updates.checkForUpdateAsync();
 
     if (update.isAvailable) {
+      Logger.info('OTA update available');
       Alert.alert(
         'Actualización disponible',
         'Hay una nueva versión de la aplicación. ¿Deseas actualizar ahora?',
@@ -78,7 +77,7 @@ async function checkForUpdates() {
                 await Updates.fetchUpdateAsync();
                 await Updates.reloadAsync();
               } catch (e) {
-                console.log('Error applying update:', e);
+                Logger.error('Error applying OTA update', e);
               }
             }
           }
@@ -86,8 +85,7 @@ async function checkForUpdates() {
       );
     }
   } catch (e) {
-    // No mostrar error al usuario, solo loguear
-    console.log('Error checking for updates:', e);
+    Logger.warn('Error checking for updates', { error: e.message });
   }
 }
 
@@ -104,20 +102,25 @@ const App = () => {
         await setCrashlyticsCollectionEnabled(crashlyticsInstance, true);
 
         // Agregar información del dispositivo
-        setAttribute(crashlyticsInstance, 'platform', Platform.OS);
-        setAttribute(
+        crashSetAttribute(crashlyticsInstance, 'platform', Platform.OS);
+        crashSetAttribute(
           crashlyticsInstance,
           'platform_version',
           String(Platform.Version)
         );
-        log(crashlyticsInstance, 'App initialized');
+        crashLog(crashlyticsInstance, 'App initialized');
+
+        Logger.info('App initialized', {
+          platform: Platform.OS,
+          version: Platform.Version
+        });
 
         await initRemoteConfig();
 
         // Verificar actualizaciones OTA
         checkForUpdates();
       } catch (e) {
-        console.warn(e);
+        Logger.error('Error during app initialization', e);
       } finally {
         setAppIsReady(true);
       }

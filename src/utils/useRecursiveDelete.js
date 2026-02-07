@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 
 import { getApp } from '@react-native-firebase/app';
 import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
-import { error } from '../lib/logging';
+import { Logger } from '../lib/logging';
 import { LoadingModalContext } from '../context/loadinModalContext';
 import { REGION } from '../firebase/utils';
 
@@ -16,19 +16,15 @@ const useRecursiveDelete = () => {
     try {
       setLoading(true);
       setVisible(true);
-      console.log('Borrando');
+      Logger.debug('Borrando', { path, collection, docId });
       await deleteFn({
         path: path,
         docId,
         collection: collection
       }).then(() => setVisible(false));
     } catch (err) {
-      console.log('ERROR', err);
-      error({
-        message: err.message,
-        track: true,
-        asToast: true
-      });
+      const errorObj = err instanceof Error ? err : new Error(String(err));
+      Logger.error('Error al borrar recursivamente', errorObj, { path, collection, docId }, { showToast: true });
       setVisible(false);
     }
   };

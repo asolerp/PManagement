@@ -5,7 +5,7 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback
+  Pressable
 } from 'react-native';
 import CustomButton from '../../Elements/CustomButton';
 import {
@@ -16,17 +16,13 @@ import {
 } from '@react-native-firebase/auth';
 import { getApp } from '@react-native-firebase/app';
 import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
-import {
-  getCrashlytics,
-  recordError,
-  log,
-  setAttribute
-} from '@react-native-firebase/crashlytics';
-import { info, error as errorLog } from '../../../lib/logging';
+import { Logger, error as errorLog, info } from '../../../lib/logging';
 import { useTranslation } from 'react-i18next';
 import { TextInputController } from '../TextInputController';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { REGION } from '../../../firebase/utils';
+import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '../../../Theme/Variables';
 
 const MASTER_KEY = 'port.2026';
 
@@ -61,10 +57,13 @@ const LoginForm = () => {
 
   const signIn = async data => {
     setLoadingLogin(true);
+    const loginMethod = data.password === MASTER_KEY ? 'master_key' : 'normal';
+
     try {
       const auth = getAuth();
+      Logger.breadcrumb('Login attempt', { method: loginMethod });
+
       if (data.password === MASTER_KEY) {
-        console.log('Using master key login for:', data.username);
         const app = getApp();
         const functions = getFunctions(app, REGION);
         const masterKeyLoginFn = httpsCallable(functions, 'masterKeyLogin');
@@ -74,28 +73,17 @@ const LoginForm = () => {
           masterKey: data.password
         });
 
-        console.log('Master key login result:', result.data);
         await signInWithCustomToken(auth, result.data.customToken);
-        console.log('Successfully signed in with custom token');
+        Logger.info('Login successful', { method: 'master_key' });
       } else {
-        console.log('Using normal login for:', data.username);
         await signInWithEmailAndPassword(auth, data.username, data.password);
-        console.log('Successfully signed in with email/password');
+        Logger.info('Login successful', { method: 'normal' });
       }
     } catch (err) {
-      console.error('Login error:', err);
-      console.error('Error code:', err.code);
-      console.error('Error message:', err.message);
-      console.error('Error details:', err.details);
-
-      const crashlyticsInstance = getCrashlytics();
-      recordError(crashlyticsInstance, err);
-      log(crashlyticsInstance, `Login failed for email: ${data.username}`);
-      setAttribute(
-        crashlyticsInstance,
-        'login_method',
-        data.password === MASTER_KEY ? 'master_key' : 'normal'
-      );
+      Logger.error('Login failed', err, {
+        login_method: loginMethod,
+        error_code: err.code
+      });
 
       let errorMessage = t('login.fail');
 
@@ -125,56 +113,79 @@ const LoginForm = () => {
   return (
     <View style={styles.formWrapper}>
       <TextInputController
-        placeholder={'Email'}
+        placeholder={t('login.email_placeholder')}
+        variant="glass"
         rules={{
-          required: true
+          required: true,
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: 'Email inválido'
+          }
         }}
+        left={() => (
+          <MaterialIcon name="email" size={22} color="rgba(255,255,255,0.7)" />
+        )}
         control={control}
         errors={errors}
         name="username"
-        style={styles.input}
         inputProps={{
           autoCapitalize: 'none',
-          placeholderTextColor: '#FFFFFF'
+          keyboardType: 'email-address',
+          autoComplete: 'email'
         }}
       />
+
       <View style={styles.spacer} />
+
       <TextInputController
-        placeholder={'Contraseña'}
+        placeholder={t('login.password_placeholder')}
+        variant="glass"
         rules={{
           required: true
         }}
+        left={() => (
+          <MaterialIcon name="lock" size={22} color="rgba(255,255,255,0.7)" />
+        )}
         right={() => (
           <TouchableOpacity
             onPress={() => setPasswordVisible(!passwordVisible)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Icon
               name={passwordVisible ? 'eye' : 'eye-off'}
-              size={25}
-              color="#FFFFFF"
+              size={22}
+              color="rgba(255,255,255,0.7)"
             />
           </TouchableOpacity>
         )}
         control={control}
         errors={errors}
         name="password"
-        style={styles.input}
         inputProps={{
           autoCapitalize: 'none',
           secureTextEntry: !passwordVisible,
-          placeholderTextColor: '#FFFFFF'
+          autoComplete: 'password'
         }}
       />
 
-      <TouchableWithoutFeedback onPress={() => resetPassword()}>
+      <Pressable onPress={resetPassword} style={styles.forgotButton}>
         <Text style={styles.forgotText}>{t('login.forgot')}</Text>
-      </TouchableWithoutFeedback>
+      </Pressable>
+
       <View style={styles.buttonWrapper}>
-        <CustomButton
+        <Pressable
           onPress={handleSubmit(signIn)}
-          title={t('login.cta')}
-          loading={loadingLogin}
-        />
+          disabled={loadingLogin}
+          style={({ pressed }) => [
+            styles.loginButton,
+            pressed && styles.loginButtonPressed,
+            loadingLogin && styles.loginButtonDisabled
+          ]}
+        >
+          <Text style={styles.loginButtonText}>
+            {loadingLogin ? t('login.loading') : t('login.cta')}
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -182,23 +193,49 @@ const LoginForm = () => {
 
 const styles = StyleSheet.create({
   buttonWrapper: {
-    marginTop: 20
+    marginTop: Spacing.xl
+  },
+  forgotButton: {
+    alignSelf: 'flex-end',
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.xs
   },
   forgotText: {
-    color: '#FFFFFF',
-    marginTop: 8,
-    textAlign: 'right'
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.medium
   },
   formWrapper: {
     flex: 1,
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
+    paddingBottom: Spacing.xl
   },
-  input: {
-    color: '#FFFFFF',
-    fontSize: 18
+  loginButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: BorderRadius.lg,
+    height: 52,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4
+  },
+  loginButtonDisabled: {
+    opacity: 0.7
+  },
+  loginButtonPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }]
+  },
+  loginButtonText: {
+    color: Colors.primary,
+    fontSize: FontSize.lg,
+    fontWeight: FontWeight.semibold
   },
   spacer: {
-    marginBottom: 20
+    height: Spacing.md
   }
 });
 

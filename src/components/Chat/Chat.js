@@ -17,6 +17,7 @@ import moment from 'moment';
 import {Colors} from '../../Theme/Variables';
 import useChat from '../../Screens/Chat/utils/useChat';
 import PhotoCameraModal from '../Modals/PhotoCameraModal';
+import {Logger} from '../../lib/logging';
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -62,7 +63,7 @@ const Chat = ({collection, docId}) => {
             }));
             await onSendImage(mappedImages[0]);
           } catch (err) {
-            console.log(err);
+            Logger.error('Failed to send image in chat', err instanceof Error ? err : new Error(String(err)), { collection, docId });
           } finally {
             setPhotoCameraModal(false);
           }
@@ -86,7 +87,7 @@ const Chat = ({collection, docId}) => {
           />
         )}
         renderLoading={() => (
-          <ActivityIndicator size="small" color={Colors.pm} />
+          <ActivityIndicator size="small" color={Colors.primary} />
         )}
         renderInputToolbar={(props) => (
           <InputToolbar

@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next';
 
 import * as resources from './resources';
 import * as Localization from 'expo-localization';
+import { Logger } from '../lib/logging';
 
 // Get locale safely with fallback
 let languageCode = 'en';
@@ -12,7 +13,7 @@ try {
     languageCode = locales[0].languageCode;
   }
 } catch (error) {
-  console.warn('Failed to get locales, using default:', error);
+  Logger.warn('Failed to get locales, using default', {error: error.message});
 }
 
 i18n.use(initReactI18next).init({

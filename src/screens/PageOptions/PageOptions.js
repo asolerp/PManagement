@@ -26,6 +26,7 @@ import { deleteGeneric } from '../../components/Alerts/deleteGeneric';
 import useMoveToRecycleBien from '../../utils/useMoveToRecycleBin';
 import { REGION } from '../../firebase/utils';
 import { success } from '../../lib/logging';
+import { Logger } from '../../lib/logging';
 import { LoadingModalContext } from '../../context/loadinModalContext';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -92,7 +93,7 @@ const PageOptionsScreen = ({
                 asToast: true
               });
             } catch (e) {
-              console.log('ERROR', e);
+              Logger.error('Error sending password reset email', e, {userEmail});
             } finally {
               setVisible(false);
             }
@@ -142,7 +143,7 @@ const PageOptionsScreen = ({
 
                 popScreen();
               } catch (err) {
-                console.log('ERROR', err);
+                Logger.error('Error deleting document', err, {collection, docId});
               } finally {
                 setVisible(false); // Ocultar loading
               }
@@ -178,7 +179,7 @@ const PageOptionsScreen = ({
                 screen: backScreen
               });
             } catch (err) {
-              console.log('ERROR duplicating:', err);
+              Logger.error('Error duplicating document', err, {collection, docId});
             } finally {
               setVisible(false); // Ocultar loading
             }

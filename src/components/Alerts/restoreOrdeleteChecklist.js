@@ -1,4 +1,5 @@
 import {Alert} from 'react-native';
+import { Logger } from '../../lib/logging';
 
 export const restoreOrDeleteChecklist = (restore, remove) =>
   Alert.alert(
@@ -13,7 +14,7 @@ export const restoreOrDeleteChecklist = (restore, remove) =>
       {text: 'Borrar', onPress: () => remove() ,style: 'destructive'},
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('restoreOrDeleteChecklist cancelled'),
         style: 'cancel',
       },
     ],

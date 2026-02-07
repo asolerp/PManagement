@@ -37,7 +37,7 @@ export const DateSelector = ({
           style={[styles.button, styles.buttonLeft]}
           activeOpacity={0.7}
         >
-          <Icon name="chevron-left" size={20} color={Colors.pm} />
+          <Icon name="chevron-left" size={20} color={Colors.primary} />
           <Text style={[theme.fontSansBold, styles.buttonText]}>Anterior</Text>
         </TouchableOpacity>
 
@@ -61,7 +61,7 @@ export const DateSelector = ({
           <Icon
             name="chevron-right"
             size={20}
-            color={isToday ? Colors.gray400 : Colors.pm}
+            color={isToday ? Colors.gray400 : Colors.primary}
           />
         </TouchableOpacity>
       </View>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     opacity: 0.4
   },
   buttonText: {
-    color: Colors.pm,
+    color: Colors.primary,
     fontSize: 14,
     marginHorizontal: 4
   },

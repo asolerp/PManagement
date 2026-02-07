@@ -11,6 +11,7 @@ import {ListItem} from './ListItem';
 import {FinishedListItem} from './FinishedListItem';
 import {format} from 'date-fns';
 import moment from 'moment';
+import {Logger} from '../../lib/logging';
 
 const JobItem = ({item, fullWidth}) => {
   const {t} = useTranslation();
@@ -25,7 +26,7 @@ const JobItem = ({item, fullWidth}) => {
     item?.task?.locales?.en.desc ||
     item?.task?.desc;
 
-  console.log('[[ITEM]]', item);
+  Logger.debug('JobItem rendered', { itemId: item?.id, done: item?.done });
 
   if (item.done) {
     return (
@@ -34,7 +35,7 @@ const JobItem = ({item, fullWidth}) => {
         date={format(item?.date.toDate(), 'dd/MM/yyyy')}
         startHour={moment(item?.quadrantStartHour?.toDate()).format('LT')}
         endHour={moment(item?.quadrantEndHour?.toDate()).format('LT')}
-        statusColor={Colors.pm}
+        statusColor={Colors.primary}
         title={taksDescByLocale}
         subtitle={item?.observations}
         counter={noReadCounter}
@@ -52,7 +53,7 @@ const JobItem = ({item, fullWidth}) => {
       startHour={moment(item?.quadrantStartHour?.toDate()).format('LT')}
       endHour={moment(item?.quadrantEndHour?.toDate()).format('LT')}
       dateVariant={parseDateWithText(item?.date).variant}
-      statusColor={Colors.pm}
+      statusColor={Colors.primary}
       statusPercentage={1}
       title={taksDescByLocale}
       subtitle={item?.observations}

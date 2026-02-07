@@ -8,7 +8,8 @@ import {
   Platform,
   Dimensions,
   TouchableWithoutFeedback,
-  Keyboard
+  Keyboard,
+  ScrollView
 } from 'react-native';
 
 // UI
@@ -17,40 +18,65 @@ import LoginForm from '../../components/Forms/Auth/LoginForm';
 import { KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useKeyboard } from '../../hooks/useKeyboard';
-import theme from '../../Theme/Theme';
+import { Colors, FontSize, FontWeight, Spacing } from '../../Theme/Variables';
 
 export const LOGIN_SCREEN_KEY = 'loginScreen';
-const isAndroid = Platform.OS === 'android';
-const heightScreen = Dimensions.get('window').height;
+const { height: heightScreen } = Dimensions.get('window');
 
 const LoginScreen = () => {
-  const isVisible = heightScreen > 700;
+  const isLargeScreen = heightScreen > 700;
   const { isKeyboardVisible } = useKeyboard();
   const { t } = useTranslation();
 
+  // Ocultar logo y welcome en pantallas pequeñas cuando el teclado está visible
+  const showLogo = isLargeScreen || !isKeyboardVisible;
+  const showWelcome = isLargeScreen || !isKeyboardVisible;
+
   return (
-    <LinearGradient colors={['#126D9B', '#67B26F']} style={styles.gradient}>
+    <LinearGradient
+      colors={[Colors.gradientStart, Colors.gradientMiddle, Colors.gradientEnd]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.gradient}
+    >
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
-          style={[styles.keyboardView, isAndroid && styles.keyboardViewAndroid]}
-          behavior={Platform.OS === 'ios' ? 'padding' : null}
+          style={styles.keyboardView}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.container}>
-              {(isVisible || !isKeyboardVisible) && (
-                <View style={styles.logoWrapper}>
-                  <Image
-                    style={styles.logo}
-                    source={require('../../assets/images/logo_pm_servicios.png')}
-                  />
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+            >
+              {/* Logo Section */}
+              {showLogo && (
+                <View style={styles.logoSection}>
+                  <View style={styles.logoContainer}>
+                    <Image
+                      style={styles.logo}
+                      source={require('../../assets/images/logo_pm_servicios.png')}
+                    />
+                  </View>
                 </View>
               )}
-              <View style={[styles.welcomeWrapper, theme.mB20]}>
-                <Text style={styles.welcomeText}>{t('login.welcome')}</Text>
-                <Text style={styles.welcomeTextSub}>{t('login.login')}</Text>
+
+              {/* Welcome Section */}
+              {showWelcome && (
+                <View style={styles.welcomeSection}>
+                  <Text style={styles.welcomeText}>{t('login.welcome')}</Text>
+                  <Text style={styles.welcomeSubtext}>{t('login.login')}</Text>
+                </View>
+              )}
+
+              {/* Form Section */}
+              <View style={styles.formSection}>
+                <LoginForm />
               </View>
-              <LoginForm />
-            </View>
+            </ScrollView>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -59,9 +85,8 @@ const LoginScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center'
+  formSection: {
+    paddingBottom: Spacing.xl
   },
   gradient: {
     flex: 1
@@ -69,33 +94,45 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1
   },
-  keyboardViewAndroid: {
-    paddingBottom: 20
-  },
   logo: {
+    height: 120,
     resizeMode: 'contain',
-    width: 150
+    width: 120
   },
-  logoWrapper: {
+  logoContainer: {
     alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center'
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 30,
+    justifyContent: 'center',
+    padding: Spacing.lg
+  },
+  logoSection: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing['2xl']
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: 30
+    paddingHorizontal: Spacing.xl
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center'
+  },
+  welcomeSection: {
+    marginBottom: Spacing.lg,
+    paddingVertical: Spacing.md
+  },
+  welcomeSubtext: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: FontSize.lg,
+    fontWeight: FontWeight.normal,
+    marginTop: Spacing.xs
   },
   welcomeText: {
     color: 'white',
-    fontSize: 30,
-    fontWeight: 'bold'
-  },
-  welcomeTextSub: {
-    color: 'white',
-    fontSize: 20
-  },
-  welcomeWrapper: {
-    flex: 1
+    fontSize: FontSize['4xl'],
+    fontWeight: FontWeight.bold
   }
 });
 

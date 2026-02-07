@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Avatar from '../Avatar';
+import { Logger } from '../../lib/logging';
 
 const FULL_WIDTH = '100%';
 const CARD_WIDTH = 220;
@@ -47,9 +48,10 @@ export const ListItem = ({
 
   // Log para debug si hay valores negativos
   if (done < 0) {
-    console.warn(
-      `⚠️ ListItem: done es negativo (${done}/${total}). Normalizando a 0.`
-    );
+    Logger.warn('ListItem: done is negative, normalizing to 0', {
+      done,
+      total
+    });
   }
 
   // Calcular progreso

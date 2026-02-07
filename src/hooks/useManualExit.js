@@ -8,7 +8,7 @@ import {
   Timestamp
 } from '@react-native-firebase/firestore';
 
-import { error } from '../lib/logging';
+import { Logger } from '../lib/logging';
 
 export const useManualExit = () => {
   const [loading, setLoading] = useState(false);
@@ -51,12 +51,8 @@ export const useManualExit = () => {
       setLoading(false);
       return true;
     } catch (err) {
-      console.log('Error marking exit manually:', err);
-      error({
-        message: err.message || 'No se pudo marcar la salida',
-        track: true,
-        asToast: true
-      });
+      const errorObj = err instanceof Error ? err : new Error(String(err));
+      Logger.error('Error marking exit manually', errorObj, { entranceId, exitTime }, { showToast: true });
       setLoading(false);
       return false;
     }

@@ -7,6 +7,7 @@ import useUploadImageCheck from '../../../hooks/useUploadImage';
 import { ENTRANCES } from '../../../utils/firebaseKeys';
 import { imageActions } from '../../../utils/imageActions';
 import { Timestamp } from '@react-native-firebase/firestore';
+import { Logger } from '../../../lib/logging';
 
 import Geolocation from '@react-native-community/geolocation';
 import { useSelector } from 'react-redux';
@@ -14,7 +15,40 @@ import { userSelector } from '../../../Store/User/userSlice';
 import { popScreen } from '../../../Router/utils/actions';
 import { useUpdateFirebase } from '../../../hooks/useUpdateFirebase';
 
-export const useConfirmEntrance = () => {
+// Ubicación por defecto para modo desarrollo (Madrid, España)
+const DEV_DEFAULT_LOCATION = {
+  latitude: 40.4168,
+  longitude: -3.7038
+};
+
+// Helper para obtener ubicación con fallback en modo dev
+const getLocationWithFallback = () => {
+  return new Promise((resolve, reject) => {
+    Geolocation.getCurrentPosition(
+      info => {
+        resolve({
+          latitude: info.coords.latitude,
+          longitude: info.coords.longitude
+        });
+      },
+      error => {
+        // En modo desarrollo, usar ubicación por defecto
+        if (__DEV__) {
+          Logger.warn('Using dev fallback location', {
+            reason: error.message,
+            fallbackLocation: DEV_DEFAULT_LOCATION
+          });
+          resolve(DEV_DEFAULT_LOCATION);
+        } else {
+          reject(error);
+        }
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  });
+};
+
+export const useConfirmEntrance = selectedHouse => {
   const { onImagePress } = useCameraOrLibrary();
   const user = useSelector(userSelector);
 
@@ -40,7 +74,7 @@ export const useConfirmEntrance = () => {
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
       } catch (err) {
-        console.warn(err);
+        Logger.warn('Camera permission request error', { error: err.message });
         return false;
       }
     }
@@ -65,7 +99,7 @@ export const useConfirmEntrance = () => {
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
       } catch (err) {
-        console.warn(err);
+        Logger.warn('Location permission error', { error: err.message });
         return false;
       }
     }
@@ -113,46 +147,32 @@ export const useConfirmEntrance = () => {
   const updateEntrance = async (imgs, docId) => {
     try {
       setVisible(true);
-      Geolocation.getCurrentPosition(
-        async info => {
-          try {
-            await updateFirebase(docId, {
-              action: 'exit',
-              exitDate: Timestamp.fromDate(new Date()),
-              exitLocation: {
-                latitude: info.coords.latitude,
-                longitude: info.coords.longitude
-              }
-            });
 
-            await uploadImages(imgs, null, docId, () => {
-              setVisible(false);
-            });
-          } catch (err) {
-            console.log('Error updating entrance:', err);
-            Alert.alert(
-              'Error',
-              'No se pudo registrar la salida. Por favor, inténtalo de nuevo.'
-            );
-            setVisible(false);
-          }
-        },
-        error => {
-          console.log('Location error:', error);
-          Alert.alert(
-            'Error de ubicación',
-            'No se pudo obtener tu ubicación. Por favor, verifica que los permisos de ubicación estén habilitados.'
-          );
-          setVisible(false);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-      );
+      const location = await getLocationWithFallback();
+
+      await updateFirebase(docId, {
+        action: 'exit',
+        exitDate: Timestamp.fromDate(new Date()),
+        exitLocation: location
+      });
+
+      await uploadImages(imgs, null, docId, () => {
+        setVisible(false);
+      });
     } catch (err) {
-      console.log('Error in updateEntrance:', err);
-      Alert.alert(
-        'Error',
-        'No se pudo registrar la salida. Por favor, inténtalo de nuevo.'
-      );
+      Logger.error('Error updating entrance', err, { service: 'confirmEntrance' });
+
+      if (err.message?.includes('location') || err.code === 1 || err.code === 2) {
+        Alert.alert(
+          'Error de ubicación',
+          'No se pudo obtener tu ubicación. Por favor, verifica que los permisos de ubicación estén habilitados.'
+        );
+      } else {
+        Alert.alert(
+          'Error',
+          'No se pudo registrar la salida. Por favor, inténtalo de nuevo.'
+        );
+      }
       setVisible(false);
     }
   };
@@ -160,84 +180,125 @@ export const useConfirmEntrance = () => {
   const saveEntrance = async imgs => {
     try {
       setVisible(true);
-      Geolocation.getCurrentPosition(
-        async info => {
-          try {
-            const data = {
-              action: 'enter',
-              worker: user,
-              location: {
-                latitude: info.coords.latitude,
-                longitude: info.coords.longitude
-              },
-              date: Timestamp.fromDate(new Date())
-            };
 
-            const newEntrance = await addFirebase('entrances', data);
-            await uploadImages(imgs, null, newEntrance.id, () => {
-              setVisible(false);
-              popScreen();
-            });
-          } catch (err) {
-            console.log('Error saving entrance:', err);
-            Alert.alert(
-              'Error',
-              'No se pudo registrar la entrada. Por favor, inténtalo de nuevo.'
-            );
-            setVisible(false);
+      const location = await getLocationWithFallback();
+
+      const data = {
+        action: 'enter',
+        worker: user,
+        location,
+        date: Timestamp.fromDate(new Date()),
+        // Incluir casa seleccionada si existe
+        ...(selectedHouse && {
+          house: {
+            id: selectedHouse.id,
+            houseName: selectedHouse.houseName
           }
-        },
-        error => {
-          console.log('Location error:', error);
-          Alert.alert(
-            'Error de ubicación',
-            'No se pudo obtener tu ubicación. Por favor, verifica que los permisos de ubicación estén habilitados.'
-          );
-          setVisible(false);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-      );
+        })
+      };
+
+      const newEntrance = await addFirebase('entrances', data);
+      await uploadImages(imgs, null, newEntrance.id, () => {
+        setVisible(false);
+        popScreen();
+      });
     } catch (err) {
-      console.log('Error in saveEntrance:', err);
-      Alert.alert(
-        'Error',
-        'No se pudo registrar la entrada. Por favor, inténtalo de nuevo.'
-      );
+      Logger.error('Error saving entrance', err, { service: 'confirmEntrance' });
+
+      if (err.message?.includes('location') || err.code === 1 || err.code === 2) {
+        Alert.alert(
+          'Error de ubicación',
+          'No se pudo obtener tu ubicación. Por favor, verifica que los permisos de ubicación estén habilitados.'
+        );
+      } else {
+        Alert.alert(
+          'Error',
+          'No se pudo registrar la entrada. Por favor, inténtalo de nuevo.'
+        );
+      }
       setVisible(false);
     }
   };
 
   const onRegisterEnter = async () => {
-    // Verificar permisos ANTES de abrir la cámara
-    const hasPermissions = await checkAllPermissions();
-    if (!hasPermissions) {
-      return; // Detener el proceso si no hay permisos
+    // En modo desarrollo, permitir bypass sin cámara
+    if (__DEV__) {
+      Alert.alert(
+        'Modo Desarrollo',
+        '¿Quieres usar la cámara o registrar sin foto?',
+        [
+          {
+            text: 'Sin foto (dev)',
+            onPress: () => saveEntrance([])
+          },
+          {
+            text: 'Usar cámara',
+            onPress: async () => {
+              const hasPermissions = await checkAllPermissions();
+              if (!hasPermissions) return;
+
+              onImagePress({
+                type: 'capture',
+                options: { ...imageActions['common'] },
+                callback: async imgs => saveEntrance(imgs)
+              });
+            }
+          },
+          { text: 'Cancelar', style: 'cancel' }
+        ]
+      );
+      return;
     }
 
-    // Si los permisos están concedidos, proceder con la cámara
+    // Producción: verificar permisos y usar cámara
+    const hasPermissions = await checkAllPermissions();
+    if (!hasPermissions) return;
+
     onImagePress({
       type: 'capture',
       options: { ...imageActions['common'] },
-      callback: async imgs => {
-        saveEntrance(imgs);
-      }
+      callback: async imgs => saveEntrance(imgs)
     });
   };
 
   const onRegisterExit = async docId => {
-    // Verificar permisos ANTES de abrir la cámara
-    const hasPermissions = await checkAllPermissions();
-    if (!hasPermissions) {
-      return; // Detener el proceso si no hay permisos
+    // En modo desarrollo, permitir bypass sin cámara
+    if (__DEV__) {
+      Alert.alert(
+        'Modo Desarrollo',
+        '¿Quieres usar la cámara o registrar sin foto?',
+        [
+          {
+            text: 'Sin foto (dev)',
+            onPress: () => updateEntrance([], docId)
+          },
+          {
+            text: 'Usar cámara',
+            onPress: async () => {
+              const hasPermissions = await checkAllPermissions();
+              if (!hasPermissions) return;
+
+              onImagePress({
+                type: 'capture',
+                options: { ...imageActions['common'] },
+                callback: async imgs => updateEntrance(imgs, docId)
+              });
+            }
+          },
+          { text: 'Cancelar', style: 'cancel' }
+        ]
+      );
+      return;
     }
 
-    // Si los permisos están concedidos, proceder con la cámara
+    // Producción: verificar permisos y usar cámara
+    const hasPermissions = await checkAllPermissions();
+    if (!hasPermissions) return;
+
     onImagePress({
       type: 'capture',
       options: { ...imageActions['common'] },
-      callback: async imgs => {
-        updateEntrance(imgs, docId);
-      }
+      callback: async imgs => updateEntrance(imgs, docId)
     });
   };
 

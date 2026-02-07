@@ -54,15 +54,6 @@ export const HousesFilter = ({ houses, onClickHouse }) => {
     }
   };
 
-  // Debug: log para verificar el estado
-  console.log('HousesFilter Debug:', {
-    isLoading,
-    allHousesLength: allHouses.length,
-    hasNextPage,
-    isFetchingNextPage,
-    pagesCount: data?.pages?.length || 0
-  });
-
   const renderItem = ({ item }) => {
     const isSelected = isInArray(item.id);
 

@@ -45,7 +45,7 @@ export const ManualExitModal = ({ isVisible, onClose, onConfirm, loading }) => {
               onPress={() => adjustTime('hours', 1)}
               activeOpacity={0.7}
             >
-              <Icon name="keyboard-arrow-up" size={32} color={Colors.pm} />
+              <Icon name="keyboard-arrow-up" size={32} color={Colors.primary} />
             </TouchableOpacity>
 
             <View style={styles.timeDisplay}>
@@ -62,7 +62,7 @@ export const ManualExitModal = ({ isVisible, onClose, onConfirm, loading }) => {
               onPress={() => adjustTime('hours', -1)}
               activeOpacity={0.7}
             >
-              <Icon name="keyboard-arrow-down" size={32} color={Colors.pm} />
+              <Icon name="keyboard-arrow-down" size={32} color={Colors.primary} />
             </TouchableOpacity>
           </View>
 
@@ -74,7 +74,7 @@ export const ManualExitModal = ({ isVisible, onClose, onConfirm, loading }) => {
               onPress={() => adjustTime('minutes', 5)}
               activeOpacity={0.7}
             >
-              <Icon name="keyboard-arrow-up" size={32} color={Colors.pm} />
+              <Icon name="keyboard-arrow-up" size={32} color={Colors.primary} />
             </TouchableOpacity>
 
             <View style={styles.timeDisplay}>
@@ -91,7 +91,7 @@ export const ManualExitModal = ({ isVisible, onClose, onConfirm, loading }) => {
               onPress={() => adjustTime('minutes', -5)}
               activeOpacity={0.7}
             >
-              <Icon name="keyboard-arrow-down" size={32} color={Colors.pm} />
+              <Icon name="keyboard-arrow-down" size={32} color={Colors.primary} />
             </TouchableOpacity>
           </View>
         </View>

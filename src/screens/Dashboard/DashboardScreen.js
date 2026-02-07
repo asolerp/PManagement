@@ -1,5 +1,12 @@
-import React from 'react';
-import { View, StyleSheet, Text, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  LayoutAnimation
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Components
 import ProfileBar from '../../components/ProfileBar';
@@ -29,6 +36,7 @@ import { useSelector } from 'react-redux';
 import { userSelector } from '../../Store/User/userSlice';
 
 const DashboardScreen = () => {
+  const [showFilters, setShowFilters] = useState(true);
   const user = useSelector(userSelector);
   const statsUid = user?.role === 'admin' ? null : user?.id;
   const { checks, incidences } = useGetGlobalStats({ uid: statsUid });
@@ -63,15 +71,43 @@ const DashboardScreen = () => {
             <ProfileBar />
           </View>
           <View style={styles.contentContainer}>
-            <HousesFilter
-              houses={filters.houses}
-              onClickHouse={houses => {
-                setFilters(oldFilters => ({
-                  ...oldFilters,
-                  houses
-                }));
+            {/* Toggle de filtros */}
+            <Pressable
+              onPress={() => {
+                LayoutAnimation.configureNext(
+                  LayoutAnimation.Presets.easeInEaseOut
+                );
+                setShowFilters(!showFilters);
               }}
-            />
+              style={({ pressed }) => [
+                styles.filterToggle,
+                pressed && styles.filterTogglePressed
+              ]}
+            >
+              <Icon name="filter-list" size={20} color={Colors.primary} />
+              <Text style={styles.filterToggleText}>
+                {showFilters ? 'Ocultar filtros' : 'Filtrar por casa'}
+              </Text>
+              <Icon
+                name={showFilters ? 'expand-less' : 'expand-more'}
+                size={20}
+                color={Colors.gray500}
+              />
+            </Pressable>
+
+            {/* Filtros colapsables */}
+            {showFilters && (
+              <HousesFilter
+                houses={filters.houses}
+                onClickHouse={houses => {
+                  setFilters(oldFilters => ({
+                    ...oldFilters,
+                    houses
+                  }));
+                }}
+              />
+            )}
+
             <HDivider style={styles.divider} />
 
             {/* Custom Simple Tabs */}
@@ -161,6 +197,26 @@ const styles = StyleSheet.create({
   divider: {
     marginVertical: Spacing.md
   },
+  filterToggle: {
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.lg,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginHorizontal: Spacing.base,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm
+  },
+  filterTogglePressed: {
+    opacity: 0.7
+  },
+  filterToggleText: {
+    color: Colors.gray700,
+    flex: 1,
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.medium
+  },
   handleIndicator: {
     backgroundColor: Colors.gray300,
     borderRadius: BorderRadius.sm,
@@ -176,7 +232,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   profileBarContainerStyle: {
-    backgroundColor: Colors.greenLight,
+    backgroundColor: Colors.secondary,
     borderBottomLeftRadius: BorderRadius['3xl'],
     borderBottomRightRadius: BorderRadius['3xl']
   },
@@ -196,7 +252,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2
   },
   tabBadgeActive: {
-    backgroundColor: Colors.pm
+    backgroundColor: Colors.primary
   },
   tabBadgeText: {
     color: Colors.gray500,
@@ -228,7 +284,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.base
   },
   tabIndicator: {
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.sm,
     bottom: 0,
     height: 3,
@@ -242,7 +298,7 @@ const styles = StyleSheet.create({
     fontWeight: FontWeight.medium
   },
   tabTextActive: {
-    color: Colors.pm,
+    color: Colors.primary,
     fontWeight: FontWeight.semibold
   },
   tabsHeader: {

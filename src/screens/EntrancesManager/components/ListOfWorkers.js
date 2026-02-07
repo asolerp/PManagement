@@ -3,11 +3,13 @@ import { FlatList, TouchableOpacity, View } from 'react-native';
 import theme from '../../../Theme/Theme';
 import Avatar from '../../../components/Avatar';
 import { DEFAULT_IMAGE } from '../../../constants/general';
+import { Logger } from '../../../lib/logging';
 
 export const ListOfWorkers = ({ workers, onPressWorker }) => {
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }) => {
+    Logger.debug('Rendering worker item', {workerId: item.id, workerName: item.firstName});
+    return (
     <View style={theme.mX1}>
-      {console.log('Item: ', item)}
       <TouchableOpacity onPress={() => onPressWorker(item.id)}>
         <Avatar
           disabled={!item?.active}
@@ -18,7 +20,8 @@ export const ListOfWorkers = ({ workers, onPressWorker }) => {
         />
       </TouchableOpacity>
     </View>
-  );
+    );
+  };
 
   return (
     <View

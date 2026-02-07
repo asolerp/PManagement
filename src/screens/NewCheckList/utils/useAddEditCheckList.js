@@ -20,6 +20,7 @@ import { getFirestore, collection, doc, addDoc } from '@react-native-firebase/fi
 import { useContext } from 'react';
 import { LoadingModalContext } from '../../../context/loadinModalContext';
 import { MAIN_ADMIN_STACK_KEY } from '../../../Router/utils/routerKeys';
+import { Logger } from '../../../lib/logging';
 
 export const useAddEditCheckist = ({ docId, edit }) => {
   const dispatch = useDispatch();
@@ -105,7 +106,7 @@ export const useAddEditCheckist = ({ docId, edit }) => {
         text2: 'El checklist se actualizó correctamente'
       });
     } catch (err) {
-      console.log(err);
+      Logger.error('Error editing checklist', err, {docId});
     } finally {
       // Invalidar todas las queries relacionadas con checklists
       queryClient.invalidateQueries({

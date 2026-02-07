@@ -63,7 +63,7 @@ export const NewQuadrantScreen = ({route}) => {
                       theme.roundedSm,
                       theme.mB2,
                       theme.p2,
-                      hasHouseJobs(house.id) && {backgroundColor: Colors.pm},
+                      hasHouseJobs(house.id) && {backgroundColor: Colors.primary},
                     ]}>
                     <View style={[theme.flexRow, theme.itemsCenter]}>
                       <FastImage

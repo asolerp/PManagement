@@ -3,10 +3,11 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {DEFAULT_IMAGE} from '../constants/general';
+import { Logger } from '../lib/logging';
 
 const Owner = ({owner}) => {
 
-  console.log("[[OWNER]]", owner)
+  Logger.debug('Owner component rendered', { ownerId: owner?.id });
 
   return (
     <View style={styles.ownerWrapper}>

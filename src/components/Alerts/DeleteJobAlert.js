@@ -1,4 +1,5 @@
 import {Alert} from 'react-native';
+import {Logger} from '../../lib/logging';
 
 const deleteJobAlert = (action) =>
   Alert.alert(
@@ -7,7 +8,7 @@ const deleteJobAlert = (action) =>
     [
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('deleteJobAlert cancelled'),
         style: 'cancel',
       },
       {text: 'Borrar', onPress: () => action()},
@@ -22,7 +23,7 @@ const deleteTaskAlert = (action) =>
     [
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('deleteTaskAlert cancelled'),
         style: 'cancel',
       },
       {text: 'Borrar', onPress: () => action()},
@@ -37,7 +38,7 @@ const finishTaskAlert = (action) =>
     [
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('finishTaskAlert cancelled'),
         style: 'cancel',
       },
       {text: 'Finalizar', onPress: () => action()},
@@ -52,7 +53,7 @@ const openTaskStatus = (action) =>
     [
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('openTaskStatus cancelled'),
         style: 'cancel',
       },
       {text: 'No finalizada', onPress: () => action()},

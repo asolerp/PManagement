@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: 'center',
-    backgroundColor: Colors.pm + '20',
+    backgroundColor: Colors.primary + '20',
     borderRadius: 24,
     height: 48,
     justifyContent: 'center',
@@ -197,12 +197,12 @@ const styles = StyleSheet.create({
     fontSize: 24
   },
   indicatorStyle: {
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderRadius: 5,
     height: 5
   },
   profileBarContainerStyle: {
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     height: 200

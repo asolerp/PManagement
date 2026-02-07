@@ -5,6 +5,8 @@ import {
   where,
   getDocs
 } from '@react-native-firebase/firestore';
+
+import { Logger } from '../../lib/logging';
 import { getEndOfToday, getStartOfToday } from '../../utils/dates';
 
 export const fetchEntrances = async dayOffset => {
@@ -25,7 +27,7 @@ export const fetchEntrances = async dayOffset => {
 
     return houses;
   } catch (error) {
-    console.error('Error fetching houses: ', error);
+    Logger.error('Error fetching entrances', error, { service: 'entrancesServices' });
     throw error; // o manejar el error como prefieras
   }
 };

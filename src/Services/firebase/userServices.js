@@ -8,6 +8,8 @@ import {
   getDoc
 } from '@react-native-firebase/firestore';
 
+import { Logger } from '../../lib/logging';
+
 const fetchUsers = async () => {
   try {
     const db = getFirestore();
@@ -22,7 +24,7 @@ const fetchUsers = async () => {
 
     return users;
   } catch (error) {
-    console.error('Error fetching users: ', error);
+    Logger.error('Error fetching users', error, { service: 'userServices' });
     throw error; // o manejar el error como prefieras
   }
 };
@@ -38,7 +40,7 @@ const fetchUser = async userId => {
       ...docSnap.data()
     };
   } catch (error) {
-    console.error('Error fetching user: ', error);
+    Logger.error('Error fetching user', error, { service: 'userServices' });
     throw error; // o manejar el error como prefieras
   }
 };

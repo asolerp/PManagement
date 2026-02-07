@@ -23,7 +23,7 @@ const CustomButton = ({
   disabled = false,
   containerStyle = [],
   type,
-  variant = 'primary' // primary, secondary, outline, danger
+  variant = 'primary' // primary, secondary, accent, outline, danger
 }) => {
   const borderRadius = styled || BorderRadius.lg;
   const isClearType = type === 'clear' || variant === 'outline';
@@ -33,15 +33,22 @@ const CustomButton = ({
     if (isClearType) {
       return {
         backgroundColor: Colors.white,
-        borderColor: color || Colors.pm,
-        textColor: color || Colors.pm
+        borderColor: color || Colors.primary,
+        textColor: color || Colors.primary
       };
     }
     if (variant === 'secondary') {
       return {
-        backgroundColor: Colors.gray100,
-        borderColor: Colors.gray200,
-        textColor: Colors.gray700
+        backgroundColor: Colors.secondary,
+        borderColor: Colors.secondary,
+        textColor: Colors.white
+      };
+    }
+    if (variant === 'accent') {
+      return {
+        backgroundColor: Colors.accent,
+        borderColor: Colors.accent,
+        textColor: Colors.white
       };
     }
     if (variant === 'danger') {
@@ -53,8 +60,8 @@ const CustomButton = ({
     }
     // primary
     return {
-      backgroundColor: color || Colors.pm,
-      borderColor: color || Colors.pm,
+      backgroundColor: color || Colors.primary,
+      borderColor: color || Colors.primary,
       textColor: Colors.white
     };
   };

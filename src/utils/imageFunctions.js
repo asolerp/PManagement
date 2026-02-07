@@ -1,6 +1,7 @@
 import {launchImageLibrary} from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import {Platform} from 'react-native';
+import { Logger } from '../lib/logging';
 
 export const launchImage = (setter) => {
   let options = {
@@ -11,11 +12,12 @@ export const launchImage = (setter) => {
   };
   launchImageLibrary(options, (response) => {
     if (response.didCancel) {
-      console.log('User cancelled image picker');
+      Logger.debug('User cancelled image picker');
     } else if (response.error) {
-      console.log('ImagePicker Error: ', response.error);
+      const errorObj = response.error instanceof Error ? response.error : new Error(String(response.error));
+      Logger.error('ImagePicker Error', errorObj);
     } else if (response.customButton) {
-      console.log('User tapped custom button: ', response.customButton);
+      Logger.debug('User tapped custom button', { customButton: response.customButton });
     } else {
       setter({
         fileName: response.fileName,

@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   avatarRing: {
     alignItems: 'center',
     backgroundColor: Colors.white,
-    borderColor: Colors.pm,
+    borderColor: Colors.primary,
     borderRadius: BorderRadius.full,
     borderWidth: 3,
     justifyContent: 'center',
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
   },
   sectionIcon: {
     alignItems: 'center',
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.md,
     height: 28,
     justifyContent: 'center',

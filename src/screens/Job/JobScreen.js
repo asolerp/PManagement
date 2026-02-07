@@ -27,6 +27,7 @@ import {useUploadFinishPhoto} from './hooks/useUploadFinishPhoto';
 import {LoadingModalContext} from '../../context/loadinModalContext';
 import {useSelector} from 'react-redux';
 import {userSelector} from '../../Store/User/userSlice';
+import {Logger} from '../../lib/logging';
 
 const JobScreen = ({route}) => {
   const {Gutters} = useTheme();
@@ -71,7 +72,7 @@ const JobScreen = ({route}) => {
             docId: jobId,
           });
         } catch (err) {
-          console.log(err);
+          Logger.error('Error uploading finish photo', err, {jobId});
         } finally {
           setVisible(false);
           popScreen();

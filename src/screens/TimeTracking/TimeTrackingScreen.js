@@ -247,7 +247,7 @@ const TimeTrackingScreen = () => {
   const renderSectionHeader = ({ section }) => (
     <View style={styles.dateSectionHeader}>
       <View style={styles.dateSectionHeaderContent}>
-        <Icon name="calendar-today" size={16} color={Colors.pm} />
+        <Icon name="calendar-today" size={16} color={Colors.primary} />
         <Text style={styles.dateSectionHeaderText}>{section.title}</Text>
         <Badge
           variant="pm"
@@ -262,7 +262,7 @@ const TimeTrackingScreen = () => {
     if (loading) {
       return (
         <View style={styles.emptyContainer}>
-          <ActivityIndicator size="large" color={Colors.pm} />
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       );
     }
@@ -281,7 +281,7 @@ const TimeTrackingScreen = () => {
 
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color={Colors.pm} />
+        <ActivityIndicator size="small" color={Colors.primary} />
         <Text style={styles.footerLoaderText}>Cargando más registros...</Text>
       </View>
     );
@@ -314,7 +314,7 @@ const TimeTrackingScreen = () => {
           <Text style={styles.statLabel}>Pendientes</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: Colors.pm }]}>
+          <Text style={[styles.statValue, { color: Colors.primary }]}>
             {Math.round(totalHours)}h
           </Text>
           <Text style={styles.statLabel}>Total Horas</Text>
@@ -468,7 +468,7 @@ const TimeTrackingScreen = () => {
             onPress={() => setShowFiltersModal(true)}
             style={styles.filterButton}
           >
-            <Icon name="filter-list" size={24} color={Colors.pm} />
+            <Icon name="filter-list" size={24} color={Colors.primary} />
             {selectedWorkerId && <View style={styles.filterBadge} />}
           </TouchableOpacity>
         }
@@ -589,7 +589,7 @@ const TimeTrackingScreen = () => {
 const styles = StyleSheet.create({
   addButton: {
     alignItems: 'center',
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderRadius: 6,
     height: 44,
     justifyContent: 'center',

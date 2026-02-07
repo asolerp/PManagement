@@ -452,14 +452,14 @@ const styles = StyleSheet.create({
   avatarOuterRing: {
     alignItems: 'center',
     backgroundColor: Colors.white,
-    borderColor: Colors.pm,
+    borderColor: Colors.primary,
     borderRadius: BorderRadius.full,
     borderWidth: 3,
     elevation: 8,
     justifyContent: 'center',
     overflow: 'hidden',
     padding: 4,
-    shadowColor: Colors.pm,
+    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8
@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
   changePasswordButton: {
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: Colors.pmLight,
+    backgroundColor: Colors.secondary,
     borderRadius: BorderRadius.lg,
     flexDirection: 'row',
     marginTop: Spacing.sm,
@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
   },
   sectionIconContainer: {
     alignItems: 'center',
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.md,
     height: 32,
     justifyContent: 'center',
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   userRole: {
-    color: Colors.pm,
+    color: Colors.secondary,
     fontSize: FontSize.base,
     fontWeight: FontWeight.medium,
     marginBottom: Spacing.xl,

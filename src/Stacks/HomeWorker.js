@@ -61,7 +61,7 @@ const HomeWorker = () => {
               name={focused ? 'speedometer' : 'speedometer-outline'}
               size={25}
               focused={focused}
-              color={Colors.pm}
+              color={Colors.primary}
             />
           ),
         })}
@@ -79,7 +79,7 @@ const HomeWorker = () => {
                   name={focused ? 'grid' : 'grid-outline'}
                   size={25}
                   focused={focused}
-                  color={Colors.pm}
+                  color={Colors.primary}
                 />
               </>
             ),
@@ -96,7 +96,7 @@ const HomeWorker = () => {
               name={focused ? 'person' : 'person-outline'}
               size={25}
               focused={focused}
-              color={Colors.pm}
+              color={Colors.primary}
             />
           ),
         }}

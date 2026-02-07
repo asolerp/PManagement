@@ -6,7 +6,7 @@ import {
   writeBatch,
   updateDoc
 } from '@react-native-firebase/firestore';
-import { error, success } from '../lib/logging';
+import { Logger } from '../lib/logging';
 
 /**
  * Repara los contadores "done" de checklists que están negativos o incorrectos
@@ -38,9 +38,11 @@ export const repairChecklistCounts = async () => {
 
       // Si el contador está incorrecto (negativo o no coincide)
       if (currentDoneCount < 0 || currentDoneCount !== actualDoneCount) {
-        console.log(
-          `🔧 Reparando checklist ${checklistId}: ${currentDoneCount} → ${actualDoneCount}`
-        );
+        Logger.info(`🔧 Reparando checklist ${checklistId}`, {
+          checklistId,
+          before: currentDoneCount,
+          after: actualDoneCount
+        });
 
         const checklistDocRef = doc(db, 'checklists', checklistId);
         batch.update(checklistDocRef, {
@@ -53,17 +55,9 @@ export const repairChecklistCounts = async () => {
 
     if (repairedCount > 0) {
       await batch.commit();
-      success({
-        message: `✅ ${repairedCount} checklists reparados`,
-        track: false,
-        asToast: true
-      });
+      Logger.info(`✅ ${repairedCount} checklists reparados`, { repairedCount, total: checklistsSnapshot.docs.length }, { showToast: true });
     } else {
-      success({
-        message: '✅ Todos los checklists están correctos',
-        track: false,
-        asToast: true
-      });
+      Logger.info('✅ Todos los checklists están correctos', { total: checklistsSnapshot.docs.length }, { showToast: true });
     }
 
     return {
@@ -72,11 +66,8 @@ export const repairChecklistCounts = async () => {
       success: true
     };
   } catch (err) {
-    error({
-      message: `Error reparando checklists: ${err.message}`,
-      track: true,
-      asToast: true
-    });
+    const errorObj = err instanceof Error ? err : new Error(String(err));
+    Logger.error('Error reparando checklists', errorObj, null, { showToast: true });
     throw err;
   }
 };
@@ -103,13 +94,15 @@ export const repairSingleChecklist = async checklistId => {
       done: actualDoneCount
     });
 
-    console.log(
-      `✅ Checklist ${checklistId} reparado: done = ${actualDoneCount}`
-    );
+    Logger.info(`✅ Checklist ${checklistId} reparado`, {
+      checklistId,
+      done: actualDoneCount
+    });
 
     return actualDoneCount;
   } catch (err) {
-    console.error(`❌ Error reparando checklist ${checklistId}:`, err);
+    const errorObj = err instanceof Error ? err : new Error(String(err));
+    Logger.error(`❌ Error reparando checklist ${checklistId}`, errorObj, { checklistId });
     throw err;
   }
 };

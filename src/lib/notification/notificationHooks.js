@@ -8,6 +8,7 @@ import {
 
 import useAuth from '../../utils/useAuth';
 import {notificationRouteHandler} from './utils/notificationRouteHandler';
+import { Logger } from '../logging';
 
 export const useNotification = () => {
   useEffect(() => {
@@ -18,7 +19,7 @@ export const useNotification = () => {
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
       if (enabled) {
-        console.log('Authorization status:', authStatus);
+        Logger.info('Notifications authorization granted', { authStatus });
       }
     }
     requestUserPermission();

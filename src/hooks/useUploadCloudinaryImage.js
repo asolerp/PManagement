@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {error as errorLog} from '../lib/logging';
+import { Logger } from '../lib/logging';
 
 export const useUploadCloudinaryImage = () => {
   const [loading, setLoading] = useState(false);
@@ -29,12 +29,8 @@ export const useUploadCloudinaryImage = () => {
         return data.secure_url;
       })
       .catch((err) => {
-        console.log('ERR', err);
-        errorLog({
-          message: err.message,
-          track: true,
-          asToast: true,
-        });
+        const errorObj = err instanceof Error ? err : new Error(String(err));
+        Logger.error('Error uploading image to Cloudinary', errorObj, { folder }, { showToast: true });
         setError(err);
       });
 

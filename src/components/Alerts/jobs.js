@@ -1,5 +1,6 @@
 import {Alert} from 'react-native';
 import i18n from '../../Translations/index';
+import {Logger} from '../../lib/logging';
 
 export const finishJob = (action) =>
   Alert.alert(
@@ -8,7 +9,7 @@ export const finishJob = (action) =>
     [
       {
         text: i18n.t('alerts.cancel'),
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('finishJob cancelled'),
         style: 'cancel',
       },
       {text: i18n.t('alerts.accept'), onPress: () => action()},
@@ -23,7 +24,7 @@ export const openJob = (action) =>
     [
       {
         text: i18n.t('alerts.cancel'),
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('openJob cancelled'),
         style: 'cancel',
       },
       {text: i18n.t('alerts.accept'), onPress: () => action()},

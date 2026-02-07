@@ -2,6 +2,7 @@ import {useCollectionDataOnce} from 'react-firebase-hooks/firestore';
 import {popScreen} from '../../../Router/utils/actions';
 import {HOUSES} from '../../../utils/entities';
 import { getFirestore, collection, doc, getDocs, deleteDoc, updateDoc, addDoc, query, where } from '@react-native-firebase/firestore';
+import { Logger } from '../../../lib/logging';
 
 export const useNewQuadrant = () => {
   const [houses] = useCollectionDataOnce(HOUSES, {
@@ -48,7 +49,7 @@ export const useNewQuadrant = () => {
         ),
       );
     } catch (err) {
-      console.log(err);
+      Logger.error('Error editing quadrant', err, { quadrantId });
     } finally {
       popScreen();
     }
@@ -82,7 +83,7 @@ export const useNewQuadrant = () => {
         ),
       );
     } catch (err) {
-      console.log(err);
+      Logger.error('Error creating new quadrant', err);
     } finally {
       popScreen();
     }

@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { getFirestore, collection, query, where, Timestamp, limit, startAfter, getDocs } from '@react-native-firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { Logger } from '../../../lib/logging';
 
 const PAGE_SIZE = 20; // Number of records per page
 
@@ -85,8 +86,8 @@ export const useTimeTracking = () => {
         pendingCount,
         totalHours
       });
-    } catch (error) {
-      console.error('Error loading total stats:', error);
+    } catch (err) {
+      Logger.error('Error loading total stats', err, { service: 'timeTracking' });
     }
   }, [getBaseQuery]);
 
@@ -111,9 +112,9 @@ export const useTimeTracking = () => {
       setEntrances(docs);
       setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
       setHasMore(docs.length === PAGE_SIZE);
-    } catch (error) {
-      console.error('Error loading initial data:', error);
-      setQueryError(error);
+    } catch (err) {
+      Logger.error('Error loading initial data', err, { service: 'timeTracking' });
+      setQueryError(err);
     } finally {
       setLoading(false);
     }
@@ -138,8 +139,8 @@ export const useTimeTracking = () => {
       setEntrances(prev => [...prev, ...docs]);
       setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
       setHasMore(docs.length === PAGE_SIZE);
-    } catch (error) {
-      console.error('Error loading more data:', error);
+    } catch (err) {
+      Logger.error('Error loading more data', err, { service: 'timeTracking' });
     } finally {
       setLoadingMore(false);
     }

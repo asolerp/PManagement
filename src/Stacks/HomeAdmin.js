@@ -106,7 +106,7 @@ const HomeAdmin = () => {
                 name={focused ? 'speedometer' : 'speedometer-outline'}
                 size={25}
                 focused={focused}
-                color={Colors.pm}
+                color={Colors.primary}
               />
             </>
           )
@@ -124,7 +124,7 @@ const HomeAdmin = () => {
                 name={focused ? 'time' : 'time-outline'}
                 size={25}
                 focused={focused}
-                color={Colors.pm}
+                color={Colors.primary}
               />
             </>
           )
@@ -143,7 +143,7 @@ const HomeAdmin = () => {
                   name={focused ? 'grid' : 'grid-outline'}
                   size={25}
                   focused={focused}
-                  color={Colors.pm}
+                  color={Colors.primary}
                 />
               </>
             ),
@@ -162,7 +162,7 @@ const HomeAdmin = () => {
                 name={focused ? 'person' : 'person-outline'}
                 size={25}
                 focused={focused}
-                color={Colors.pm}
+                color={Colors.primary}
               />
             </>
           )
@@ -180,7 +180,7 @@ const HomeAdmin = () => {
                 name={focused ? 'home' : 'home-outline'}
                 size={25}
                 focused={focused}
-                color={Colors.pm}
+                color={Colors.primary}
               />
             </>
           )

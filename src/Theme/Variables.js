@@ -4,13 +4,30 @@ import theme from './Theme';
 // DESIGN SYSTEM - COLORES
 // ============================================
 
-// Paleta principal
+// Paleta basada en el gradiente del Login: #126D9B → #3B8D7A → #67B26F
+
 export const Colors = {
-  // Brand
-  pm: '#55A5AD',
-  pmDark: '#3E93A8',
-  pmLight: '#77C5A2',
-  pmLow: '#55A5AD20',
+  // Brand Principal (basado en gradiente)
+  primary: '#126D9B',
+  primaryDark: '#0E5A82',
+  primaryLight: '#1A7FB0',
+  primaryLow: '#126D9B15',
+
+  secondary: '#3B8D7A',
+  secondaryDark: '#2E7464',
+  secondaryLight: '#4AA08C',
+  secondaryLow: '#3B8D7A15',
+
+  accent: '#67B26F',
+  accentDark: '#52A05A',
+  accentLight: '#7DC284',
+  accentLow: '#67B26F15',
+
+  // Aliases (pm = primary, para compatibilidad)
+  pm: '#126D9B',
+  pmDark: '#0E5A82',
+  pmLight: '#3B8D7A',
+  pmLow: '#126D9B20',
 
   // Neutros
   white: '#FFFFFF',
@@ -35,9 +52,9 @@ export const Colors = {
   darkBlue: '#284748',
 
   // Estados semánticos
-  success: '#10B981',
-  successLight: '#D1FAE5',
-  successLow: '#10B98120',
+  success: '#67B26F',
+  successLight: '#E8F5E9',
+  successLow: '#67B26F20',
 
   warning: '#F59E0B',
   warningLight: '#FEF3C7',
@@ -48,76 +65,90 @@ export const Colors = {
   dangerLow: '#EF444420',
   error: '#EF4444',
 
-  info: '#3B82F6',
-  infoLight: '#DBEAFE',
-  infoLow: '#3B82F620',
+  info: '#126D9B',
+  infoLight: '#E3F2FD',
+  infoLow: '#126D9B20',
 
-  // Prioridades (legacy)
-  priorityLow: '#61C0CD',
-  priorityMedium: '#F5C66D',
-  priorityHigh: '#ED7A7A',
+  // Prioridades
+  priorityLow: '#67B26F',
+  priorityMedium: '#F59E0B',
+  priorityHigh: '#EF4444',
 
-  // Gradientes
+  // Gradientes (explícitos)
+  gradientStart: '#126D9B',
+  gradientMiddle: '#3B8D7A',
+  gradientEnd: '#67B26F',
+
+  // Legacy aliases
   leftBlue: '#126D9B',
   rightGreen: '#67B26F',
-  mediterranean: '#54A3AC',
-  greenLight: '#77C5A2',
+  mediterranean: '#3B8D7A',
+  greenLight: '#67B26F',
 
-  // Acentos
+  // Acentos adicionales
   purple: '#8B5CF6',
   purpleLight: '#EDE9FE',
   purpleLow: '#8B5CF620',
+
+  // Teal (complementario)
+  teal: '#3B8D7A',
+  tealLight: '#E0F2F1',
+  tealLow: '#3B8D7A20'
 };
 
 export const Variants = {
   info: {
     backgroundColor: `${theme.bgInfo.backgroundColor}30`,
-    color: theme.textInfo.color,
+    color: theme.textInfo.color
   },
   pm: {
     backgroundColor: Colors.pmLow,
-    color: Colors.pm,
+    color: Colors.pm
   },
   filter: {
     backgroundColor: `${Colors.success}30`,
     color: Colors.black,
-    borderColor: Colors.pm,
+    borderColor: Colors.pm
   },
   dangerFilter: {
     backgroundColor: `${Colors.danger}30`,
     color: Colors.black,
-    borderColor: Colors.danger,
+    borderColor: Colors.danger
   },
   successFilter: {
     backgroundColor: `${Colors.rightGreen}30`,
     color: Colors.black,
-    borderColor: Colors.rightGreen,
+    borderColor: Colors.rightGreen
   },
   warningFilter: {
     backgroundColor: `${Colors.warning}30`,
     color: Colors.black,
-    borderColor: Colors.warning,
+    borderColor: Colors.warning
   },
   success: {
     backgroundColor: Colors.successLow,
-    color: Colors.success,
+    color: Colors.success
   },
   warning: {
     backgroundColor: Colors.warningLow,
-    color: Colors.warning,
+    color: Colors.warning
   },
   danger: {
     backgroundColor: Colors.dangerLow,
-    color: Colors.danger,
+    color: Colors.danger
   },
   purple: {
     backgroundColor: Colors.purpleLow,
-    color: Colors.purple,
-  },
+    color: Colors.purple
+  }
 };
 
 export const NavigationColors = {
   primary: Colors.primary,
+  background: Colors.gray50,
+  card: Colors.white,
+  text: Colors.gray800,
+  border: Colors.gray200
 };
 
 // ============================================
@@ -141,14 +172,14 @@ export const FontSize = {
   small: 16,
   regular: 20,
   md2: 25,
-  large: 40,
+  large: 40
 };
 
 export const FontWeight = {
   normal: '400',
   medium: '500',
   semibold: '600',
-  bold: '700',
+  bold: '700'
 };
 
 // ============================================
@@ -164,7 +195,7 @@ export const Spacing = {
   xl: 24,
   '2xl': 32,
   '3xl': 40,
-  '4xl': 48,
+  '4xl': 48
 };
 
 // Metric Sizes (legacy - para compatibilidad)
@@ -179,7 +210,7 @@ export const MetricsSizes = {
   small,
   medium,
   regular,
-  large,
+  large
 };
 
 // ============================================
@@ -193,7 +224,7 @@ export const BorderRadius = {
   xl: 16,
   '2xl': 20,
   '3xl': 24,
-  full: 9999,
+  full: 9999
 };
 
 // ============================================
@@ -206,20 +237,20 @@ export const Shadows = {
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
-    elevation: 1,
+    elevation: 1
   },
   md: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
   },
   lg: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
-    elevation: 5,
-  },
+    elevation: 5
+  }
 };

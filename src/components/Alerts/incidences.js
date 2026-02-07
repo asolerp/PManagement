@@ -1,5 +1,6 @@
 import {Alert} from 'react-native';
 import i18n from '../../Translations/index';
+import {Logger} from '../../lib/logging';
 
 export const finishIncidence = (action) =>
   Alert.alert(
@@ -8,7 +9,7 @@ export const finishIncidence = (action) =>
     [
       {
         text: i18n.t('alerts.cancel'),
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('finishIncidence cancelled'),
         style: 'cancel',
       },
       {text: i18n.t('alerts.accept'), onPress: () => action()},
@@ -23,7 +24,7 @@ export const deleteIncidenceAlert = (action) =>
     [
       {
         text: i18n.t('alerts.cancel'),
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('deleteIncidenceAlert cancelled'),
         style: 'cancel',
       },
       {text: i18n.t('alerts.accept'), onPress: () => action()},
@@ -38,7 +39,7 @@ export const openIncidence = (action) =>
     [
       {
         text: i18n.t('alerts.cancel'),
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('openIncidence cancelled'),
         style: 'cancel',
       },
       {text: i18n.t('alerts.accept'), onPress: () => action()},

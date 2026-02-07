@@ -265,7 +265,7 @@ export const TimeTrackingCard = ({ entrance, onUpdate }) => {
                   onPress={() => setShowMapModal(true)}
                   style={styles.mapButton}
                 >
-                  <Icon name="map" size={18} color={Colors.pm} />
+                  <Icon name="map" size={18} color={Colors.primary} />
                   <Text style={styles.mapButtonText}>Ver en mapa</Text>
                 </TouchableOpacity>
               )}
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   },
   mapButton: {
     alignItems: 'center',
-    backgroundColor: Colors.pm + '15',
+    backgroundColor: Colors.primary + '15',
     borderRadius: 6,
     flexDirection: 'row',
     gap: 6,
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6
   },
   mapButtonText: {
-    color: Colors.pm,
+    color: Colors.primary,
     fontSize: 12,
     fontWeight: '600'
   },
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
   },
   placeholderImage: {
     alignItems: 'center',
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     justifyContent: 'center'
   },
   placeholderText: {

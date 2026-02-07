@@ -1,11 +1,14 @@
 export default {
   login: {
     welcome: 'Bienvenido!',
-    login: 'Logeate para continuar',
-    forgot: 'He olvidado mi contraseña',
-    reset_fail: 'Por favor, introduzca un correo electrónico correcto',
+    login: 'Inicia sesión para continuar',
+    forgot: '¿Olvidaste tu contraseña?',
+    reset_fail: 'Por favor, introduce un correo electrónico válido',
     fail: 'El email o la contraseña son incorrectos',
-    cta: 'Login'
+    cta: 'Iniciar sesión',
+    loading: 'Entrando...',
+    email_placeholder: 'Correo electrónico',
+    password_placeholder: 'Contraseña'
   },
   tabs: {
     dashboard: 'Home',
@@ -149,11 +152,15 @@ export default {
   },
   newIncidence: {
     title: 'Nueva Incidencia',
-    subtitle: 'Info',
+    subtitle: 'Reporta un problema o incidencia',
+    error: 'Ha ocurrido un error al crear la incidencia. Inténtalo de nuevo.',
     form: {
       title: 'Título',
+      title_placeholder: '¿Qué ha pasado?',
       incidence: 'Descripción',
+      incidence_placeholder: 'Describe el problema con detalle...',
       photos: 'Fotos',
+      photos_description: 'Añade fotos para documentar la incidencia (opcional)',
       create: 'Crear incidencia'
     }
   },

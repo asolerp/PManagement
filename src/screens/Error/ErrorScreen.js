@@ -15,7 +15,7 @@ const ErrorScreen = () => {
       <Icon
         name="sentiment-very-dissatisfied"
         size={100}
-        color={Colors.pm}
+        color={Colors.primary}
         style={[Gutters.regularBMargin]}
       />
       <Text

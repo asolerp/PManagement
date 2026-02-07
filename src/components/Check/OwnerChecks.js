@@ -29,7 +29,7 @@ export const OwnerChecks = ({ checklist, checksFromChecklist }) => {
               style={[
                 theme.mB2,
                 {
-                  borderColor: Colors.pm
+                  borderColor: Colors.primary
                 },
                 theme.border0_5,
                 theme.roundedSm,
@@ -46,7 +46,7 @@ export const OwnerChecks = ({ checklist, checksFromChecklist }) => {
                   theme.itemsCenter,
                   theme.justifyBetween,
                   {
-                    backgroundColor: Colors.pm
+                    backgroundColor: Colors.primary
                   }
                 ]}
               >

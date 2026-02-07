@@ -1,5 +1,6 @@
 import {Alert} from 'react-native';
 import i18n from '../../Translations/index';
+import {Logger} from '../../lib/logging';
 
 export const sendOwnerChecklist = (action) =>
   Alert.alert(
@@ -8,7 +9,7 @@ export const sendOwnerChecklist = (action) =>
     [
       {
         text: i18n.t('alerts.cancel'),
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('sendOwnerChecklist cancelled'),
         style: 'cancel',
       },
       {text: i18n.t('alerts.accept'), onPress: () => action()},
@@ -23,7 +24,7 @@ export const deleteCheckListAlert = (action) =>
     [
       {
         text: i18n.t('alerts.cancel'),
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('deleteCheckListAlert cancelled'),
         style: 'cancel',
       },
       {text: i18n.t('alerts.accept'), onPress: () => action()},

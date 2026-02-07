@@ -7,6 +7,7 @@ import '@react-native-firebase/functions';
 import { useUpdateFirebase } from '../../../hooks/useUpdateFirebase';
 import { useUploadCloudinaryImage } from '../../../hooks/useUploadCloudinaryImage';
 import { error } from '../../../lib/logging';
+import { Logger } from '../../../lib/logging';
 import { popScreen } from '../../../Router/utils/actions';
 import { REGION } from '../../../firebase/utils';
 
@@ -54,7 +55,7 @@ export const useNewUserForm = docId => {
         popScreen();
       }, 100);
     } catch (err) {
-      console.log('ERROR', err);
+      Logger.error('Error creating new user', err, {form});
       setLoading(false);
       setVisible(false);
       error({

@@ -20,23 +20,18 @@ import {
   isDeviceRegisteredForRemoteMessages,
   registerDeviceForRemoteMessages
 } from '@react-native-firebase/messaging';
-import {
-  getCrashlytics,
-  setUserId,
-  setAttribute,
-  log,
-  recordError
-} from '@react-native-firebase/crashlytics';
+import { Logger } from '../../lib/logging';
 
 const onAuthStateChange = callback => {
   const auth = getAuth();
   return onAuthStateChanged(auth, user => {
     if (user) {
-      const crashlyticsInstance = getCrashlytics();
-      // Agregar información del usuario a Crashlytics
-      setUserId(crashlyticsInstance, user.uid);
-      setAttribute(crashlyticsInstance, 'email', user.email || 'unknown');
-      log(crashlyticsInstance, `User authenticated: ${user.uid}`);
+      // Set user context for Crashlytics
+      Logger.setUser({
+        id: user.uid,
+        email: user.email
+      });
+      Logger.info('User authenticated', { userId: user.uid });
 
       const db = getFirestore();
       const docRef = doc(collection(db, 'users'), user.uid);
@@ -58,10 +53,7 @@ const onAuthStateChange = callback => {
             token = await getToken(messaging);
           } catch (error) {
             // Si falla el token, continuar sin él (común en desarrollo)
-            console.log('Error getting messaging token:', error);
-            const crashlyticsInstance = getCrashlytics();
-            recordError(crashlyticsInstance, error);
-            log(crashlyticsInstance, 'Error getting messaging token');
+            Logger.warn('Error getting messaging token', { error: error.message });
           }
 
           try {
@@ -83,15 +75,13 @@ const onAuthStateChange = callback => {
                     });
                   } else {
                     // Documento no existe después de actualizar, hacer logout
-                    console.error('User document does not exist after update');
+                    Logger.error('User document does not exist after update', null, { userId: user.uid });
                     signOut(auth);
                     callback({ loggedIn: false });
                   }
                 })
                 .catch(error => {
-                  console.error('Error updating user document:', error);
-                  recordError(crashlyticsInstance, error);
-                  log(crashlyticsInstance, 'Error updating user document');
+                  Logger.error('Error updating user document', error, { userId: user.uid });
 
                   // Si falla la actualización, intentar obtener el documento directamente
                   getDoc(docRef)
@@ -114,9 +104,9 @@ const onAuthStateChange = callback => {
                 });
             } else {
               // Usuario autenticado pero sin documento en Firestore
-              console.warn(
-                'User authenticated but no Firestore document found, creating one...'
-              );
+              Logger.warn('User authenticated but no Firestore document found, creating one', {
+                userId: user.uid
+              });
               const newUserData = {
                 email: user.email,
                 photoURL: user.photoURL
@@ -135,24 +125,19 @@ const onAuthStateChange = callback => {
                       ...docSnap.data()
                     });
                   } else {
-                    console.error('Failed to create user document');
+                    Logger.error('Failed to create user document', null, { userId: user.uid });
                     signOut(auth);
                     callback({ loggedIn: false });
                   }
                 })
                 .catch(error => {
-                  console.error('Error creating user document:', error);
-                  recordError(crashlyticsInstance, error);
-                  log(crashlyticsInstance, 'Error creating user document');
-
+                  Logger.error('Error creating user document', error, { userId: user.uid });
                   signOut(auth);
                   callback({ loggedIn: false });
                 });
             }
           } catch (error) {
-            console.error('Error getting messaging token:', error);
-            recordError(crashlyticsInstance, error);
-            log(crashlyticsInstance, 'Error getting messaging token');
+            Logger.error('Error in user auth flow', error, { userId: user.uid });
 
             // Si falla el token de messaging, intentar sin él
             if (docSnapshot.exists()) {
@@ -168,13 +153,7 @@ const onAuthStateChange = callback => {
           }
         })
         .catch(error => {
-          console.error('Error fetching user document:', error);
-          const crashlyticsInstance = getCrashlytics();
-          recordError(crashlyticsInstance, error);
-          log(
-            crashlyticsInstance,
-            'Error fetching user document on auth state change'
-          );
+          Logger.error('Error fetching user document on auth state change', error);
 
           // Si hay error al obtener el documento, hacer logout
           signOut(auth);
@@ -182,10 +161,8 @@ const onAuthStateChange = callback => {
         });
     } else {
       // Limpiar información de Crashlytics al hacer logout
-      const crashlyticsInstance = getCrashlytics();
-      setUserId(crashlyticsInstance, '');
-      setAttribute(crashlyticsInstance, 'email', '');
-      log(crashlyticsInstance, 'User logged out');
+      Logger.clearUser();
+      Logger.info('User logged out');
 
       callback({ loggedIn: false });
     }

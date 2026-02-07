@@ -79,7 +79,7 @@ const QuadrantScreen = ({navigation}) => {
               theme.justifyCenter,
               theme.itemsCenter,
             ]}>
-            <Icon name={'grid'} size={40} color={Colors.pm} />
+            <Icon name={'grid'} size={40} color={Colors.primary} />
           </View>
           <View style={[theme.flexGrow, theme.justifyEnd]}>
             <CustomButton

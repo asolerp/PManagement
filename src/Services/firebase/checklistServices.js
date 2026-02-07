@@ -10,6 +10,8 @@ import {
   startAfter
 } from '@react-native-firebase/firestore';
 
+import { Logger } from '../../lib/logging';
+
 const fetchChecklistsNotFinished = async params => {
   const queryKey = params?.queryKey;
 
@@ -64,7 +66,7 @@ const fetchChecklistsNotFinished = async params => {
 
     return checklists;
   } catch (error) {
-    console.error('Error fetching checklists: ', error);
+    Logger.error('Error fetching checklists', error, { service: 'checklistServices' });
     throw error; // o manejar el error como prefieras
   }
 };
@@ -115,7 +117,7 @@ const fetchChecklistsFinished = async params => {
 
     return checklists;
   } catch (error) {
-    console.error('Error fetching checklists: ', error);
+    Logger.error('Error fetching checklists', error, { service: 'checklistServices' });
     throw error; // o manejar el error como prefieras
   }
 };
@@ -139,7 +141,7 @@ const fetchChecklistsByHouseId = async houseId => {
 
     return checklists[0];
   } catch (error) {
-    console.error('Error fetching checklists: ', error);
+    Logger.error('Error fetching checklists', error, { service: 'checklistServices' });
     throw error; // o manejar el error como prefieras
   }
 };
@@ -160,7 +162,7 @@ const fetchChecksByChecklistId = async checklistId => {
 
     return checks;
   } catch (error) {
-    console.error('Error fetching checks: ', error);
+    Logger.error('Error fetching checks', error, { service: 'checklistServices' });
     throw error; // o manejar el error como prefieras
   }
 };
@@ -215,7 +217,7 @@ const fetchChecklistsNotFinishedPaginated = async ({
       hasMore: snapshot.docs.length === limitCount
     };
   } catch (error) {
-    console.error('Error fetching paginated not finished checklists: ', error);
+    Logger.error('Error fetching paginated not finished checklists', error, { service: 'checklistServices' });
     return {
       checklists: [],
       nextCursor: null,
@@ -271,7 +273,7 @@ const fetchChecklistsFinishedPaginated = async ({
       hasMore: snapshot.docs.length === limitCount
     };
   } catch (error) {
-    console.error('Error fetching paginated finished checklists: ', error);
+    Logger.error('Error fetching paginated finished checklists', error, { service: 'checklistServices' });
     return {
       checklists: [],
       nextCursor: null,

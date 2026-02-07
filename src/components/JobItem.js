@@ -127,7 +127,7 @@ const JobItem = ({job, onPress}) => {
             borderTopColor: Colors.lowGrey,
             borderRightColor: Colors.lowGrey,
             borderBottomColor: Colors.lowGrey,
-            borderLeftColor: Colors.pm,
+            borderLeftColor: Colors.primary,
           },
         ]}>
         <View style={[Layout.fill]}>

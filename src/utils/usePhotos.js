@@ -9,7 +9,7 @@ import {
   updateDoc
 } from '@react-native-firebase/firestore';
 import ImageResizer from 'react-native-image-resizer';
-import { error as errorLog } from '../lib/logging';
+import { Logger } from '../lib/logging';
 import { REGION } from '../firebase/utils';
 
 const uploadImageFromFirebase = async asset => {
@@ -33,7 +33,7 @@ const uploadImageFromFirebase = async asset => {
 
   await collectionRef(url);
 
-  console.log('Image uploaded and Firestore updated!');
+  Logger.debug('Image uploaded and Firestore updated!', { fileName, storageFolder });
 };
 
 export const usePhotos = () => {
@@ -69,11 +69,8 @@ export const usePhotos = () => {
         setter([]);
       }
     } catch (err) {
-      errorLog({
-        message: err.message,
-        track: true,
-        asToast: true
-      });
+      const errorObj = err instanceof Error ? err : new Error(String(err));
+      Logger.error('Error al eliminar fotos', errorObj, { photoIds }, { showToast: true });
       setError(err);
     } finally {
       setLoading(false);
@@ -100,11 +97,8 @@ export const usePhotos = () => {
         )
       );
     } catch (err) {
-      errorLog({
-        message: err.message,
-        track: true,
-        asToast: true
-      });
+      const errorObj = err instanceof Error ? err : new Error(String(err));
+      Logger.error('Error al subir fotos', errorObj, { folder }, { showToast: true });
       setError(err);
     } finally {
       setLoading(false);
@@ -127,11 +121,8 @@ export const usePhotos = () => {
           })
       });
     } catch (err) {
-      errorLog({
-        message: err.message,
-        track: true,
-        asToast: true
-      });
+      const errorObj = err instanceof Error ? err : new Error(String(err));
+      Logger.error('Error al actualizar foto de casa', errorObj, { folder }, { showToast: true });
       setError(err);
     } finally {
       setLoading(false);
@@ -154,11 +145,8 @@ export const usePhotos = () => {
           })
       });
     } catch (err) {
-      errorLog({
-        message: err.message,
-        track: true,
-        asToast: true
-      });
+      const errorObj = err instanceof Error ? err : new Error(String(err));
+      Logger.error('Error al actualizar foto de perfil', errorObj, { folder }, { showToast: true });
       setError(err);
     } finally {
       setLoading(false);

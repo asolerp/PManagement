@@ -6,6 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { imageActions } from '../../utils/imageActions';
 import { useCameraOrLibrary } from '../../hooks/useCamerOrLibrary';
 import { BottomModal } from './BottomModal';
+import {
+  Colors,
+  FontSize,
+  FontWeight,
+  Spacing,
+  BorderRadius
+} from '../../Theme/Variables';
 
 const CAPTURE_ACTION = 'capture';
 const LIBRARY_ACTION = 'library';
@@ -20,13 +27,13 @@ const ActionOption = ({ icon, title, subtitle, onPress, color }) => (
     ]}
   >
     <View style={[styles.iconContainer, { backgroundColor: color }]}>
-      <Icon name={icon} size={28} color="#FFFFFF" />
+      <Icon name={icon} size={28} color={Colors.white} />
     </View>
     <View style={styles.actionTextContainer}>
       <Text style={styles.actionTitle}>{title}</Text>
       <Text style={styles.actionSubtitle}>{subtitle}</Text>
     </View>
-    <Icon name="chevron-right" size={24} color="#CBD5E0" />
+    <Icon name="chevron-right" size={24} color={Colors.gray300} />
   </Pressable>
 );
 
@@ -71,7 +78,7 @@ const PhotoCameraModal = ({ visible, handleVisibility, onSelectImage }) => {
             icon="camera-alt"
             title={t('photos.take_photo')}
             subtitle={t('photos.take_photo_description')}
-            color="#55A5AD"
+            color={Colors.primary}
             onPress={() => handlePress(CAPTURE_ACTION)}
           />
 
@@ -81,7 +88,7 @@ const PhotoCameraModal = ({ visible, handleVisibility, onSelectImage }) => {
             icon="photo-library"
             title={t('photos.from_gallery')}
             subtitle={t('photos.from_gallery_description')}
-            color="#8B5CF6"
+            color={Colors.purple}
             onPress={() => handlePress(LIBRARY_ACTION)}
           />
         </View>
@@ -105,81 +112,81 @@ const styles = StyleSheet.create({
   actionOption: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 16,
-    paddingHorizontal: 4,
-    paddingVertical: 16
+    gap: Spacing.base,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: Spacing.base
   },
   actionOptionPressed: {
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12
+    backgroundColor: Colors.gray50,
+    borderRadius: BorderRadius.lg
   },
   actionSubtitle: {
-    color: '#6B7280',
-    fontSize: 13,
+    color: Colors.gray500,
+    fontSize: FontSize.sm,
     marginTop: 2
   },
   actionTextContainer: {
     flex: 1
   },
   actionTitle: {
-    color: '#111827',
-    fontSize: 16,
-    fontWeight: '600'
+    color: Colors.gray900,
+    fontSize: FontSize.lg,
+    fontWeight: FontWeight.semibold
   },
   cancelButton: {
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    marginTop: 8,
-    paddingVertical: 16
+    backgroundColor: Colors.gray100,
+    borderRadius: BorderRadius.lg,
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.base
   },
   cancelButtonPressed: {
-    backgroundColor: '#E5E7EB'
+    backgroundColor: Colors.gray200
   },
   cancelText: {
-    color: '#6B7280',
-    fontSize: 16,
-    fontWeight: '600'
+    color: Colors.gray600,
+    fontSize: FontSize.lg,
+    fontWeight: FontWeight.semibold
   },
   container: {
-    paddingBottom: Platform.OS === 'ios' ? 8 : 16,
-    paddingHorizontal: 20
+    paddingBottom: Platform.OS === 'ios' ? Spacing.sm : Spacing.base,
+    paddingHorizontal: Spacing.lg
   },
   divider: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.gray200,
     height: 1,
-    marginVertical: 4
+    marginVertical: Spacing.xs
   },
   header: {
     alignItems: 'center',
-    marginBottom: 24,
-    paddingTop: 8
+    marginBottom: Spacing.xl,
+    paddingTop: Spacing.sm
   },
   headerSubtitle: {
-    color: '#6B7280',
-    fontSize: 14,
-    marginTop: 4,
+    color: Colors.gray500,
+    fontSize: FontSize.base,
+    marginTop: Spacing.xs,
     textAlign: 'center'
   },
   headerTitle: {
-    color: '#111827',
-    fontSize: 20,
-    fontWeight: '700'
+    color: Colors.gray900,
+    fontSize: FontSize['2xl'],
+    fontWeight: FontWeight.bold
   },
   iconContainer: {
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: BorderRadius.xl,
     height: 56,
     justifyContent: 'center',
     width: 56
   },
   optionsContainer: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E5E7EB',
-    borderRadius: 16,
+    backgroundColor: Colors.white,
+    borderColor: Colors.gray200,
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 8
+    paddingHorizontal: Spacing.base,
+    paddingVertical: Spacing.sm
   }
 });
 

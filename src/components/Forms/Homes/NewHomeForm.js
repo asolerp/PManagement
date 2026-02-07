@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   },
   imageIconCircle: {
     alignItems: 'center',
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.full,
     height: 56,
     justifyContent: 'center',
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
   },
   ownerIcon: {
     alignItems: 'center',
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.lg,
     height: 44,
     justifyContent: 'center',
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
   },
   sectionIcon: {
     alignItems: 'center',
-    backgroundColor: Colors.pm,
+    backgroundColor: Colors.primary,
     borderRadius: BorderRadius.md,
     height: 28,
     justifyContent: 'center',

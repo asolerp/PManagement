@@ -18,6 +18,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useLocales } from '../../utils/useLocales';
 import { ScreenHeader } from '../../components/Layout/ScreenHeader';
 import { TASKS } from '../../utils/firebaseKeys';
+import { Logger } from '../../lib/logging';
 
 const styles = StyleSheet.create({
   container: {
@@ -70,7 +71,7 @@ const NewJobTaskSelectorScreen = ({ route }) => {
     idField: 'id'
   });
 
-  console.log('tasks', tasks, loadingTasks);
+  Logger.debug('Tasks loaded', {tasksCount: tasks?.length, loadingTasks});
 
   const setTaskAction = useCallback(
     task => dispatch(setTask({ task })),

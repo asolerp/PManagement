@@ -1,101 +1,113 @@
-import React, {useState} from 'react';
-import {ImageBackground} from 'react-native';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
-
+import React, { useState } from 'react';
+import { View, StyleSheet, Pressable, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useCameraOrLibrary} from '../hooks/useCamerOrLibrary';
-import {imageActions} from '../utils/imageActions';
-import {IncidencesCameraModal} from './Modals/IncidenceCameraModal';
 
-const LIBRARY_ACTION = 'library';
+import PhotoCameraModal from './Modals/PhotoCameraModal';
+import {
+  Colors,
+  Spacing,
+  BorderRadius,
+  Shadows
+} from '../Theme/Variables';
 
-// Utils
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  houseImage: {
-    height: 170,
-    borderRadius: 10,
-    resizeMode: 'cover',
-    justifyContent: 'center',
-    alignSelf: 'stretch',
-  },
-  imagePicker: {
-    height: 80,
-    width: 60,
-    backgroundColor: '#4A8CA4',
-    borderRadius: 10,
-    marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageContainer: {
-    position: 'relative',
-  },
-  removeImage: {
-    width: 20,
-    height: 20,
-    borderRadius: 100,
-    backgroundColor: '#ED7A7A',
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 2,
-    right: 3,
-    top: -10,
-  },
-  photoIncidence: {
-    height: 80,
-    width: 60,
-    borderRadius: 10,
-    marginRight: 10,
-    marginBottom: 10,
-    resizeMode: 'contain',
-  },
-});
-
-const MultipleImageSelector = ({images, setImages}) => {
+const MultipleImageSelector = ({ images = [], setImages }) => {
   const [isVisible, setIsVisible] = useState(false);
 
-  const ImagePickerView = () => {
-    return (
-      <TouchableOpacity onPress={() => setIsVisible(true)}>
-        <View style={styles.imagePicker}>
-          <Icon name="add" size={30} color={'white'} />
-        </View>
-      </TouchableOpacity>
-    );
+  const handleSelectImages = imgs => {
+    const formattedImages = imgs.map((image, i) => ({
+      fileName: image?.fileName || `image-${i}`,
+      fileUri: image?.uri,
+      fileType: image?.type
+    }));
+
+    // Añadir a las existentes en lugar de reemplazar
+    const currentImages = Array.isArray(images) ? images : [];
+    setImages([...currentImages, ...formattedImages]);
+  };
+
+  const handleRemoveImage = fileName => {
+    const currentImages = Array.isArray(images) ? images : [];
+    setImages(currentImages.filter(p => p.fileName !== fileName));
   };
 
   return (
     <View style={styles.container}>
-      <IncidencesCameraModal
-        isVisible={isVisible}
-        setIsVisible={setIsVisible}
-        setImages={setImages}
+      <PhotoCameraModal
+        visible={isVisible}
+        handleVisibility={setIsVisible}
+        onSelectImage={handleSelectImages}
       />
-      <ImagePickerView />
-      {images?.length > 0 &&
-        images?.map((photo, i) => (
-          <View style={styles.imageContainer} key={i}>
-            <TouchableOpacity
-              style={styles.removeImage}
-              onPress={() => {
-                setImages(images?.filter((p) => p.fileName !== photo.fileName));
-              }}>
-              <Icon name="close" size={18} color="white" />
-            </TouchableOpacity>
-            <ImageBackground
-              source={{uri: photo?.fileUri}}
-              imageStyle={{borderRadius: 10}}
-              style={styles.photoIncidence}
-            />
-          </View>
-        ))}
+
+      {/* Botón añadir */}
+      <Pressable
+        onPress={() => setIsVisible(true)}
+        style={({ pressed }) => [
+          styles.addButton,
+          pressed && styles.addButtonPressed
+        ]}
+      >
+        <Icon name="add-a-photo" size={24} color={Colors.white} />
+      </Pressable>
+
+      {/* Lista de imágenes */}
+      {Array.isArray(images) && images.map((photo, i) => (
+        <View style={styles.imageContainer} key={photo.fileName || i}>
+          <Pressable
+            style={styles.removeButton}
+            onPress={() => handleRemoveImage(photo.fileName)}
+            hitSlop={8}
+          >
+            <Icon name="close" size={14} color={Colors.white} />
+          </Pressable>
+          <Image
+            source={{ uri: photo?.fileUri }}
+            style={styles.thumbnail}
+          />
+        </View>
+      ))}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  addButton: {
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.lg,
+    height: 80,
+    justifyContent: 'center',
+    marginRight: Spacing.sm,
+    width: 80,
+    ...Shadows.sm
+  },
+  addButtonPressed: {
+    opacity: 0.8
+  },
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm
+  },
+  imageContainer: {
+    position: 'relative'
+  },
+  removeButton: {
+    alignItems: 'center',
+    backgroundColor: Colors.danger,
+    borderRadius: BorderRadius.full,
+    height: 22,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: -6,
+    top: -6,
+    width: 22,
+    zIndex: 2
+  },
+  thumbnail: {
+    borderRadius: BorderRadius.lg,
+    height: 80,
+    width: 80
+  }
+});
 
 export default MultipleImageSelector;

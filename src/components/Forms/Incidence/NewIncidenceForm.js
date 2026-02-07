@@ -1,117 +1,163 @@
-import React, {useState, useCallback} from 'react';
-import {View, Text, TextInput, StyleSheet} from 'react-native';
-import {useTranslation} from 'react-i18next';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
-import InputGroup from '../../../components/Elements/InputGroup';
-import DynamicSelectorList from '../../../components/DynamicSelectorList';
+// Components
+import DynamicSelectorList from '../../DynamicSelectorList';
 import CustomInput from '../../Elements/CustomInput';
-import {BottomModal} from '../../Modals/BottomModal';
+import { BottomModal } from '../../Modals/BottomModal';
 
-// Redux
-import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-import {setInputForm} from '../../../Store/IncidenceForm/incidenceFormSlice';
-import {userSelector} from '../../../Store/User/userSlice';
-import {Colors} from '../../../Theme/Variables';
-import {commonStyles} from '../../../styles/input';
-import {Spacer} from '../../Elements/Spacer';
+// Store
+import { setInputForm } from '../../../Store/IncidenceForm/incidenceFormSlice';
+import { userSelector } from '../../../Store/User/userSlice';
 
-const styles = StyleSheet.create({
-  subtitle: {
-    color: '#2A7BA5',
-  },
-});
+// Theme
+import {
+  Colors,
+  FontSize,
+  FontWeight,
+  Spacing,
+  BorderRadius
+} from '../../../Theme/Variables';
 
 const NewIncidenceForm = () => {
   const dispatch = useDispatch();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [modalContent, setModalContent] = useState();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const {incidence} = useSelector(
-    ({incidenceForm: {incidence}}) => ({incidence}),
-    shallowEqual,
+  const { incidence } = useSelector(
+    ({ incidenceForm: { incidence } }) => ({ incidence }),
+    shallowEqual
   );
 
   const user = useSelector(userSelector);
 
   const setInputFormAction = useCallback(
-    (label, value) => dispatch(setInputForm({label, value})),
-    [dispatch],
+    (label, value) => dispatch(setInputForm({ label, value })),
+    [dispatch]
   );
 
   return (
-    <View>
+    <View style={styles.container}>
       <BottomModal
         isFixedBottom={false}
         isVisible={modalVisible}
         swipeDirection={null}
-        onClose={() => {
-          setModalVisible(false);
-        }}>
+        onClose={() => setModalVisible(false)}
+      >
         {modalContent}
       </BottomModal>
 
-      <TextInput
-        placeholder={t('newIncidence.form.title')}
-        placeholderTextColor={Colors.darkGrey}
-        onChangeText={(text) => setInputFormAction('title', text)}
-        value={incidence?.title}
-        style={[commonStyles.input]}
-      />
-      <Spacer space={4} />
-      <TextInput
-        multiline
-        numberOfLines={10}
-        textAlignVertical="top"
-        style={[commonStyles.input, {height: 120}]}
-        placeholderTextColor={Colors.darkGrey}
-        placeholder={t('newIncidence.form.incidence')}
-        onChangeText={(text) => setInputFormAction('incidence', text)}
-        value={incidence?.incidence}
-      />
-      <Spacer space={4} />
-      {user.role !== 'owner' && (
-        <CustomInput
-          title={t('common.house')}
-          subtitle={
-            incidence?.house?.value && (
-              <View style={{flexDirection: 'row'}}>
-                {incidence?.house?.value.map((house, i) => (
-                  <View key={i}>
-                    <Text style={styles.subtitle}>{house.houseName}</Text>
-                    {incidence?.house?.value?.length - 1 !== i && (
-                      <Text style={styles.subtitle}> & </Text>
-                    )}
-                  </View>
-                ))}
-              </View>
-            )
-          }
-          iconProps={{name: 'house', color: '#55A5AD'}}
-          onPress={() => {
-            setModalContent(
-              <DynamicSelectorList
-                collection="houses"
-                store="jobForm"
-                searchBy="houseName"
-                order={{field: 'houseName', type: 'asc'}}
-                schema={{img: 'houseImage', name: 'houseName'}}
-                get={incidence?.house?.value || []}
-                set={(house) =>
-                  setInputFormAction('house', {
-                    ...incidence?.house,
-                    value: house,
-                  })
-                }
-                closeModal={() => setModalVisible(false)}
-              />,
-            );
-            setModalVisible(true);
-          }}
+      {/* Título */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>{t('newIncidence.form.title')}</Text>
+        <TextInput
+          placeholder={t('newIncidence.form.title_placeholder')}
+          placeholderTextColor={Colors.gray400}
+          onChangeText={text => setInputFormAction('title', text)}
+          value={incidence?.title}
+          style={styles.input}
         />
+      </View>
+
+      {/* Descripción */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>{t('newIncidence.form.incidence')}</Text>
+        <TextInput
+          multiline
+          numberOfLines={5}
+          textAlignVertical="top"
+          style={[styles.input, styles.textArea]}
+          placeholderTextColor={Colors.gray400}
+          placeholder={t('newIncidence.form.incidence_placeholder')}
+          onChangeText={text => setInputFormAction('incidence', text)}
+          value={incidence?.incidence}
+        />
+      </View>
+
+      {/* Selector de casa (solo para no-owners) */}
+      {user.role !== 'owner' && (
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>{t('common.house')}</Text>
+          <CustomInput
+            subtitle={
+              incidence?.house?.value && (
+                <View style={styles.houseList}>
+                  {incidence?.house?.value.map((house, i) => (
+                    <Text key={house.id || i} style={styles.houseText}>
+                      {house.houseName}
+                      {incidence?.house?.value?.length - 1 !== i && ' & '}
+                    </Text>
+                  ))}
+                </View>
+              )
+            }
+            iconProps={{ name: 'house', color: Colors.primary }}
+            onPress={() => {
+              setModalContent(
+                <DynamicSelectorList
+                  collection="houses"
+                  store="jobForm"
+                  searchBy="houseName"
+                  order={{ field: 'houseName', type: 'asc' }}
+                  schema={{ img: 'houseImage', name: 'houseName' }}
+                  get={incidence?.house?.value || []}
+                  set={house =>
+                    setInputFormAction('house', {
+                      ...incidence?.house,
+                      value: house
+                    })
+                  }
+                  closeModal={() => setModalVisible(false)}
+                />
+              );
+              setModalVisible(true);
+            }}
+          />
+        </View>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    gap: Spacing.md
+  },
+  houseList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  houseText: {
+    color: Colors.primary,
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.medium
+  },
+  input: {
+    backgroundColor: Colors.gray50,
+    borderColor: Colors.gray200,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    color: Colors.gray800,
+    fontSize: FontSize.base,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md
+  },
+  inputGroup: {
+    gap: Spacing.xs
+  },
+  label: {
+    color: Colors.gray700,
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.medium,
+    marginLeft: Spacing.xs
+  },
+  textArea: {
+    height: 120,
+    paddingTop: Spacing.md
+  }
+});
 
 export default NewIncidenceForm;

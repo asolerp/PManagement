@@ -58,7 +58,7 @@ export const WorkerSearch = ({ workers, selectedWorkerId, onSelectWorker }) => {
           </Text>
           {item.email && <Text style={styles.workerEmail}>{item.email}</Text>}
         </View>
-        {isSelected && <Icon name="check-circle" size={24} color={Colors.pm} />}
+        {isSelected && <Icon name="check-circle" size={24} color={Colors.primary} />}
       </TouchableOpacity>
     );
   };
@@ -120,13 +120,13 @@ export const WorkerSearch = ({ workers, selectedWorkerId, onSelectWorker }) => {
 
 const styles = StyleSheet.create({
   clearButtonInline: {
-    backgroundColor: Colors.pm + '20',
+    backgroundColor: Colors.primary + '20',
     borderRadius: 4,
     paddingHorizontal: 8,
     paddingVertical: 4
   },
   clearButtonText: {
-    color: Colors.pm,
+    color: Colors.primary,
     fontSize: 12,
     fontWeight: '600'
   },
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   selectedBadge: {
     alignItems: 'center',
-    backgroundColor: Colors.pm + '15',
+    backgroundColor: Colors.primary + '15',
     borderColor: Colors.grey,
     borderRadius: 6,
     borderWidth: 1,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8
   },
   selectedBadgeText: {
-    color: Colors.pm,
+    color: Colors.primary,
     flex: 1,
     fontSize: 12,
     fontWeight: '600'
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     padding: 12
   },
   workerItemSelected: {
-    backgroundColor: Colors.pm + '10',
+    backgroundColor: Colors.primary + '10',
     borderColor: Colors.grey,
     borderWidth: 2
   },

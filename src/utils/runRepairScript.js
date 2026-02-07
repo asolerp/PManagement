@@ -2,6 +2,7 @@ import {
   repairChecklistCounts,
   repairSingleChecklist
 } from './repairChecklistCounts';
+import { Logger } from '../lib/logging';
 
 /**
  * Script para ejecutar desde consola y reparar los contadores
@@ -14,21 +15,22 @@ import {
  */
 
 export const runRepair = async () => {
-  console.log('🔧 Iniciando reparación de contadores...');
+  Logger.info('🔧 Iniciando reparación de contadores...');
 
   try {
     const result = await repairChecklistCounts();
 
-    console.log(`
-✅ Reparación completada:
-   - Checklists reparados: ${result.repairedCount}
-   - Total de checklists: ${result.total}
-   - Porcentaje reparado: ${((result.repairedCount / result.total) * 100).toFixed(1)}%
-    `);
+    const percentage = ((result.repairedCount / result.total) * 100).toFixed(1);
+    Logger.info('✅ Reparación completada', {
+      repaired: result.repairedCount,
+      total: result.total,
+      percentage: `${percentage}%`
+    });
 
     return result;
   } catch (error) {
-    console.error('❌ Error durante la reparación:', error);
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    Logger.error('❌ Error durante la reparación', errorObj);
     throw error;
   }
 };
@@ -37,16 +39,17 @@ export const runRepair = async () => {
  * Reparar un checklist específico por ID
  */
 export const runRepairSingle = async checklistId => {
-  console.log(`🔧 Reparando checklist ${checklistId}...`);
+  Logger.info(`🔧 Reparando checklist ${checklistId}...`, { checklistId });
 
   try {
     const actualDone = await repairSingleChecklist(checklistId);
 
-    console.log(`✅ Checklist ${checklistId} reparado: done = ${actualDone}`);
+    Logger.info(`✅ Checklist ${checklistId} reparado`, { checklistId, done: actualDone });
 
     return actualDone;
   } catch (error) {
-    console.error(`❌ Error reparando checklist ${checklistId}:`, error);
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    Logger.error(`❌ Error reparando checklist ${checklistId}`, errorObj, { checklistId });
     throw error;
   }
 };

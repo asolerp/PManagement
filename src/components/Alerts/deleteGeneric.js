@@ -1,4 +1,5 @@
 import {Alert} from 'react-native';
+import {Logger} from '../../lib/logging';
 
 export const deleteGeneric = (action) =>
   Alert.alert(
@@ -7,7 +8,7 @@ export const deleteGeneric = (action) =>
     [
       {
         text: 'Cancelar',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => Logger.breadcrumb('deleteGeneric cancelled'),
         style: 'cancel',
       },
       {text: 'Borrar', onPress: () => action()},

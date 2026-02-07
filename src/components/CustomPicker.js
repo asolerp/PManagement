@@ -27,7 +27,7 @@ const OptionItem = ({ label, isSelected, onPress, isLast }) => (
     <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
       {label}
     </Text>
-    {isSelected && <Icon name="check" size={22} color={Colors.pm} />}
+    {isSelected && <Icon name="check" size={22} color={Colors.primary} />}
   </TouchableOpacity>
 );
 
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     fontWeight: FontWeight.normal
   },
   optionTextSelected: {
-    color: Colors.pm,
+    color: Colors.primary,
     fontWeight: FontWeight.medium
   },
   optionsList: {

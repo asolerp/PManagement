@@ -1,11 +1,14 @@
 export default {
   login: {
     welcome: 'Welcome!',
-    login: 'Login to manage your house',
-    forgot: 'Remember password',
-    reset_fail: 'Please enter a correct email',
-    fail: 'Email or password are wrong',
-    cta: 'Login'
+    login: 'Sign in to continue',
+    forgot: 'Forgot your password?',
+    reset_fail: 'Please enter a valid email address',
+    fail: 'Email or password are incorrect',
+    cta: 'Sign in',
+    loading: 'Signing in...',
+    email_placeholder: 'Email address',
+    password_placeholder: 'Password'
   },
   tabs: {
     dashboard: 'Home',
@@ -151,11 +154,15 @@ export default {
   },
   newIncidence: {
     title: 'New Incidence',
-    subtitle: 'Info',
+    subtitle: 'Report a problem or issue',
+    error: 'An error occurred while creating the incidence. Please try again.',
     form: {
       title: 'Title',
+      title_placeholder: 'What happened?',
       incidence: 'Description',
+      incidence_placeholder: 'Describe the problem in detail...',
       photos: 'Photos',
+      photos_description: 'Add photos to document the issue (optional)',
       create: 'Create incidence'
     }
   },

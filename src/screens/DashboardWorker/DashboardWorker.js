@@ -3,10 +3,11 @@ import {
   View,
   StyleSheet,
   Text,
-  useWindowDimensions,
-  TouchableOpacity
+  Pressable,
+  LayoutAnimation
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Components
 import ProfileBar from '../../components/ProfileBar';
@@ -16,22 +17,23 @@ import PageLayout from '../../components/PageLayout';
 
 // Utils
 import moment from 'moment';
-import { useTheme } from '../../Theme';
-
-import { TabView, TabBar } from 'react-native-tab-view';
 
 import { FiltersContext } from '../../context/FiltersContext';
 import { ActionButtons } from '../../components/Dashboard/ActionButtons';
 import { ChecklistsTab } from '../../components/Dashboard/Tabs/ChecklistsTab';
 import { IncidencesTab } from '../../components/Dashboard/Tabs/IncidencesTab';
 
-import { Colors } from '../../Theme/Variables';
-import { GlobalStats } from '../../components/Dashboard/GlobalStats';
+import {
+  Colors,
+  FontSize,
+  FontWeight,
+  Spacing,
+  BorderRadius
+} from '../../Theme/Variables';
 import { HousesFilter } from '../../components/Dashboard/HousesFilter';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../Store/User/userSlice';
 import theme from '../../Theme/Theme';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useAnimatedContainer } from '../Dashboard/hooks/useAnimatedContainer';
 import { HDivider } from '../../components/UI/HDivider';
@@ -39,26 +41,25 @@ import AddButton from '../../components/Elements/AddButton';
 import { openScreenWithPush } from '../../Router/utils/actions';
 import { CONFIRM_ENTRANCE_SCREEN_KEY } from '../../Router/utils/routerKeys';
 import { useDashboardWorker } from './hooks/useDashboardWorker';
-import Badge from '../../components/Elements/Badge';
-import { format } from 'date-fns';
+import { useGetGlobalStats } from '../../components/Dashboard/hooks/useGetGlobalStats';
+import EntranceCard from '../../components/Dashboard/EntranceCard';
 
 export const ENTRANCE_FORMAT = 'HH:mm';
 
 const DashboardWorkerScreen = () => {
   const [index, setIndex] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
   const { filters, setFilters } = useContext(FiltersContext);
-  const [routes] = useState([
+  const routes = [
     { key: 'checklists', title: 'Checklists' },
     { key: 'incidences', title: 'Incidencias' }
-  ]);
-  const { Layout } = useTheme();
+  ];
   const user = useSelector(userSelector);
   const date = moment(new Date()).format('LL').split(' ');
   date[2] = date[2][0].toUpperCase() + date[2].slice(1);
-  const { isScrollActive, gestureHandler, containerStyles } =
-    useAnimatedContainer();
-  const layout = useWindowDimensions();
+  const { isScrollActive, containerStyles } = useAnimatedContainer();
   const { entrance, onRegisterExit, refresh } = useDashboardWorker();
+  const { checks, incidences } = useGetGlobalStats({ uid: user?.id });
 
   // Refrescar datos cuando la pantalla vuelve al foco
   useFocusEffect(
@@ -93,7 +94,7 @@ const DashboardWorkerScreen = () => {
         <ActionButtons />
         {!entrance && (
           <AddButton
-            containerStyle={[theme.left5]}
+            containerStyle={styles.entranceButton}
             iconName="login"
             onPress={() => openScreenWithPush(CONFIRM_ENTRANCE_SCREEN_KEY)}
           />
@@ -103,115 +104,116 @@ const DashboardWorkerScreen = () => {
             <ProfileBar />
           </View>
           <View style={[[theme.flex1], styles.container]}>
-            <View style={theme.pX4}>
-              <GlobalStats onPressStat={setIndex} uid={user?.id} />
-            </View>
-            {entrance && (
-              <View
-                style={[
-                  theme.h24,
-                  theme.flexRow,
-                  theme.itemsCenter,
-                  theme.justifyBetween,
-                  theme.bgWhite,
-                  theme.mX3,
-                  theme.mB2,
-                  theme.p4,
-                  theme.shadowXl,
-                  theme.borderGray400,
-                  { borderRadius: 6, borderWidth: 1 }
+            {/* Toggle de filtros */}
+            <Pressable
+              onPress={() => {
+                LayoutAnimation.configureNext(
+                  LayoutAnimation.Presets.easeInEaseOut
+                );
+                setShowFilters(!showFilters);
+              }}
+              style={({ pressed }) => [
+                styles.filterToggle,
+                pressed && styles.filterTogglePressed
+              ]}
+            >
+              <Icon name="filter-list" size={20} color={Colors.primary} />
+              <Text style={styles.filterToggleText}>
+                {showFilters ? 'Ocultar filtros' : 'Filtrar por casa'}
+              </Text>
+              <Icon
+                name={showFilters ? 'expand-less' : 'expand-more'}
+                size={20}
+                color={Colors.gray500}
+              />
+            </Pressable>
+
+            {/* Filtros colapsables */}
+            {showFilters && (
+              <HousesFilter
+                houses={filters.houses}
+                onClickHouse={houses => {
+                  setFilters(oldFilters => ({
+                    ...oldFilters,
+                    houses
+                  }));
+                }}
+              />
+            )}
+            <HDivider style={styles.divider} />
+            <EntranceCard entrance={entrance} onRegisterExit={onRegisterExit} />
+
+            {/* Custom Simple Tabs */}
+            <View style={styles.tabsHeader}>
+              <Pressable
+                onPress={() => setIndex(0)}
+                style={({ pressed }) => [
+                  styles.tabButton,
+                  index === 0 && styles.tabButtonActive,
+                  pressed && styles.tabButtonPressed
                 ]}
               >
-                <View>
-                  <Text style={theme.mB1}>Entrada registrada</Text>
-                  <View style={[theme.flexRow, theme.mT2, theme.itemsCenter]}>
-                    <Text style={theme.mR1}>Hora de entrada:</Text>
-                    <Badge
-                      text={format(
-                        entrance?.date?.seconds * 1000 +
-                          entrance?.date?.nanoseconds / 1000000,
-                        'HH:mm'
-                      )}
-                    >
-                      {}
-                    </Badge>
-                  </View>
-                </View>
-                <View>
-                  <TouchableOpacity
-                    onPress={() => onRegisterExit(entrance.id)}
+                <Text
+                  style={[styles.tabText, index === 0 && styles.tabTextActive]}
+                >
+                  Checklists
+                </Text>
+                <View
+                  style={[
+                    styles.tabBadge,
+                    index === 0 && styles.tabBadgeActive
+                  ]}
+                >
+                  <Text
                     style={[
-                      theme.bgError,
-                      theme.wFull,
-                      theme.hFull,
-                      theme.p4,
-                      theme.roundedSm,
-                      theme.itemsCenter,
-                      theme.justifyCenter
+                      styles.tabBadgeText,
+                      index === 0 && styles.tabBadgeTextActive
                     ]}
                   >
-                    <Text style={theme.textWhite}>Marcar salida</Text>
-                  </TouchableOpacity>
+                    {checks || 0}
+                  </Text>
                 </View>
-              </View>
-            )}
-            <HousesFilter
-              houses={filters.houses}
-              onClickHouse={houses => {
-                setFilters(oldFilters => ({
-                  ...oldFilters,
-                  houses
-                }));
-              }}
-            />
-            <HDivider style={theme.mY4} />
-            <PanGestureHandler onGestureEvent={gestureHandler}>
-              <Animated.View
-                style={[
-                  theme.flexGrow,
-                  theme.bgGray100,
-                  theme.pX4,
-                  containerStyles
+                {index === 0 && <View style={styles.tabIndicator} />}
+              </Pressable>
+
+              <Pressable
+                onPress={() => setIndex(1)}
+                style={({ pressed }) => [
+                  styles.tabButton,
+                  index === 1 && styles.tabButtonActive,
+                  pressed && styles.tabButtonPressed
                 ]}
               >
-                <View style={[theme.itemsCenter, theme.mT2]}>
-                  <View
+                <Text
+                  style={[styles.tabText, index === 1 && styles.tabTextActive]}
+                >
+                  Incidencias
+                </Text>
+                <View
+                  style={[
+                    styles.tabBadge,
+                    index === 1 && styles.tabBadgeActive
+                  ]}
+                >
+                  <Text
                     style={[
-                      theme.w8,
-                      theme.h2,
-                      theme.bgGray200,
-                      theme.roundedSm
+                      styles.tabBadgeText,
+                      index === 1 && styles.tabBadgeTextActive
                     ]}
-                  />
+                  >
+                    {incidences || 0}
+                  </Text>
                 </View>
-                <TabView
-                  renderTabBar={props => (
-                    <TabBar
-                      {...props}
-                      style={styles.tabBarContainerStyle}
-                      indicatorStyle={styles.indicatorStyle}
-                      renderLabel={({ route, focused }) => {
-                        return (
-                          <Text
-                            style={[
-                              { color: focused ? Colors.pm : Colors.gray800 },
-                              styles.tabTextStyle
-                            ]}
-                          >
-                            {route.title}
-                          </Text>
-                        );
-                      }}
-                    />
-                  )}
-                  navigationState={{ index, routes }}
-                  renderScene={renderScene}
-                  onIndexChange={setIndex}
-                  initialLayout={{ width: layout.width }}
-                  style={Layout.fill}
-                />
-              </Animated.View>
-            </PanGestureHandler>
+                {index === 1 && <View style={styles.tabIndicator} />}
+              </Pressable>
+            </View>
+
+            {/* Tab Content */}
+            <Animated.View style={[styles.tabContent, containerStyles]}>
+              <View style={styles.sceneContainer}>
+                {renderScene({ route: routes[index] })}
+              </View>
+            </Animated.View>
           </View>
         </View>
       </PageLayout>
@@ -223,21 +225,103 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 0
   },
-  indicatorStyle: {
-    backgroundColor: Colors.pm,
-    borderRadius: 5,
-    height: 5
+  divider: {
+    marginVertical: Spacing.md
+  },
+  entranceButton: {
+    left: 30,
+    right: undefined
+  },
+  filterToggle: {
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.lg,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginHorizontal: Spacing.base,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm
+  },
+  filterTogglePressed: {
+    opacity: 0.7
+  },
+  filterToggleText: {
+    color: Colors.gray700,
+    flex: 1,
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.medium
   },
   profileBarContainerStyle: {
-    backgroundColor: Colors.pm,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30
+    backgroundColor: Colors.secondary,
+    borderBottomLeftRadius: BorderRadius['3xl'],
+    borderBottomRightRadius: BorderRadius['3xl']
   },
-  tabBarContainerStyle: {
-    backgroundColor: null
+  sceneContainer: {
+    flex: 1
   },
-  tabTextStyle: {
-    fontWeight: '500'
+  tabBadge: {
+    backgroundColor: Colors.gray200,
+    borderRadius: BorderRadius.md,
+    marginLeft: Spacing.sm,
+    minWidth: 24,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2
+  },
+  tabBadgeActive: {
+    backgroundColor: Colors.primary
+  },
+  tabBadgeText: {
+    color: Colors.gray500,
+    fontSize: FontSize.xs,
+    fontWeight: FontWeight.bold,
+    textAlign: 'center'
+  },
+  tabBadgeTextActive: {
+    color: Colors.white
+  },
+  tabButton: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingBottom: Spacing.md,
+    paddingTop: Spacing.md,
+    position: 'relative'
+  },
+  tabButtonActive: {
+    // Active tab styles handled by text and badge
+  },
+  tabButtonPressed: {
+    opacity: 0.7
+  },
+  tabContent: {
+    backgroundColor: Colors.gray100,
+    flex: 1,
+    paddingHorizontal: Spacing.base
+  },
+  tabIndicator: {
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.sm,
+    bottom: 0,
+    height: 3,
+    left: 0,
+    position: 'absolute',
+    right: 0
+  },
+  tabText: {
+    color: Colors.gray800,
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.medium
+  },
+  tabTextActive: {
+    color: Colors.primary,
+    fontWeight: FontWeight.semibold
+  },
+  tabsHeader: {
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.base
   }
 });
 

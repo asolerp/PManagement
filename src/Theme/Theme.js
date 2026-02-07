@@ -1,11 +1,29 @@
 import { StyleSheet } from 'react-native';
 
+// Colores base del gradiente para referencia rápida en Theme
+const COLORS = {
+  primary: '#126D9B',       // Azul
+  secondary: '#3B8D7A',     // Verde-azulado
+  accent: '#67B26F',        // Verde
+  gray100: '#F3F4F6',
+  darkBlue: '#0E5A82',
+};
+
 const theme = StyleSheet.create({
   bgGray100: {
-    backgroundColor: '#f5f5f5'
+    backgroundColor: COLORS.gray100
   },
   bgInfo: {
-    backgroundColor: '#58BFC0'
+    backgroundColor: COLORS.secondary
+  },
+  bgPrimary: {
+    backgroundColor: COLORS.primary
+  },
+  bgSecondary: {
+    backgroundColor: COLORS.secondary
+  },
+  bgAccent: {
+    backgroundColor: COLORS.accent
   },
   borderGray200: {
     borderColor: '#e0e0e0'
@@ -70,7 +88,16 @@ const theme = StyleSheet.create({
     color: '#757575'
   },
   textInfo: {
-    color: '#284748'
+    color: COLORS.darkBlue
+  },
+  textPrimary: {
+    color: COLORS.primary
+  },
+  textSecondary: {
+    color: COLORS.secondary
+  },
+  textAccent: {
+    color: COLORS.accent
   },
   textXl: {
     fontSize: 20
