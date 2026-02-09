@@ -11,6 +11,7 @@ const { deleteUser } = require('./admin/deleteUser');
 const {
   moveToRecycleBinWithSubcollection
 } = require('./admin/moveToRecycleBinWithSubcollection');
+const { deleteDocument } = require('./admin/deleteDocument');
 
 // Notifications
 const {
@@ -88,6 +89,7 @@ exports.notifyOwner = notifyOwner;
 exports.deleteUser = deleteUser;
 exports.moveToRecycleBinWithSubcollection = moveToRecycleBinWithSubcollection;
 exports.restoreDocumentWithSubcollection = restoreDocumentWithSubcollection;
+exports.deleteDocument = deleteDocument;
 
 // CHECKLISTS
 

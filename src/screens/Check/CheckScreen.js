@@ -1,5 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import {
+  View,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
 
 import { Info } from '../../components/Check';
 
@@ -25,6 +30,9 @@ import { useCheck } from './hooks/useCheck';
 import PageOptionsScreen from '../PageOptions/PageOptions';
 import { useNotifyOwner } from '../../utils/useNotifyOwner';
 import { error } from '../../lib/logging';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Colors } from '../../Theme/Variables';
+import { popScreen } from '../../Router/utils/actions';
 
 // Loading State Component
 const LoadingState = () => (
@@ -34,23 +42,47 @@ const LoadingState = () => (
 );
 
 const CheckScreen = ({ route }) => {
-  const { docId } = route.params;
+  // Protección contra params undefined (puede ocurrir durante navegación)
+  const docId = route?.params?.docId;
   const { t } = useTranslation();
 
-  const { isCheckFinished, isEmailSent, checklist } = useCheck({ docId });
+  // Estado para desactivar listeners antes de borrar
+  // Esto previene el error "Cannot set property 'id' of undefined"
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { isCheckFinished, isEmailSent, checklist, isDeleted } = useCheck({
+    docId: isDeleting ? null : docId // Desactivar listener si estamos borrando
+  });
   const { notifyOwner } = useNotifyOwner();
   const [isResending, setIsResending] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
 
   const db = getFirestore();
-  const checksCollection = collection(
-    doc(collection(db, CHECKLISTS), docId),
-    'checks'
+
+  // Solo crear la referencia si tenemos docId válido Y no estamos borrando
+  const checksCollection =
+    docId && !isDeleting
+      ? collection(doc(collection(db, CHECKLISTS), docId), 'checks')
+      : null;
+
+  const [checks, checksLoading] = useCollectionData(
+    checksCollection,
+    checksCollection ? { idField: 'id' } : undefined
   );
-  const [checks, checksLoading] = useCollectionData(checksCollection, {
-    idField: 'id'
-  });
 
   const user = useSelector(userSelector);
+
+  // Callback para preparar el borrado (desactiva listeners)
+  const handlePrepareDelete = useCallback(() => {
+    setIsDeleting(true);
+  }, []);
+
+  // Si el documento fue borrado o no hay docId, volver atrás
+  useEffect(() => {
+    if ((isDeleted && !isDeleting) || !docId) {
+      popScreen();
+    }
+  }, [isDeleted, docId, isDeleting]);
 
   // Calcular si todos los checks están completos
   const areAllChecksDone = useMemo(() => {
@@ -121,35 +153,67 @@ const CheckScreen = ({ route }) => {
   };
 
   return (
-    <PageLayout
-      safe
-      backButton
-      titleRightSide={
-        !isLoading && (
-          <PageOptionsScreen
-            editable={!isCheckFinished}
-            collection={CHECKLISTS}
-            docId={docId}
-            showDelete={true}
-            duplicate={true}
-          />
-        )
-      }
-      titleProps={{
-        subPage: true
-      }}
-      footer={renderFooterButton()}
-    >
-      {isLoading ? (
-        <LoadingState />
-      ) : (
-        <Info isCheckFinished={isCheckFinished} />
+    <>
+      {/* Botón de opciones flotante */}
+      <TouchableOpacity
+        onPress={() => setShowOptions(true)}
+        style={styles.floatingOptionsButton}
+        activeOpacity={0.7}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <Icon name="more-vert" size={22} color={Colors.gray700} />
+      </TouchableOpacity>
+
+      <PageLayout
+        safe
+        backButton
+        titleProps={{
+          subPage: true
+        }}
+        footer={renderFooterButton()}
+      >
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <Info isCheckFinished={isCheckFinished} />
+        )}
+      </PageLayout>
+
+      {/* Options Modal */}
+      {showOptions && (
+        <PageOptionsScreen
+          editable={!isCheckFinished}
+          collection={CHECKLISTS}
+          docId={docId}
+          showDelete={true}
+          duplicate={true}
+          isVisible={showOptions}
+          onClose={() => setShowOptions(false)}
+          onBeforeDelete={handlePrepareDelete}
+        />
       )}
-    </PageLayout>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  floatingOptionsButton: {
+    alignItems: 'center',
+    backgroundColor: Colors.gray100,
+    borderRadius: 18,
+    elevation: 2,
+    height: 36,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    top: 52,
+    width: 36,
+    zIndex: 100
+  },
   loadingContainer: {
     alignItems: 'center',
     flex: 1,

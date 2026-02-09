@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   getFirestore,
   collection,
@@ -9,15 +10,29 @@ import { useQueryClient } from '@tanstack/react-query';
 
 export const useCheck = ({ docId }) => {
   const db = getFirestore();
-  const query = doc(collection(db, 'checklists'), docId);
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  // Solo crear query si tenemos docId válido
+  const query = docId ? doc(collection(db, 'checklists'), docId) : null;
   const queryClient = useQueryClient();
 
   const { updateFirebase } = useUpdateFirebase('checklists');
-  const [checklist] = useDocumentData(query, {
-    idField: 'id'
-  });
+  const [checklist, loading, error] = useDocumentData(
+    query,
+    query ? { idField: 'id' } : undefined
+  );
+
+  // Detectar cuando el documento fue borrado
+  // (loading terminó, no hay error, pero checklist es undefined)
+  useEffect(() => {
+    if (!loading && !error && checklist === undefined && docId) {
+      setIsDeleted(true);
+    }
+  }, [loading, error, checklist, docId]);
 
   const reOpenChecklist = async () => {
+    if (!docId) return;
+
     await updateFirebase(docId, {
       finished: false
     });
@@ -38,6 +53,8 @@ export const useCheck = ({ docId }) => {
     isCheckFinished,
     isEmailSent,
     reOpenChecklist,
-    checklist
+    checklist,
+    isDeleted,
+    loading
   };
 };
