@@ -18,7 +18,7 @@ export default {
 
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.portmanagement',
+      bundleIdentifier: 'com.port.management',  // iOS usa com.port.management
       buildNumber: '27',
       googleServicesFile:
         './native-backup/Firebase/Prod/GoogleService-Info.plist',
@@ -42,7 +42,7 @@ export default {
         foregroundImage: './assets/bootsplash/logo.png',
         backgroundColor: '#FFFFFF'
       },
-      package: 'com.portmanagement',
+      package: 'com.portmanagement',  // Android usa com.portmanagement
       versionCode: 27,
       permissions: [
         'CAMERA',
@@ -94,7 +94,7 @@ export default {
 
     extra: {
       eas: {
-        projectId: 'your-eas-project-id' // Actualizar después de eas init
+        projectId: 'fa7f00ee-b967-4bed-85f3-32f4deb4df88'
       }
     }
   }

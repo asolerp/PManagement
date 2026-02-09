@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>portmanagement</string>
-          <string>com.portmanagement</string>
+          <string>com.port.management</string>
         </array>
       </dict>
       <dict>
@@ -39,7 +39,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>27</string>
+    <string>28</string>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>

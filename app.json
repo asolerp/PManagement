@@ -1,4 +1,9 @@
 {
   "name": "portmanagement",
-  "displayName": "portmanagement"
+  "displayName": "portmanagement",
+  "expo": {
+    "ios": {
+      "buildNumber": "28"
+    }
+  }
 }
