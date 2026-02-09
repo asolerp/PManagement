@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { getFirestore, collection, query, where, Timestamp, limit, startAfter, getDocs } from '@react-native-firebase/firestore';
+import { getFirestore, collection, query, where, orderBy, Timestamp, limit, startAfter, getDocs } from '@react-native-firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { Logger } from '../../../lib/logging';
 
@@ -33,28 +33,34 @@ export const useTimeTracking = () => {
     totalHours: 0
   });
 
-  // Query base for entrances
-  const getBaseQuery = useCallback(() => {
+  // Query base for entrances (with orderBy for pagination support)
+  const getBaseQuery = useCallback((includePagination = false) => {
     const db = getFirestore();
     const startTimestamp = Timestamp.fromDate(startDate);
     const endTimestamp = Timestamp.fromDate(endDate);
 
-    let baseQuery = query(
-      collection(db, 'entrances'),
+    // Build query constraints
+    const constraints = [
       where('date', '>=', startTimestamp),
       where('date', '<=', endTimestamp)
-    );
+    ];
 
     if (selectedWorkerId) {
-      baseQuery = query(baseQuery, where('worker.id', '==', selectedWorkerId));
+      constraints.push(where('worker.id', '==', selectedWorkerId));
     }
 
-    return baseQuery;
+    // Add orderBy for pagination - must match the range filter field
+    // Order ascending (oldest first) as requested
+    if (includePagination) {
+      constraints.push(orderBy('date', 'asc'));
+    }
+
+    return query(collection(db, 'entrances'), ...constraints);
   }, [startDate, endDate, selectedWorkerId]);
 
   const loadTotalStats = useCallback(async () => {
     try {
-      const queryRef = getBaseQuery();
+      const queryRef = getBaseQuery(false); // No pagination needed for stats
       const snapshot = await getDocs(queryRef);
 
       let totalCount = 0;
@@ -100,7 +106,7 @@ export const useTimeTracking = () => {
 
       // Load stats and data in parallel
       const statsPromise = loadTotalStats();
-      const dataQuery = query(getBaseQuery(), limit(PAGE_SIZE));
+      const dataQuery = query(getBaseQuery(true), limit(PAGE_SIZE));
       const snapshot = await getDocs(dataQuery);
       await statsPromise;
 
@@ -122,12 +128,12 @@ export const useTimeTracking = () => {
 
   // Load more data (infinity scroll)
   const loadMore = useCallback(async () => {
-    if (!hasMore || loadingMore || loading) return;
+    if (!hasMore || loadingMore || loading || !lastDoc) return;
 
     try {
       setLoadingMore(true);
 
-      const moreQuery = query(getBaseQuery(), startAfter(lastDoc), limit(PAGE_SIZE));
+      const moreQuery = query(getBaseQuery(true), startAfter(lastDoc), limit(PAGE_SIZE));
 
       const snapshot = await getDocs(moreQuery);
 
@@ -354,7 +360,7 @@ export const useTimeTracking = () => {
     return entrances.sort((a, b) => {
       const dateA = a.date.seconds;
       const dateB = b.date.seconds;
-      return dateB - dateA; // Más recientes primero
+      return dateA - dateB; // Más antiguos primero
     });
   }, [mockWorkers]);
 

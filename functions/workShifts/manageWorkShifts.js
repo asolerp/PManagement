@@ -53,7 +53,10 @@ exports.createWorkShift = functions
       const shiftId = generateShiftId(workerId, date);
 
       // Check if shift already exists
-      const existingShift = await db.collection('workShifts').doc(shiftId).get();
+      const existingShift = await db
+        .collection('workShifts')
+        .doc(shiftId)
+        .get();
       if (existingShift.exists) {
         throw new functions.https.HttpsError(
           'already-exists',
@@ -77,9 +80,14 @@ exports.createWorkShift = functions
       // Create the shift
       const shiftData = {
         workerId,
-        workerName: workerData.name || `${workerData.firstName || ''} ${workerData.lastName || ''}`.trim(),
+        workerName:
+          workerData.name ||
+          `${workerData.firstName || ''} ${workerData.lastName || ''}`.trim(),
         workerEmail: workerData.email || '',
-        workerPhoto: workerData.profileImage?.small || workerData.profileImage?.thumbnail || null,
+        workerPhoto:
+          workerData.profileImage?.small ||
+          workerData.profileImage?.thumbnail ||
+          null,
         date,
         firstEntry: firstEntryTimestamp,
         lastExit: lastExitTimestamp,
@@ -160,7 +168,10 @@ exports.updateWorkShift = functions
       const shiftDoc = await shiftRef.get();
 
       if (!shiftDoc.exists) {
-        throw new functions.https.HttpsError('not-found', 'Work shift not found.');
+        throw new functions.https.HttpsError(
+          'not-found',
+          'Work shift not found.'
+        );
       }
 
       const currentData = shiftDoc.data();
@@ -263,7 +274,10 @@ exports.deleteWorkShift = functions
       const shiftDoc = await shiftRef.get();
 
       if (!shiftDoc.exists) {
-        throw new functions.https.HttpsError('not-found', 'Work shift not found.');
+        throw new functions.https.HttpsError(
+          'not-found',
+          'Work shift not found.'
+        );
       }
 
       // Delete the shift

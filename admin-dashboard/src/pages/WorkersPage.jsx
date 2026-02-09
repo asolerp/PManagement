@@ -1,6 +1,31 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { useWorkers } from '@/hooks/useWorkShifts';
-import { Mail } from 'lucide-react';
+import { Mail, User } from 'lucide-react';
+
+function WorkerAvatar({ photo, name }) {
+  const [imgError, setImgError] = useState(false);
+  const initial = name?.charAt(0)?.toUpperCase() || '?';
+
+  if (!photo || imgError) {
+    return (
+      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#126D9B] to-[#3B8D7A] flex items-center justify-center flex-shrink-0">
+        <span className="text-lg font-semibold text-white">{initial}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
+      <img
+        src={photo}
+        alt={name}
+        className="w-full h-full object-cover"
+        onError={() => setImgError(true)}
+      />
+    </div>
+  );
+}
 
 export default function WorkersPage() {
   const { data, isLoading } = useWorkers();
@@ -16,6 +41,14 @@ export default function WorkersPage() {
         </p>
       </div>
 
+      {/* Stats */}
+      {!isLoading && workers.length > 0 && (
+        <div className="flex items-center gap-2 text-sm text-gray-500">
+          <User className="w-4 h-4" />
+          <span>{workers.length} trabajadores registrados</span>
+        </div>
+      )}
+
       {/* Workers grid */}
       {isLoading ? (
         <div className="text-center py-12 text-gray-500">Cargando...</div>
@@ -26,21 +59,9 @@ export default function WorkersPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {workers.map((worker) => (
-            <Card key={worker.id} className="p-4">
+            <Card key={worker.id} className="p-4 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  {worker.photo ? (
-                    <img
-                      src={worker.photo}
-                      alt=""
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-lg font-medium text-gray-600">
-                      {worker.name?.charAt(0) || '?'}
-                    </span>
-                  )}
-                </div>
+                <WorkerAvatar photo={worker.photo} name={worker.name} />
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 truncate">
                     {worker.name}

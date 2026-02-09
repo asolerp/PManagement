@@ -5,11 +5,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { REGION } = require('../utils');
-const {
-  getDateString,
-  calculateMinutes,
-  generateShiftId
-} = require('./utils');
+const { getDateString, calculateMinutes, generateShiftId } = require('./utils');
 
 /**
  * Trigger when an entrance document is created
@@ -44,7 +40,8 @@ exports.onEntranceCreated = functions
 
         // Check if this entrance's time is earlier than current firstEntry
         const currentFirstEntry = shiftData.firstEntry;
-        const isEarlier = entrance.date.toMillis() < currentFirstEntry.toMillis();
+        const isEarlier =
+          entrance.date.toMillis() < currentFirstEntry.toMillis();
 
         await shiftRef.update({
           entranceIds: admin.firestore.FieldValue.arrayUnion(entranceId),
@@ -61,9 +58,14 @@ exports.onEntranceCreated = functions
         // Create new shift
         await shiftRef.set({
           workerId: workerId,
-          workerName: entrance.worker.name || `${entrance.worker.firstName || ''} ${entrance.worker.lastName || ''}`.trim(),
+          workerName:
+            entrance.worker.name ||
+            `${entrance.worker.firstName || ''} ${entrance.worker.lastName || ''}`.trim(),
           workerEmail: entrance.worker.email || '',
-          workerPhoto: entrance.worker.profileImage?.small || entrance.worker.profileImage?.thumbnail || null,
+          workerPhoto:
+            entrance.worker.profileImage?.small ||
+            entrance.worker.profileImage?.thumbnail ||
+            null,
           date: dateString,
           firstEntry: entrance.date,
           lastExit: null,
@@ -78,7 +80,9 @@ exports.onEntranceCreated = functions
           updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        console.log(`Created new workShift ${shiftId} for entrance ${entranceId}`);
+        console.log(
+          `Created new workShift ${shiftId} for entrance ${entranceId}`
+        );
       }
 
       return null;

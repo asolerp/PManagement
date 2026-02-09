@@ -16,7 +16,12 @@ import Toast from 'react-native-toast-message';
 import { openScreenWithPush, popScreen } from '../../../Router/utils/actions';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getFirestore, collection, doc, addDoc } from '@react-native-firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc
+} from '@react-native-firebase/firestore';
 import { useContext } from 'react';
 import { LoadingModalContext } from '../../../context/loadinModalContext';
 import { MAIN_ADMIN_STACK_KEY } from '../../../Router/utils/routerKeys';
@@ -95,9 +100,7 @@ export const useAddEditCheckist = ({ docId, edit }) => {
           date: null
         }));
 
-      await Promise.all(
-        newChecks.map(c => addDoc(checksCollection, c))
-      );
+      await Promise.all(newChecks.map(c => addDoc(checksCollection, c)));
 
       Toast.show({
         type: 'success',
@@ -106,7 +109,7 @@ export const useAddEditCheckist = ({ docId, edit }) => {
         text2: 'El checklist se actualizó correctamente'
       });
     } catch (err) {
-      Logger.error('Error editing checklist', err, {docId});
+      Logger.error('Error editing checklist', err, { docId });
     } finally {
       // Invalidar todas las queries relacionadas con checklists
       queryClient.invalidateQueries({

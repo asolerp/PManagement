@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { format } from 'date-fns';
 import theme from '../../Theme/Theme';
-import { Colors } from '../../Theme/Variables';
+import { Colors, Spacing, BorderRadius, Shadows } from '../../Theme/Variables';
 import Badge from '../Elements/Badge';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
@@ -148,209 +148,229 @@ export const TimeTrackingCard = ({ entrance, onUpdate }) => {
         onPress={() => setIsExpanded(!isExpanded)}
         activeOpacity={0.7}
       >
-        {/* Main content - compact layout */}
+        {/* Main content - redesigned layout with photos */}
         <View style={styles.mainContent}>
-          {/* Left: Worker avatar and info */}
-          <View style={styles.leftSection}>
-            {entrance.worker?.profileImage?.thumbnail ||
-            entrance.worker?.profileImage?.small ? (
-              <FastImage
-                source={{
-                  uri:
-                    entrance.worker.profileImage.thumbnail ||
-                    entrance.worker.profileImage.small
-                }}
-                style={styles.workerImage}
-              />
-            ) : (
-              <View style={[styles.workerImage, styles.placeholderImage]}>
-                <Text style={styles.placeholderText}>
-                  {entrance.worker?.name?.[0] ||
-                    entrance.worker?.firstName?.[0] ||
-                    '?'}
+          {/* Top row: Time info with status */}
+          <View style={styles.topRow}>
+            <View style={styles.timeInfo}>
+              <View style={styles.timeBlock}>
+                <View style={[styles.timeIconBg, styles.entryIconBg]}>
+                  <Icon name="login" size={12} color={Colors.white} />
+                </View>
+                <Text style={styles.timeTextBold}>{entryTimeStr}</Text>
+              </View>
+              <Icon name="arrow-forward" size={14} color={Colors.gray400} />
+              <View style={styles.timeBlock}>
+                <View style={[styles.timeIconBg, exitTimeStr ? styles.exitIconBg : styles.pendingIconBg]}>
+                  <Icon name={exitTimeStr ? 'logout' : 'schedule'} size={12} color={Colors.white} />
+                </View>
+                <Text style={[styles.timeTextBold, !exitTimeStr && styles.pendingTimeText]}>
+                  {exitTimeStr || '--:--'}
                 </Text>
               </View>
-            )}
-            <View style={styles.workerInfo}>
-              <View style={styles.nameRow}>
-                <Text style={styles.workerName} numberOfLines={1}>
-                  {entrance.worker?.name ||
-                    `${entrance.worker?.firstName || ''} ${entrance.worker?.secondName || ''}`.trim() ||
-                    entrance.worker?.email ||
-                    'Desconocido'}
-                </Text>
-                <View style={styles.timeContainer}>
-                  <View style={styles.timeBlock}>
-                    <Icon name="login" size={12} color={Colors.success} />
-                    <Text style={styles.timeText}>{entryTimeStr}</Text>
-                  </View>
-                  <View style={styles.timeBlock}>
-                    <Icon
-                      name={exitTimeStr ? 'logout' : 'schedule'}
-                      size={12}
-                      color={exitTimeStr ? Colors.danger : Colors.warning}
-                    />
-                    <Text
-                      style={[
-                        styles.timeText,
-                        !exitTimeStr && styles.pendingTimeText
-                      ]}
-                    >
-                      {exitTimeStr || '--'}
-                    </Text>
-                  </View>
+            </View>
+            <View style={styles.statusContainer}>
+              {totalHours ? (
+                <View style={styles.durationBadge}>
+                  <Icon name="timer" size={14} color={Colors.success} />
+                  <Text style={styles.durationText}>{totalHours}</Text>
                 </View>
-              </View>
-              <View style={styles.metaRow}>
-                <View style={styles.metaItem}>
-                  <Icon
-                    name="calendar-today"
-                    size={12}
-                    color={Colors.gray500}
-                  />
-                  <Text style={styles.metaText}>{dateStr}</Text>
+              ) : (
+                <View style={styles.pendingBadge}>
+                  <Text style={styles.pendingBadgeText}>En curso</Text>
                 </View>
-                {entrance.house?.houseName && (
-                  <>
-                    <View style={styles.metaDot} />
-                    <View style={styles.metaItem}>
-                      <Icon name="home" size={12} color={Colors.gray500} />
-                      <Text style={styles.metaText} numberOfLines={1}>
-                        {entrance.house.houseName}
-                      </Text>
-                    </View>
-                  </>
-                )}
-              </View>
+              )}
             </View>
           </View>
 
-          {/* Right: Status badge and manual exit button */}
-          <View style={styles.rightSection}>
-            {totalHours ? (
-              <Badge text={totalHours} variant="success" />
-            ) : (
-              <>
-                <Badge text="Pendiente" variant="warning" />
-                {isOwnerOrAdmin && hasNoExit && (
-                  <TouchableOpacity
-                    style={styles.manualExitButton}
-                    onPress={() => setShowManualExitModal(true)}
-                    activeOpacity={0.7}
-                  >
-                    <Icon name="schedule" size={14} color={Colors.danger} />
-                    <Text style={styles.manualExitText}>Marcar salida</Text>
-                  </TouchableOpacity>
-                )}
-              </>
-            )}
+          {/* Middle: Photos thumbnails (if available) */}
+          {(entryPhoto || exitPhoto) && (
+            <View style={styles.photoThumbnails}>
+              {entryPhoto && (
+                <TouchableOpacity
+                  style={styles.thumbnailContainer}
+                  onPress={() => openPhoto(entryPhoto)}
+                  activeOpacity={0.8}
+                >
+                  <FastImage
+                    style={styles.thumbnail}
+                    source={{ uri: entryPhoto }}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                  <View style={styles.thumbnailLabel}>
+                    <Icon name="login" size={10} color={Colors.white} />
+                  </View>
+                </TouchableOpacity>
+              )}
+              {exitPhoto && (
+                <TouchableOpacity
+                  style={styles.thumbnailContainer}
+                  onPress={() => openPhoto(exitPhoto)}
+                  activeOpacity={0.8}
+                >
+                  <FastImage
+                    style={styles.thumbnail}
+                    source={{ uri: exitPhoto }}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                  <View style={[styles.thumbnailLabel, styles.thumbnailLabelExit]}>
+                    <Icon name="logout" size={10} color={Colors.white} />
+                  </View>
+                </TouchableOpacity>
+              )}
+              {!entryPhoto && !exitPhoto && null}
+            </View>
+          )}
+
+          {/* Bottom: Meta info */}
+          <View style={styles.bottomRow}>
+            <View style={styles.metaLeft}>
+              <View style={styles.metaItem}>
+                <Icon name="calendar-today" size={12} color={Colors.gray500} />
+                <Text style={styles.metaText}>{dateStr}</Text>
+              </View>
+              {entrance.house?.houseName && (
+                <>
+                  <View style={styles.metaDot} />
+                  <View style={styles.metaItem}>
+                    <Icon name="home" size={12} color={Colors.gray500} />
+                    <Text style={styles.metaText} numberOfLines={1}>
+                      {entrance.house.houseName}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </View>
+            <View style={styles.expandIndicator}>
+              <Icon 
+                name={isExpanded ? 'expand-less' : 'expand-more'} 
+                size={20} 
+                color={Colors.gray400} 
+              />
+            </View>
           </View>
         </View>
 
         {isExpanded && (
-          <View style={[theme.mT3, theme.pT3, styles.expandedSection]}>
-            <View
-              style={[
-                theme.flexRow,
-                theme.itemsCenter,
-                theme.justifyBetween,
-                theme.mB2
-              ]}
-            >
-              <Text style={[theme.fontSansBold, theme.textBase]}>
-                Ubicaciones GPS
-              </Text>
-              {(entrance.location || entrance.exitLocation) && (
-                <TouchableOpacity
-                  onPress={() => setShowMapModal(true)}
-                  style={styles.mapButton}
-                >
-                  <Icon name="map" size={18} color={Colors.primary} />
-                  <Text style={styles.mapButtonText}>Ver en mapa</Text>
-                </TouchableOpacity>
-              )}
+          <View style={styles.expandedSection}>
+            {/* GPS Locations Section */}
+            <View style={styles.expandedBlock}>
+              <View style={styles.expandedHeader}>
+                <Icon name="location-on" size={16} color={Colors.primary} />
+                <Text style={styles.expandedTitle}>Ubicaciones GPS</Text>
+                {(entrance.location || entrance.exitLocation) && (
+                  <TouchableOpacity
+                    onPress={() => setShowMapModal(true)}
+                    style={styles.mapButton}
+                  >
+                    <Icon name="map" size={16} color={Colors.primary} />
+                    <Text style={styles.mapButtonText}>Ver mapa</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              <View style={styles.locationGrid}>
+                {entrance.location && (
+                  <View style={styles.locationItem}>
+                    <View style={[styles.locationIcon, styles.entryIconBg]}>
+                      <Icon name="login" size={12} color={Colors.white} />
+                    </View>
+                    <View>
+                      <Text style={styles.locationLabel}>Entrada</Text>
+                      <Text style={styles.locationCoords}>
+                        {entrance.location.latitude.toFixed(5)}, {entrance.location.longitude.toFixed(5)}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {entrance.exitLocation && (
+                  <View style={styles.locationItem}>
+                    <View style={[styles.locationIcon, styles.exitIconBg]}>
+                      <Icon name="logout" size={12} color={Colors.white} />
+                    </View>
+                    <View>
+                      <Text style={styles.locationLabel}>Salida</Text>
+                      <Text style={styles.locationCoords}>
+                        {entrance.exitLocation.latitude.toFixed(5)}, {entrance.exitLocation.longitude.toFixed(5)}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </View>
             </View>
 
-            {entrance.location && (
-              <View style={theme.mB2}>
-                <Text style={[theme.textGray600, theme.textXs]}>Entrada:</Text>
-                <Text style={theme.textSm}>
-                  {entrance.location.latitude.toFixed(6)},{' '}
-                  {entrance.location.longitude.toFixed(6)}
-                </Text>
+            {/* Photos Section - Large view */}
+            {(entryPhoto || exitPhoto) && (
+              <View style={styles.expandedBlock}>
+                <View style={styles.expandedHeader}>
+                  <Icon name="photo-library" size={16} color={Colors.primary} />
+                  <Text style={styles.expandedTitle}>Fotos</Text>
+                </View>
+
+                <View style={styles.photosGrid}>
+                  {entryPhoto && (
+                    <TouchableOpacity
+                      onPress={() => openPhoto(entryPhoto)}
+                      style={styles.photoLarge}
+                      activeOpacity={0.8}
+                    >
+                      <FastImage
+                        style={styles.photoLargeImage}
+                        source={{ uri: entryPhoto }}
+                        resizeMode={FastImage.resizeMode.cover}
+                      />
+                      <View style={styles.photoLargeOverlay}>
+                        <Icon name="login" size={14} color={Colors.white} />
+                        <Text style={styles.photoLargeLabel}>Entrada</Text>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+
+                  {exitPhoto && (
+                    <TouchableOpacity
+                      onPress={() => openPhoto(exitPhoto)}
+                      style={styles.photoLarge}
+                      activeOpacity={0.8}
+                    >
+                      <FastImage
+                        style={styles.photoLargeImage}
+                        source={{ uri: exitPhoto }}
+                        resizeMode={FastImage.resizeMode.cover}
+                      />
+                      <View style={[styles.photoLargeOverlay, styles.photoLargeOverlayExit]}>
+                        <Icon name="logout" size={14} color={Colors.white} />
+                        <Text style={styles.photoLargeLabel}>Salida</Text>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
             )}
 
-            {entrance.exitLocation && (
-              <View style={theme.mB2}>
-                <Text style={[theme.textGray600, theme.textXs]}>Salida:</Text>
-                <Text style={theme.textSm}>
-                  {entrance.exitLocation.latitude.toFixed(6)},{' '}
-                  {entrance.exitLocation.longitude.toFixed(6)}
-                </Text>
-              </View>
-            )}
-
-            <Text style={[theme.fontSansBold, theme.mT3, theme.mB2]}>
-              Fotos
-            </Text>
-
-            <View style={styles.photosContainer}>
-              {entryPhoto && (
-                <TouchableOpacity
-                  onPress={() => openPhoto(entryPhoto)}
-                  style={[
-                    styles.photoContainer,
-                    exitPhoto && styles.photoContainerLeft
-                  ]}
-                  activeOpacity={0.8}
-                >
-                  <View style={styles.photoWrapper}>
-                    <FastImage
-                      style={styles.photoPreview}
-                      source={{ uri: entryPhoto }}
-                      resizeMode={FastImage.resizeMode.cover}
-                    />
-                    <View style={styles.photoOverlay}>
-                      <Text style={styles.photoLabel}>Entrada</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-
-              {exitPhoto && (
-                <TouchableOpacity
-                  onPress={() => openPhoto(exitPhoto)}
-                  style={[
-                    styles.photoContainer,
-                    entryPhoto && styles.photoContainerRight
-                  ]}
-                  activeOpacity={0.8}
-                >
-                  <View style={styles.photoWrapper}>
-                    <FastImage
-                      style={styles.photoPreview}
-                      source={{ uri: exitPhoto }}
-                      resizeMode={FastImage.resizeMode.cover}
-                    />
-                    <View style={styles.photoOverlay}>
-                      <Text style={styles.photoLabel}>Salida</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            </View>
-
+            {/* Admin Actions */}
             {isOwnerOrAdmin && (
-              <TouchableOpacity
-                style={[styles.deleteButton, theme.mT3]}
-                onPress={handleDelete}
-                disabled={deleteLoading}
-                activeOpacity={0.7}
-              >
-                <Icon name="delete" size={18} color={Colors.danger} />
-                <Text style={styles.deleteButtonText}>Eliminar registro</Text>
-              </TouchableOpacity>
+              <View style={styles.adminActions}>
+                {hasNoExit && (
+                  <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={() => setShowManualExitModal(true)}
+                    activeOpacity={0.7}
+                  >
+                    <Icon name="schedule" size={16} color={Colors.warning} />
+                    <Text style={styles.actionButtonTextWarning}>Marcar salida manual</Text>
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.deleteActionButton]}
+                  onPress={handleDelete}
+                  disabled={deleteLoading}
+                  activeOpacity={0.7}
+                >
+                  <Icon name="delete" size={16} color={Colors.danger} />
+                  <Text style={styles.actionButtonTextDanger}>Eliminar registro</Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         )}
@@ -466,90 +486,278 @@ export const TimeTrackingCard = ({ entrance, onUpdate }) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.white,
-    borderColor: Colors.grey,
-    borderRadius: 10,
+    borderColor: Colors.gray200,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    elevation: 1,
-    marginBottom: 8,
-    padding: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2
-  },
-  closeButton: {
-    backgroundColor: Colors.white,
-    borderRadius: 8,
-    marginTop: 20,
-    paddingHorizontal: 24,
-    paddingVertical: 12
-  },
-  closeButtonText: {
-    color: Colors.gray900,
-    fontSize: 16,
-    fontWeight: '600'
-  },
-  deleteButton: {
-    alignItems: 'center',
-    backgroundColor: Colors.dangerLow,
-    borderRadius: 6,
-    flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6
-  },
-  deleteButtonText: {
-    color: Colors.danger,
-    fontSize: 12,
-    fontWeight: '600'
-  },
-  exitMarker: {
-    opacity: 0.7
-  },
-  expandedSection: {
-    borderTopColor: Colors.gray200,
-    borderTopWidth: 1
-  },
-  fullImage: {
-    height: '80%',
-    width: '100%'
-  },
-  leftSection: {
-    flex: 1,
-    flexDirection: 'row',
-    marginRight: 12
+    marginBottom: Spacing.sm,
+    padding: Spacing.md,
+    ...Shadows.small
   },
   mainContent: {
+    gap: Spacing.sm
+  },
+  // Top Row Styles
+  topRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
-  manualExitButton: {
+  timeInfo: {
     alignItems: 'center',
-    backgroundColor: Colors.dangerLow,
-    borderRadius: 6,
+    flexDirection: 'row',
+    gap: Spacing.sm
+  },
+  timeBlock: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6
+  },
+  timeIconBg: {
+    alignItems: 'center',
+    borderRadius: 12,
+    height: 24,
+    justifyContent: 'center',
+    width: 24
+  },
+  entryIconBg: {
+    backgroundColor: Colors.success
+  },
+  exitIconBg: {
+    backgroundColor: Colors.secondary
+  },
+  pendingIconBg: {
+    backgroundColor: Colors.warning
+  },
+  timeTextBold: {
+    color: Colors.gray900,
+    fontSize: 15,
+    fontWeight: '700'
+  },
+  pendingTimeText: {
+    color: Colors.warning
+  },
+  statusContainer: {
+    alignItems: 'flex-end'
+  },
+  durationBadge: {
+    alignItems: 'center',
+    backgroundColor: Colors.success + '15',
+    borderRadius: BorderRadius.full,
     flexDirection: 'row',
     gap: 4,
-    marginTop: 6,
-    paddingHorizontal: 8,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 4
   },
-  manualExitText: {
-    color: Colors.danger,
+  durationText: {
+    color: Colors.success,
+    fontSize: 13,
+    fontWeight: '700'
+  },
+  pendingBadge: {
+    backgroundColor: Colors.warning + '20',
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4
+  },
+  pendingBadgeText: {
+    color: Colors.warning,
     fontSize: 11,
     fontWeight: '600'
   },
+  // Photo Thumbnails
+  photoThumbnails: {
+    flexDirection: 'row',
+    gap: Spacing.xs
+  },
+  thumbnailContainer: {
+    borderRadius: BorderRadius.md,
+    height: 56,
+    overflow: 'hidden',
+    position: 'relative',
+    width: 56
+  },
+  thumbnail: {
+    height: '100%',
+    width: '100%'
+  },
+  thumbnailLabel: {
+    alignItems: 'center',
+    backgroundColor: Colors.success,
+    borderRadius: 10,
+    bottom: 4,
+    height: 20,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 4,
+    width: 20
+  },
+  thumbnailLabelExit: {
+    backgroundColor: Colors.secondary
+  },
+  // Bottom Row
+  bottomRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  metaLeft: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 6
+  },
+  metaItem: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4
+  },
+  metaDot: {
+    backgroundColor: Colors.gray300,
+    borderRadius: 2,
+    height: 4,
+    width: 4
+  },
+  metaText: {
+    color: Colors.gray500,
+    fontSize: 11,
+    maxWidth: 100
+  },
+  expandIndicator: {
+    alignItems: 'center',
+    height: 24,
+    justifyContent: 'center',
+    width: 24
+  },
+  // Expanded Section
+  expandedSection: {
+    borderTopColor: Colors.gray200,
+    borderTopWidth: 1,
+    gap: Spacing.md,
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md
+  },
+  expandedBlock: {
+    gap: Spacing.sm
+  },
+  expandedHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.xs
+  },
+  expandedTitle: {
+    color: Colors.gray900,
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '600'
+  },
+  // Location Grid
+  locationGrid: {
+    flexDirection: 'row',
+    gap: Spacing.md
+  },
+  locationItem: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: Spacing.xs
+  },
+  locationIcon: {
+    alignItems: 'center',
+    borderRadius: 10,
+    height: 20,
+    justifyContent: 'center',
+    width: 20
+  },
+  locationLabel: {
+    color: Colors.gray500,
+    fontSize: 10,
+    textTransform: 'uppercase'
+  },
+  locationCoords: {
+    color: Colors.gray700,
+    fontSize: 11
+  },
+  // Photos Grid (expanded)
+  photosGrid: {
+    flexDirection: 'row',
+    gap: Spacing.sm
+  },
+  photoLarge: {
+    borderRadius: BorderRadius.md,
+    flex: 1,
+    height: 140,
+    overflow: 'hidden',
+    position: 'relative'
+  },
+  photoLargeImage: {
+    height: '100%',
+    width: '100%'
+  },
+  photoLargeOverlay: {
+    alignItems: 'center',
+    backgroundColor: Colors.success + 'CC',
+    borderRadius: BorderRadius.sm,
+    bottom: Spacing.xs,
+    flexDirection: 'row',
+    gap: 4,
+    left: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 4,
+    position: 'absolute'
+  },
+  photoLargeOverlayExit: {
+    backgroundColor: Colors.secondary + 'CC'
+  },
+  photoLargeLabel: {
+    color: Colors.white,
+    fontSize: 11,
+    fontWeight: '600'
+  },
+  // Admin Actions
+  adminActions: {
+    borderTopColor: Colors.gray200,
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    paddingTop: Spacing.md
+  },
+  actionButton: {
+    alignItems: 'center',
+    backgroundColor: Colors.gray100,
+    borderRadius: BorderRadius.md,
+    flex: 1,
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.sm
+  },
+  deleteActionButton: {
+    backgroundColor: Colors.dangerLow
+  },
+  actionButtonTextWarning: {
+    color: Colors.warning,
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  actionButtonTextDanger: {
+    color: Colors.danger,
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  // Map Styles
   mapButton: {
     alignItems: 'center',
     backgroundColor: Colors.primary + '15',
-    borderRadius: 6,
+    borderRadius: BorderRadius.md,
     flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6
+    gap: 4,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4
   },
   mapButtonText: {
     color: Colors.primary,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600'
   },
   mapModal: {
@@ -561,16 +769,11 @@ const styles = StyleSheet.create({
   },
   mapModalContent: {
     backgroundColor: Colors.white,
-    borderColor: Colors.grey,
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: BorderRadius.xl,
     elevation: 5,
     maxHeight: '80%',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8
+    ...Shadows.large
   },
   mapModalHeader: {
     alignItems: 'center',
@@ -578,8 +781,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm
   },
   mapModalTitle: {
     color: Colors.gray900,
@@ -594,28 +797,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  metaDot: {
-    backgroundColor: Colors.gray300,
-    borderRadius: 2,
-    height: 4,
-    width: 4
+  exitMarker: {
+    opacity: 0.7
   },
-  metaItem: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 4
-  },
-  metaRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 6,
-    marginTop: 4
-  },
-  metaText: {
-    color: Colors.gray600,
-    fontSize: 11,
-    maxWidth: 120
-  },
+  // Photo Modal
   modal: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -628,107 +813,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%'
   },
-  nameRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8
-  },
-  pendingTime: {
-    color: Colors.warning
-  },
-  pendingTimeText: {
-    color: Colors.warning
-  },
-  photoContainer: {
-    flex: 1
-  },
-  photoContainerLeft: {
-    marginRight: 6
-  },
-  photoContainerRight: {
-    marginLeft: 6
-  },
-  photoLabel: {
-    color: Colors.white,
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase'
-  },
-  photoOverlay: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    bottom: 0,
-    justifyContent: 'center',
-    left: 0,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    position: 'absolute',
-    right: 0
-  },
-  photoPreview: {
-    backgroundColor: Colors.gray100,
-    height: 120,
+  fullImage: {
+    height: '80%',
     width: '100%'
   },
-  photoWrapper: {
-    backgroundColor: Colors.gray100,
-    borderColor: Colors.grey,
-    borderRadius: 12,
-    borderWidth: 1,
-    elevation: 3,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4
+  closeButton: {
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.md,
+    marginTop: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 12
   },
-  photosContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  placeholderImage: {
-    alignItems: 'center',
-    backgroundColor: Colors.primary,
-    justifyContent: 'center'
-  },
-  placeholderText: {
-    color: Colors.white,
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
-  rightSection: {
-    alignItems: 'flex-end',
-    justifyContent: 'flex-start'
-  },
-  timeBlock: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 3
-  },
-  timeContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8
-  },
-  timeText: {
+  closeButtonText: {
     color: Colors.gray900,
-    fontSize: 13,
-    fontWeight: '600'
-  },
-  workerImage: {
-    borderRadius: 20,
-    height: 40,
-    marginRight: 10,
-    width: 40
-  },
-  workerInfo: {
-    flex: 1
-  },
-  workerName: {
-    color: Colors.gray900,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600'
   }
 });

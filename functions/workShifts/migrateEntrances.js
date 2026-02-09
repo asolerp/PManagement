@@ -5,7 +5,12 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { REGION } = require('../utils');
-const { getDateString, calculateMinutes, generateShiftId, isAdmin } = require('./utils');
+const {
+  getDateString,
+  calculateMinutes,
+  generateShiftId,
+  isAdmin
+} = require('./utils');
 
 /**
  * Migrate existing entrances to workShifts collection
@@ -46,12 +51,16 @@ exports.migrateEntrancesToWorkShifts = functions
       let query = db.collection('entrances').orderBy('date', 'asc');
 
       if (startDate) {
-        const startTimestamp = admin.firestore.Timestamp.fromDate(new Date(startDate));
+        const startTimestamp = admin.firestore.Timestamp.fromDate(
+          new Date(startDate)
+        );
         query = query.where('date', '>=', startTimestamp);
       }
 
       if (endDate) {
-        const endTimestamp = admin.firestore.Timestamp.fromDate(new Date(endDate));
+        const endTimestamp = admin.firestore.Timestamp.fromDate(
+          new Date(endDate)
+        );
         query = query.where('date', '<=', endTimestamp);
       }
 
@@ -78,9 +87,14 @@ exports.migrateEntrancesToWorkShifts = functions
         if (!shiftGroups.has(shiftKey)) {
           shiftGroups.set(shiftKey, {
             workerId,
-            workerName: entrance.worker.name || `${entrance.worker.firstName || ''} ${entrance.worker.lastName || ''}`.trim(),
+            workerName:
+              entrance.worker.name ||
+              `${entrance.worker.firstName || ''} ${entrance.worker.lastName || ''}`.trim(),
             workerEmail: entrance.worker.email || '',
-            workerPhoto: entrance.worker.profileImage?.small || entrance.worker.profileImage?.thumbnail || null,
+            workerPhoto:
+              entrance.worker.profileImage?.small ||
+              entrance.worker.profileImage?.thumbnail ||
+              null,
             date: dateString,
             entrances: [],
             house: entrance.house || null
@@ -113,7 +127,10 @@ exports.migrateEntrancesToWorkShifts = functions
       for (const [shiftId, group] of shiftGroups) {
         try {
           // Check if shift already exists
-          const existingShift = await db.collection('workShifts').doc(shiftId).get();
+          const existingShift = await db
+            .collection('workShifts')
+            .doc(shiftId)
+            .get();
 
           if (existingShift.exists) {
             results.skipped++;
@@ -138,7 +155,10 @@ exports.migrateEntrancesToWorkShifts = functions
 
           for (const entrance of group.entrances) {
             if (entrance.exitDate) {
-              if (!lastExit || entrance.exitDate.toMillis() > lastExit.toMillis()) {
+              if (
+                !lastExit ||
+                entrance.exitDate.toMillis() > lastExit.toMillis()
+              ) {
                 lastExit = entrance.exitDate;
                 lastExitLocation = entrance.exitLocation;
               }
@@ -206,7 +226,9 @@ exports.migrateEntrancesToWorkShifts = functions
         await batch.commit();
       }
 
-      console.log(`Migration complete. Created: ${results.created}, Skipped: ${results.skipped}, Errors: ${results.errors}`);
+      console.log(
+        `Migration complete. Created: ${results.created}, Skipped: ${results.skipped}, Errors: ${results.errors}`
+      );
 
       return {
         success: true,

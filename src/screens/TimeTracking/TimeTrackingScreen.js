@@ -8,9 +8,10 @@ import {
   SectionList,
   ScrollView
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import PageLayout from '../../components/PageLayout';
 import theme from '../../Theme/Theme';
-import { Colors } from '../../Theme/Variables';
+import { Colors, Spacing, BorderRadius, Shadows } from '../../Theme/Variables';
 import { useTimeTracking } from './hooks/useTimeTracking';
 import { TimeTrackingCard } from '../../components/TimeTracking/TimeTrackingCard';
 import { DateRangePicker } from '../../components/TimeTracking/DateRangePicker';
@@ -24,6 +25,20 @@ import { useTheme } from '../../Theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+
+// Opciones de periodo
+const PERIOD_OPTIONS = [
+  { id: 'today', label: 'Hoy', icon: 'today' },
+  { id: 'week', label: 'Semana', icon: 'date-range' },
+  { id: 'month', label: 'Mes', icon: 'calendar-month' }
+];
+
+// Opciones de estado
+const STATUS_OPTIONS = [
+  { id: 'all', label: 'Todos' },
+  { id: 'completed', label: 'Completos' },
+  { id: 'pending', label: 'Pendientes' }
+];
 
 const TimeTrackingScreen = () => {
   const { Gutters, Layout, Fonts } = useTheme();
@@ -48,6 +63,44 @@ const TimeTrackingScreen = () => {
   } = useTimeTracking();
 
   const [showFiltersModal, setShowFiltersModal] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState('month');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [showWorkerPicker, setShowWorkerPicker] = useState(false);
+
+  // Manejar cambio de periodo
+  const handlePeriodChange = (periodId) => {
+    setSelectedPeriod(periodId);
+    switch (periodId) {
+      case 'today':
+        setToday();
+        break;
+      case 'week':
+        setThisWeek();
+        break;
+      case 'month':
+        setThisMonth();
+        break;
+    }
+  };
+
+  // Filtrar entradas por estado
+  const filteredEntrances = useMemo(() => {
+    if (!entrances) return [];
+    if (selectedStatus === 'all') return entrances;
+    if (selectedStatus === 'completed') return entrances.filter(e => e.exitDate);
+    if (selectedStatus === 'pending') return entrances.filter(e => !e.exitDate);
+    return entrances;
+  }, [entrances, selectedStatus]);
+
+  // Obtener nombre del trabajador seleccionado
+  const selectedWorkerName = useMemo(() => {
+    if (!selectedWorkerId) return 'Todos';
+    const worker = workers?.find(w => w.id === selectedWorkerId);
+    if (worker) {
+      return `${worker.firstName || ''} ${worker.secondName || ''}`.trim() || worker.email;
+    }
+    return 'Todos';
+  }, [selectedWorkerId, workers]);
 
   // Get summary statistics from totalStats (all records, not just loaded ones)
   const totalRecords = totalStats?.totalCount || 0;
@@ -120,11 +173,11 @@ const TimeTrackingScreen = () => {
 
   // Group entrances by date and then by worker
   const groupedEntrances = useMemo(() => {
-    if (!entrances || entrances.length === 0) return [];
+    if (!filteredEntrances || filteredEntrances.length === 0) return [];
 
     const groups = {};
 
-    entrances.forEach(entrance => {
+    filteredEntrances.forEach(entrance => {
       const entryDate = new Date(
         entrance.date.seconds * 1000 + entrance.date.nanoseconds / 1000000
       );
@@ -143,7 +196,7 @@ const TimeTrackingScreen = () => {
 
     // Sort by date (most recent first) and within each date, group by worker and sort
     return Object.values(groups)
-      .sort((a, b) => b.date - a.date)
+      .sort((a, b) => a.date - b.date) // Oldest first
       .map(group => {
         // Group by worker within each date
         const workerGroups = {};
@@ -187,7 +240,7 @@ const TimeTrackingScreen = () => {
           data: flattenedData
         };
       });
-  }, [entrances]);
+  }, [filteredEntrances]);
 
   const renderItem = ({ item, index, section }) => {
     // Check if this is the first entrance of a worker group
@@ -245,15 +298,15 @@ const TimeTrackingScreen = () => {
   };
 
   const renderSectionHeader = ({ section }) => (
-    <View style={styles.dateSectionHeader}>
-      <View style={styles.dateSectionHeaderContent}>
-        <Icon name="calendar-today" size={16} color={Colors.primary} />
-        <Text style={styles.dateSectionHeaderText}>{section.title}</Text>
-        <Badge
-          variant="pm"
-          type="outline"
-          text={`${section.data.length} registro${section.data.length !== 1 ? 's' : ''}`}
-        />
+    <View style={styles.dateSectionHeaderNew}>
+      <View style={styles.dateSectionDateContainer}>
+        <Icon name="event" size={14} color={Colors.white} />
+      </View>
+      <Text style={styles.dateSectionHeaderTextNew}>{section.title}</Text>
+      <View style={styles.dateSectionBadge}>
+        <Text style={styles.dateSectionBadgeText}>
+          {section.data.length}
+        </Text>
       </View>
     </View>
   );
@@ -295,160 +348,205 @@ const TimeTrackingScreen = () => {
 
   const renderListHeader = () => (
     <>
-      {/* Summary Statistics */}
-      <View style={styles.statsCard}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{totalRecords}</Text>
-          <Text style={styles.statLabel}>Total Registros</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: Colors.success }]}>
-            {completedRecords}
-          </Text>
-          <Text style={styles.statLabel}>Completos</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: Colors.warning }]}>
-            {pendingRecords}
-          </Text>
-          <Text style={styles.statLabel}>Pendientes</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: Colors.primary }]}>
-            {Math.round(totalHours)}h
-          </Text>
-          <Text style={styles.statLabel}>Total Horas</Text>
-        </View>
+      {/* Filtros de Periodo */}
+      <View style={styles.periodFilters}>
+        {PERIOD_OPTIONS.map((option) => (
+          <TouchableOpacity
+            key={option.id}
+            style={[
+              styles.periodButton,
+              selectedPeriod === option.id && styles.periodButtonActive
+            ]}
+            onPress={() => handlePeriodChange(option.id)}
+            activeOpacity={0.7}
+          >
+            <Icon 
+              name={option.icon} 
+              size={16} 
+              color={selectedPeriod === option.id ? Colors.white : Colors.primary} 
+            />
+            <Text style={[
+              styles.periodButtonText,
+              selectedPeriod === option.id && styles.periodButtonTextActive
+            ]}>
+              {option.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity
+          style={styles.moreFiltersButton}
+          onPress={() => setShowFiltersModal(true)}
+          activeOpacity={0.7}
+        >
+          <Icon name="tune" size={18} color={Colors.gray600} />
+        </TouchableOpacity>
       </View>
 
-      {/* Alert for incomplete records */}
-      {pendingRecords > 0 && (
-        <View style={styles.alertCard}>
-          <View style={[Layout.row, Layout.itemsCenter]}>
-            <Icon name="warning" size={20} color={Colors.warning} />
-            <Text
+      {/* Filtros de Estado + Trabajador */}
+      <View style={styles.secondaryFilters}>
+        {/* Status Filter */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={styles.statusFiltersScroll}
+          contentContainerStyle={styles.statusFiltersContent}
+        >
+          {STATUS_OPTIONS.map((option) => (
+            <TouchableOpacity
+              key={option.id}
               style={[
-                Fonts.textBold,
-                Fonts.textSmall,
-                Gutters.smallLMargin,
-                { color: Colors.warning }
+                styles.statusChip,
+                selectedStatus === option.id && styles.statusChipActive
               ]}
+              onPress={() => setSelectedStatus(option.id)}
+              activeOpacity={0.7}
             >
-              Atención: {pendingRecords} registro(s) sin salida registrada
+              <Text style={[
+                styles.statusChipText,
+                selectedStatus === option.id && styles.statusChipTextActive
+              ]}>
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Worker Filter Chip */}
+        <TouchableOpacity
+          style={[
+            styles.workerChip,
+            selectedWorkerId && styles.workerChipActive
+          ]}
+          onPress={() => setShowWorkerPicker(true)}
+          activeOpacity={0.7}
+        >
+          <Icon 
+            name="person" 
+            size={14} 
+            color={selectedWorkerId ? Colors.white : Colors.gray600} 
+          />
+          <Text 
+            style={[
+              styles.workerChipText,
+              selectedWorkerId && styles.workerChipTextActive
+            ]}
+            numberOfLines={1}
+          >
+            {selectedWorkerName}
+          </Text>
+          {selectedWorkerId && (
+            <TouchableOpacity
+              onPress={() => setSelectedWorkerId(null)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Icon name="close" size={14} color={Colors.white} />
+            </TouchableOpacity>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* Summary Statistics - Gradient Card */}
+      <LinearGradient
+        colors={['#126D9B', '#3B8D7A', '#67B26F']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.statsGradient}
+      >
+        <View style={styles.statsRow}>
+          <View style={styles.statItemNew}>
+            <View style={styles.statIconContainer}>
+              <Icon name="event-note" size={20} color="rgba(255,255,255,0.9)" />
+            </View>
+            <Text style={styles.statValueNew}>{totalRecords}</Text>
+            <Text style={styles.statLabelNew}>Registros</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItemNew}>
+            <View style={styles.statIconContainer}>
+              <Icon name="check-circle" size={20} color="rgba(255,255,255,0.9)" />
+            </View>
+            <Text style={styles.statValueNew}>{completedRecords}</Text>
+            <Text style={styles.statLabelNew}>Completos</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItemNew}>
+            <View style={styles.statIconContainer}>
+              <Icon name="schedule" size={20} color="rgba(255,255,255,0.9)" />
+            </View>
+            <Text style={styles.statValueNew}>{pendingRecords}</Text>
+            <Text style={styles.statLabelNew}>Pendientes</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItemNew}>
+            <View style={styles.statIconContainer}>
+              <Icon name="access-time" size={20} color="rgba(255,255,255,0.9)" />
+            </View>
+            <Text style={styles.statValueNew}>{Math.round(totalHours)}h</Text>
+            <Text style={styles.statLabelNew}>Total</Text>
+          </View>
+        </View>
+      </LinearGradient>
+
+      {/* Alert for incomplete records */}
+      {pendingRecords > 0 && selectedStatus !== 'completed' && (
+        <View style={styles.alertCardNew}>
+          <View style={styles.alertIconContainer}>
+            <Icon name="warning" size={18} color={Colors.warning} />
+          </View>
+          <View style={styles.alertContent}>
+            <Text style={styles.alertTitle}>
+              {pendingRecords} registro(s) sin salida
+            </Text>
+            <Text style={styles.alertText}>
+              Todos los registros deben tener entrada y salida completas.
             </Text>
           </View>
-          <Text
-            style={[
-              Fonts.textRegular,
-              Fonts.textSmall,
-              Gutters.smallTMargin,
-              { color: Colors.gray700 }
-            ]}
-          >
-            Según la normativa de seguridad social, todos los registros deben
-            tener entrada y salida completas.
-          </Text>
         </View>
       )}
 
-      {/* Worker Summary Section */}
+      {/* Worker Summary Section - Compact List */}
       {!selectedWorkerId && workerStats.length > 0 && (
-        <View style={styles.summaryCard}>
-          <Text
-            style={[
-              Fonts.textBold,
-              Fonts.textRegular,
-              Gutters.smallBMargin,
-              styles.sectionTitle
-            ]}
-          >
-            Resumen por Trabajador
-          </Text>
+        <View style={styles.summarySection}>
+          <View style={styles.sectionHeaderNew}>
+            <Icon name="people" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitleNew}>Resumen por Trabajador</Text>
+          </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.workerStatsScroll}
-          >
+          <View style={styles.workerList}>
             {workerStats.map((stat, index) => (
-              <View
+              <TouchableOpacity
                 key={stat.worker?.id || index}
-                style={styles.workerStatCard}
+                style={styles.workerListItem}
+                onPress={() => setSelectedWorkerId(stat.worker?.id)}
+                activeOpacity={0.7}
               >
-                <View style={styles.workerStatHeader}>
+                <View style={styles.workerListLeft}>
                   <Avatar
                     uri={stat.worker?.profileImage?.small || DEFAULT_IMAGE}
-                    size="medium"
+                    size="small"
                   />
-                  <View style={styles.workerStatInfo}>
-                    <Text
-                      style={[
-                        Fonts.textBold,
-                        Fonts.textSmall,
-                        styles.workerName
-                      ]}
-                      numberOfLines={1}
-                    >
+                  <View style={styles.workerListInfo}>
+                    <Text style={styles.workerListName} numberOfLines={1}>
                       {stat.worker?.firstName} {stat.worker?.secondName}
                     </Text>
+                    <Text style={styles.workerListMeta}>
+                      {stat.daysWorked} días • {stat.avgHoursPerDay.toFixed(1)}h/día
+                    </Text>
                   </View>
                 </View>
-
-                <View style={styles.workerStatDetails}>
-                  <View style={styles.workerStatRow}>
-                    <Text style={styles.workerStatLabel}>Horas totales:</Text>
-                    <Text style={styles.workerStatValue}>
-                      {Math.round(stat.totalHours)}h
-                    </Text>
-                  </View>
-                  <View style={styles.workerStatRow}>
-                    <Text style={styles.workerStatLabel}>Días trabajados:</Text>
-                    <Text style={styles.workerStatValue}>
-                      {stat.daysWorked}
-                    </Text>
-                  </View>
-                  <View style={styles.workerStatRow}>
-                    <Text style={styles.workerStatLabel}>Promedio/día:</Text>
-                    <Text style={styles.workerStatValue}>
-                      {stat.avgHoursPerDay.toFixed(1)}h
-                    </Text>
-                  </View>
-                  {stat.overtimeHours > 0 && (
-                    <View style={styles.workerStatRow}>
-                      <Text style={styles.workerStatLabel}>Horas extra:</Text>
-                      <Badge
-                        variant="warning"
-                        type="outline"
-                        text={`${Math.round(stat.overtimeHours)}h`}
-                      />
-                    </View>
-                  )}
+                <View style={styles.workerListRight}>
+                  <Text style={styles.workerListHours}>
+                    {Math.round(stat.totalHours)}h
+                  </Text>
                   {stat.pendingRecords > 0 && (
-                    <View style={styles.workerStatRow}>
-                      <Text style={styles.workerStatLabel}>Pendientes:</Text>
-                      <Badge
-                        variant="danger"
-                        type="outline"
-                        text={stat.pendingRecords}
-                      />
+                    <View style={styles.pendingBadge}>
+                      <Text style={styles.pendingBadgeText}>{stat.pendingRecords}</Text>
                     </View>
                   )}
-                  <View style={styles.workerStatRow}>
-                    <Text style={styles.workerStatLabel}>Completos:</Text>
-                    <Badge
-                      variant={
-                        stat.completedRecords === stat.totalRecords
-                          ? 'success'
-                          : 'warning'
-                      }
-                      type="outline"
-                      text={`${stat.completedRecords}/${stat.totalRecords}`}
-                    />
-                  </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
-          </ScrollView>
+          </View>
         </View>
       )}
     </>
@@ -582,6 +680,84 @@ const TimeTrackingScreen = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Worker Picker Modal */}
+      <Modal
+        isVisible={showWorkerPicker}
+        onBackdropPress={() => setShowWorkerPicker(false)}
+        onBackButtonPress={() => setShowWorkerPicker(false)}
+        style={styles.workerModal}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        useNativeDriver={true}
+      >
+        <View style={styles.workerModalContent}>
+          <View style={styles.workerModalHeader}>
+            <Text style={styles.workerModalTitle}>Seleccionar Trabajador</Text>
+            <TouchableOpacity
+              onPress={() => setShowWorkerPicker(false)}
+              style={styles.workerModalClose}
+            >
+              <Icon name="close" size={24} color={Colors.gray600} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView 
+            style={styles.workerModalList}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* All workers option */}
+            <TouchableOpacity
+              style={[
+                styles.workerModalItem,
+                !selectedWorkerId && styles.workerModalItemActive
+              ]}
+              onPress={() => {
+                setSelectedWorkerId(null);
+                setShowWorkerPicker(false);
+              }}
+              activeOpacity={0.7}
+            >
+              <View style={styles.workerModalItemLeft}>
+                <View style={styles.workerModalAllIcon}>
+                  <Icon name="groups" size={20} color={Colors.white} />
+                </View>
+                <Text style={styles.workerModalItemName}>Todos los trabajadores</Text>
+              </View>
+              {!selectedWorkerId && (
+                <Icon name="check" size={20} color={Colors.primary} />
+              )}
+            </TouchableOpacity>
+
+            {workers?.map((worker) => (
+              <TouchableOpacity
+                key={worker.id}
+                style={[
+                  styles.workerModalItem,
+                  selectedWorkerId === worker.id && styles.workerModalItemActive
+                ]}
+                onPress={() => {
+                  setSelectedWorkerId(worker.id);
+                  setShowWorkerPicker(false);
+                }}
+                activeOpacity={0.7}
+              >
+                <View style={styles.workerModalItemLeft}>
+                  <Avatar
+                    uri={worker.profileImage?.small || DEFAULT_IMAGE}
+                    size="small"
+                  />
+                  <Text style={styles.workerModalItemName}>
+                    {worker.firstName} {worker.secondName}
+                  </Text>
+                </View>
+                {selectedWorkerId === worker.id && (
+                  <Icon name="check" size={20} color={Colors.primary} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -608,6 +784,33 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     padding: 12
   },
+  alertCardNew: {
+    alignItems: 'flex-start',
+    backgroundColor: Colors.warning + '10',
+    borderLeftColor: Colors.warning,
+    borderLeftWidth: 3,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+    padding: Spacing.sm
+  },
+  alertContent: {
+    flex: 1
+  },
+  alertIconContainer: {
+    marginTop: 2
+  },
+  alertText: {
+    color: Colors.gray600,
+    fontSize: 12,
+    marginTop: 2
+  },
+  alertTitle: {
+    color: Colors.warning,
+    fontSize: 13,
+    fontWeight: '600'
+  },
   applyButtonContainer: {
     flex: 1
   },
@@ -633,6 +836,28 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600'
   },
+  dateSectionBadge: {
+    alignItems: 'center',
+    backgroundColor: Colors.primary + '15',
+    borderRadius: 12,
+    height: 24,
+    justifyContent: 'center',
+    minWidth: 24,
+    paddingHorizontal: 8
+  },
+  dateSectionBadgeText: {
+    color: Colors.primary,
+    fontSize: 12,
+    fontWeight: '700'
+  },
+  dateSectionDateContainer: {
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+    borderRadius: 6,
+    height: 24,
+    justifyContent: 'center',
+    width: 24
+  },
   dateSectionHeader: {
     backgroundColor: Colors.white,
     borderBottomColor: Colors.grey,
@@ -647,10 +872,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8
   },
+  dateSectionHeaderNew: {
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs
+  },
   dateSectionHeaderText: {
     color: Colors.gray900,
     flex: 1,
     fontSize: 15,
+    fontWeight: '600',
+    textTransform: 'capitalize'
+  },
+  dateSectionHeaderTextNew: {
+    color: Colors.gray800,
+    flex: 1,
+    fontSize: 14,
     fontWeight: '600',
     textTransform: 'capitalize'
   },
@@ -755,6 +998,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700'
   },
+  pendingBadge: {
+    alignItems: 'center',
+    backgroundColor: Colors.warning,
+    borderRadius: 10,
+    height: 20,
+    justifyContent: 'center',
+    marginLeft: Spacing.xs,
+    minWidth: 20,
+    paddingHorizontal: 6
+  },
+  pendingBadgeText: {
+    color: Colors.white,
+    fontSize: 11,
+    fontWeight: '700'
+  },
   scrollContent: {
     paddingBottom: 24,
     paddingHorizontal: 20,
@@ -766,23 +1024,56 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 16
   },
+  sectionHeaderNew: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm
+  },
   sectionTitle: {
     color: Colors.gray800,
     fontSize: 15,
     fontWeight: '600'
   },
+  sectionTitleNew: {
+    color: Colors.gray800,
+    fontSize: 14,
+    fontWeight: '600'
+  },
+  statDivider: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    height: 40,
+    width: 1
+  },
+  statIconContainer: {
+    marginBottom: 4
+  },
   statItem: {
     alignItems: 'center'
+  },
+  statItemNew: {
+    alignItems: 'center',
+    flex: 1
   },
   statLabel: {
     color: Colors.gray600,
     fontSize: 12,
     marginTop: 4
   },
+  statLabelNew: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 11,
+    marginTop: 2
+  },
   statValue: {
     color: Colors.gray900,
     fontSize: 24,
     fontWeight: 'bold'
+  },
+  statValueNew: {
+    color: Colors.white,
+    fontSize: 22,
+    fontWeight: '700'
   },
   statsCard: {
     backgroundColor: Colors.white,
@@ -800,6 +1091,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2
   },
+  statsGradient: {
+    borderRadius: BorderRadius.lg,
+    marginBottom: Spacing.md,
+    marginTop: Spacing.md,
+    padding: Spacing.md,
+    ...Shadows.medium
+  },
+  statsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-around'
+  },
   summaryCard: {
     backgroundColor: Colors.white,
     borderColor: Colors.grey,
@@ -812,6 +1115,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2
+  },
+  summarySection: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.gray200,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    marginBottom: Spacing.md,
+    padding: Spacing.md,
+    ...Shadows.small
   },
   workerGroupHeader: {
     backgroundColor: Colors.gray50,
@@ -833,6 +1145,46 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600'
+  },
+  workerList: {
+    gap: Spacing.xs
+  },
+  workerListHours: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '700'
+  },
+  workerListInfo: {
+    flex: 1,
+    marginLeft: Spacing.sm
+  },
+  workerListItem: {
+    alignItems: 'center',
+    backgroundColor: Colors.gray50,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.sm
+  },
+  workerListLeft: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row'
+  },
+  workerListMeta: {
+    color: Colors.gray500,
+    fontSize: 11,
+    marginTop: 2
+  },
+  workerListName: {
+    color: Colors.gray900,
+    fontSize: 13,
+    fontWeight: '600'
+  },
+  workerListRight: {
+    alignItems: 'center',
+    flexDirection: 'row'
   },
   workerName: {
     color: Colors.gray900
@@ -874,6 +1226,163 @@ const styles = StyleSheet.create({
   },
   workerStatsScroll: {
     marginTop: 12
+  },
+  // New Filter Styles
+  periodFilters: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.xs,
+    marginTop: Spacing.sm
+  },
+  periodButton: {
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderColor: Colors.primary + '40',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.sm
+  },
+  periodButtonActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary
+  },
+  periodButtonText: {
+    color: Colors.primary,
+    fontSize: 13,
+    fontWeight: '600'
+  },
+  periodButtonTextActive: {
+    color: Colors.white
+  },
+  moreFiltersButton: {
+    alignItems: 'center',
+    backgroundColor: Colors.gray100,
+    borderRadius: BorderRadius.lg,
+    height: 40,
+    justifyContent: 'center',
+    width: 40
+  },
+  secondaryFilters: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginTop: Spacing.sm
+  },
+  statusFiltersScroll: {
+    flex: 1
+  },
+  statusFiltersContent: {
+    flexDirection: 'row',
+    gap: Spacing.xs
+  },
+  statusChip: {
+    backgroundColor: Colors.gray100,
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs
+  },
+  statusChipActive: {
+    backgroundColor: Colors.secondary
+  },
+  statusChipText: {
+    color: Colors.gray600,
+    fontSize: 12,
+    fontWeight: '500'
+  },
+  statusChipTextActive: {
+    color: Colors.white
+  },
+  workerChip: {
+    alignItems: 'center',
+    backgroundColor: Colors.gray100,
+    borderRadius: BorderRadius.full,
+    flexDirection: 'row',
+    gap: 4,
+    maxWidth: 140,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs
+  },
+  workerChipActive: {
+    backgroundColor: Colors.primary
+  },
+  workerChipText: {
+    color: Colors.gray600,
+    fontSize: 12,
+    fontWeight: '500'
+  },
+  workerChipTextActive: {
+    color: Colors.white
+  },
+  // Worker Picker Modal Styles
+  workerModal: {
+    justifyContent: 'flex-end',
+    margin: 0
+  },
+  workerModalContent: {
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    maxHeight: '70%',
+    paddingBottom: Spacing.xl
+  },
+  workerModalHeader: {
+    alignItems: 'center',
+    borderBottomColor: Colors.gray200,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md
+  },
+  workerModalTitle: {
+    color: Colors.gray900,
+    fontSize: 18,
+    fontWeight: '600'
+  },
+  workerModalClose: {
+    alignItems: 'center',
+    height: 32,
+    justifyContent: 'center',
+    width: 32
+  },
+  workerModalList: {
+    paddingHorizontal: Spacing.sm
+  },
+  workerModalItem: {
+    alignItems: 'center',
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md
+  },
+  workerModalItemActive: {
+    backgroundColor: Colors.primary + '10'
+  },
+  workerModalItemLeft: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: Spacing.sm
+  },
+  workerModalItemName: {
+    color: Colors.gray900,
+    fontSize: 15,
+    fontWeight: '500'
+  },
+  workerModalAllIcon: {
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+    borderRadius: 18,
+    height: 36,
+    justifyContent: 'center',
+    width: 36
   }
 });
 

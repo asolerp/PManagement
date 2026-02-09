@@ -120,8 +120,7 @@ exports.getWorkShiftStats = functions
       }
 
       const { date } = data;
-      const targetDate =
-        date || new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const targetDate = date || new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
       // Get shifts for today
       const todayShifts = await db
@@ -206,19 +205,39 @@ exports.getWorkers = functions
       const snapshot = await db
         .collection('users')
         .where('role', '==', 'worker')
-        .orderBy('name', 'asc')
         .get();
 
       const workers = [];
       snapshot.forEach(doc => {
         const data = doc.data();
+        // Handle different photo field formats
+        let photo =
+          data.profileImage?.small ||
+          data.profileImage?.thumbnail ||
+          data.profileImage?.original ||
+          (typeof data.profileImage === 'string' ? data.profileImage : null) ||
+          data.photoURL ||
+          data.photo ||
+          null;
+
+        // Filter out old Cloudinary URLs that no longer work
+        if (photo && photo.includes('cloudinary')) {
+          photo = null;
+        }
+
         workers.push({
           id: doc.id,
-          name: data.name || `${data.firstName || ''} ${data.lastName || ''}`.trim(),
+          name:
+            `${data.firstName || ''} ${data.lastName || ''}`.trim() ||
+            data.name ||
+            data.email,
           email: data.email,
-          photo: data.profileImage?.small || data.profileImage?.thumbnail || null
+          photo
         });
       });
+
+      // Sort by name in memory
+      workers.sort((a, b) => a.name.localeCompare(b.name));
 
       return {
         success: true,
