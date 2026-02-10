@@ -88,12 +88,36 @@ const EntityItem = ({
               )}
             </View>
             <View style={[Layout.grow, Layout.col, Layout.justifyContentEnd]}>
-              <Badge
-                type="outline"
-                text={house}
-                variant="purple"
-                iconName="home"
-              />
+              <View
+                style={[
+                  Layout.row,
+                  Layout.alignItemsCenter,
+                  styles.houseWorkerRow,
+                ]}>
+                {house && (
+                  <Badge
+                    type="outline"
+                    text={house}
+                    variant="purple"
+                    iconName="home"
+                    textStyle={styles.smallMetaText}
+                    iconSize={14}
+                    containerStyle={styles.smallBadge}
+                  />
+                )}
+                <View style={[Layout.row, styles.workersWrap]}>
+                  {workers?.map((worker, i) => (
+                    <Avatar
+                      overlap={workers?.length > 1}
+                      index={i}
+                      id={worker.id}
+                      key={worker.id}
+                      uri={worker.profileImage?.small}
+                      size="tiny"
+                    />
+                  ))}
+                </View>
+              </View>
               <Divider
                 color={Colors.darkGrey}
                 style={[Gutters.smallTMargin, Gutters.tinyBMargin]}
@@ -118,18 +142,6 @@ const EntityItem = ({
                     type="outline"
                     iconName="schedule"
                   />
-                </View>
-                <View style={[Layout.row]}>
-                  {workers?.map((worker, i) => (
-                    <Avatar
-                      overlap={workers?.length > 1}
-                      index={i}
-                      id={worker.id}
-                      key={worker.id}
-                      uri={worker.profileImage?.small}
-                      size="tiny"
-                    />
-                  ))}
                 </View>
               </View>
             </View>
@@ -160,44 +172,60 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   checkItemWrapper: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
     alignItems: 'center',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 1,
+    backgroundColor: 'white',
     borderColor: GREY_1,
-  },
-  statusBarContainer: {
-    width: 8,
-    height: '100%',
-    borderRadius: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginBottom: 10,
+    padding: 10,
   },
   checkText: {
-    marginTop: 5,
     color: DARK_BLUE,
+    marginTop: 5,
   },
-  priority: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 10,
-    borderRadius: 20,
-    marginRight: 10,
-    backgroundColor: 'white',
+  countStyle: {
+    color: DARK_BLUE,
+    fontSize: 14,
+    fontWeight: '600',
   },
   date: {
     fontSize: 10,
   },
-  countStyle: {
-    color: DARK_BLUE,
-    fontWeight: '600',
-    fontSize: 14,
+  houseWorkerRow: {
+    flexWrap: 'wrap',
+    gap: 8,
   },
   percentageContainer: {
     position: 'absolute',
     right: 10,
     top: 10,
+  },
+  priority: {
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    justifyContent: 'center',
+    marginRight: 10,
+    width: 10,
+  },
+  smallBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  smallMetaText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  statusBarContainer: {
+    borderRadius: 20,
+    height: '100%',
+    width: 8,
+  },
+  workersWrap: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
 });
 

@@ -2,30 +2,32 @@ export default {
   expo: {
     name: 'Port Management',
     slug: 'portmanagement',
-    version: '1.9.7',
+    version: '1.9.9',
     orientation: 'portrait',
-    icon: './assets/bootsplash/logo.png',
+    icon: './assets/icon/icon.png',
     userInterfaceStyle: 'automatic',
     scheme: 'portmanagement',
 
     splash: {
-      image: './assets/bootsplash/logo.png',
-      resizeMode: 'contain',
-      backgroundColor: '#FFFFFF'
+      image: './assets/splash/splash.png',
+      resizeMode: 'cover',
+      backgroundColor: '#26b45f'
     },
 
     assetBundlePatterns: ['**/*'],
 
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.port.management',  // iOS usa com.port.management
-      buildNumber: '27',
+      bundleIdentifier: 'com.port.management', // iOS usa com.port.management
+      buildNumber: '28',
       googleServicesFile:
         './native-backup/Firebase/Prod/GoogleService-Info.plist',
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           'Esta app necesita acceso a tu ubicación para registrar entradas y salidas.',
         NSLocationAlwaysUsageDescription:
+          'Esta app necesita acceso a tu ubicación para registrar entradas y salidas.',
+        NSLocationAlwaysAndWhenInUseUsageDescription:
           'Esta app necesita acceso a tu ubicación para registrar entradas y salidas.',
         NSCameraUsageDescription:
           'Esta app necesita acceso a la cámara para tomar fotos de verificación.',
@@ -39,11 +41,11 @@ export default {
 
     android: {
       adaptiveIcon: {
-        foregroundImage: './assets/bootsplash/logo.png',
-        backgroundColor: '#FFFFFF'
+        foregroundImage: './assets/icon/icon.png',
+        backgroundColor: '#26b45f'
       },
-      package: 'com.portmanagement',  // Android usa com.portmanagement
-      versionCode: 27,
+      package: 'com.portmanagement', // Android usa com.portmanagement
+      versionCode: 28,
       permissions: [
         'CAMERA',
         'READ_EXTERNAL_STORAGE',
@@ -63,9 +65,9 @@ export default {
       [
         'expo-splash-screen',
         {
-          image: './assets/bootsplash/logo.png',
-          backgroundColor: '#FFFFFF',
-          imageWidth: 200
+          image: './assets/splash/splash.png',
+          resizeMode: 'cover',
+          backgroundColor: '#26b45f'
         }
       ],
       [

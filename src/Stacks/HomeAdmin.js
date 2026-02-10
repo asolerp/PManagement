@@ -16,6 +16,7 @@ import { tabNameByScreen } from '../utils/parsers';
 import {
   DASHBOARD_SCREEN_KEY,
   HOUSES_SCREEN_KEY,
+  INCIDENCES_SCREEN_KEY,
   TIME_TRACKING_SCREEN_KEY,
   USERS_SCREEN_KEY
 } from '../Router/utils/routerKeys';
@@ -24,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { isIOS } from '../utils/platform';
 import { Colors } from '../Theme/Variables';
 import { TimeTrackingScreen } from '../Screens/TimeTracking';
+import { IncidencesScreen } from '../Screens/Incidences';
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
@@ -104,6 +106,24 @@ const HomeAdmin = () => {
             <>
               <Icon
                 name={focused ? 'speedometer' : 'speedometer-outline'}
+                size={25}
+                focused={focused}
+                color={Colors.primary}
+              />
+            </>
+          )
+        })}
+      />
+      <Screen
+        name={t(tabNameByScreen[INCIDENCES_SCREEN_KEY])}
+        initialParams={{ screenKey: INCIDENCES_SCREEN_KEY }}
+        component={IncidencesScreen}
+        options={({ route }) => ({
+          tabBarVisible: getTabBarVisible(route),
+          tabBarIcon: ({ focused, color, size }) => (
+            <>
+              <Icon
+                name={focused ? 'warning' : 'warning-outline'}
                 size={25}
                 focused={focused}
                 color={Colors.primary}

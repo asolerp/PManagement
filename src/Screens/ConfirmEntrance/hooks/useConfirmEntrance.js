@@ -21,30 +21,113 @@ const DEV_DEFAULT_LOCATION = {
   longitude: -3.7038
 };
 
-// Helper para obtener ubicación con fallback en modo dev
+// Precisión máxima aceptable en metros (100m es razonable para GPS móvil)
+const MAX_ACCEPTABLE_ACCURACY = 100;
+// Número máximo de intentos para obtener una ubicación precisa
+const MAX_LOCATION_ATTEMPTS = 3;
+
+// Helper para obtener ubicación con reintentos y validación de precisión
 const getLocationWithFallback = () => {
   return new Promise((resolve, reject) => {
-    Geolocation.getCurrentPosition(
-      info => {
-        resolve({
-          latitude: info.coords.latitude,
-          longitude: info.coords.longitude
-        });
-      },
-      error => {
-        // En modo desarrollo, usar ubicación por defecto
-        if (__DEV__) {
-          Logger.warn('Using dev fallback location', {
-            reason: error.message,
-            fallbackLocation: DEV_DEFAULT_LOCATION
+    let attempts = 0;
+    let bestLocation = null;
+    let bestAccuracy = Infinity;
+
+    const tryGetLocation = () => {
+      attempts++;
+      Logger.info('Getting GPS location', { attempt: attempts, maxAttempts: MAX_LOCATION_ATTEMPTS });
+
+      Geolocation.getCurrentPosition(
+        info => {
+          const { latitude, longitude, accuracy } = info.coords;
+          Logger.info('GPS location received', { 
+            latitude, 
+            longitude, 
+            accuracy: accuracy ? `${accuracy.toFixed(1)}m` : 'unknown',
+            attempt: attempts 
           });
-          resolve(DEV_DEFAULT_LOCATION);
-        } else {
-          reject(error);
+
+          // Guardar la mejor ubicación obtenida
+          if (accuracy && accuracy < bestAccuracy) {
+            bestAccuracy = accuracy;
+            bestLocation = { latitude, longitude, accuracy };
+          } else if (!bestLocation) {
+            bestLocation = { latitude, longitude, accuracy: accuracy || 0 };
+          }
+
+          // Si la precisión es buena, usar esta ubicación
+          if (!accuracy || accuracy <= MAX_ACCEPTABLE_ACCURACY) {
+            resolve({ latitude, longitude });
+            return;
+          }
+
+          // Si la precisión es mala y aún tenemos intentos, reintentar
+          if (attempts < MAX_LOCATION_ATTEMPTS) {
+            Logger.warn('GPS accuracy too low, retrying', { 
+              accuracy: `${accuracy.toFixed(1)}m`, 
+              maxAcceptable: `${MAX_ACCEPTABLE_ACCURACY}m`,
+              attempt: attempts 
+            });
+            // Esperar un poco antes de reintentar para que el GPS se estabilice
+            setTimeout(tryGetLocation, 1500);
+            return;
+          }
+
+          // Agotamos los intentos, usar la mejor ubicación obtenida
+          Logger.warn('Max GPS attempts reached, using best location', { 
+            bestAccuracy: bestAccuracy ? `${bestAccuracy.toFixed(1)}m` : 'unknown',
+            attempts 
+          });
+          resolve({ 
+            latitude: bestLocation.latitude, 
+            longitude: bestLocation.longitude 
+          });
+        },
+        error => {
+          Logger.warn('GPS error', { 
+            code: error.code, 
+            message: error.message, 
+            attempt: attempts 
+          });
+
+          // Si tenemos una ubicación previa, usarla
+          if (bestLocation) {
+            Logger.warn('Using previously obtained location after error', { 
+              bestAccuracy: bestAccuracy ? `${bestAccuracy.toFixed(1)}m` : 'unknown'
+            });
+            resolve({ 
+              latitude: bestLocation.latitude, 
+              longitude: bestLocation.longitude 
+            });
+            return;
+          }
+
+          // Reintentar si quedan intentos
+          if (attempts < MAX_LOCATION_ATTEMPTS) {
+            setTimeout(tryGetLocation, 1500);
+            return;
+          }
+
+          // En modo desarrollo, usar ubicación por defecto
+          if (__DEV__) {
+            Logger.warn('Using dev fallback location', {
+              reason: error.message,
+              fallbackLocation: DEV_DEFAULT_LOCATION
+            });
+            resolve(DEV_DEFAULT_LOCATION);
+          } else {
+            reject(error);
+          }
+        },
+        { 
+          enableHighAccuracy: true, 
+          timeout: 20000, 
+          maximumAge: 0  // Forzar ubicación fresca, no usar caché
         }
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
+      );
+    };
+
+    tryGetLocation();
   });
 };
 

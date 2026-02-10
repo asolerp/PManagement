@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Avatar from '../Avatar';
 
 // Configuración de colores para estados
 const STATUS_COLORS = {
@@ -105,56 +106,62 @@ export const ActiveChecklistCard = ({
           </View>
         </View>
 
-        {/* House */}
-        <View style={styles.activeHouseRow}>
-          <View
-            style={[
-              styles.houseIconBg,
-              { backgroundColor: STATUS_COLORS.purple.light }
-            ]}
-          >
-            <Icon name="home" size={18} color={STATUS_COLORS.purple.primary} />
+        {/* House + Workers */}
+        <View style={styles.metaStrip}>
+          <View style={styles.chipHouse}>
+            <Icon name="home" size={13} color={STATUS_COLORS.purple.primary} />
+            <Text style={styles.chipHouseText} numberOfLines={1}>
+              {house}
+            </Text>
           </View>
-          <Text style={styles.activeHouseText}>{house}</Text>
-        </View>
-
-        {/* Content */}
-        <View style={styles.activeContent}>
-          {/* Workers */}
           {workers && workers.length > 0 && (
-            <View style={styles.activeInfoRow}>
-              <View style={styles.iconBadge}>
-                <Icon name="person" size={16} color="#6B7280" />
+            <>
+              <View style={styles.metaDot} />
+              <View style={styles.chipWorker}>
+                <View style={styles.workersAvatars}>
+                  {workers.slice(0, 3).map((worker, i) => (
+                    <Avatar
+                      key={worker.id}
+                      overlap={workers.length > 1}
+                      index={i}
+                      id={worker.id}
+                      uri={worker.profileImage?.small}
+                      size="tiny"
+                    />
+                  ))}
+                </View>
+                <Text style={styles.chipWorkerText} numberOfLines={1}>
+                  {workers.length === 1
+                    ? workers[0].firstName || workers[0].name
+                    : `${workers[0].firstName || workers[0].name} +${workers.length - 1}`}
+                </Text>
               </View>
-              <Text style={styles.activeInfoText} numberOfLines={1}>
-                {workers.length === 1
-                  ? workers[0].firstName || workers[0].name
-                  : `${workers[0].firstName || workers[0].name} +${workers.length - 1}`}
-              </Text>
-            </View>
-          )}
-
-          {/* Time */}
-          {startHour && endHour && (
-            <View style={styles.activeInfoRow}>
-              <View style={styles.iconBadge}>
-                <Icon name="access-time" size={16} color="#6B7280" />
-              </View>
-              <Text style={styles.activeInfoText}>
-                {startHour} - {endHour}
-              </Text>
-            </View>
-          )}
-
-          {/* Notes */}
-          {subtitle && subtitle.trim() !== '' && (
-            <View style={styles.activeNotesContainer}>
-              <Text style={styles.activeNotes} numberOfLines={3}>
-                {subtitle}
-              </Text>
-            </View>
+            </>
           )}
         </View>
+
+        {/* Content - solo si hay hora o notas */}
+        {((startHour && endHour) || (subtitle && subtitle.trim() !== '')) && (
+          <View style={styles.activeContent}>
+            {startHour && endHour && (
+              <View style={styles.activeInfoRow}>
+                <View style={styles.iconBadge}>
+                  <Icon name="access-time" size={16} color="#6B7280" />
+                </View>
+                <Text style={styles.activeInfoText}>
+                  {startHour} - {endHour}
+                </Text>
+              </View>
+            )}
+            {subtitle && subtitle.trim() !== '' && (
+              <View style={styles.activeNotesContainer}>
+                <Text style={styles.activeNotes} numberOfLines={3}>
+                  {subtitle}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
       </View>
     </Pressable>
   );
@@ -220,54 +227,63 @@ export const FinishedChecklistCard = ({
           </View>
         </View>
 
-        {/* House */}
-        <View style={styles.finishedHouseRow}>
-          <View
-            style={[
-              styles.houseIconBg,
-              { backgroundColor: STATUS_COLORS.purple.light }
-            ]}
-          >
-            <Icon name="home" size={18} color={STATUS_COLORS.purple.primary} />
+        {/* House + Workers */}
+        <View style={styles.metaStrip}>
+          <View style={styles.chipHouse}>
+            <Icon name="home" size={13} color={STATUS_COLORS.purple.primary} />
+            <Text style={styles.chipHouseText} numberOfLines={1}>
+              {house}
+            </Text>
           </View>
-          <Text style={styles.finishedHouseText}>{house}</Text>
-        </View>
-
-        {/* Content */}
-        <View style={styles.finishedContent}>
-          {/* Workers */}
           {workers && workers.length > 0 && (
-            <View style={styles.finishedInfoRow}>
-              <View style={styles.iconBadge}>
-                <Icon name="people" size={16} color="#6B7280" />
+            <>
+              <View style={styles.metaDot} />
+              <View style={styles.chipWorker}>
+                <View style={styles.workersAvatars}>
+                  {workers.slice(0, 3).map((worker, i) => (
+                    <Avatar
+                      key={worker.id}
+                      overlap={workers.length > 1}
+                      index={i}
+                      id={worker.id}
+                      uri={worker.profileImage?.small}
+                      size="tiny"
+                    />
+                  ))}
+                </View>
+                <Text style={styles.chipWorkerText} numberOfLines={1}>
+                  {workers
+                    .map(w => w.firstName || w.name)
+                    .filter(Boolean)
+                    .join(', ')}
+                </Text>
               </View>
-              <Text style={styles.finishedInfoText}>
-                {workers.map(w => w.firstName).join(', ')}
-              </Text>
-            </View>
-          )}
-
-          {/* Time */}
-          {startHour && endHour && (
-            <View style={styles.finishedInfoRow}>
-              <View style={styles.iconBadge}>
-                <Icon name="access-time" size={16} color="#6B7280" />
-              </View>
-              <Text style={styles.finishedInfoText}>
-                {startHour} - {endHour}
-              </Text>
-            </View>
-          )}
-
-          {/* Notes */}
-          {subtitle && subtitle.trim() !== '' && (
-            <View style={styles.finishedNotesContainer}>
-              <Text style={styles.finishedNotes} numberOfLines={3}>
-                {subtitle}
-              </Text>
-            </View>
+            </>
           )}
         </View>
+
+        {/* Content - solo si hay hora o notas */}
+        {((startHour && endHour) || (subtitle && subtitle.trim() !== '')) && (
+          <View style={styles.finishedContent}>
+            {startHour && endHour && (
+              <View style={styles.finishedInfoRow}>
+                <View style={styles.iconBadge}>
+                  <Icon name="access-time" size={16} color="#6B7280" />
+                </View>
+                <Text style={styles.finishedInfoText}>
+                  {startHour} - {endHour}
+                </Text>
+              </View>
+            )}
+            {subtitle && subtitle.trim() !== '' && (
+              <View style={styles.finishedNotesContainer}>
+                <Text style={styles.finishedNotes} numberOfLines={3}>
+                  {subtitle}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Email Status */}
         <View style={styles.emailStatusContainer}>
@@ -309,7 +325,7 @@ export const FinishedChecklistCard = ({
 
 const styles = StyleSheet.create({
   activeContent: {
-    marginTop: 12
+    marginTop: 6
   },
   activeHouseRow: {
     alignItems: 'center',
@@ -365,11 +381,47 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   cardContent: {
-    padding: 12
+    paddingBottom: 8,
+    paddingHorizontal: 12,
+    paddingTop: 12
   },
   cardPressed: {
     opacity: 0.9,
     transform: [{ scale: 0.98 }]
+  },
+  chipHouse: {
+    alignItems: 'center',
+    backgroundColor: '#EDE9FE',
+    borderRadius: 8,
+    flexDirection: 'row',
+    flexShrink: 1,
+    gap: 5,
+    minWidth: 0,
+    paddingHorizontal: 8,
+    paddingVertical: 5
+  },
+  chipHouseText: {
+    color: '#7C3AED',
+    flexShrink: 1,
+    fontSize: 12,
+    fontWeight: '700'
+  },
+  chipWorker: {
+    alignItems: 'center',
+    backgroundColor: '#F0F9FF',
+    borderRadius: 8,
+    flexDirection: 'row',
+    flexShrink: 1,
+    gap: 6,
+    minWidth: 0,
+    paddingHorizontal: 8,
+    paddingVertical: 4
+  },
+  chipWorkerText: {
+    color: '#1E40AF',
+    flexShrink: 1,
+    fontSize: 12,
+    fontWeight: '600'
   },
   datePill: {
     alignItems: 'center',
@@ -418,7 +470,7 @@ const styles = StyleSheet.create({
     borderWidth: 1
   },
   finishedContent: {
-    marginTop: 12
+    marginTop: 6
   },
   finishedHouseRow: {
     alignItems: 'center',
@@ -483,6 +535,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 28
   },
+  metaDot: {
+    backgroundColor: '#CBD5E1',
+    borderRadius: 2,
+    height: 4,
+    width: 4
+  },
+  metaStrip: {
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 10,
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 4
+  },
   progressBadge: {
     alignItems: 'center',
     borderRadius: 12,
@@ -512,5 +580,8 @@ const styles = StyleSheet.create({
     right: 12,
     top: 12,
     width: 10
+  },
+  workersAvatars: {
+    flexDirection: 'row'
   }
 });

@@ -39,7 +39,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>28</string>
+    <string>27</string>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>
@@ -53,6 +53,8 @@
     </dict>
     <key>NSCameraUsageDescription</key>
     <string>Esta app necesita acceso a la cámara para tomar fotos de verificación.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Esta app necesita acceso a tu ubicación para registrar entradas y salidas.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Esta app necesita acceso a tu ubicación para registrar entradas y salidas.</string>
     <key>NSLocationWhenInUseUsageDescription</key>

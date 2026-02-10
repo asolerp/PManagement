@@ -7,10 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Dimensions,
   SafeAreaView
 } from 'react-native';
-import theme from '../../Theme/Theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../../Theme/Variables';
 import Modal from 'react-native-modal';
@@ -29,7 +27,7 @@ import { Variants } from '../../Theme/Variables';
 import { useTheme } from '../../Theme';
 
 const ConfirmEntranceScreen = () => {
-  const { Gutters, Layout, Fonts } = useTheme();
+  const { Layout } = useTheme();
   const [showHouseModal, setShowHouseModal] = useState(false);
   const [selectedHouse, setSelectedHouse] = useState(null);
 

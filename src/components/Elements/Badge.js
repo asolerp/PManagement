@@ -32,7 +32,9 @@ const Badge = ({
   iconName,
   onPress,
   label,
-  text
+  text,
+  textStyle,
+  iconSize = 18
 }) => {
   const variantSelected = VARIANT_COLORS[variant] || VARIANT_COLORS.pm;
   const isTypeNormal = type === 'normal';
@@ -53,14 +55,16 @@ const Badge = ({
         {iconName && (
           <Icon
             name={iconName}
-            size={18}
+            size={iconSize}
             color={variantSelected.color}
             style={styles.icon}
           />
         )}
         <Text>
-          {label && <Text style={styles.label}>{label}</Text>}
-          <Text style={[styles.text, { color: variantSelected.color }]}>
+          {label && <Text style={[styles.label, textStyle]}>{label}</Text>}
+          <Text
+            style={[styles.text, { color: variantSelected.color }, textStyle]}
+          >
             {text}
           </Text>
         </Text>

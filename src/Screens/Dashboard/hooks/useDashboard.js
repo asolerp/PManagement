@@ -1,28 +1,16 @@
 import React from 'react';
-import { useContext, useState, useMemo, useCallback } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useContext, useMemo } from 'react';
 import moment from 'moment';
 
 import { FiltersContext } from '../../../context/FiltersContext';
 import { useAnimatedContainer } from './useAnimatedContainer';
 import { ChecklistsTab } from '../../../components/Dashboard/Tabs/ChecklistsTab';
-import { IncidencesTab } from '../../../components/Dashboard/Tabs/IncidencesTab';
-import { CHECKLISTS, INCIDENCES } from '../../../utils/firebaseKeys';
+import { CHECKLISTS } from '../../../utils/firebaseKeys';
 
 export const useDashboard = () => {
-  const [index, setIndex] = useState(0);
   const { filters, setFilters } = useContext(FiltersContext);
   const { isScrollActive, gestureHandler, containerStyles } =
     useAnimatedContainer();
-  const layout = useWindowDimensions();
-
-  const routes = useMemo(
-    () => [
-      { key: CHECKLISTS, title: 'Checklists' },
-      { key: INCIDENCES, title: 'Incidencias' }
-    ],
-    []
-  );
 
   const date = useMemo(() => {
     const formattedDate = moment().format('LL');
@@ -37,33 +25,16 @@ export const useDashboard = () => {
     ];
   }, []);
 
-  const renderScene = useCallback(
-    ({ route }) => {
-      switch (route.key) {
-        case CHECKLISTS:
-          return (
-            <ChecklistsTab filters={filters} scrollEnabled={isScrollActive} />
-          );
-        case INCIDENCES:
-          return (
-            <IncidencesTab filters={filters} scrollEnabled={isScrollActive} />
-          );
-        default:
-          return null;
-      }
-    },
+  const renderChecklistsContent = useMemo(
+    () => <ChecklistsTab filters={filters} scrollEnabled={isScrollActive} />,
     [filters, isScrollActive]
   );
 
   return {
-    index,
-    routes,
-    layout,
     filters,
     date,
-    setIndex,
     setFilters,
-    renderScene,
+    renderChecklistsContent,
     gestureHandler,
     containerStyles
   };

@@ -15,9 +15,10 @@ const withFirebaseNonModularFix = config => {
       );
       let podfileContent = fs.readFileSync(podfilePath, 'utf-8');
 
-      // Agregar el fix para Firebase en post_install
+      // Agregar el fix para Firebase + dSYM en post_install
       const postInstallFix = `
     # Fix for Firebase non-modular headers with static frameworks
+    # + Force dSYM generation for Release (fixes missing hermes.framework dSYM for Crashlytics)
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         # Allow non-modular includes for ALL Firebase pods
@@ -27,6 +28,11 @@ const withFirebaseNonModularFix = config => {
           # Fix for RCT_EXPORT_MODULE/METHOD errors (implicit-int warnings)
           config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
           config.build_settings['WARNING_CFLAGS'] = '$(inherited) -Wno-error=implicit-int -Wno-implicit-int'
+        end
+
+        # Generate dSYM files for Release builds (required for Crashlytics + hermes.framework)
+        if config.name == 'Release'
+          config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
         end
       end
     end`;
