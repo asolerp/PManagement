@@ -2,16 +2,16 @@ export default {
   expo: {
     name: 'Port Management',
     slug: 'portmanagement',
-    version: '1.9.9',
+    version: '2.0.1',
     orientation: 'portrait',
     icon: './assets/icon/icon.png',
     userInterfaceStyle: 'automatic',
     scheme: 'portmanagement',
 
     splash: {
-      image: './assets/splash/splash.png',
-      resizeMode: 'cover',
-      backgroundColor: '#26b45f'
+      image: './assets/bootsplash/logo.png',
+      resizeMode: 'contain',
+      backgroundColor: '#0f766e'
     },
 
     assetBundlePatterns: ['**/*'],
@@ -19,7 +19,7 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.port.management', // iOS usa com.port.management
-      buildNumber: '28',
+      buildNumber: '30',
       googleServicesFile:
         './native-backup/Firebase/Prod/GoogleService-Info.plist',
       infoPlist: {
@@ -45,7 +45,7 @@ export default {
         backgroundColor: '#26b45f'
       },
       package: 'com.portmanagement', // Android usa com.portmanagement
-      versionCode: 28,
+      versionCode: 30,
       permissions: [
         'CAMERA',
         'READ_EXTERNAL_STORAGE',
@@ -65,9 +65,9 @@ export default {
       [
         'expo-splash-screen',
         {
-          image: './assets/splash/splash.png',
-          resizeMode: 'cover',
-          backgroundColor: '#26b45f'
+          image: './assets/bootsplash/logo.png',
+          resizeMode: 'contain',
+          backgroundColor: '#0f766e'
         }
       ],
       [
@@ -90,6 +90,7 @@ export default {
       '@react-native-firebase/messaging',
       '@react-native-firebase/crashlytics',
       './plugins/withFirebaseNonModularFix.js',
+      './plugins/withHermesDsym.js',
       './plugins/withAndroidSigning.js',
       './plugins/withAndroidSigningConfig.js'
     ],

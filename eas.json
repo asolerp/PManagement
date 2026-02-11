@@ -27,7 +27,8 @@
       "autoIncrement": true,
       "ios": {
         "buildConfiguration": "Release",
-        "resourceClass": "m-medium"
+        "resourceClass": "m-medium",
+        "image": "macos-sequoia-15.5-xcode-26.0"
       },
       "channel": "testflight"
     },
@@ -35,7 +36,8 @@
       "autoIncrement": true,
       "ios": {
         "buildConfiguration": "Release",
-        "resourceClass": "m-medium"
+        "resourceClass": "m-medium",
+        "image": "macos-sequoia-15.5-xcode-26.0"
       },
       "android": {
         "buildType": "app-bundle",
