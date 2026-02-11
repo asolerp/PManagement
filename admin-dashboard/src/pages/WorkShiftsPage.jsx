@@ -220,6 +220,53 @@ export default function WorkShiftsPage() {
       return;
     }
 
+    const start = new Date(filters.startDate);
+    const end = new Date(filters.endDate);
+    const monthYearStr = format(start, 'MMMM yyyy', { locale: es });
+    const monthYearLabel = monthYearStr.charAt(0).toUpperCase() + monthYearStr.slice(1);
+    const periodLabel = `${format(start, 'dd/MM/yyyy')} a ${format(end, 'dd/MM/yyyy')}`;
+
+    // Hoja 0: Informe (cabecera + totales por trabajador)
+    const totalMinutesAll = workerTotals.reduce((sum, w) => sum + w.totalMinutes, 0);
+    const totalDaysAll = workerTotals.reduce((sum, w) => sum + w.daysWorked, 0);
+    const summaryRows = workerTotals.map((worker) => [
+      worker.name,
+      worker.daysWorked,
+      worker.completedShifts,
+      Math.floor(worker.totalMinutes / 60),
+      worker.totalMinutes % 60,
+      (worker.totalMinutes / 60).toFixed(2),
+      worker.daysWorked > 0 ? (worker.totalMinutes / 60 / worker.daysWorked).toFixed(2) : '0.00',
+    ]);
+    summaryRows.push([
+      'TOTAL',
+      totalDaysAll,
+      workerTotals.reduce((sum, w) => sum + w.completedShifts, 0),
+      Math.floor(totalMinutesAll / 60),
+      totalMinutesAll % 60,
+      (totalMinutesAll / 60).toFixed(2),
+      '-',
+    ]);
+    const reportHeader = [
+      ['Informe de jornadas laborales'],
+      [],
+      ['Mes y año:', monthYearLabel],
+      ['Periodo:', periodLabel],
+      ['N.º jornadas en el informe:', shifts.length],
+      [],
+      [
+        'Este informe recoge las jornadas laborales registradas en el periodo indicado. '
+        + 'A continuación se muestra la tabla de totales por trabajador que aparece en el reporte.',
+      ],
+      [],
+      ['Trabajador', 'Días trabajados', 'Jornadas completadas', 'Horas totales', 'Minutos totales', 'Total horas (decimal)', 'Media horas/día'],
+      ...summaryRows,
+    ];
+    const wsReport = XLSX.utils.aoa_to_sheet(reportHeader);
+    wsReport['!cols'] = [
+      { wch: 25 }, { wch: 16 }, { wch: 20 }, { wch: 14 }, { wch: 16 }, { wch: 18 }, { wch: 16 },
+    ];
+
     // Hoja 1: Detalle de jornadas
     const detailData = sortedShifts.map((shift) => ({
       'Fecha': shift.date ? format(new Date(shift.date), 'dd/MM/yyyy') : '-',
@@ -232,7 +279,7 @@ export default function WorkShiftsPage() {
       'Estado': shift.status === 'completed' ? 'Completada' : 'En curso',
     }));
 
-    // Hoja 2: Resumen por trabajador
+    // Hoja 2: Resumen por trabajador (misma tabla que en Informe, por compatibilidad)
     const summaryData = workerTotals.map((worker) => ({
       'Trabajador': worker.name,
       'Días trabajados': worker.daysWorked,
@@ -244,10 +291,6 @@ export default function WorkShiftsPage() {
         ? (worker.totalMinutes / 60 / worker.daysWorked).toFixed(2) 
         : '0.00',
     }));
-
-    // Añadir fila de totales al resumen
-    const totalMinutesAll = workerTotals.reduce((sum, w) => sum + w.totalMinutes, 0);
-    const totalDaysAll = workerTotals.reduce((sum, w) => sum + w.daysWorked, 0);
     summaryData.push({
       'Trabajador': 'TOTAL',
       'Días trabajados': totalDaysAll,
@@ -260,28 +303,23 @@ export default function WorkShiftsPage() {
 
     // Crear workbook
     const wb = XLSX.utils.book_new();
-    
-    // Añadir hojas
     const wsDetail = XLSX.utils.json_to_sheet(detailData);
     const wsSummary = XLSX.utils.json_to_sheet(summaryData);
-    
-    // Ajustar anchos de columna
+
     wsDetail['!cols'] = [
-      { wch: 12 }, { wch: 25 }, { wch: 10 }, { wch: 10 }, 
-      { wch: 8 }, { wch: 10 }, { wch: 14 }, { wch: 12 }
+      { wch: 12 }, { wch: 25 }, { wch: 10 }, { wch: 10 },
+      { wch: 8 }, { wch: 10 }, { wch: 14 }, { wch: 12 },
     ];
     wsSummary['!cols'] = [
-      { wch: 25 }, { wch: 16 }, { wch: 20 }, { wch: 14 }, 
-      { wch: 16 }, { wch: 18 }, { wch: 16 }
+      { wch: 25 }, { wch: 16 }, { wch: 20 }, { wch: 14 },
+      { wch: 16 }, { wch: 18 }, { wch: 16 },
     ];
 
+    XLSX.utils.book_append_sheet(wb, wsReport, 'Informe');
     XLSX.utils.book_append_sheet(wb, wsDetail, 'Detalle Jornadas');
     XLSX.utils.book_append_sheet(wb, wsSummary, 'Resumen Trabajadores');
 
-    // Generar nombre del archivo con periodo
     const fileName = `Jornadas_${filters.startDate}_a_${filters.endDate}.xlsx`;
-    
-    // Descargar
     XLSX.writeFile(wb, fileName);
   };
 
