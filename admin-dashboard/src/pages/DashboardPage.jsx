@@ -9,10 +9,13 @@ import {
   subDays
 } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Users, Clock, CheckCircle, AlertCircle, Database, RefreshCw, Calendar, TrendingUp, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Users, Clock, CheckCircle, AlertCircle, Database, RefreshCw, Calendar, TrendingUp, ArrowUpDown, ArrowUp, ArrowDown, CheckSquare, Home, Camera, FileText } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { useWorkShiftStats, useWorkShifts, useMigrateEntrances } from '@/hooks/useWorkShifts';
+import { useChecklists } from '@/hooks/useFirestore';
+import { useNavigate } from 'react-router-dom';
+import ChecklistDetailPanel from '@/components/ChecklistDetailPanel';
 import {
   BarChart,
   Bar,
@@ -480,6 +483,134 @@ function MigrationCard() {
   );
 }
 
+function formatDate(value) {
+  if (!value) return '—';
+  try {
+    let date;
+    if (value.toDate && typeof value.toDate === 'function') date = value.toDate();
+    else if (value.seconds) date = new Date(value.seconds * 1000);
+    else if (value._d) date = value._d;
+    else date = new Date(value);
+    if (isNaN(date.getTime())) return '—';
+    return format(date, "d MMM", { locale: es });
+  } catch {
+    return '—';
+  }
+}
+
+function ActiveChecklistsSection() {
+  const { data: checklists = [], isLoading } = useChecklists({ finished: false });
+  const navigate = useNavigate();
+  const [selectedChecklist, setSelectedChecklist] = useState(null);
+
+  if (isLoading) {
+    return (
+      <Card>
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-2">
+          <CheckSquare className="w-5 h-5 text-[#126D9B]" />
+          <h2 className="text-lg font-semibold text-gray-900">Checklists en curso</h2>
+        </div>
+        <div className="p-6 text-center text-gray-400 text-sm">Cargando...</div>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card>
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckSquare className="w-5 h-5 text-[#126D9B]" />
+            <h2 className="text-lg font-semibold text-gray-900">Checklists en curso</h2>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-500">{checklists.length} pendientes</span>
+            <button
+              onClick={() => navigate('/checklists')}
+              className="text-sm text-[#126D9B] font-medium hover:underline"
+            >
+              Ver todos
+            </button>
+          </div>
+        </div>
+
+        {checklists.length === 0 ? (
+          <div className="p-8 text-center">
+            <CheckCircle className="w-10 h-10 text-[#67B26F] mx-auto mb-2" />
+            <p className="text-gray-500 text-sm">Todos los checklists están completados</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {checklists.slice(0, 8).map((cl) => {
+              const houseName = cl.house?.[0]?.houseName || cl.houseName || 'Sin casa';
+              const done = cl.done || 0;
+              const total = cl.total || 0;
+              const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+              const workers = cl.workers || [];
+
+              return (
+                <div
+                  key={cl.id}
+                  className="px-6 py-3.5 hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => setSelectedChecklist(cl)}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                        <span className="font-medium text-gray-900 text-sm truncate">{houseName}</span>
+                      </div>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-xs text-gray-400">{formatDate(cl.date)}</span>
+                        {workers.length > 0 && (
+                          <span className="text-xs text-gray-400">
+                            {workers.map(w => `${w.firstName || ''}`.trim()).filter(Boolean).join(', ') || `${workers.length} asignados`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="text-right">
+                        <span className="text-sm font-semibold text-[#126D9B]">{done}/{total}</span>
+                        <div className="w-24 h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                          <div
+                            className="h-full bg-[#126D9B] rounded-full transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="text-xs text-gray-400 w-8 text-right">{pct}%</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {checklists.length > 8 && (
+              <div className="px-6 py-3 text-center">
+                <button
+                  onClick={() => navigate('/checklists')}
+                  className="text-sm text-[#126D9B] font-medium hover:underline"
+                >
+                  Ver {checklists.length - 8} más...
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </Card>
+
+      {selectedChecklist && (
+        <ChecklistDetailPanel
+          checklist={selectedChecklist}
+          onClose={() => setSelectedChecklist(null)}
+        />
+      )}
+    </>
+  );
+}
+
 // Opciones de periodo
 const periodOptions = [
   { id: 'today', label: 'Hoy' },
@@ -687,6 +818,9 @@ export default function DashboardPage() {
           color="secondary"
         />
       </div>
+
+      {/* Active Checklists */}
+      <ActiveChecklistsSection />
 
       {/* Worker visualizations - Grid layout */}
       {!shiftsLoading && workerStats.length > 0 && (

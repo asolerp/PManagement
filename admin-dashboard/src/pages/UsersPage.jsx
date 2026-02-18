@@ -1,46 +1,52 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
+import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/useFirestore';
 import {
-  useWorkersFirestore,
-  useUpdateUser,
-  useCreateUser,
-} from '@/hooks/useFirestore';
-import {
-  Mail,
-  Phone,
-  User,
+  Users,
   Plus,
   X,
   Save,
-  Globe,
+  Mail,
+  Phone,
+  Shield,
+  User,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 
-function WorkerAvatar({ photo, name, size = 'md' }) {
+const ROLES = [
+  { value: 'admin', label: 'Administrador', color: 'bg-purple-100 text-purple-700' },
+  { value: 'worker', label: 'Trabajador', color: 'bg-blue-100 text-blue-700' },
+  { value: 'owner', label: 'Propietario', color: 'bg-green-100 text-green-700' },
+];
+
+function RoleBadge({ role }) {
+  const r = ROLES.find((rl) => rl.value === role) || {
+    label: role || 'Sin rol',
+    color: 'bg-gray-100 text-gray-600',
+  };
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${r.color}`}>
+      {r.label}
+    </span>
+  );
+}
+
+function UserAvatar({ photo, name }) {
   const [imgError, setImgError] = useState(false);
   const initial = name?.charAt(0)?.toUpperCase() || '?';
 
-  const sizes = {
-    md: 'w-12 h-12 text-lg',
-    lg: 'w-16 h-16 text-xl',
-  };
-
   if (!photo || imgError) {
     return (
-      <div
-        className={`${sizes[size]} rounded-full bg-gradient-to-br from-[#126D9B] to-[#3B8D7A] flex items-center justify-center flex-shrink-0`}
-      >
-        <span className="font-semibold text-white">{initial}</span>
+      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#126D9B] to-[#3B8D7A] flex items-center justify-center flex-shrink-0">
+        <span className="text-lg font-semibold text-white">{initial}</span>
       </div>
     );
   }
 
   return (
-    <div
-      className={`${sizes[size]} rounded-full bg-gray-200 flex-shrink-0 overflow-hidden`}
-    >
+    <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
       <img
         src={photo}
         alt={name}
@@ -51,45 +57,36 @@ function WorkerAvatar({ photo, name, size = 'md' }) {
   );
 }
 
-function getWorkerPhoto(worker) {
-  if (typeof worker.profileImage === 'object' && worker.profileImage) {
-    return worker.profileImage.small || worker.profileImage.original || null;
-  }
-  if (typeof worker.profileImage === 'string') return worker.profileImage;
-  return worker.photoURL || worker.photo || null;
-}
-
-function WorkerDetailPanel({ worker, onClose }) {
+function UserDetailPanel({ user, onClose }) {
   const updateUser = useUpdateUser();
-  const fullName = `${worker.firstName || ''} ${worker.lastName || ''}`.trim();
-  const photo = getWorkerPhoto(worker);
-
   const [form, setForm] = useState({
-    firstName: worker.firstName || '',
-    lastName: worker.lastName || '',
-    email: worker.email || '',
-    phone: worker.phone || '',
-    language: worker.language || 'es',
+    firstName: user.firstName || '',
+    lastName: user.lastName || '',
+    email: user.email || '',
+    phone: user.phone || '',
+    role: user.role || '',
   });
   const [saving, setSaving] = useState(false);
 
   const hasChanges =
-    form.firstName !== (worker.firstName || '') ||
-    form.lastName !== (worker.lastName || '') ||
-    form.phone !== (worker.phone || '') ||
-    form.language !== (worker.language || 'es');
+    form.firstName !== (user.firstName || '') ||
+    form.lastName !== (user.lastName || '') ||
+    form.phone !== (user.phone || '') ||
+    form.role !== (user.role || '');
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateUser.mutateAsync({ id: worker.id, ...form });
+      await updateUser.mutateAsync({ id: user.id, ...form });
       onClose();
     } catch (e) {
-      console.error('Error updating worker', e);
+      console.error('Error updating user', e);
     } finally {
       setSaving(false);
     }
   };
+
+  const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
 
   return (
     <>
@@ -98,11 +95,8 @@ function WorkerDetailPanel({ worker, onClose }) {
         onClick={onClose}
       />
       <aside className="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl flex flex-col animate-slide-in-right">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Ficha de trabajador
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900">Ficha de usuario</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -111,18 +105,16 @@ function WorkerDetailPanel({ worker, onClose }) {
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Avatar + nombre */}
           <div className="flex items-center gap-4">
-            <WorkerAvatar photo={photo} name={fullName} size="lg" />
+            <UserAvatar
+              photo={user.profileImage?.small || user.profileImage?.original}
+              name={fullName}
+            />
             <div>
-              <p className="font-semibold text-gray-900 text-lg">
-                {fullName || 'Sin nombre'}
-              </p>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                Trabajador
-              </span>
+              <p className="font-semibold text-gray-900">{fullName || 'Sin nombre'}</p>
+              <RoleBadge role={user.role} />
             </div>
           </div>
 
@@ -132,16 +124,12 @@ function WorkerDetailPanel({ worker, onClose }) {
               <Input
                 label="Nombre"
                 value={form.firstName}
-                onChange={(e) =>
-                  setForm({ ...form, firstName: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
               />
               <Input
                 label="Apellidos"
                 value={form.lastName}
-                onChange={(e) =>
-                  setForm({ ...form, lastName: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
               />
             </div>
             <Input
@@ -157,24 +145,23 @@ function WorkerDetailPanel({ worker, onClose }) {
             />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Idioma
+                Rol
               </label>
               <select
-                value={form.language}
-                onChange={(e) =>
-                  setForm({ ...form, language: e.target.value })
-                }
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
               >
-                <option value="es">Español</option>
-                <option value="en">English</option>
-                <option value="ca">Català</option>
+                {ROLES.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-200">
           <Button
             className="w-full"
@@ -191,13 +178,14 @@ function WorkerDetailPanel({ worker, onClose }) {
   );
 }
 
-function CreateWorkerModal({ open, onClose }) {
+function CreateUserModal({ open, onClose }) {
   const createUser = useCreateUser();
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
+    role: 'worker',
     language: 'es',
     gender: 'male',
   });
@@ -205,7 +193,10 @@ function CreateWorkerModal({ open, onClose }) {
   const [error, setError] = useState('');
 
   const canSubmit =
-    form.firstName.trim() && form.lastName.trim() && form.email.trim();
+    form.firstName.trim() &&
+    form.lastName.trim() &&
+    form.email.trim() &&
+    form.role;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -213,18 +204,19 @@ function CreateWorkerModal({ open, onClose }) {
     setSaving(true);
     setError('');
     try {
-      await createUser.mutateAsync({ ...form, role: 'worker' });
+      await createUser.mutateAsync(form);
       setForm({
         firstName: '',
         lastName: '',
         email: '',
         phone: '',
+        role: 'worker',
         language: 'es',
         gender: 'male',
       });
       onClose();
     } catch (err) {
-      console.error('Error creating worker', err);
+      console.error('Error creating user', err);
       setError('Comprueba que el email es correcto y no está en uso');
     } finally {
       setSaving(false);
@@ -232,7 +224,7 @@ function CreateWorkerModal({ open, onClose }) {
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="Nuevo trabajador">
+    <Modal open={open} onClose={onClose} title="Nuevo usuario">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <Input
@@ -262,16 +254,30 @@ function CreateWorkerModal({ open, onClose }) {
           value={form.phone}
           onChange={(e) => setForm({ ...form, phone: e.target.value })}
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Rol *
+            </label>
+            <select
+              value={form.role}
+              onChange={(e) => setForm({ ...form, role: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
+            >
+              {ROLES.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Idioma
             </label>
             <select
               value={form.language}
-              onChange={(e) =>
-                setForm({ ...form, language: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, language: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
             >
               <option value="es">Español</option>
@@ -285,9 +291,7 @@ function CreateWorkerModal({ open, onClose }) {
             </label>
             <select
               value={form.gender}
-              onChange={(e) =>
-                setForm({ ...form, gender: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, gender: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
             >
               <option value="male">Masculino</option>
@@ -309,7 +313,7 @@ function CreateWorkerModal({ open, onClose }) {
           </Button>
           <Button type="submit" disabled={!canSubmit} loading={saving}>
             <Plus className="w-4 h-4 mr-2" />
-            Crear trabajador
+            Crear usuario
           </Button>
         </div>
       </form>
@@ -317,74 +321,99 @@ function CreateWorkerModal({ open, onClose }) {
   );
 }
 
-export default function WorkersPage() {
-  const { data: workers = [], isLoading } = useWorkersFirestore();
-  const [selectedWorker, setSelectedWorker] = useState(null);
+export default function UsersPage() {
+  const { data: users = [], isLoading } = useUsers();
+  const [selectedUser, setSelectedUser] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [filterRole, setFilterRole] = useState('all');
+
+  const filteredUsers =
+    filterRole === 'all'
+      ? users
+      : users.filter((u) => u.role === filterRole);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Trabajadores</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Usuarios</h1>
           <p className="text-gray-500">
-            Lista de trabajadores registrados en el sistema
+            Usuarios registrados en el sistema
           </p>
         </div>
         <Button onClick={() => setShowCreate(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo trabajador
+          Nuevo usuario
         </Button>
       </div>
 
-      {/* Stats */}
-      {!isLoading && workers.length > 0 && (
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <User className="w-4 h-4" />
-          <span>{workers.length} trabajadores registrados</span>
+      {/* Filtros */}
+      {!isLoading && users.length > 0 && (
+        <div className="flex items-center gap-2">
+          {[
+            { value: 'all', label: 'Todos' },
+            ...ROLES,
+          ].map((r) => (
+            <button
+              key={r.value}
+              onClick={() => setFilterRole(r.value)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                filterRole === r.value
+                  ? 'bg-[#126D9B] text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
+          <span className="ml-auto text-sm text-gray-500">
+            {filteredUsers.length} usuarios
+          </span>
         </div>
       )}
 
-      {/* Workers grid */}
+      {/* Lista */}
       {isLoading ? (
         <div className="text-center py-12 text-gray-500">Cargando...</div>
-      ) : workers.length === 0 ? (
+      ) : filteredUsers.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
-          No hay trabajadores registrados
+          No hay usuarios registrados
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {workers.map((worker) => {
-            const fullName =
-              `${worker.firstName || ''} ${worker.lastName || ''}`.trim() ||
-              'Sin nombre';
-            const photo = getWorkerPhoto(worker);
-
+          {filteredUsers.map((u) => {
+            const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim();
             return (
               <Card
-                key={worker.id}
+                key={u.id}
                 className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedWorker(worker)}
+                onClick={() => setSelectedUser(u)}
               >
                 <div className="flex items-center gap-4">
-                  <WorkerAvatar photo={photo} name={fullName} />
+                  <UserAvatar
+                    photo={u.profileImage?.small || u.profileImage?.original}
+                    name={fullName}
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 truncate">
-                      {fullName}
+                      {fullName || 'Sin nombre'}
                     </p>
-                    {worker.email && (
+                    {u.email && (
                       <div className="flex items-center gap-1.5 text-sm text-gray-500 mt-0.5">
                         <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-                        <span className="truncate">{worker.email}</span>
+                        <span className="truncate">{u.email}</span>
                       </div>
                     )}
-                    {worker.phone && (
+                    {u.phone && (
                       <div className="flex items-center gap-1.5 text-sm text-gray-500 mt-0.5">
                         <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                        <span className="truncate">{worker.phone}</span>
+                        <span className="truncate">{u.phone}</span>
                       </div>
                     )}
+                    <div className="mt-1.5">
+                      <RoleBadge role={u.role} />
+                    </div>
                   </div>
                 </div>
               </Card>
@@ -394,15 +423,15 @@ export default function WorkersPage() {
       )}
 
       {/* Sidebar detalle */}
-      {selectedWorker && (
-        <WorkerDetailPanel
-          worker={selectedWorker}
-          onClose={() => setSelectedWorker(null)}
+      {selectedUser && (
+        <UserDetailPanel
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
         />
       )}
 
       {/* Modal crear */}
-      <CreateWorkerModal
+      <CreateUserModal
         open={showCreate}
         onClose={() => setShowCreate(false)}
       />

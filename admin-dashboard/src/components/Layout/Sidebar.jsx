@@ -3,15 +3,25 @@ import {
   LayoutDashboard,
   Clock,
   Users,
-  Settings,
+  UserCircle,
+  Home,
+  AlertCircle,
+  CheckSquare,
+  Briefcase,
+  Trash2,
   LogOut
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth.jsx';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/checklists', icon: CheckSquare, label: 'Checklists' },
+  { to: '/incidencias', icon: AlertCircle, label: 'Incidencias' },
+  { to: '/casas', icon: Home, label: 'Casas' },
   { to: '/jornadas', icon: Clock, label: 'Jornadas' },
   { to: '/trabajadores', icon: Users, label: 'Trabajadores' },
+  { to: '/usuarios', icon: UserCircle, label: 'Usuarios' },
+  { to: '/papelera', icon: Trash2, label: 'Papelera' }
 ];
 
 export default function Sidebar() {
@@ -31,7 +41,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => (
+        {navItems.map(item => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -69,9 +79,7 @@ export default function Sidebar() {
             <p className="text-sm font-medium text-gray-900 truncate">
               {userData?.name || 'Admin'}
             </p>
-            <p className="text-xs text-gray-500 truncate">
-              {userData?.email}
-            </p>
+            <p className="text-xs text-gray-500 truncate">{userData?.email}</p>
           </div>
         </div>
         <button

@@ -10,14 +10,20 @@ import LoginPage from '@/pages/LoginPage';
 import DashboardPage from '@/pages/DashboardPage';
 import WorkShiftsPage from '@/pages/WorkShiftsPage';
 import WorkersPage from '@/pages/WorkersPage';
+import HousesPage from '@/pages/HousesPage';
+import IncidencesPage from '@/pages/IncidencesPage';
+import ChecklistsPage from '@/pages/ChecklistsPage';
+import JobsPage from '@/pages/JobsPage';
+import RecycleBinPage from '@/pages/RecycleBinPage';
+import UsersPage from '@/pages/UsersPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
+      refetchOnWindowFocus: false
+    }
+  }
 });
 
 function ProtectedRoute({ children }) {
@@ -50,8 +56,13 @@ function AppRoutes() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
+        <Route path="/checklists" element={<ChecklistsPage />} />
+        <Route path="/incidencias" element={<IncidencesPage />} />
+        <Route path="/casas" element={<HousesPage />} />
         <Route path="/jornadas" element={<WorkShiftsPage />} />
         <Route path="/trabajadores" element={<WorkersPage />} />
+        <Route path="/usuarios" element={<UsersPage />} />
+        <Route path="/papelera" element={<RecycleBinPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

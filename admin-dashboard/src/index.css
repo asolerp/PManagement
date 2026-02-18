@@ -11,3 +11,33 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: #F9FAFB;
 }
+
+/* Sidebar slide-in animation */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.25s ease-out;
+}
+
+/* Modal scale-in animation */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-modal-in {
+  animation: modal-in 0.2s ease-out;
+}
