@@ -6,12 +6,14 @@ const HERMES_DSYM_PHASE_ID = 'A1B2C3D4E5F60718293A4B5C';
 const HERMES_DSYM_PHASE_NAME = '[Hermes] Generate dSYM for archive';
 
 const SHELL_SCRIPT = [
-  '# Generate hermes dSYM for archive (fixes missing dSYM warning)',
-  'HERMES_BINARY="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework/hermes"',
+  '# Generate hermes dSYM for archive (fixes missing dSYM UUID warning)',
+  '# Use Pre-built Hermes from Pods (same binary that gets embedded = same UUID)',
+  'set -e',
+  'HERMES_BINARY="${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes"',
   'DSYM_OUTPUT="${DWARF_DSYM_FOLDER_PATH}/hermes.framework.dSYM"',
-  'if [ -f "$HERMES_BINARY" ] && [ "$CONFIGURATION" = "Release" ]; then',
+  'if [ "$CONFIGURATION" = "Release" ] && [ -f "$HERMES_BINARY" ]; then',
   '  mkdir -p "$(dirname "$DSYM_OUTPUT")"',
-  '  dsymutil "$HERMES_BINARY" -o "$DSYM_OUTPUT" 2>/dev/null || true',
+  '  dsymutil "$HERMES_BINARY" -o "$DSYM_OUTPUT"',
   'fi'
 ]
   .join('\\n')
@@ -49,7 +51,7 @@ function withHermesDsym(config) {
         '\t\t\tfiles = (',
         '\t\t\t);',
         '\t\t\tinputPaths = (',
-        '\t\t\t\t"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework/hermes",',
+        '\t\t\t\t"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",',
         '\t\t\t);',
         `\t\t\tname = "${HERMES_DSYM_PHASE_NAME}";`,
         '\t\t\toutputPaths = (',

@@ -561,6 +561,7 @@ const styles = StyleSheet.create({
   logoutButton: {
     alignItems: 'center',
     alignSelf: 'center',
+    borderRadius: BorderRadius.lg,
     flexDirection: 'row',
     paddingVertical: Spacing.sm
   },

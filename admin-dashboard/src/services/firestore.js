@@ -7,6 +7,7 @@ import {
   where,
   orderBy,
   limit,
+  startAfter,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -74,8 +75,48 @@ export async function getIncidence(id) {
 }
 
 // ——— Checklists ———
+const PAGE_SIZE = 20;
+
+export async function getChecklistsPage({ filters = {}, pageParam = null } = {}) {
+  const colRef = collection(db, COLLECTIONS.CHECKLISTS);
+  const constraints = [];
+
+  if (filters.finished !== undefined) {
+    constraints.push(where('finished', '==', filters.finished));
+  }
+  if (filters.houseId) {
+    constraints.push(where('houseId', '==', filters.houseId));
+  }
+
+  constraints.push(orderBy('date', 'desc'));
+
+  if (filters.dateFrom) {
+    constraints.push(where('date', '<=', filters.dateFrom));
+  }
+  if (filters.dateTo) {
+    constraints.push(where('date', '>=', filters.dateTo));
+  }
+
+  if (pageParam) {
+    constraints.push(startAfter(pageParam));
+  }
+
+  constraints.push(limit(PAGE_SIZE));
+
+  try {
+    const q = query(colRef, ...constraints);
+    const snapshot = await getDocs(q);
+    const docs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+    return { docs, lastDoc, hasMore: snapshot.docs.length === PAGE_SIZE };
+  } catch (e) {
+    console.error('getChecklistsPage', e);
+    return { docs: [], lastDoc: null, hasMore: false };
+  }
+}
+
 export async function getChecklists(filters = {}) {
-  const ref = collection(db, COLLECTIONS.CHECKLISTS);
+  const colRef = collection(db, COLLECTIONS.CHECKLISTS);
   const constraints = [];
   if (filters.finished !== undefined) {
     constraints.push(where('finished', '==', filters.finished));
@@ -88,7 +129,7 @@ export async function getChecklists(filters = {}) {
     constraints.push(limit(Math.min(filters.limitCount, 100)));
   }
   try {
-    const q = query(ref, ...constraints);
+    const q = query(colRef, ...constraints);
     const snapshot = await getDocs(q);
     return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   } catch (e) {

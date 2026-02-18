@@ -766,7 +766,7 @@ const styles = StyleSheet.create({
   addButton: {
     alignItems: 'center',
     backgroundColor: Colors.primary,
-    borderRadius: 6,
+    borderRadius: BorderRadius.lg,
     height: 44,
     justifyContent: 'center',
     width: 44
@@ -816,6 +816,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     alignItems: 'center',
+    borderRadius: BorderRadius.lg,
     height: 40,
     justifyContent: 'center',
     width: 40
@@ -922,6 +923,7 @@ const styles = StyleSheet.create({
   },
   filterButton: {
     alignItems: 'center',
+    borderRadius: BorderRadius.lg,
     height: 40,
     justifyContent: 'center',
     position: 'relative',

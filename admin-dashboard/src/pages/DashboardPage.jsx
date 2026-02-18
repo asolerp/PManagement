@@ -9,10 +9,10 @@ import {
   subDays
 } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Users, Clock, CheckCircle, AlertCircle, Database, RefreshCw, Calendar, TrendingUp, ArrowUpDown, ArrowUp, ArrowDown, CheckSquare, Home, Camera, FileText } from 'lucide-react';
+import { Users, Clock, CheckCircle, AlertCircle, RefreshCw, Calendar, TrendingUp, ArrowUpDown, ArrowUp, ArrowDown, CheckSquare, Home, Camera, FileText } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
-import { useWorkShiftStats, useWorkShifts, useMigrateEntrances } from '@/hooks/useWorkShifts';
+import { useWorkShiftStats, useWorkShifts } from '@/hooks/useWorkShifts';
 import { useChecklists } from '@/hooks/useFirestore';
 import { useNavigate } from 'react-router-dom';
 import ChecklistDetailPanel from '@/components/ChecklistDetailPanel';
@@ -37,16 +37,16 @@ function StatCard({ icon: Icon, label, value, subvalue, color }) {
 
   return (
     <Card>
-      <CardContent className="py-6">
-        <div className="flex items-center gap-4">
-          <div className={`p-3 rounded-xl ${colors[color]}`}>
-            <Icon className="w-6 h-6" />
+      <CardContent className="py-4 sm:py-6">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className={`p-2.5 sm:p-3 rounded-xl ${colors[color]}`}>
+            <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <p className="text-sm text-gray-500">{label}</p>
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm text-gray-500 truncate">{label}</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900">{value}</p>
             {subvalue && (
-              <p className="text-xs text-gray-400">{subvalue}</p>
+              <p className="text-xs text-gray-400 truncate">{subvalue}</p>
             )}
           </div>
         </div>
@@ -113,10 +113,10 @@ function RecentShiftsTable({ shifts }) {
 
   const SortableHeader = ({ field, children }) => (
     <th 
-      className="text-left py-3 px-4 text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none"
+      className="text-left py-2.5 sm:py-3 px-2.5 sm:px-4 text-xs sm:text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700 select-none whitespace-nowrap"
       onClick={() => handleSort(field)}
     >
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1">
         {children}
         <SortIcon field={field} />
       </div>
@@ -124,8 +124,8 @@ function RecentShiftsTable({ shifts }) {
   );
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
+    <div className="overflow-x-auto -mx-3 sm:mx-0">
+      <table className="w-full min-w-[540px]">
         <thead>
           <tr className="border-b border-gray-200">
             <SortableHeader field="date">Fecha</SortableHeader>
@@ -133,7 +133,7 @@ function RecentShiftsTable({ shifts }) {
             <SortableHeader field="entry">Entrada</SortableHeader>
             <SortableHeader field="exit">Salida</SortableHeader>
             <SortableHeader field="total">Total</SortableHeader>
-            <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">
+            <th className="text-left py-2.5 sm:py-3 px-2.5 sm:px-4 text-xs sm:text-sm font-medium text-gray-500 whitespace-nowrap">
               Estado
             </th>
           </tr>
@@ -141,16 +141,16 @@ function RecentShiftsTable({ shifts }) {
         <tbody>
           {sortedShifts.map((shift) => (
             <tr key={shift.id} className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="py-3 px-4 text-gray-600">
+              <td className="py-2.5 sm:py-3 px-2.5 sm:px-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
                 {shift.date 
-                  ? format(new Date(shift.date), 'dd/MM/yyyy')
+                  ? format(new Date(shift.date), 'dd/MM/yy')
                   : shift.firstEntry 
-                    ? format(new Date(shift.firstEntry), 'dd/MM/yyyy')
+                    ? format(new Date(shift.firstEntry), 'dd/MM/yy')
                     : '-'}
               </td>
-              <td className="py-3 px-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+              <td className="py-2.5 sm:py-3 px-2.5 sm:px-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
                     {shift.workerPhoto ? (
                       <img
                         src={shift.workerPhoto}
@@ -163,29 +163,29 @@ function RecentShiftsTable({ shifts }) {
                       </span>
                     )}
                   </div>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[100px] sm:max-w-none">
                     {shift.workerName}
                   </span>
                 </div>
               </td>
-              <td className="py-3 px-4 text-gray-600">
+              <td className="py-2.5 sm:py-3 px-2.5 sm:px-4 text-xs sm:text-sm text-gray-600">
                 {shift.firstEntry
                   ? format(new Date(shift.firstEntry), 'HH:mm')
                   : '-'}
               </td>
-              <td className="py-3 px-4 text-gray-600">
+              <td className="py-2.5 sm:py-3 px-2.5 sm:px-4 text-xs sm:text-sm text-gray-600">
                 {shift.lastExit
                   ? format(new Date(shift.lastExit), 'HH:mm')
                   : '-'}
               </td>
-              <td className="py-3 px-4 text-gray-600">
+              <td className="py-2.5 sm:py-3 px-2.5 sm:px-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
                 {shift.totalMinutes > 0
                   ? `${Math.floor(shift.totalMinutes / 60)}h ${shift.totalMinutes % 60}m`
                   : '-'}
               </td>
-              <td className="py-3 px-4">
+              <td className="py-2.5 sm:py-3 px-2.5 sm:px-4">
                 <span
-                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                  className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                     shift.status === 'completed'
                       ? 'bg-green-100 text-green-700'
                       : 'bg-amber-100 text-amber-700'
@@ -271,15 +271,14 @@ function WorkerSummaryCards({ workerStats }) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5 sm:space-y-2">
       {workerStats.map((worker, index) => (
         <div 
           key={worker.id} 
-          className="flex items-center gap-4 p-3 bg-white rounded-lg border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all"
+          className="flex items-center gap-2.5 sm:gap-4 p-2.5 sm:p-3 bg-white rounded-lg border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all"
         >
-          {/* Avatar + Ranking */}
           <div className="relative shrink-0">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#126D9B] to-[#67B26F] flex items-center justify-center overflow-hidden">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#126D9B] to-[#67B26F] flex items-center justify-center overflow-hidden">
               {worker.photo ? (
                 <img
                   src={worker.photo}
@@ -307,16 +306,14 @@ function WorkerSummaryCards({ workerStats }) {
             )}
           </div>
 
-          {/* Nombre */}
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-gray-900 text-sm truncate">{worker.name}</p>
-            <p className="text-xs text-gray-500">{worker.daysWorked} días</p>
+            <p className="font-medium text-gray-900 text-xs sm:text-sm truncate">{worker.name}</p>
+            <p className="text-[10px] sm:text-xs text-gray-500">{worker.daysWorked} días</p>
           </div>
 
-          {/* Stats en línea */}
-          <div className="flex items-center gap-4 text-right">
+          <div className="flex items-center gap-3 sm:gap-4 text-right">
             <div>
-              <p className="text-base font-bold text-[#126D9B]">{formatHours(worker.totalMinutes)}</p>
+              <p className="text-sm sm:text-base font-bold text-[#126D9B]">{formatHours(worker.totalMinutes)}</p>
               <p className="text-[10px] text-gray-400">Total</p>
             </div>
             <div className="hidden sm:block">
@@ -339,31 +336,33 @@ function WorkerSummaryCards({ workerStats }) {
   );
 }
 
-// Gráfico de barras de horas por trabajador
 function HoursBarChart({ workerStats }) {
-  if (!workerStats?.length) {
-    return null;
-  }
+  if (!workerStats?.length) return null;
 
-  // Preparar datos para el gráfico
   const chartData = workerStats.slice(0, 10).map((worker) => ({
-    name: worker.name?.split(' ')[0] || 'N/A', // Solo primer nombre
+    name: worker.name?.split(' ')[0] || 'N/A',
     fullName: worker.name,
     hours: Math.round((worker.totalMinutes / 60) * 10) / 10,
     minutes: worker.totalMinutes,
   }));
 
+  const maxMinutes = Math.max(...chartData.map(d => d.minutes), 1);
   const colors = ['#126D9B', '#3B8D7A', '#67B26F', '#8BC34A', '#AED581'];
+
+  const formatMin = (m) => {
+    if (!m) return '0h';
+    const h = Math.floor(m / 60);
+    const mm = m % 60;
+    return mm > 0 ? `${h}h ${mm}m` : `${h}h`;
+  };
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
         <div className="bg-white px-3 py-2 shadow-lg rounded-lg border border-gray-200">
-          <p className="font-medium text-gray-900">{data.fullName}</p>
-          <p className="text-sm text-[#126D9B]">
-            {Math.floor(data.minutes / 60)}h {data.minutes % 60}m
-          </p>
+          <p className="font-medium text-gray-900 text-sm">{data.fullName}</p>
+          <p className="text-sm text-[#126D9B]">{formatMin(data.minutes)}</p>
         </div>
       );
     }
@@ -371,117 +370,65 @@ function HoursBarChart({ workerStats }) {
   };
 
   return (
-    <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={chartData}
-          layout="vertical"
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-          <XAxis 
-            type="number" 
-            tickFormatter={(value) => `${value}h`}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis 
-            type="category" 
-            dataKey="name" 
-            width={80}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 12 }}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar 
-            dataKey="hours" 
-            radius={[0, 4, 4, 0]}
-            maxBarSize={30}
-          >
-            {chartData.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-function MigrationCard() {
-  const [result, setResult] = useState(null);
-  const migrate = useMigrateEntrances();
-
-  const handleMigrate = async (dryRun) => {
-    try {
-      const data = await migrate.mutateAsync({ dryRun });
-      setResult(data);
-    } catch (error) {
-      setResult({ error: error.message });
-    }
-  };
-
-  return (
-    <Card>
-      <CardContent className="py-6">
-        <div className="flex items-start gap-4">
-          <div className="p-3 rounded-xl bg-purple-100 text-purple-600">
-            <Database className="w-6 h-6" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-gray-900">Migrar datos históricos</h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Convierte los registros de entradas existentes a jornadas laborales.
-            </p>
-            
-            <div className="flex gap-2 mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleMigrate(true)}
-                loading={migrate.isPending}
-              >
-                Simular (sin cambios)
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => handleMigrate(false)}
-                loading={migrate.isPending}
-              >
-                Ejecutar migración
-              </Button>
+    <>
+      {/* Mobile: CSS bars */}
+      <div className="sm:hidden space-y-2">
+        {chartData.map((worker, i) => (
+          <div key={worker.name + i} className="flex items-center gap-2">
+            <span className="text-[11px] text-gray-600 w-14 truncate flex-shrink-0">{worker.name}</span>
+            <div className="flex-1 h-5 bg-gray-100 rounded overflow-hidden relative">
+              <div
+                className="h-full rounded transition-all duration-500"
+                style={{
+                  width: `${Math.max((worker.minutes / maxMinutes) * 100, 4)}%`,
+                  backgroundColor: colors[i % colors.length],
+                }}
+              />
             </div>
-
-            {result && (
-              <div className={`mt-4 p-3 rounded-lg text-sm ${
-                result.error 
-                  ? 'bg-red-50 text-red-700' 
-                  : 'bg-green-50 text-green-700'
-              }`}>
-                {result.error ? (
-                  <p>Error: {result.error}</p>
-                ) : (
-                  <div>
-                    <p className="font-medium">
-                      {result.dryRun ? '✓ Simulación completada' : '✓ Migración completada'}
-                    </p>
-                    <ul className="mt-1 space-y-1">
-                      <li>• Entradas procesadas: {result.totalEntrances}</li>
-                      <li>• Jornadas a crear: {result.created}</li>
-                      <li>• Ya existentes (omitidas): {result.skipped}</li>
-                      {result.errors > 0 && <li>• Errores: {result.errors}</li>}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
+            <span className="text-[11px] font-semibold text-gray-700 w-12 text-right flex-shrink-0">
+              {formatMin(worker.minutes)}
+            </span>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        ))}
+      </div>
+
+      {/* Desktop: Recharts */}
+      <div className="hidden sm:block h-[300px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            margin={{ top: 5, right: 20, left: 5, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+            <XAxis
+              type="number"
+              tickFormatter={(value) => `${value}h`}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 12 }}
+            />
+            <YAxis
+              type="category"
+              dataKey="name"
+              width={70}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="hours" radius={[0, 4, 4, 0]} maxBarSize={30}>
+              {chartData.map((_, index) => (
+                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </>
   );
 }
+
 
 function formatDate(value) {
   if (!value) return '—';
@@ -506,9 +453,9 @@ function ActiveChecklistsSection() {
   if (isLoading) {
     return (
       <Card>
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-2">
-          <CheckSquare className="w-5 h-5 text-[#126D9B]" />
-          <h2 className="text-lg font-semibold text-gray-900">Checklists en curso</h2>
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center gap-2">
+          <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 text-[#126D9B]" />
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">Checklists en curso</h2>
         </div>
         <div className="p-6 text-center text-gray-400 text-sm">Cargando...</div>
       </Card>
@@ -518,16 +465,16 @@ function ActiveChecklistsSection() {
   return (
     <>
       <Card>
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckSquare className="w-5 h-5 text-[#126D9B]" />
-            <h2 className="text-lg font-semibold text-gray-900">Checklists en curso</h2>
+            <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 text-[#126D9B]" />
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Checklists en curso</h2>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500">{checklists.length} pendientes</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xs sm:text-sm text-gray-500">{checklists.length} pend.</span>
             <button
               onClick={() => navigate('/checklists')}
-              className="text-sm text-[#126D9B] font-medium hover:underline"
+              className="text-xs sm:text-sm text-[#126D9B] font-medium hover:underline"
             >
               Ver todos
             </button>
@@ -535,8 +482,8 @@ function ActiveChecklistsSection() {
         </div>
 
         {checklists.length === 0 ? (
-          <div className="p-8 text-center">
-            <CheckCircle className="w-10 h-10 text-[#67B26F] mx-auto mb-2" />
+          <div className="p-6 sm:p-8 text-center">
+            <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-[#67B26F] mx-auto mb-2" />
             <p className="text-gray-500 text-sm">Todos los checklists están completados</p>
           </div>
         ) : (
@@ -551,36 +498,36 @@ function ActiveChecklistsSection() {
               return (
                 <div
                   key={cl.id}
-                  className="px-6 py-3.5 hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="px-4 sm:px-6 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => setSelectedChecklist(cl)}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                        <span className="font-medium text-gray-900 text-sm truncate">{houseName}</span>
+                        <span className="font-medium text-gray-900 text-xs sm:text-sm truncate">{houseName}</span>
                       </div>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-gray-400">{formatDate(cl.date)}</span>
+                      <div className="flex items-center gap-2 sm:gap-3 mt-0.5 sm:mt-1">
+                        <span className="text-[10px] sm:text-xs text-gray-400">{formatDate(cl.date)}</span>
                         {workers.length > 0 && (
-                          <span className="text-xs text-gray-400">
+                          <span className="text-[10px] sm:text-xs text-gray-400 truncate">
                             {workers.map(w => `${w.firstName || ''}`.trim()).filter(Boolean).join(', ') || `${workers.length} asignados`}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                       <div className="text-right">
-                        <span className="text-sm font-semibold text-[#126D9B]">{done}/{total}</span>
-                        <div className="w-24 h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                        <span className="text-xs sm:text-sm font-semibold text-[#126D9B]">{done}/{total}</span>
+                        <div className="w-16 sm:w-24 h-1.5 bg-gray-100 rounded-full mt-0.5 sm:mt-1 overflow-hidden">
                           <div
                             className="h-full bg-[#126D9B] rounded-full transition-all"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
                       </div>
-                      <span className="text-xs text-gray-400 w-8 text-right">{pct}%</span>
+                      <span className="text-[10px] sm:text-xs text-gray-400 w-7 sm:w-8 text-right">{pct}%</span>
                     </div>
                   </div>
                 </div>
@@ -588,10 +535,10 @@ function ActiveChecklistsSection() {
             })}
 
             {checklists.length > 8 && (
-              <div className="px-6 py-3 text-center">
+              <div className="px-4 sm:px-6 py-3 text-center">
                 <button
                   onClick={() => navigate('/checklists')}
-                  className="text-sm text-[#126D9B] font-medium hover:underline"
+                  className="text-xs sm:text-sm text-[#126D9B] font-medium hover:underline"
                 >
                   Ver {checklists.length - 8} más...
                 </button>
@@ -723,29 +670,29 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500">
-            {format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-sm sm:text-base text-gray-500 truncate">
+            {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })}
           </p>
         </div>
-        <Button variant="outline" onClick={handleRefresh}>
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Actualizar
+        <Button variant="outline" onClick={handleRefresh} className="flex-shrink-0">
+          <RefreshCw className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Actualizar</span>
         </Button>
       </div>
 
       {/* Period selector */}
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0">
           {periodOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => handlePeriodChange(option.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
                 selectedPeriod === option.id
                   ? 'bg-[#126D9B] text-white'
                   : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -756,25 +703,23 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Year selector */}
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-gray-400" />
+          <Calendar className="w-4 h-4 text-gray-400 hidden sm:block" />
           <select
             value={selectedYear}
             onChange={(e) => handleYearChange(Number(e.target.value))}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
+            className="px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
           >
             {availableYears.map((year) => (
               <option key={year} value={year}>{year}</option>
             ))}
           </select>
 
-          {/* Month selector - only show when period is 'month' */}
           {selectedPeriod === 'month' && (
             <select
               value={selectedMonth}
               onChange={(e) => handleMonthChange(Number(e.target.value))}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
             >
               {months.map((month) => (
                 <option key={month.value} value={month.value}>{month.label}</option>
@@ -784,13 +729,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Migration Card - show if no shifts */}
-      {!shiftsLoading && shifts.length === 0 && (
-        <MigrationCard />
-      )}
-
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           icon={Users}
           label="Trabajadores hoy"
@@ -824,50 +764,47 @@ export default function DashboardPage() {
 
       {/* Worker visualizations - Grid layout */}
       {!shiftsLoading && workerStats.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Hours chart */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <Card>
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-[#126D9B]" />
-              <h2 className="text-lg font-semibold text-gray-900">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-[#126D9B]" />
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">
                 Horas por trabajador
               </h2>
             </div>
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               <HoursBarChart workerStats={workerStats} />
             </div>
           </Card>
 
-          {/* Top workers summary */}
           <Card>
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-2">
-              <Users className="w-5 h-5 text-[#3B8D7A]" />
-              <h2 className="text-lg font-semibold text-gray-900">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center gap-2">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[#3B8D7A]" />
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">
                 Resumen por trabajador
               </h2>
             </div>
-            <div className="p-4 max-h-[320px] overflow-y-auto">
+            <div className="p-3 sm:p-4 max-h-[320px] overflow-y-auto">
               <WorkerSummaryCards workerStats={workerStats.slice(0, 6)} />
             </div>
           </Card>
         </div>
       )}
 
-      {/* All worker cards - Full width when more than 6 workers */}
       {!shiftsLoading && workerStats.length > 6 && (
         <Card>
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-[#67B26F]" />
-              <h2 className="text-lg font-semibold text-gray-900">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[#67B26F]" />
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">
                 Todos los trabajadores
               </h2>
             </div>
-            <span className="text-sm text-gray-500">
+            <span className="text-xs sm:text-sm text-gray-500">
               {workerStats.length} trabajadores
             </span>
           </div>
-          <div className="p-4">
+          <div className="p-3 sm:p-4">
             <WorkerSummaryCards workerStats={workerStats} />
           </div>
         </Card>
@@ -875,19 +812,19 @@ export default function DashboardPage() {
 
       {/* Recent shifts */}
       <Card>
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">
             Jornadas {selectedPeriod === 'today' ? 'de hoy' : 
                       selectedPeriod === 'week' ? 'de la semana' :
                       selectedPeriod === 'month' ? 'del mes' :
                       selectedPeriod === 'lastMonth' ? 'del mes anterior' :
                       'del año'}
           </h2>
-          <span className="text-sm text-gray-500">
+          <span className="text-xs sm:text-sm text-gray-500">
             {shifts.length} registros
           </span>
         </div>
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           {shiftsLoading ? (
             <div className="text-center py-8 text-gray-500">Cargando...</div>
           ) : (

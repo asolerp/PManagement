@@ -25,7 +25,8 @@ const CustomButton = ({
   type,
   variant = 'primary' // primary, secondary, accent, outline, danger
 }) => {
-  const borderRadius = styled || BorderRadius.lg;
+  const borderRadius =
+    styled === 'rounded' ? BorderRadius.xl : (styled ?? BorderRadius.lg);
   const isClearType = type === 'clear' || variant === 'outline';
 
   // Colores según variante

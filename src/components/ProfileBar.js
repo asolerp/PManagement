@@ -5,9 +5,10 @@ import {
   collection,
   doc
 } from '@react-native-firebase/firestore';
-import { LinearGradient } from 'expo-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
+import { Colors } from '../Theme/Variables';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { capitalizeText } from '../utils/capitalize';
@@ -34,10 +35,10 @@ const ProfileBar = () => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#55A5AD', '#3B8A91']}
-        style={styles.gradientBg}
+        colors={[Colors.gradientStart, Colors.gradientMiddle, Colors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
+        style={styles.gradient}
       />
 
       <View style={styles.profileBar}>
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     right: 0,
     width: 28
   },
-  gradientBg: {
+  gradient: {
     ...StyleSheet.absoluteFillObject
   },
   greeting: {

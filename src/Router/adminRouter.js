@@ -13,11 +13,13 @@ import { NewCheckListScreen } from '../Screens/NewCheckList';
 import NewJob from '../Stacks/NewJob';
 import { NewIncidenceScreen } from '../Screens/NewIncidence';
 import { NewHouseScreen } from '../Screens/NewHouse';
+import { HouseScreen } from '../Screens/House';
 import { CheckPhotosScreen } from '../Screens/CheckPhotos';
 import {
   CHAT_SCREEN_KEY,
   CHECK_PHOTO_SCREEN_KEY,
   CHECK_SCREEN_KEY,
+  HOUSE_SCREEN_KEY,
   MAIN_ADMIN_STACK_KEY,
   NEW_CHECKLIST_SCREEN,
   NEW_HOUSE_SCREEN_KEY,
@@ -91,6 +93,11 @@ const AdminRouter = () => {
         <Screen
           name={NEW_HOUSE_SCREEN_KEY}
           component={NewHouseScreen}
+          options={{ headerShown: false }}
+        />
+        <Screen
+          name={HOUSE_SCREEN_KEY}
+          component={HouseScreen}
           options={{ headerShown: false }}
         />
         <Screen

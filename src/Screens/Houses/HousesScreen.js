@@ -12,6 +12,7 @@ import AddButton from '../../components/Elements/AddButton';
 import HouseItemList from '../../components/HouseItemList';
 import { ScreenHeader } from '../../components/Layout/ScreenHeader';
 import PageLayout from '../../components/PageLayout';
+import { BorderRadius } from '../../Theme/Variables';
 
 import { openScreenWithPush } from '../../Router/utils/actions';
 import {
@@ -131,6 +132,8 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   itemContainer: {
+    borderRadius: BorderRadius.lg,
+    overflow: 'hidden',
     width: '100%'
   },
   listContainer: {

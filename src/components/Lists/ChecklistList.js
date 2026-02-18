@@ -21,6 +21,7 @@ import {
   fetchChecklistsFinishedPaginated,
   fetchChecklistsNotFinishedPaginated
 } from '../../Services/firebase/checklistServices';
+import { BorderRadius } from '../../Theme/Variables';
 
 // Componente para el estado vacío
 const EmptyState = () => {
@@ -228,7 +229,9 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   itemContainer: {
-    marginHorizontal: 4
+    borderRadius: BorderRadius.lg,
+    marginHorizontal: 4,
+    overflow: 'hidden'
   },
   list: {
     marginTop: 12

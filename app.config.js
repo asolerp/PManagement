@@ -9,9 +9,9 @@ export default {
     scheme: 'portmanagement',
 
     splash: {
-      image: './assets/bootsplash/logo.png',
-      resizeMode: 'contain',
-      backgroundColor: '#0f766e'
+      image: './assets/bootsplash/splash@2x.png',
+      resizeMode: 'cover',
+      backgroundColor: '#3B8D7A'
     },
 
     assetBundlePatterns: ['**/*'],
@@ -65,9 +65,9 @@ export default {
       [
         'expo-splash-screen',
         {
-          image: './assets/bootsplash/logo.png',
-          resizeMode: 'contain',
-          backgroundColor: '#0f766e'
+          image: './assets/bootsplash/splash@2x.png',
+          resizeMode: 'cover',
+          backgroundColor: '#3B8D7A'
         }
       ],
       [
@@ -92,7 +92,8 @@ export default {
       './plugins/withFirebaseNonModularFix.js',
       './plugins/withHermesDsym.js',
       './plugins/withAndroidSigning.js',
-      './plugins/withAndroidSigningConfig.js'
+      './plugins/withAndroidSigningConfig.js',
+      './plugins/withFullScreenSplash.js'
     ],
 
     extra: {

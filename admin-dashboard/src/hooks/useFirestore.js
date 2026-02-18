@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as firestore from '@/services/firestore';
 
 export function useHouses() {
@@ -37,6 +37,18 @@ export function useChecklists(filters = {}) {
   return useQuery({
     queryKey: ['checklists', filters],
     queryFn: () => firestore.getChecklists({ ...filters, limitCount: 100 }),
+    staleTime: 1000 * 60 * 2,
+  });
+}
+
+export function useChecklistsPaginated(filters = {}) {
+  return useInfiniteQuery({
+    queryKey: ['checklists-paginated', filters],
+    queryFn: ({ pageParam }) =>
+      firestore.getChecklistsPage({ filters, pageParam }),
+    initialPageParam: null,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasMore ? lastPage.lastDoc : undefined,
     staleTime: 1000 * 60 * 2,
   });
 }
