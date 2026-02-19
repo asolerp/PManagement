@@ -23,7 +23,8 @@ const COLLECTIONS = {
   JOBS: 'jobs',
   USERS: 'users',
   RECYCLE_BIN: 'recycleBin',
-  CHECKS: 'checks'
+  CHECKS: 'checks',
+  ENTRANCES: 'entrances'
 };
 
 // ——— Casas ———
@@ -265,4 +266,17 @@ export async function createUserViaFunction(userData) {
     gender: userData.gender || 'male',
   });
   return result.data;
+}
+
+// ——— Entrances (fotos de jornadas) ———
+export async function getEntrancesByIds(entranceIds = []) {
+  if (!entranceIds.length) return [];
+  const results = await Promise.all(
+    entranceIds.map(async (id) => {
+      const snap = await getDoc(doc(db, COLLECTIONS.ENTRANCES, id));
+      if (!snap.exists()) return null;
+      return { id: snap.id, ...snap.data() };
+    })
+  );
+  return results.filter(Boolean);
 }

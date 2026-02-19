@@ -16,6 +16,7 @@ import { useWorkShiftStats, useWorkShifts } from '@/hooks/useWorkShifts';
 import { useChecklists } from '@/hooks/useFirestore';
 import { useNavigate } from 'react-router-dom';
 import ChecklistDetailPanel from '@/components/ChecklistDetailPanel';
+import ShiftDetailPanel from '@/components/ShiftDetailPanel';
 import {
   BarChart,
   Bar,
@@ -55,7 +56,7 @@ function StatCard({ icon: Icon, label, value, subvalue, color }) {
   );
 }
 
-function RecentShiftsTable({ shifts }) {
+function RecentShiftsTable({ shifts, onShiftClick }) {
   const [sortField, setSortField] = useState('date');
   const [sortDirection, setSortDirection] = useState('asc');
 
@@ -140,7 +141,11 @@ function RecentShiftsTable({ shifts }) {
         </thead>
         <tbody>
           {sortedShifts.map((shift) => (
-            <tr key={shift.id} className="border-b border-gray-100 hover:bg-gray-50">
+            <tr
+              key={shift.id}
+              className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+              onClick={() => onShiftClick?.(shift)}
+            >
               <td className="py-2.5 sm:py-3 px-2.5 sm:px-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
                 {shift.date 
                   ? format(new Date(shift.date), 'dd/MM/yy')
@@ -641,6 +646,7 @@ export default function DashboardPage() {
   const stats = statsData?.stats || {};
   const shifts = shiftsData?.shifts || [];
   const workerStats = useWorkerStats(shifts);
+  const [selectedShift, setSelectedShift] = useState(null);
 
   const handlePeriodChange = (periodId) => {
     setSelectedPeriod(periodId);
@@ -828,10 +834,17 @@ export default function DashboardPage() {
           {shiftsLoading ? (
             <div className="text-center py-8 text-gray-500">Cargando...</div>
           ) : (
-            <RecentShiftsTable shifts={shifts} />
+            <RecentShiftsTable shifts={shifts} onShiftClick={setSelectedShift} />
           )}
         </div>
       </Card>
+
+      {selectedShift && (
+        <ShiftDetailPanel
+          shift={selectedShift}
+          onClose={() => setSelectedShift(null)}
+        />
+      )}
     </div>
   );
 }

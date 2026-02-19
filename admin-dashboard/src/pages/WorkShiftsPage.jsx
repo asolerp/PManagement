@@ -29,6 +29,7 @@ import Input from '@/components/ui/Input';
 import { useWorkShifts, useWorkers, useDeleteWorkShift } from '@/hooks/useWorkShifts';
 import CreateShiftModal from '@/components/WorkShifts/CreateShiftModal';
 import EditShiftModal from '@/components/WorkShifts/EditShiftModal';
+import ShiftDetailPanel from '@/components/ShiftDetailPanel';
 
 // Opciones de periodo predefinidas
 const periodOptions = [
@@ -88,6 +89,7 @@ export default function WorkShiftsPage() {
   const [showFilters, setShowFilters] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editShift, setEditShift] = useState(null);
+  const [selectedShift, setSelectedShift] = useState(null);
   const [sortField, setSortField] = useState('date');
   const [sortDirection, setSortDirection] = useState('asc');
 
@@ -378,25 +380,27 @@ export default function WorkShiftsPage() {
       {/* Filters */}
       {showFilters && (
         <Card className="p-3 sm:p-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-            <Input
-              type="date"
-              label="Desde"
-              value={filters.startDate}
-              onChange={(e) => {
-                setSelectedPeriod('custom');
-                setFilters({ ...filters, startDate: e.target.value });
-              }}
-            />
-            <Input
-              type="date"
-              label="Hasta"
-              value={filters.endDate}
-              onChange={(e) => {
-                setSelectedPeriod('custom');
-                setFilters({ ...filters, endDate: e.target.value });
-              }}
-            />
+          <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:contents">
+              <Input
+                type="date"
+                label="Desde"
+                value={filters.startDate}
+                onChange={(e) => {
+                  setSelectedPeriod('custom');
+                  setFilters({ ...filters, startDate: e.target.value });
+                }}
+              />
+              <Input
+                type="date"
+                label="Hasta"
+                value={filters.endDate}
+                onChange={(e) => {
+                  setSelectedPeriod('custom');
+                  setFilters({ ...filters, endDate: e.target.value });
+                }}
+              />
+            </div>
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Trabajador
@@ -416,26 +420,28 @@ export default function WorkShiftsPage() {
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-                Estado
-              </label>
-              <select
-                value={filters.status}
-                onChange={(e) =>
-                  setFilters({ ...filters, status: e.target.value })
-                }
-                className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
-              >
-                <option value="">Todos</option>
-                <option value="completed">Completadas</option>
-                <option value="in_progress">En curso</option>
-              </select>
-            </div>
-            <div className="flex items-end col-span-2 sm:col-span-1">
-              <Button onClick={() => refetch()} className="w-full">
-                Aplicar
-              </Button>
+            <div className="grid grid-cols-2 gap-2 sm:contents">
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                  Estado
+                </label>
+                <select
+                  value={filters.status}
+                  onChange={(e) =>
+                    setFilters({ ...filters, status: e.target.value })
+                  }
+                  className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
+                >
+                  <option value="">Todos</option>
+                  <option value="completed">Completadas</option>
+                  <option value="in_progress">En curso</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <Button onClick={() => refetch()} className="w-full">
+                  Aplicar
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
@@ -497,7 +503,8 @@ export default function WorkShiftsPage() {
                 sortedShifts.map((shift) => (
                   <tr
                     key={shift.id}
-                    className="border-b border-gray-100 hover:bg-gray-50"
+                    className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                    onClick={() => setSelectedShift(shift)}
                   >
                     <td className="py-2.5 sm:py-3 px-2.5 sm:px-4">
                       <div className="flex items-center gap-2 sm:gap-3">
@@ -561,13 +568,13 @@ export default function WorkShiftsPage() {
                     <td className="py-2.5 sm:py-3 px-2.5 sm:px-4">
                       <div className="flex justify-end gap-1 sm:gap-2">
                         <button
-                          onClick={() => setEditShift(shift)}
+                          onClick={(e) => { e.stopPropagation(); setEditShift(shift); }}
                           className="p-1.5 sm:p-2 text-gray-400 hover:text-[#126D9B] hover:bg-gray-100 rounded-lg transition-colors"
                         >
                           <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(shift.id)}
+                          onClick={(e) => { e.stopPropagation(); handleDelete(shift.id); }}
                           className="p-1.5 sm:p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -594,6 +601,13 @@ export default function WorkShiftsPage() {
         <EditShiftModal
           shift={editShift}
           onClose={() => setEditShift(null)}
+        />
+      )}
+
+      {selectedShift && (
+        <ShiftDetailPanel
+          shift={selectedShift}
+          onClose={() => setSelectedShift(null)}
         />
       )}
     </div>

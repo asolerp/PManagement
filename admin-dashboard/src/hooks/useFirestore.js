@@ -176,3 +176,12 @@ export function useUpdateUser() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
   });
 }
+
+export function useEntrances(entranceIds = []) {
+  return useQuery({
+    queryKey: ['entrances', entranceIds],
+    queryFn: () => firestore.getEntrancesByIds(entranceIds),
+    enabled: entranceIds.length > 0,
+    staleTime: 1000 * 60 * 10,
+  });
+}
