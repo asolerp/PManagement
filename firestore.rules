@@ -1,9 +1,88 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2021, 1, 29);
+    // Helper: usuario autenticado
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: es el propio usuario o tiene claim admin (para dashboard)
+    function isOwnerOrAdmin(userId) {
+      return request.auth.uid == userId || request.auth.token.admin == true;
+    }
+
+    // ——— users ———
+    // Lectura: cualquier autenticado (app lista workers/owners, dashboard lista todos).
+    // Escritura: solo el propio documento o admin (crear solo el propio al registrarse).
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update, delete: if isOwnerOrAdmin(userId);
+    }
+
+    // ——— houses ———
+    match /houses/{houseId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // ——— incidences ———
+    match /incidences/{incidenceId} {
+      allow read, write: if isSignedIn();
+      match /messages/{messageId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    // ——— checklists ———
+    match /checklists/{checklistId} {
+      allow read, write: if isSignedIn();
+      match /checks/{checkId} {
+        allow read, write: if isSignedIn();
+      }
+      match /messages/{messageId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    // ——— jobs ———
+    match /jobs/{jobId} {
+      allow read, write: if isSignedIn();
+      match /messages/{messageId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    // ——— entrances ———
+    match /entrances/{entranceId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // ——— quadrants ———
+    match /quadrants/{quadrantId} {
+      allow read, write: if isSignedIn();
+      match /jobs/{jobId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    // ——— tasks (catálogo de tareas para jobs) ———
+    match /tasks/{taskId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // ——— checks (plantilla global de checks) ———
+    match /checks/{checkId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // ——— recycleBin (papelera; usado por admin dashboard) ———
+    match /recycleBin/{docId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // ——— workShifts (acceso desde dashboard vía API; por si hubiera acceso directo) ———
+    match /workShifts/{shiftId} {
+      allow read, write: if isSignedIn();
     }
   }
 }
