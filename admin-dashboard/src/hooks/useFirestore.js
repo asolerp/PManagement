@@ -177,6 +177,21 @@ export function useUpdateUser() {
   });
 }
 
+export function useUploadUserImage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, file }) => firestore.uploadUserImage(userId, file),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: ({ userId, newPassword }) =>
+      firestore.adminChangePassword(userId, newPassword),
+  });
+}
+
 export function useEntrances(entranceIds = []) {
   return useQuery({
     queryKey: ['entrances', entranceIds],

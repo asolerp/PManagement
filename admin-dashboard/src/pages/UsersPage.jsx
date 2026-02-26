@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
-import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/useFirestore';
+import { useUsers, useCreateUser, useUpdateUser, useChangePassword, useUploadUserImage } from '@/hooks/useFirestore';
 import {
   Users,
   Plus,
@@ -10,6 +10,11 @@ import {
   Phone,
   Shield,
   User,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Check,
+  Camera,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -63,6 +68,8 @@ function UserAvatar({ photo, name, size = 'md' }) {
 
 function UserDetailPanel({ user, onClose }) {
   const updateUser = useUpdateUser();
+  const changePassword = useChangePassword();
+  const uploadImage = useUploadUserImage();
   const [form, setForm] = useState({
     firstName: user.firstName || '',
     lastName: user.lastName || '',
@@ -71,6 +78,24 @@ function UserDetailPanel({ user, onClose }) {
     role: user.role || '',
   });
   const [saving, setSaving] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPreviewUrl(URL.createObjectURL(file));
+    try {
+      await uploadImage.mutateAsync({ userId: user.id, file });
+    } catch (err) {
+      console.error('Error uploading image', err);
+    }
+  };
 
   const hasChanges =
     form.firstName !== (user.firstName || '') ||
@@ -90,6 +115,24 @@ function UserDetailPanel({ user, onClose }) {
     }
   };
 
+  const handleChangePassword = async () => {
+    if (newPassword.length < 6) {
+      setPasswordError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+    setPasswordError('');
+    setPasswordSuccess(false);
+    try {
+      await changePassword.mutateAsync({ userId: user.id, newPassword });
+      setPasswordSuccess(true);
+      setNewPassword('');
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    } catch (e) {
+      setPasswordError('Error al cambiar la contraseña');
+      console.error('Error changing password', e);
+    }
+  };
+
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
 
   return (
@@ -99,8 +142,8 @@ function UserDetailPanel({ user, onClose }) {
         onClick={onClose}
       />
       <aside className="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl flex flex-col animate-slide-in-right">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Ficha de usuario</h2>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">Ficha de usuario</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -109,13 +152,35 @@ function UserDetailPanel({ user, onClose }) {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
           {/* Avatar + nombre */}
-          <div className="flex items-center gap-4">
-            <UserAvatar
-              photo={user.profileImage?.small || user.profileImage?.original}
-              name={fullName}
-            />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <label className="relative cursor-pointer group flex-shrink-0">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+              {previewUrl ? (
+                <div className="w-12 h-12 rounded-full overflow-hidden">
+                  <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <UserAvatar
+                  photo={user.profileImage?.small || user.profileImage?.original}
+                  name={fullName}
+                />
+              )}
+              <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera className="w-4 h-4 text-white" />
+              </div>
+              {uploadImage.isPending && (
+                <div className="absolute inset-0 bg-white/60 rounded-full flex items-center justify-center">
+                  <div className="w-5 h-5 border-2 border-[#126D9B] border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+            </label>
             <div>
               <p className="font-semibold text-gray-900">{fullName || 'Sin nombre'}</p>
               <RoleBadge role={user.role} />
@@ -123,8 +188,8 @@ function UserDetailPanel({ user, onClose }) {
           </div>
 
           {/* Formulario */}
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
               <Input
                 label="Nombre"
                 value={form.firstName}
@@ -148,13 +213,13 @@ function UserDetailPanel({ user, onClose }) {
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[11px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">
                 Rol
               </label>
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
+                className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-[13px] sm:text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
               >
                 {ROLES.map((r) => (
                   <option key={r.value} value={r.value}>
@@ -164,9 +229,70 @@ function UserDetailPanel({ user, onClose }) {
               </select>
             </div>
           </div>
+
+          {/* Cambiar contraseña */}
+          <div className="border-t border-gray-200 pt-4 sm:pt-5">
+            <button
+              type="button"
+              onClick={() => setShowPasswordSection(!showPasswordSection)}
+              className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-[#126D9B] transition-colors"
+            >
+              <KeyRound className="w-4 h-4" />
+              Cambiar contraseña
+            </button>
+
+            {showPasswordSection && (
+              <div className="mt-3 space-y-3">
+                <div className="relative">
+                  <Input
+                    label="Nueva contraseña"
+                    type={showPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      setPasswordError('');
+                      setPasswordSuccess(false);
+                    }}
+                    placeholder="Mínimo 6 caracteres"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-[22px] sm:top-[24px] p-1 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword
+                      ? <EyeOff className="w-3.5 h-3.5" />
+                      : <Eye className="w-3.5 h-3.5" />
+                    }
+                  </button>
+                </div>
+
+                {passwordError && (
+                  <p className="text-xs text-red-600">{passwordError}</p>
+                )}
+                {passwordSuccess && (
+                  <div className="flex items-center gap-1.5 text-xs text-green-600">
+                    <Check className="w-3.5 h-3.5" />
+                    Contraseña actualizada correctamente
+                  </div>
+                )}
+
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  disabled={!newPassword.trim()}
+                  loading={changePassword.isPending}
+                  onClick={handleChangePassword}
+                >
+                  <KeyRound className="w-4 h-4 mr-2" />
+                  Actualizar contraseña
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
           <Button
             className="w-full"
             disabled={!hasChanges}

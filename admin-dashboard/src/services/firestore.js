@@ -230,6 +230,19 @@ export async function uploadHouseImage(houseId, file) {
   return url;
 }
 
+export async function uploadUserImage(userId, file) {
+  const storageRef = ref(storage, `users/${userId}/profileImage/${file.name}`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+
+  const userRef = doc(db, COLLECTIONS.USERS, userId);
+  await updateDoc(userRef, {
+    'profileImage.original': url,
+    'profileImage.small': url,
+  });
+  return url;
+}
+
 // Eliminar checklist (documento + subcollection checks) via Cloud Function
 export async function deleteChecklist(checklistId) {
   const { httpsCallable } = await import('firebase/functions');
@@ -265,6 +278,15 @@ export async function createUserViaFunction(userData) {
     language: userData.language || 'es',
     gender: userData.gender || 'male',
   });
+  return result.data;
+}
+
+// ——— Admin: cambiar contraseña ———
+export async function adminChangePassword(userId, newPassword) {
+  const { httpsCallable } = await import('firebase/functions');
+  const { functions } = await import('@/config/firebase');
+  const fn = httpsCallable(functions, 'adminChangePassword');
+  const result = await fn({ userId, newPassword });
   return result.data;
 }
 

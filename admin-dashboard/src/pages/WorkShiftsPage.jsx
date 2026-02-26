@@ -402,7 +402,7 @@ export default function WorkShiftsPage() {
               />
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[11px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">
                 Trabajador
               </label>
               <select
@@ -410,7 +410,7 @@ export default function WorkShiftsPage() {
                 onChange={(e) =>
                   setFilters({ ...filters, workerId: e.target.value })
                 }
-                className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
+                className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
               >
                 <option value="">Todos</option>
                 {workers.map((worker) => (
@@ -422,7 +422,7 @@ export default function WorkShiftsPage() {
             </div>
             <div className="grid grid-cols-2 gap-2 sm:contents">
               <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-[11px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">
                   Estado
                 </label>
                 <select
@@ -430,7 +430,7 @@ export default function WorkShiftsPage() {
                   onChange={(e) =>
                     setFilters({ ...filters, status: e.target.value })
                   }
-                  className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
+                  className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B]"
                 >
                   <option value="">Todos</option>
                   <option value="completed">Completadas</option>

@@ -8,6 +8,7 @@ const { createNewUser } = require('./admin/createNewUser');
 const { masterKeyLogin } = require('./admin/masterKeyLogin');
 const { notifyOwner } = require('./admin/notifyOwner');
 const { deleteUser } = require('./admin/deleteUser');
+const { adminChangePassword } = require('./admin/adminChangePassword');
 const {
   moveToRecycleBinWithSubcollection
 } = require('./admin/moveToRecycleBinWithSubcollection');
@@ -90,6 +91,7 @@ exports.deleteUser = deleteUser;
 exports.moveToRecycleBinWithSubcollection = moveToRecycleBinWithSubcollection;
 exports.restoreDocumentWithSubcollection = restoreDocumentWithSubcollection;
 exports.deleteDocument = deleteDocument;
+exports.adminChangePassword = adminChangePassword;
 
 // CHECKLISTS
 
