@@ -1,0 +1,73 @@
+import { useState, useEffect } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import OnboardingWizard from '@/components/OnboardingWizard';
+import { useAuth } from '@/hooks/useAuth.jsx';
+import { Menu, Sparkles } from 'lucide-react';
+
+export default function MainLayout() {
+  const { company } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.classList.toggle('sidebar-open', sidebarOpen);
+    return () => document.body.classList.remove('sidebar-open');
+  }, [sidebarOpen]);
+
+  const showOnboarding = company && !company.onboardingComplete;
+  const isOnWizardRoute = location.pathname === '/';
+  const showOnboardingBanner = showOnboarding && !isOnWizardRoute;
+
+  if (showOnboarding && isOnWizardRoute) {
+    return <OnboardingWizard />;
+  }
+
+  return (
+    <div className="min-h-screen bg-[var(--surface)]">
+      {showOnboardingBanner && (
+        <div className="sticky top-0 z-20 flex items-center justify-center gap-2 bg-turquoise-600 text-white py-3 px-4 shadow-sm">
+          <Sparkles className="w-4 h-4 flex-shrink-0 opacity-90" />
+          <span className="text-sm font-medium">Completa la configuración inicial</span>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="text-sm font-semibold underline underline-offset-2 hover:no-underline opacity-95 hover:opacity-100"
+          >
+            Continuar
+          </button>
+        </div>
+      )}
+      {/* Mobile header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-[var(--surface-elevated)] border-b border-[var(--border)] flex items-center px-4 gap-3 shadow-[var(--shadow-sm)]">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="p-2.5 -ml-2 rounded-xl hover:bg-turquoise-50 transition-colors text-stone-600"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-turquoise-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <span className="text-white font-heading font-bold text-xs">P</span>
+          </div>
+          <span className="font-heading font-semibold text-stone-900 text-sm truncate">
+            {company?.name || 'Port Management SL'}
+          </span>
+        </div>
+      </header>
+
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      <main className="lg:ml-64 min-h-screen pt-14 lg:pt-0">
+        <div className="p-5 sm:p-6 lg:p-8 max-w-[1600px] mx-auto">
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
+}

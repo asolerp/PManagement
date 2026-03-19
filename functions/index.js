@@ -1,8 +1,6 @@
-const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const firebase_tools = require('firebase-tools');
 
-const cloudinary = require('cloudinary').v2;
+let cloudinary;
 
 const { createNewUser } = require('./admin/createNewUser');
 const { masterKeyLogin } = require('./admin/masterKeyLogin');
@@ -25,8 +23,23 @@ const {
   sendPushNotificationUpdateIncidence,
   sendPushNotificationNewIncidence,
   sendPushNotificationNewIncidenceMessage,
-  sendPushNotificationAsignedIncidence
+  sendPushNotificationAsignedIncidence,
+  incidentStateUpdatedAt,
+  scheduledIncidenceReminders
 } = require('./notifications/incidences');
+
+// Audit
+const {
+  auditLogIncidenceCreated,
+  auditLogIncidenceUpdated,
+  auditLogIncidenceDeleted,
+  auditLogJobCreated,
+  auditLogJobUpdated,
+  auditLogJobDeleted,
+  auditLogChecklistCreated,
+  auditLogChecklistUpdated,
+  auditLogChecklistDeleted
+} = require('./audit/auditLog');
 
 const {
   sendPushNotificationJobMessage,
@@ -34,6 +47,13 @@ const {
 } = require('./notifications/jobs');
 
 const { createJobsForQuadrant } = require('./admin/createJobsForQuadrant');
+const { optimizeRoute } = require('./admin/optimizeRoute');
+const {
+  proposeQuadrantAssignment
+} = require('./admin/proposeQuadrantAssignment');
+const {
+  generateEmailToOwnerTemplate
+} = require('./admin/generateEmailToOwnerTemplate');
 const {
   restoreDocumentWithSubcollection
 } = require('./admin/restoreDocumentWithSubcollection');
@@ -55,6 +75,9 @@ const {
   sendMonthlyReportManually
 } = require('./timeTracking/sendMonthlyReportManually');
 
+// Agent (Telegram Bot + AI)
+const { telegramWebhook } = require('./agent');
+
 // Work Shifts
 const {
   onEntranceCreated,
@@ -68,17 +91,11 @@ const {
   migrateEntrancesToWorkShifts
 } = require('./workShifts');
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
+// v2 imports for inline functions
+const { onDocumentUpdated } = require('firebase-functions/v2/firestore');
+const { onCall } = require('firebase-functions/v2/https');
 
-admin.initializeApp(
-  functions.config({
-    region: REGION
-  }).firebase
-);
+admin.initializeApp();
 
 /// ADMIN
 
@@ -117,19 +134,40 @@ exports.sendPushNotificationNewIncidenceMessage =
 exports.sendPushNotificationAsignedIncidence =
   sendPushNotificationAsignedIncidence;
 
+exports.incidentStateUpdatedAt = incidentStateUpdatedAt;
+exports.scheduledIncidenceReminders = scheduledIncidenceReminders;
+
+// AUDIT
+
+exports.auditLogIncidenceCreated = auditLogIncidenceCreated;
+exports.auditLogIncidenceUpdated = auditLogIncidenceUpdated;
+exports.auditLogIncidenceDeleted = auditLogIncidenceDeleted;
+exports.auditLogJobCreated = auditLogJobCreated;
+exports.auditLogJobUpdated = auditLogJobUpdated;
+exports.auditLogJobDeleted = auditLogJobDeleted;
+exports.auditLogChecklistCreated = auditLogChecklistCreated;
+exports.auditLogChecklistUpdated = auditLogChecklistUpdated;
+exports.auditLogChecklistDeleted = auditLogChecklistDeleted;
+
 // JOBS
 
 exports.sendPushNotificationJobMessage = sendPushNotificationJobMessage;
 exports.sendPushNotificationNewJob = sendPushNotificationNewJob;
 exports.createJobsForQuadrant = createJobsForQuadrant;
+exports.optimizeRoute = optimizeRoute;
+exports.proposeQuadrantAssignment = proposeQuadrantAssignment;
+exports.generateEmailToOwnerTemplate = generateEmailToOwnerTemplate;
+
+// AGENT
+exports.telegramWebhook = telegramWebhook;
 
 // TIME TRACKING
 
 exports.exportTimeTrackingToExcel = exportTimeTrackingToExcel;
 exports.sendTimeTrackingEmail = sendTimeTrackingEmail;
 exports.scheduledMonthlyReport = scheduledMonthlyReport;
-exports.testMonthlyReport = testMonthlyReport; // For testing purposes
-exports.sendMonthlyReportManually = sendMonthlyReportManually; // Manual trigger from app
+exports.testMonthlyReport = testMonthlyReport;
+exports.sendMonthlyReportManually = sendMonthlyReportManually;
 
 // WORK SHIFTS
 exports.onEntranceCreated = onEntranceCreated;
@@ -142,30 +180,24 @@ exports.updateWorkShift = updateWorkShift;
 exports.deleteWorkShift = deleteWorkShift;
 exports.migrateEntrancesToWorkShifts = migrateEntrancesToWorkShifts;
 
-exports.updateProfileImage = functions
-  .region(REGION)
-  .firestore.document('users/{userId}')
-  .onUpdate(async (change, context) => {
+exports.updateProfileImage = onDocumentUpdated(
+  { document: 'users/{userId}', region: REGION },
+  async event => {
     console.log('Updating images');
-    const userAfter = change.after.data();
-    // Create a new batch instance
+    const userAfter = event.data.after.data();
+    const userId = event.params.userId;
     const batch = admin.firestore().batch();
 
     try {
       const querySnapshot = await admin
         .firestore()
         .collection('jobs')
-        .where('workersId', 'array-contains', context.params.userId)
+        .where('workersId', 'array-contains', userId)
         .get();
       querySnapshot.forEach(doc => {
         const job = doc.data();
-        const findUserIndex = job.workers.findIndex(
-          w => w.id === context.params.userId
-        );
-        job.workers[findUserIndex] = {
-          ...userAfter,
-          id: context.params.userId
-        };
+        const findUserIndex = job.workers.findIndex(w => w.id === userId);
+        job.workers[findUserIndex] = { ...userAfter, id: userId };
         const docRef = admin.firestore().collection('jobs').doc(doc.id);
         batch.update(docRef, job);
       });
@@ -173,27 +205,27 @@ exports.updateProfileImage = functions
     } catch (err) {
       console.log(err);
     }
-  });
+  }
+);
 
-exports.updateHouseImageJobs = functions
-  .region(REGION)
-  .firestore.document('houses/{houseId}')
-  .onUpdate(async (change, context) => {
+exports.updateHouseImageJobs = onDocumentUpdated(
+  { document: 'houses/{houseId}', region: REGION },
+  async event => {
     console.log('Updating images');
-    const houseAfter = change.after.data();
-    // Create a new batch instance
+    const houseAfter = event.data.after.data();
+    const houseId = event.params.houseId;
     const batch = admin.firestore().batch();
 
     try {
       const querySnapshot = await admin
         .firestore()
         .collection('jobs')
-        .where('houseId', '==', context.params.houseId)
+        .where('houseId', '==', houseId)
         .get();
       querySnapshot.forEach(doc => {
         const job = doc.data();
         console.log('job', job);
-        job.house[0] = { ...houseAfter, id: context.params.houseId };
+        job.house[0] = { ...houseAfter, id: houseId };
         const docRef = admin.firestore().collection('jobs').doc(doc.id);
         batch.update(docRef, job);
       });
@@ -201,47 +233,39 @@ exports.updateHouseImageJobs = functions
     } catch (err) {
       console.log(err);
     }
-  });
+  }
+);
 
-exports.deletePhotoCloudinary = functions
-  .region(REGION)
-  .runWith({
-    timeoutSeconds: 540,
-    memory: '2GB'
-  })
-  .https.onCall(async data => {
-    const { photoIds } = data;
-
+exports.deletePhotoCloudinary = onCall(
+  { region: REGION, timeoutSeconds: 540, memory: '2GiB' },
+  async request => {
+    if (!cloudinary) {
+      cloudinary = require('cloudinary').v2;
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+      });
+    }
+    const { photoIds } = request.data;
     console.log(photoIds);
-
     await cloudinary.api.delete_resources(photoIds, (error, result) => {
       console.log('error', error);
       console.log('result', result);
     });
-  });
+  }
+);
 
-exports.recursiveDelete = functions
-  .region(REGION)
-  .runWith({
-    timeoutSeconds: 540,
-    memory: '2GB'
-  })
-  .https.onCall(async (data, context) => {
-    const { path, collection } = data;
+exports.recursiveDelete = onCall(
+  { region: REGION, timeoutSeconds: 540, memory: '2GiB' },
+  async request => {
+    const firebase_tools = require('firebase-tools');
+    const { path, collection } = request.data;
 
     console.log(
-      `User ${context.auth.uid} has requested to delete path ${path} with collection ${collection}`
+      `User ${request.auth.uid} has requested to delete path ${path} with collection ${collection}`
     );
 
-    // const collectionFolders = {
-    //   checklists: 'checkLists',
-    //   incidences: 'incidences',
-    //   jobs: 'jobs',
-    // };
-
-    // Run a recursive delete on the given document or collection path.
-    // The 'token' must be set in the functions config, and can be generated
-    // at the command line by running 'firebase login:ci'.
     await firebase_tools.firestore.delete(path, {
       project: process.env.GCLOUD_PROJECT,
       recursive: true,
@@ -253,15 +277,9 @@ exports.recursiveDelete = functions
     const bucket = admin.storage().bucket();
 
     await bucket.deleteFiles({
-      prefix: path // the path of the folder
+      prefix: path
     });
 
-    // Delete the file from Firebase Storage.
-    // const storagePath = `${collectionFolders[collection]}/${docId}`;
-    // const fileRef = storage.ref(storagePath);
-    // fileRef.delete();
-
-    return {
-      path: path
-    };
-  });
+    return { path };
+  }
+);

@@ -92,9 +92,7 @@ exports.testMonthlyReport = functions
       }
 
       // Get recipients from config
-      const configRecipients =
-        functions.config().monthly_report?.recipients ||
-        process.env.MONTHLY_REPORT_RECIPIENTS;
+      const configRecipients = process.env.MONTHLY_REPORT_RECIPIENTS;
 
       let recipients = [];
       if (configRecipients) {

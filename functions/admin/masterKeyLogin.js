@@ -4,8 +4,7 @@ const { REGION } = require('../utils');
 
 // Clave maestra - Deberías mover esto a variables de entorno para mayor seguridad
 // Puedes configurarlo con: firebase functions:config:set master.key="TU_CLAVE_MAESTRA"
-const MASTER_KEY =
-  functions.config().master?.key || process.env.MASTER_KEY || 'port.2026';
+const MASTER_KEY = process.env.MASTER_KEY || 'port.2026';
 
 const masterKeyLogin = functions
   .region(REGION)

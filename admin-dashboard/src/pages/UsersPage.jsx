@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { useUsers, useCreateUser, useUpdateUser, useChangePassword, useUploadUserImage } from '@/hooks/useFirestore';
+import { useAuth } from '@/hooks/useAuth.jsx';
 import {
   Users,
   Plus,
@@ -19,6 +20,7 @@ import {
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
+import { getSafeImageUrl } from '@/utils/getSafeImageUrl';
 
 const ROLES = [
   { value: 'admin', label: 'Administrador', color: 'bg-purple-100 text-purple-700' },
@@ -38,18 +40,19 @@ function RoleBadge({ role }) {
   );
 }
 
+const DEFAULT_AVATAR = '/placeholder-avatar.svg';
+
 function UserAvatar({ photo, name, size = 'md' }) {
   const [imgError, setImgError] = useState(false);
-  const initial = name?.charAt(0)?.toUpperCase() || '?';
   const sizeClasses = size === 'sm'
     ? 'w-9 h-9 sm:w-12 sm:h-12'
     : 'w-12 h-12';
-  const textSize = size === 'sm' ? 'text-sm sm:text-lg' : 'text-lg';
+  const iconSize = size === 'sm' ? 'w-4 h-4 sm:w-5 sm:h-5' : 'w-6 h-6';
 
   if (!photo || imgError) {
     return (
-      <div className={`${sizeClasses} rounded-full bg-gradient-to-br from-[#126D9B] to-[#3B8D7A] flex items-center justify-center flex-shrink-0`}>
-        <span className={`${textSize} font-semibold text-white`}>{initial}</span>
+      <div className={`${sizeClasses} rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 border border-gray-200 overflow-hidden`}>
+        <img src={DEFAULT_AVATAR} alt="" className={iconSize} />
       </div>
     );
   }
@@ -76,6 +79,8 @@ function UserDetailPanel({ user, onClose }) {
     email: user.email || '',
     phone: user.phone || '',
     role: user.role || '',
+    notes: user.notes || '',
+    telegramId: user.telegramId || '',
   });
   const [saving, setSaving] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -101,7 +106,9 @@ function UserDetailPanel({ user, onClose }) {
     form.firstName !== (user.firstName || '') ||
     form.lastName !== (user.lastName || '') ||
     form.phone !== (user.phone || '') ||
-    form.role !== (user.role || '');
+    form.role !== (user.role || '') ||
+    form.notes !== (user.notes || '') ||
+    form.telegramId !== (user.telegramId || '');
 
   const handleSave = async () => {
     setSaving(true);
@@ -168,7 +175,7 @@ function UserDetailPanel({ user, onClose }) {
                 </div>
               ) : (
                 <UserAvatar
-                  photo={user.profileImage?.small || user.profileImage?.original}
+                  photo={getSafeImageUrl(user.profileImage?.small || user.profileImage?.original)}
                   name={fullName}
                 />
               )}
@@ -213,6 +220,15 @@ function UserDetailPanel({ user, onClose }) {
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
             <div>
+              <Input
+                label="ID de Telegram"
+                placeholder="Para usar el bot de consultas"
+                value={form.telegramId}
+                onChange={(e) => setForm({ ...form, telegramId: e.target.value })}
+              />
+              <p className="text-xs text-gray-500 mt-0.5">El usuario obtiene su ID escribiendo al bot; así puede usar las consultas por Telegram.</p>
+            </div>
+            <div>
               <label className="block text-[11px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">
                 Rol
               </label>
@@ -227,6 +243,18 @@ function UserDetailPanel({ user, onClose }) {
                   </option>
                 ))}
               </select>
+            </div>
+            <div>
+              <label className="block text-[11px] sm:text-xs font-medium text-gray-600 mb-0.5 sm:mb-1">
+                Notas (uso interno)
+              </label>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                placeholder="Comentarios sobre este usuario..."
+                rows={2}
+                className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-[13px] sm:text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
+              />
             </div>
           </div>
 
@@ -443,7 +471,7 @@ function CreateUserModal({ open, onClose }) {
           </Button>
           <Button type="submit" disabled={!canSubmit} loading={saving}>
             <Plus className="w-4 h-4 mr-2" />
-            Crear usuario
+            Invitar usuario
           </Button>
         </div>
       </form>
@@ -452,6 +480,7 @@ function CreateUserModal({ open, onClose }) {
 }
 
 export default function UsersPage() {
+  const { company } = useAuth();
   const { data: users = [], isLoading } = useUsers();
   const [selectedUser, setSelectedUser] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -467,14 +496,15 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Usuarios</h1>
+          <h1 className="font-heading text-xl sm:text-2xl font-bold text-gray-900">Usuarios</h1>
           <p className="text-sm sm:text-base text-gray-500 hidden sm:block">
-            Usuarios registrados en el sistema
+            Invita a tu equipo y gestiona administradores, trabajadores y propietarios
           </p>
         </div>
         <Button onClick={() => setShowCreate(true)} className="flex-shrink-0 !px-2.5 sm:!px-4">
           <Plus className="w-4 h-4 sm:mr-2" />
-          <span className="hidden sm:inline">Nuevo usuario</span>
+          <span className="hidden sm:inline">Invitar usuario</span>
+          <span className="sm:hidden">Invitar</span>
         </Button>
       </div>
 
@@ -507,8 +537,12 @@ export default function UsersPage() {
       {isLoading ? (
         <div className="text-center py-12 text-gray-500 text-sm">Cargando...</div>
       ) : filteredUsers.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 text-sm">
-          No hay usuarios registrados
+        <div className="flex flex-col items-center justify-center py-14 text-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#126D9B]/20 to-[#67B26F]/20 flex items-center justify-center mb-4">
+            <Users className="w-8 h-8 text-[#126D9B]" />
+          </div>
+          <p className="font-heading text-gray-800 font-medium mb-1">No hay usuarios registrados</p>
+          <p className="text-sm text-gray-500">Invita al primer usuario desde el botón superior</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -522,7 +556,7 @@ export default function UsersPage() {
               >
                 <div className="flex items-center gap-3 sm:gap-4">
                   <UserAvatar
-                    photo={u.profileImage?.small || u.profileImage?.original}
+                    photo={getSafeImageUrl(u.profileImage?.small || u.profileImage?.original)}
                     name={fullName}
                     size="sm"
                   />

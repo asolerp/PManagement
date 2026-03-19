@@ -47,8 +47,8 @@ exports.scheduledMonthlyReport = functions
       // Get recipients from environment config or firestore
       let recipients = [];
 
-      // Option 1: From Firebase Functions config (firebase functions:config:set)
-      const configRecipients = functions.config().monthly_report?.recipients;
+      // Option 1: From environment variables
+      const configRecipients = process.env.MONTHLY_REPORT_RECIPIENTS;
       if (configRecipients) {
         recipients = configRecipients.split(',').map(email => email.trim());
       }

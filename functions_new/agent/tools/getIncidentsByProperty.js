@@ -1,0 +1,139 @@
+/**
+ * Tool: lista incidencias de una propiedad (abiertas o todas).
+ */
+const admin = require("firebase-admin");
+
+const MAX_PROPERTIES_SEARCH = 120;
+
+const schema = {
+  type: "function",
+  function: {
+    name: "getIncidentsByProperty",
+    description:
+      "Lista incidencias de una propiedad por ID o por nombre. Puede devolver solo abiertas o todas.",
+    parameters: {
+      type: "object",
+      properties: {
+        propertyId: {
+          type: "string",
+          description: "ID de la propiedad (houseId).",
+        },
+        propertyName: {
+          type: "string",
+          description:
+            "Nombre o parte del nombre/dirección de la propiedad para buscar.",
+        },
+        includeClosed: {
+          type: "boolean",
+          description:
+            "Si true incluye incidencias cerradas. Por defecto false (solo abiertas).",
+        },
+        limit: {
+          type: "number",
+          description: "Máximo de incidencias a devolver (por defecto 25).",
+        },
+      },
+      required: [],
+    },
+  },
+};
+
+async function findPropertiesByName(db, companyId, name) {
+  const snap = await db
+    .collection("properties")
+    .where("companyId", "==", companyId)
+    .limit(MAX_PROPERTIES_SEARCH)
+    .get();
+  const search = name.trim().toLowerCase();
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .filter((p) => {
+      const houseName = String(p.houseName || "").toLowerCase();
+      const address = String(p.address || p.street || "").toLowerCase();
+      return houseName.includes(search) || address.includes(search);
+    });
+}
+
+async function resolveProperty(db, companyId, args) {
+  const hasId = args?.propertyId && String(args.propertyId).trim();
+  const hasName = args?.propertyName && String(args.propertyName).trim();
+  if (!hasId && !hasName) {
+    return { error: "Indica propertyId o propertyName." };
+  }
+
+  if (hasId) {
+    const snap = await db
+      .collection("properties")
+      .doc(String(args.propertyId).trim())
+      .get();
+    if (!snap.exists) {
+      return {
+        error: `No existe ninguna propiedad con ID "${args.propertyId}".`,
+      };
+    }
+    const data = snap.data() || {};
+    if (data.companyId !== companyId) {
+      return { error: "Esa propiedad no pertenece a tu empresa." };
+    }
+    return { property: { id: snap.id, ...data } };
+  }
+
+  const matches = await findPropertiesByName(
+    db,
+    companyId,
+    String(args.propertyName),
+  );
+  if (matches.length === 0) {
+    return {
+      error: `No hay propiedades que coincidan con "${String(args.propertyName).trim()}".`,
+    };
+  }
+  if (matches.length > 1) {
+    const lines = matches.map((p, i) => {
+      const name = p.houseName || p.address || p.id;
+      return `${i + 1}) ${p.id} — ${name}`;
+    });
+    return {
+      error:
+        `Hay varias propiedades que coinciden con "${String(args.propertyName).trim()}". ` +
+        `Llama de nuevo con propertyId:\n${lines.join("\n")}`,
+    };
+  }
+  return { property: matches[0] };
+}
+
+async function run(companyId, args) {
+  if (!companyId) return "Falta companyId.";
+  const db = admin.firestore();
+  const resolved = await resolveProperty(db, companyId, args || {});
+  if (resolved.error) return resolved.error;
+
+  const property = resolved.property;
+  const includeClosed = Boolean(args?.includeClosed);
+  const limit = Math.min(Number(args?.limit) || 25, 60);
+
+  const snap = await db
+    .collection("incidents")
+    .where("companyId", "==", companyId)
+    .where("houseId", "==", property.id)
+    .get();
+  const incidents = snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .filter((i) => (includeClosed ? true : !i.done))
+    .slice(0, limit);
+
+  const propName = property.houseName || property.address || property.id;
+  if (incidents.length === 0) {
+    return includeClosed
+      ? `No hay incidencias en la propiedad "${propName}".`
+      : `No hay incidencias abiertas en la propiedad "${propName}".`;
+  }
+
+  const lines = incidents.map((i) => {
+    const state = i.state || (i.done ? "done" : "iniciada");
+    return `- [${i.id}] "${i.title || "(sin título)"}" | Estado: ${state} | ${i.done ? "cerrada" : "abierta"}`;
+  });
+  return `Incidencias en "${propName}" (${incidents.length}):\n${lines.join("\n")}`;
+}
+
+module.exports = { schema, run };

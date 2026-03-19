@@ -84,5 +84,25 @@ service cloud.firestore {
     match /workShifts/{shiftId} {
       allow read, write: if isSignedIn();
     }
+
+    // ——— inspectionReports (reportes del bot de Telegram) ———
+    match /inspectionReports/{reportId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // ——— agentSessions (sesiones del agente IA) ———
+    match /agentSessions/{sessionId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // ——— auditLog (registro de auditoría) ———
+    match /auditLog/{logId} {
+      allow read: if isSignedIn();
+    }
+
+    // ——— settings ———
+    match /settings/{settingId} {
+      allow read, write: if isSignedIn();
+    }
   }
 }

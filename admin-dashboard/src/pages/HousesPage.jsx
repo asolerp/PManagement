@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import {
   useHouses,
@@ -6,11 +7,19 @@ import {
   useCreateHouse,
   useUploadHouseImage,
   useOwners,
+  useChecklists,
+  useIncidences,
+  useJobs,
 } from '@/hooks/useFirestore';
-import { Home, X, MapPin, User, Save, Plus, Camera, ChevronDown, Check } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth.jsx';
+import { Home, X, MapPin, User, Save, Plus, Camera, ChevronDown, Check, CheckSquare, AlertCircle, Briefcase, CheckCircle, ChevronRight, ExternalLink } from 'lucide-react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
+import ChecklistDetailPanel from '@/components/ChecklistDetailPanel';
+import { geocodeAddress, toLocationObject } from '@/utils/geocoding';
 
 const PLACEHOLDER_IMAGE = '/placeholder-house.png';
 
@@ -30,7 +39,7 @@ function HouseImage({ src, size = 'sm' }) {
       >
         <img
           src={PLACEHOLDER_IMAGE}
-          alt="Port Management"
+          alt="Port Management SL"
           className={size === 'lg' ? 'h-20 object-contain opacity-40' : 'h-8 object-contain opacity-40'}
         />
       </div>
@@ -47,23 +56,85 @@ function HouseImage({ src, size = 'sm' }) {
   );
 }
 
-function HouseDetailPanel({ house, onClose }) {
+function getIncidenceHouseId(incidence) {
+  if (incidence.houseId) return incidence.houseId;
+  if (incidence.house?.id) return incidence.house.id;
+  if (incidence.house?.[0]?.id) return incidence.house[0].id;
+  return null;
+}
+
+function toDate(value) {
+  if (!value) return null;
+  try {
+    if (value.toDate && typeof value.toDate === 'function') return value.toDate();
+    if (value.seconds) return new Date(value.seconds * 1000);
+    if (value._d) return value._d;
+    return new Date(value);
+  } catch {
+    return null;
+  }
+}
+
+function HouseDetailPanel({ house, onClose, onOpenChecklist }) {
   const updateHouse = useUpdateHouse();
+  const uploadImage = useUploadHouseImage();
+  const { data: checklists = [], isLoading: loadingChecklists, isError: checklistsError } = useChecklists({ houseId: house.id });
+  const { data: incidences = [], isLoading: loadingIncidences } = useIncidences();
+  const { data: jobs = [], isLoading: loadingJobs } = useJobs();
+
+  const houseIncidences = useMemo(
+    () => incidences.filter((inc) => getIncidenceHouseId(inc) === house.id),
+    [incidences, house.id]
+  );
+  const houseJobs = useMemo(
+    () => jobs.filter((job) => job.houseId === house.id),
+    [jobs, house.id]
+  );
+
   const [form, setForm] = useState({
     houseName: house.houseName || '',
     street: house.street || '',
     municipio: house.municipio || '',
+    cp: house.cp || '',
+    phone: house.phone || '',
+    notes: house.notes || '',
+    latitude: house.location?.latitude ?? '',
+    longitude: house.location?.longitude ?? '',
   });
+  const [owner, setOwner] = useState(house.owner || null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [geocoding, setGeocoding] = useState(false);
 
-  const ownerName = house.owner
-    ? `${house.owner.firstName || ''} ${house.owner.lastName || ''}`.trim()
-    : null;
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      houseName: house.houseName || '',
+      street: house.street || '',
+      municipio: house.municipio || '',
+      cp: house.cp || '',
+      phone: house.phone || '',
+      notes: house.notes || '',
+      latitude: house.location?.latitude ?? '',
+      longitude: house.location?.longitude ?? '',
+    }));
+    setOwner(house.owner || null);
+  }, [house.id, house.houseName, house.street, house.municipio, house.cp, house.phone, house.notes, house.location, house.owner]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateHouse.mutateAsync({ id: house.id, ...form });
+      const payload = { id: house.id, houseName: form.houseName, street: form.street, municipio: form.municipio, cp: form.cp, phone: form.phone, notes: form.notes };
+      if (owner) payload.owner = owner;
+      else payload.owner = null;
+      const location = toLocationObject({ latitude: form.latitude, longitude: form.longitude });
+      payload.location = location ?? (house.location ? null : undefined);
+      if (payload.location === undefined) delete payload.location;
+      await updateHouse.mutateAsync(payload);
+      if (imageFile) {
+        await uploadImage.mutateAsync({ houseId: house.id, file: imageFile });
+      }
       onClose();
     } catch (e) {
       console.error('Error updating house', e);
@@ -72,10 +143,30 @@ function HouseDetailPanel({ house, onClose }) {
     }
   };
 
+  const ownerChanged = (owner?.id ?? null) !== (house.owner?.id ?? null);
+  const locLat = house.location?.latitude ?? '';
+  const locLng = house.location?.longitude ?? '';
+  const locationChanged = String(form.latitude ?? '') !== String(locLat) || String(form.longitude ?? '') !== String(locLng);
   const hasChanges =
     form.houseName !== (house.houseName || '') ||
     form.street !== (house.street || '') ||
-    form.municipio !== (house.municipio || '');
+    form.municipio !== (house.municipio || '') ||
+    form.cp !== (house.cp || '') ||
+    form.phone !== (house.phone || '') ||
+    form.notes !== (house.notes || '') ||
+    ownerChanged ||
+    locationChanged ||
+    !!imageFile;
+
+  const handleGeocode = async () => {
+    setGeocoding(true);
+    try {
+      const coords = await geocodeAddress({ street: form.street, municipio: form.municipio, cp: form.cp });
+      if (coords) setForm((f) => ({ ...f, latitude: coords.latitude, longitude: coords.longitude }));
+    } finally {
+      setGeocoding(false);
+    }
+  };
 
   return (
     <>
@@ -88,23 +179,40 @@ function HouseDetailPanel({ house, onClose }) {
       {/* Panel */}
       <aside className="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl flex flex-col animate-slide-in-right">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Ficha de casa</h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
+        <div className="flex items-center justify-between gap-2 px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900 truncate">Ficha de casa</h2>
+          <div className="flex items-center gap-1 shrink-0">
+            <Link
+              to={`/casas/${house.id}`}
+              onClick={onClose}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-[#126D9B] hover:bg-[#126D9B]/10 transition-colors"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Ver ficha completa
+            </Link>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Imagen */}
-          <HouseImage
-            src={house.houseImage?.original}
-            size="lg"
-          />
+          <div>
+            <p className="text-xs font-medium text-gray-600 mb-1">Foto de la casa</p>
+            <ImagePicker
+              file={imageFile}
+              preview={imagePreview || (!imageFile && house.houseImage?.original) || null}
+              onChange={(file) => {
+                setImageFile(file);
+                setImagePreview(file ? URL.createObjectURL(file) : null);
+              }}
+            />
+          </div>
 
           {/* Datos */}
           <div className="space-y-4">
@@ -123,27 +231,180 @@ function HouseDetailPanel({ house, onClose }) {
               value={form.municipio}
               onChange={(e) => setForm({ ...form, municipio: e.target.value })}
             />
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Código postal"
+                placeholder="07001"
+                value={form.cp}
+                onChange={(e) => setForm({ ...form, cp: e.target.value })}
+              />
+              <Input
+                label="Teléfono"
+                placeholder="+34 600..."
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                placeholder="Ej: código llave, acceso, observaciones..."
+                rows={3}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
+              />
+            </div>
+
+            {/* Ubicación (para rutas) */}
+            <div className="border-t border-gray-100 pt-4">
+              <p className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" />
+                Ubicación (para rutas)
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  label="Latitud"
+                  type="number"
+                  step="any"
+                  placeholder="39.5696"
+                  value={form.latitude}
+                  onChange={(e) => setForm({ ...form, latitude: e.target.value })}
+                />
+                <Input
+                  label="Longitud"
+                  type="number"
+                  step="any"
+                  placeholder="2.6502"
+                  value={form.longitude}
+                  onChange={(e) => setForm({ ...form, longitude: e.target.value })}
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={handleGeocode}
+                disabled={geocoding || !(form.street || form.municipio || form.cp)}
+                loading={geocoding}
+              >
+                <MapPin className="w-3.5 h-3.5 mr-1.5" />
+                Geocodificar desde dirección
+              </Button>
+            </div>
           </div>
 
           {/* Propietario */}
-          {ownerName && (
-            <div className="rounded-xl border border-gray-200 p-4">
-              <p className="text-xs text-gray-500 mb-1">Propietario</p>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-[#126D9B]/10">
-                  <User className="w-4 h-4 text-[#126D9B]" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {ownerName}
-                  </p>
-                  {house.owner?.phone && (
-                    <p className="text-xs text-gray-500">{house.owner.phone}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+          <OwnerSelector value={owner} onChange={setOwner} />
+
+          {/* Actividad en esta propiedad */}
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+              <CheckSquare className="w-4 h-4 text-[#126D9B]" />
+              Actividad en esta propiedad
+            </h4>
+            <p className="text-xs text-gray-500 mb-3">
+              Revisiones, incidencias y trabajos vinculados a esta casa.
+            </p>
+            {checklistsError ? (
+              <p className="text-sm text-amber-600">Error al cargar revisiones. Revisa la consola del navegador.</p>
+            ) : loadingChecklists || loadingIncidences || loadingJobs ? (
+              <p className="text-sm text-gray-500">Cargando actividad...</p>
+            ) : checklists.length === 0 && houseIncidences.length === 0 && houseJobs.length === 0 ? (
+              <p className="text-sm text-gray-500">Sin actividad registrada aún.</p>
+            ) : (
+              <ul className="space-y-2 max-h-72 overflow-y-auto">
+                {checklists.map((cl) => {
+                  const d = toDate(cl.date);
+                  const done = cl.done ?? 0;
+                  const total = cl.total ?? 0;
+                  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                  return (
+                    <li key={cl.id}>
+                      <button
+                        type="button"
+                        onClick={() => onOpenChecklist?.(cl)}
+                        className="w-full flex gap-3 p-3 rounded-lg border border-gray-100 hover:border-[#126D9B]/30 hover:bg-[#126D9B]/5 transition-colors text-left group"
+                      >
+                        <span className="flex-shrink-0 mt-0.5">
+                          {cl.finished ? (
+                            <CheckCircle className="w-4 h-4 text-[#67B26F]" />
+                          ) : (
+                            <CheckSquare className="w-4 h-4 text-[#126D9B]" />
+                          )}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate group-hover:text-[#126D9B]">
+                            Revisión · {done}/{total} puntos
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {d ? format(d, "d MMM yyyy", { locale: es }) : '—'}
+                            {cl.finished && <span className="text-[#67B26F]"> · Finalizada</span>}
+                          </p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#126D9B] flex-shrink-0 mt-1" />
+                      </button>
+                    </li>
+                  );
+                })}
+                {houseIncidences.map((inc) => {
+                  const d = toDate(inc.date || inc.createdAt);
+                  return (
+                    <li key={inc.id}>
+                      <Link
+                        to="/incidencias"
+                        className="flex gap-3 p-3 rounded-lg border border-gray-100 hover:border-[#126D9B]/30 hover:bg-[#126D9B]/5 transition-colors group"
+                      >
+                        <span className="flex-shrink-0 mt-0.5">
+                          <AlertCircle className={`w-4 h-4 ${inc.done ? 'text-emerald-500' : 'text-amber-500'}`} />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate group-hover:text-[#126D9B]">
+                            {inc.title || 'Incidencia'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {d ? format(d, "d MMM yyyy", { locale: es }) : '—'}
+                            {inc.done ? <span className="text-emerald-600"> · Cerrada</span> : <span className="text-amber-600"> · Abierta</span>}
+                          </p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#126D9B] flex-shrink-0 mt-1" />
+                      </Link>
+                    </li>
+                  );
+                })}
+                {houseJobs.map((job) => {
+                  const d = toDate(job.createdAt);
+                  const statusLabel = job.status === 'completed' ? 'Completado' : job.status === 'in_progress' ? 'En curso' : 'Pendiente';
+                  return (
+                    <li key={job.id}>
+                      <Link
+                        to="/trabajos"
+                        className="flex gap-3 p-3 rounded-lg border border-gray-100 hover:border-[#126D9B]/30 hover:bg-[#126D9B]/5 transition-colors group"
+                      >
+                        <span className="flex-shrink-0 mt-0.5">
+                          <Briefcase className="w-4 h-4 text-[#126D9B]" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate group-hover:text-[#126D9B]">
+                            {job.title || job.jobName || 'Trabajo'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {d ? format(d, "d MMM yyyy", { locale: es }) : '—'}
+                            <span className="text-gray-500"> · {statusLabel}</span>
+                          </p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#126D9B] flex-shrink-0 mt-1" />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <p className="text-xs text-gray-400 mt-2">
+              Las comunicaciones con el propietario están en la ficha del <Link to="/propietarios" className="text-[#126D9B] hover:underline">propietario</Link>.
+            </p>
+          </div>
         </div>
 
         {/* Footer */}
@@ -301,11 +562,15 @@ function CreateHouseModal({ open, onClose }) {
     municipio: '',
     cp: '',
     phone: '',
+    notes: '',
+    latitude: '',
+    longitude: '',
   });
   const [owner, setOwner] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [geocoding, setGeocoding] = useState(false);
 
   const canSubmit = form.houseName.trim() && form.street.trim();
 
@@ -315,10 +580,20 @@ function CreateHouseModal({ open, onClose }) {
   };
 
   const resetForm = () => {
-    setForm({ houseName: '', street: '', municipio: '', cp: '', phone: '' });
+    setForm({ houseName: '', street: '', municipio: '', cp: '', phone: '', notes: '', latitude: '', longitude: '' });
     setOwner(null);
     setImageFile(null);
     setImagePreview(null);
+  };
+
+  const handleGeocode = async () => {
+    setGeocoding(true);
+    try {
+      const coords = await geocodeAddress({ street: form.street, municipio: form.municipio, cp: form.cp });
+      if (coords) setForm((f) => ({ ...f, latitude: coords.latitude, longitude: coords.longitude }));
+    } finally {
+      setGeocoding(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -326,8 +601,10 @@ function CreateHouseModal({ open, onClose }) {
     if (!canSubmit) return;
     setSaving(true);
     try {
-      const houseData = { ...form };
+      const houseData = { houseName: form.houseName, street: form.street, municipio: form.municipio, cp: form.cp, phone: form.phone, notes: form.notes };
       if (owner) houseData.owner = owner;
+      const location = toLocationObject({ latitude: form.latitude, longitude: form.longitude });
+      if (location) houseData.location = location;
 
       const houseId = await createHouse.mutateAsync(houseData);
 
@@ -386,6 +663,53 @@ function CreateHouseModal({ open, onClose }) {
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+          <textarea
+            value={form.notes}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            placeholder="Ej: código llave, acceso, observaciones..."
+            rows={3}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#126D9B] focus:border-transparent"
+          />
+        </div>
+
+        <div className="border-t border-gray-100 pt-4">
+          <p className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5" />
+            Ubicación (para rutas)
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="Latitud"
+              type="number"
+              step="any"
+              placeholder="39.5696"
+              value={form.latitude}
+              onChange={(e) => setForm({ ...form, latitude: e.target.value })}
+            />
+            <Input
+              label="Longitud"
+              type="number"
+              step="any"
+              placeholder="2.6502"
+              value={form.longitude}
+              onChange={(e) => setForm({ ...form, longitude: e.target.value })}
+            />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-2"
+            onClick={handleGeocode}
+            disabled={geocoding || !(form.street || form.municipio || form.cp)}
+            loading={geocoding}
+          >
+            <MapPin className="w-3.5 h-3.5 mr-1.5" />
+            Geocodificar desde dirección
+          </Button>
+        </div>
 
         <OwnerSelector value={owner} onChange={setOwner} />
 
@@ -404,15 +728,29 @@ function CreateHouseModal({ open, onClose }) {
 }
 
 export default function HousesPage() {
+  const { company } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { data: houses = [], isLoading } = useHouses();
   const [selectedHouse, setSelectedHouse] = useState(null);
+  const [selectedChecklist, setSelectedChecklist] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
+
+  useEffect(() => {
+    const openHouseId = location.state?.openHouseId;
+    if (!openHouseId || houses.length === 0) return;
+    const house = houses.find((h) => h.id === openHouseId);
+    if (house) {
+      setSelectedHouse(house);
+      navigate('/casas', { replace: true, state: {} });
+    }
+  }, [location.state?.openHouseId, houses, navigate]);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Casas</h1>
+          <h1 className="font-heading text-2xl font-bold text-gray-900">Casas</h1>
           <p className="text-gray-500">
             Propiedades o viviendas gestionadas en el sistema
           </p>
@@ -432,8 +770,12 @@ export default function HousesPage() {
       {isLoading ? (
         <div className="text-center py-12 text-gray-500">Cargando...</div>
       ) : houses.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          No hay casas registradas
+        <div className="flex flex-col items-center justify-center py-14 text-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#126D9B]/20 to-[#67B26F]/20 flex items-center justify-center mb-4">
+            <Home className="w-8 h-8 text-[#126D9B]" />
+          </div>
+          <p className="font-heading text-gray-800 font-medium mb-1">No hay casas registradas</p>
+          <p className="text-sm text-gray-500">Añade la primera propiedad desde el botón superior</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -480,6 +822,14 @@ export default function HousesPage() {
         <HouseDetailPanel
           house={selectedHouse}
           onClose={() => setSelectedHouse(null)}
+          onOpenChecklist={setSelectedChecklist}
+        />
+      )}
+
+      {selectedChecklist && (
+        <ChecklistDetailPanel
+          checklist={selectedChecklist}
+          onClose={() => setSelectedChecklist(null)}
         />
       )}
 

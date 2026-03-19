@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import { useAuth } from '@/hooks/useAuth.jsx';
 import { Menu } from 'lucide-react';
 
 export default function MainLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { company } = useAuth();
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     setSidebarOpen(false);
@@ -17,27 +19,29 @@ export default function MainLayout() {
   }, [sidebarOpen]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--surface)]">
       {/* Mobile header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-white border-b border-gray-200 flex items-center px-4 gap-3">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-[var(--surface-elevated)] border-b border-[var(--border)] flex items-center px-4 gap-3 shadow-[var(--shadow-sm)]">
         <button
           onClick={() => setSidebarOpen(true)}
-          className="p-2 -ml-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2.5 -ml-2 rounded-xl hover:bg-turquoise-50 transition-colors text-stone-600"
         >
-          <Menu className="w-5 h-5 text-gray-700" />
+          <Menu className="w-5 h-5" />
         </button>
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#126D9B] to-[#67B26F] flex items-center justify-center">
-            <span className="text-white font-bold text-xs">PM</span>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-turquoise-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <span className="text-white font-heading font-bold text-xs">P</span>
           </div>
-          <span className="font-semibold text-gray-900 text-sm">PortManagement</span>
+          <span className="font-heading font-semibold text-stone-900 text-sm truncate">
+            {company?.name || 'Port Management SL'}
+          </span>
         </div>
       </header>
 
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <main className="lg:ml-64 min-h-screen pt-14 lg:pt-0">
-        <div className="p-4 sm:p-6 lg:p-8">
+        <div className="p-5 sm:p-6 lg:p-8 max-w-[1600px] mx-auto">
           <Outlet />
         </div>
       </main>

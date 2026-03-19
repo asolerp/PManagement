@@ -9,6 +9,8 @@ import { auth, db } from '@/config/firebase';
 
 const AuthContext = createContext(null);
 
+const STATIC_COMPANY = { name: 'Port Management', onboardingComplete: true };
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -18,13 +20,11 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Get user data from Firestore
         try {
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           if (userDoc.exists()) {
             const data = userDoc.data();
-            
-            // Check if user is admin
+
             if (data.role !== 'admin') {
               setError('Solo los administradores pueden acceder a este panel.');
               await firebaseSignOut(auth);
@@ -42,8 +42,23 @@ export function AuthProvider({ children }) {
             setUserData(null);
           }
         } catch (err) {
-          console.error('Error fetching user data:', err);
-          setError('Error al cargar datos del usuario.');
+          console.error('Error fetching user data:', {
+            code: err?.code,
+            message: err?.message,
+            name: err?.name,
+            uid: firebaseUser?.uid,
+            path: firebaseUser ? `users/${firebaseUser.uid}` : null,
+            fullError: err
+          });
+          const isPermissionError = err?.code === 'permission-denied' || err?.message?.includes('permission');
+          if (isPermissionError) {
+            await firebaseSignOut(auth);
+            setUser(null);
+            setUserData(null);
+            setError(null);
+          } else {
+            setError('Error al cargar datos del usuario.');
+          }
         }
       } else {
         setUser(null);
@@ -55,6 +70,13 @@ export function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
+  const refreshUserData = async () => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    if (userDoc.exists()) setUserData(userDoc.data());
+  };
+
   const signIn = async (email, password) => {
     setLoading(true);
     setError(null);
@@ -62,16 +84,17 @@ export function AuthProvider({ children }) {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
       console.error('Sign in error:', err);
+      setLoading(false);
       if (err.code === 'auth/invalid-credential') {
         setError('Email o contraseña incorrectos.');
+      } else if (err.code === 'auth/user-not-found') {
+        setError('No hay ningún usuario con este email.');
       } else if (err.code === 'auth/too-many-requests') {
         setError('Demasiados intentos. Inténtalo más tarde.');
       } else {
-        setError('Error al iniciar sesión.');
+        setError(err?.message || 'Error al iniciar sesión.');
       }
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -88,10 +111,13 @@ export function AuthProvider({ children }) {
       value={{
         user,
         userData,
+        company: STATIC_COMPANY,
         loading,
         error,
         signIn,
         signOut,
+        refreshUserData,
+        refreshCompany: () => {},
         isAuthenticated: !!user && !!userData
       }}
     >
