@@ -13,6 +13,7 @@ import {
   Plus,
   Hourglass,
   UserX,
+  User,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
