@@ -88,10 +88,14 @@ function buildProfessionalReportMessage({
   finalStatus
 }) {
   const lines = [];
-  lines.push(`📋 <b>${escapeHtml(reportHeader?.title || `INFORME DE REVISIÓN - ${propertyName || 'PROPIEDAD'}`)}</b>`);
+  lines.push(
+    `📋 <b>${escapeHtml(reportHeader?.title || `INFORME DE REVISIÓN - ${propertyName || 'PROPIEDAD'}`)}</b>`
+  );
   lines.push('━━━━━━━━━━━━━━━━━━━━━━');
   lines.push(`📅 ${escapeHtml(formatReportDate(new Date()))}`);
-  lines.push(`👤 ${escapeHtml(reportHeader?.responsible || 'Equipo Port Management')}`);
+  lines.push(
+    `👤 ${escapeHtml(reportHeader?.responsible || 'Equipo Port Management')}`
+  );
   lines.push(`📍 ${escapeHtml(reportHeader?.location || propertyName || '—')}`);
   if (summaryText) {
     lines.push('');
@@ -120,7 +124,9 @@ function buildProfessionalReportMessage({
     });
   });
   lines.push('');
-  lines.push(`📸 Material gráfico: ${photoCount} foto${photoCount !== 1 ? 's' : ''}`);
+  lines.push(
+    `📸 Material gráfico: ${photoCount} foto${photoCount !== 1 ? 's' : ''}`
+  );
   if (Array.isArray(consolidatedActions) && consolidatedActions.length > 0) {
     lines.push('');
     lines.push('🔧 <b>Acciones recomendadas</b>');
@@ -510,7 +516,9 @@ const telegramWebhook = onRequest(
             session.pendingReportConfirmation;
           try {
             const propertyName =
-              overrideProperty?.propertyName || pipelineResult.propertyName || '';
+              overrideProperty?.propertyName ||
+              pipelineResult.propertyName ||
+              '';
             const fullReportMessage = buildProfessionalReportMessage({
               propertyName,
               reportHeader: {
@@ -1205,7 +1213,9 @@ const telegramWebhook = onRequest(
             session.pendingReportConfirmation;
           try {
             const propertyName =
-              overrideProperty?.propertyName || pipelineResult.propertyName || '';
+              overrideProperty?.propertyName ||
+              pipelineResult.propertyName ||
+              '';
             const fullReportMessage = buildProfessionalReportMessage({
               propertyName,
               reportHeader: {
@@ -1416,7 +1426,8 @@ const telegramWebhook = onRequest(
             pipelineResult.dashboardReport?.tasks_performed || [];
           const consolidatedActions =
             pipelineResult.dashboardReport?.consolidated_actions || [];
-          const finalStatus = pipelineResult.dashboardReport?.final_status || '';
+          const finalStatus =
+            pipelineResult.dashboardReport?.final_status || '';
           const previewMessage = buildProfessionalReportMessage({
             propertyName,
             reportHeader,
