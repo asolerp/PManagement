@@ -27,7 +27,8 @@ async function runReportPipeline(
   const reasoningInput = {
     propertyName: extractionResult.propertyName,
     location: extractionResult.location,
-    facts: extractionResult.facts
+    facts: extractionResult.facts,
+    tasksPerformed: extractionResult.tasksPerformed || []
   };
   const assessmentRaw = await reasonWithOpenAI(
     apiKey,
@@ -36,6 +37,15 @@ async function runReportPipeline(
     transcript
   );
   const assessment = runRules(assessmentRaw);
+  assessment.location = extractionResult.location || metadata.location || '';
+  assessment.responsible = metadata.responsibleName || '';
+  assessment.reportDate = metadata.reportDate || new Date().toISOString();
+  if (!assessment.reportTitle && extractionResult.propertyName) {
+    assessment.reportTitle = `INFORME DE REVISIÓN - ${extractionResult.propertyName.toUpperCase()}`;
+  }
+  if (!Array.isArray(assessment.tasksPerformed)) {
+    assessment.tasksPerformed = extractionResult.tasksPerformed || [];
+  }
   const dashboardReport = toDashboardReport(assessment);
   if (assessment.transcriptionSummary) {
     dashboardReport.summary = dashboardReport.summary || {};

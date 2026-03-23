@@ -77,6 +77,80 @@ function formatTelegramMessage(message) {
   return markdownToTelegramHtml(text);
 }
 
+function buildProfessionalReportMessage({
+  propertyName,
+  reportHeader,
+  summaryText,
+  tasksPerformed,
+  issues,
+  photoCount,
+  consolidatedActions,
+  finalStatus
+}) {
+  const lines = [];
+  lines.push(`📋 <b>${escapeHtml(reportHeader?.title || `INFORME DE REVISIÓN - ${propertyName || 'PROPIEDAD'}`)}</b>`);
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━');
+  lines.push(`📅 ${escapeHtml(formatReportDate(new Date()))}`);
+  lines.push(`👤 ${escapeHtml(reportHeader?.responsible || 'Equipo Port Management')}`);
+  lines.push(`📍 ${escapeHtml(reportHeader?.location || propertyName || '—')}`);
+  if (summaryText) {
+    lines.push('');
+    lines.push('📝 <b>Resumen general</b>');
+    lines.push(escapeHtml(summaryText));
+  }
+  if (Array.isArray(tasksPerformed) && tasksPerformed.length > 0) {
+    lines.push('');
+    lines.push('✅ <b>Tareas realizadas</b>');
+    tasksPerformed.slice(0, 8).forEach(t => lines.push(`• ${escapeHtml(t)}`));
+  }
+  lines.push('');
+  lines.push(`⚠️ <b>Incidencias detectadas (${issues.length})</b>`);
+  const grouped = {};
+  for (const issue of issues) {
+    const key = issue.location || 'Sin ubicación';
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(issue);
+  }
+  Object.entries(grouped).forEach(([location, locIssues]) => {
+    lines.push('');
+    lines.push(`🔸 <b>${escapeHtml(location)}</b>`);
+    locIssues.slice(0, 4).forEach(i => {
+      lines.push(escapeHtml(i.title || 'Sin título'));
+      if (i.priority) lines.push(`Prioridad: ${escapeHtml(i.priority)}`);
+    });
+  });
+  lines.push('');
+  lines.push(`📸 Material gráfico: ${photoCount} foto${photoCount !== 1 ? 's' : ''}`);
+  if (Array.isArray(consolidatedActions) && consolidatedActions.length > 0) {
+    lines.push('');
+    lines.push('🔧 <b>Acciones recomendadas</b>');
+    consolidatedActions.slice(0, 8).forEach((a, idx) => {
+      lines.push(`${idx + 1}. ${escapeHtml(a)}`);
+    });
+  }
+  if (finalStatus) {
+    lines.push('');
+    lines.push('📊 <b>Estado final</b>');
+    lines.push(escapeHtml(finalStatus));
+  }
+  let message = lines.join('\n');
+  if (message.length > 3900) {
+    message = `${message.slice(0, 3800)}\n\n<i>…Informe truncado por longitud. Consulta el detalle completo en el dashboard.</i>`;
+  }
+  return message;
+}
+
+function formatReportDate(d) {
+  const dt = d instanceof Date ? d : new Date(d);
+  if (Number.isNaN(dt.getTime())) return '—';
+  const yyyy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  const hh = String(dt.getHours()).padStart(2, '0');
+  const mi = String(dt.getMinutes()).padStart(2, '0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+}
+
 /**
  * Resuelve telegramId a usuario (users collection).
  * Single-tenant: no necesita companyId.
@@ -93,7 +167,13 @@ async function resolveUserByTelegramId(telegramId) {
   const data = doc.data();
   return {
     uid: doc.id,
-    role: data.role || null
+    role: data.role || null,
+    displayName:
+      [data.firstName, data.lastName].filter(Boolean).join(' ') ||
+      data.name ||
+      data.displayName ||
+      data.email ||
+      ''
   };
 }
 
@@ -429,13 +509,40 @@ const telegramWebhook = onRequest(
           const { pipelineResult, overrideProperty } =
             session.pendingReportConfirmation;
           try {
+            const propertyName =
+              overrideProperty?.propertyName || pipelineResult.propertyName || '';
+            const fullReportMessage = buildProfessionalReportMessage({
+              propertyName,
+              reportHeader: {
+                title:
+                  pipelineResult.dashboardReport?.report_header?.title ||
+                  `INFORME DE REVISIÓN - ${propertyName || 'PROPIEDAD'}`,
+                responsible: user.displayName || 'Equipo Port Management',
+                location:
+                  pipelineResult.dashboardReport?.report_header?.location ||
+                  propertyName ||
+                  '—'
+              },
+              summaryText:
+                pipelineResult.dashboardReport?.summary?.transcriptionSummary ||
+                '',
+              tasksPerformed:
+                pipelineResult.dashboardReport?.tasks_performed || [],
+              issues: pipelineResult.dashboardReport?.issues || [],
+              photoCount: session.photoUrls?.length || 0,
+              consolidatedActions:
+                pipelineResult.dashboardReport?.consolidated_actions || [],
+              finalStatus: pipelineResult.dashboardReport?.final_status || ''
+            });
             const result = await createReportFromPipeline(
               null,
               pipelineResult,
               session.lastTranscription,
               session.photoUrls || [],
-              overrideProperty
+              overrideProperty,
+              { responsibleName: user.displayName || '' }
             );
+            await send(fullReportMessage);
             await send(result.message);
             await clearPendingReportConfirmation(chatId);
             const incidencesKeyboard = [
@@ -1097,13 +1204,40 @@ const telegramWebhook = onRequest(
           const { pipelineResult, overrideProperty } =
             session.pendingReportConfirmation;
           try {
+            const propertyName =
+              overrideProperty?.propertyName || pipelineResult.propertyName || '';
+            const fullReportMessage = buildProfessionalReportMessage({
+              propertyName,
+              reportHeader: {
+                title:
+                  pipelineResult.dashboardReport?.report_header?.title ||
+                  `INFORME DE REVISIÓN - ${propertyName || 'PROPIEDAD'}`,
+                responsible: user.displayName || 'Equipo Port Management',
+                location:
+                  pipelineResult.dashboardReport?.report_header?.location ||
+                  propertyName ||
+                  '—'
+              },
+              summaryText:
+                pipelineResult.dashboardReport?.summary?.transcriptionSummary ||
+                '',
+              tasksPerformed:
+                pipelineResult.dashboardReport?.tasks_performed || [],
+              issues: pipelineResult.dashboardReport?.issues || [],
+              photoCount: session.photoUrls?.length || 0,
+              consolidatedActions:
+                pipelineResult.dashboardReport?.consolidated_actions || [],
+              finalStatus: pipelineResult.dashboardReport?.final_status || ''
+            });
             const result = await createReportFromPipeline(
               null,
               pipelineResult,
               session.lastTranscription,
               session.photoUrls || [],
-              overrideProperty
+              overrideProperty,
+              { responsibleName: user.displayName || '' }
             );
+            await send(fullReportMessage);
             await send(result.message);
             await clearPendingReportConfirmation(chatId);
             await setPendingIncidentCreationFromReport(chatId, {
@@ -1248,7 +1382,11 @@ const telegramWebhook = onRequest(
             apiKey,
             session.lastTranscription,
             session.photoUrls || [],
-            {}
+            {
+              responsibleName: user.displayName || '',
+              reportDate: new Date().toISOString(),
+              location: session.selectedPropertyName || ''
+            }
           );
           const overrideProperty =
             session.selectedPropertyId != null
@@ -1264,21 +1402,31 @@ const telegramWebhook = onRequest(
             pipelineResult.dashboardReport?.summary?.transcriptionSummary?.trim() ||
             '';
           const photoCount = session.photoUrls?.length || 0;
-
-          const lines = [
-            `📋 <b>Resumen del informe</b>`,
-            `• Casa: ${propertyName || '—'}`,
-            summaryText
-              ? `• Resumen: ${summaryText.length > 120 ? summaryText.slice(0, 120) + '…' : summaryText}`
-              : '',
-            issues.length > 0
-              ? `• Incidencias detectadas: ${issues.length} — ${issues
-                  .slice(0, 5)
-                  .map(i => i.title || 'Sin título')
-                  .join(', ')}${issues.length > 5 ? '…' : ''}`
-              : '• Incidencias detectadas: ninguna',
-            `• Fotos: ${photoCount}`
-          ].filter(Boolean);
+          const reportHeader = {
+            title:
+              pipelineResult.dashboardReport?.report_header?.title ||
+              `INFORME DE REVISIÓN - ${propertyName || 'PROPIEDAD'}`,
+            responsible: user.displayName || 'Equipo Port Management',
+            location:
+              pipelineResult.dashboardReport?.report_header?.location ||
+              propertyName ||
+              '—'
+          };
+          const tasksPerformed =
+            pipelineResult.dashboardReport?.tasks_performed || [];
+          const consolidatedActions =
+            pipelineResult.dashboardReport?.consolidated_actions || [];
+          const finalStatus = pipelineResult.dashboardReport?.final_status || '';
+          const previewMessage = buildProfessionalReportMessage({
+            propertyName,
+            reportHeader,
+            summaryText,
+            tasksPerformed,
+            issues,
+            photoCount,
+            consolidatedActions,
+            finalStatus
+          });
           await setPendingReportConfirmation(chatId, {
             pipelineResult: {
               propertyName: pipelineResult.propertyName,
@@ -1295,12 +1443,12 @@ const telegramWebhook = onRequest(
           await sendMessageWithKeyboard(
             botToken,
             chatId,
-            `${lines.join('\n')}\n\n¿Crear este informe?`,
+            `${previewMessage}\n\n¿Crear este informe?`,
             confirmKeyboard
           ).catch(e => {
             console.error('Keyboard send error:', e);
             send(
-              `${lines.join('\n')}\n\n¿Crear este informe? Responde <b>Sí</b> o <b>Confirmar</b> para crearlo, o <b>No</b> / <b>Cancelar</b> para no crearlo.`
+              `${previewMessage}\n\n¿Crear este informe? Responde <b>Sí</b> o <b>Confirmar</b> para crearlo, o <b>No</b> / <b>Cancelar</b> para no crearlo.`
             );
           });
         } catch (err) {

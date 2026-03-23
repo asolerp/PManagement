@@ -49,9 +49,14 @@
  * Resultado de la capa de reasoning.
  * @typedef {Object} OperationalAssessment
  * @property {string} mainContext
+ * @property {string} [transcriptionSummary]
+ * @property {string} [reportTitle]
+ * @property {string[]} [tasksPerformed]
  * @property {Priority} overallPriority
  * @property {boolean} requiresImmediateAction
  * @property {AssessedIssue[]} issues
+ * @property {string[]} [consolidatedActions]
+ * @property {string} [finalStatus]
  */
 
 /**
@@ -74,8 +79,13 @@
 /**
  * Payload final para la UI.
  * @typedef {Object} DashboardReport
+ * @property {{ title: string, date: string|null, responsible: string, location: string }} [report_header]
  * @property {{ headline: string, overall_priority: Priority, total_issues: number, requires_immediate_action: boolean, main_context: string }} summary
+ * @property {string[]} [tasks_performed]
  * @property {DashboardIssue[]} issues
+ * @property {Record<string, DashboardIssue[]>} [issues_grouped]
+ * @property {string[]} [consolidated_actions]
+ * @property {string} [final_status]
  * @property {{ critical: number, high: number, medium: number, low: number }} quick_stats
  * @property {string} suggested_next_step
  */

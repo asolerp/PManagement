@@ -12,7 +12,7 @@ const {
 /**
  * @param {string} apiKey
  * @param {string} transcript
- * @returns {Promise<{ propertyName?: string, location?: string, facts: Array<{ factId: string, source: string, kind: string, text: string, location?: string, object?: string, confidence?: number }> }>}
+ * @returns {Promise<{ propertyName?: string, location?: string, facts: Array<{ factId: string, source: string, kind: string, text: string, location?: string, object?: string, confidence?: number }>, tasksPerformed?: string[] }>}
  */
 async function extractWithOpenAI(apiKey, transcript) {
   const res = await fetch(OPENAI_API, {
@@ -76,8 +76,14 @@ async function extractWithOpenAI(apiKey, transcript) {
               : undefined
         }))
     : [];
+  const tasksPerformed = Array.isArray(parsed.tasksPerformed)
+    ? parsed.tasksPerformed
+        .map(t => String(t || '').trim())
+        .filter(Boolean)
+        .slice(0, 20)
+    : [];
 
-  return { propertyName, location, facts };
+  return { propertyName, location, facts, tasksPerformed };
 }
 
 module.exports = { extractWithOpenAI };

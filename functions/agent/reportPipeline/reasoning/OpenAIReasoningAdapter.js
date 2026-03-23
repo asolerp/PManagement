@@ -54,7 +54,7 @@ function normalizeIssue(raw) {
  * @param {object} extractionResult - ExtractionResult (propertyName, location, facts)
  * @param {object} [metadata] - opcional: propertyId, inspectionType, etc.
  * @param {string} [transcript] - transcript original para generar transcriptionSummary
- * @returns {Promise<{ mainContext: string, transcriptionSummary: string, overallPriority: string, requiresImmediateAction: boolean, issues: object[] }>}
+ * @returns {Promise<{ mainContext: string, transcriptionSummary: string, reportTitle?: string, tasksPerformed?: string[], overallPriority: string, requiresImmediateAction: boolean, issues: object[], consolidatedActions?: string[], finalStatus?: string }>}
  */
 async function reasonWithOpenAI(
   apiKey,
@@ -117,13 +117,33 @@ async function reasonWithOpenAI(
   const issues = Array.isArray(parsed.issues)
     ? parsed.issues.map(normalizeIssue)
     : [];
+  const reportTitle =
+    typeof parsed.reportTitle === 'string' ? parsed.reportTitle.trim() : '';
+  const tasksPerformed = Array.isArray(parsed.tasksPerformed)
+    ? parsed.tasksPerformed
+        .map(t => String(t || '').trim())
+        .filter(Boolean)
+        .slice(0, 20)
+    : [];
+  const consolidatedActions = Array.isArray(parsed.consolidatedActions)
+    ? parsed.consolidatedActions
+        .map(a => String(a || '').trim())
+        .filter(Boolean)
+        .slice(0, 20)
+    : [];
+  const finalStatus =
+    typeof parsed.finalStatus === 'string' ? parsed.finalStatus.trim() : '';
 
   return {
     mainContext,
     transcriptionSummary,
+    reportTitle,
+    tasksPerformed,
     overallPriority,
     requiresImmediateAction,
-    issues
+    issues,
+    consolidatedActions,
+    finalStatus
   };
 }
 

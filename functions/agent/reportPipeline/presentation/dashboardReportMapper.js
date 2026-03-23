@@ -16,6 +16,7 @@ const PRIORITY_MARKERS = {
  * @returns {object} DashboardReport
  */
 function toDashboardReport(assessment) {
+  const groupedByLocation = {};
   const issues = (assessment.issues || []).map(i => ({
     id: i.issueId,
     title: i.title,
@@ -33,6 +34,11 @@ function toDashboardReport(assessment) {
     tags: [i.category],
     visual_marker: PRIORITY_MARKERS[i.priority] || PRIORITY_MARKERS.medium
   }));
+  for (const issue of issues) {
+    const key = issue.location || 'Sin ubicación';
+    if (!groupedByLocation[key]) groupedByLocation[key] = [];
+    groupedByLocation[key].push(issue);
+  }
 
   const quick_stats = { critical: 0, high: 0, medium: 0, low: 0 };
   for (const i of issues) {
@@ -52,6 +58,12 @@ function toDashboardReport(assessment) {
       : 'Ninguna acción requerida.';
 
   return {
+    report_header: {
+      title: assessment.reportTitle || '',
+      location: assessment.location || '',
+      responsible: assessment.responsible || '',
+      date: assessment.reportDate || null
+    },
     summary: {
       headline,
       overall_priority: assessment.overallPriority,
@@ -59,7 +71,15 @@ function toDashboardReport(assessment) {
       requires_immediate_action: assessment.requiresImmediateAction,
       main_context: assessment.mainContext || ''
     },
+    tasks_performed: Array.isArray(assessment.tasksPerformed)
+      ? assessment.tasksPerformed
+      : [],
     issues,
+    issues_grouped: groupedByLocation,
+    consolidated_actions: Array.isArray(assessment.consolidatedActions)
+      ? assessment.consolidatedActions
+      : [],
+    final_status: assessment.finalStatus || '',
     quick_stats,
     suggested_next_step
   };

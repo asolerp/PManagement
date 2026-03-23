@@ -165,7 +165,8 @@ async function createReportFromPipeline(
   pipelineResult,
   transcription,
   photoUrls = [],
-  overrideProperty = null
+  overrideProperty = null,
+  reportMeta = {}
 ) {
   const db = admin.firestore();
   const { propertyName, dashboardReport } = pipelineResult;
@@ -186,6 +187,23 @@ async function createReportFromPipeline(
 
   const summaryText =
     dashboardReport?.summary?.transcriptionSummary?.trim() || '';
+  const reportHeader = {
+    title:
+      dashboardReport?.report_header?.title ||
+      'INFORME DE REVISIÓN' + (finalPropertyName ? ` - ${finalPropertyName}` : ''),
+    date: new Date().toISOString(),
+    responsible:
+      reportMeta?.responsibleName || dashboardReport?.report_header?.responsible || '',
+    location:
+      dashboardReport?.report_header?.location || overrideProperty?.propertyName || finalPropertyName || ''
+  };
+  const tasksPerformed = Array.isArray(dashboardReport?.tasks_performed)
+    ? dashboardReport.tasks_performed
+    : [];
+  const consolidatedActions = Array.isArray(dashboardReport?.consolidated_actions)
+    ? dashboardReport.consolidated_actions
+    : [];
+  const finalStatus = dashboardReport?.final_status || '';
 
   const docRef = await db.collection('inspectionReports').add({
     propertyName: finalPropertyName,
@@ -196,7 +214,11 @@ async function createReportFromPipeline(
     photoUrls: Array.isArray(photoUrls) ? photoUrls : [],
     source: 'telegram',
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    dashboardReport: dashboardReport || null
+    dashboardReport: dashboardReport || null,
+    reportHeader,
+    tasksPerformed,
+    consolidatedActions,
+    finalStatus
   });
 
   const count = issues.length;

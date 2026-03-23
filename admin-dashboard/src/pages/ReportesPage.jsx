@@ -79,6 +79,35 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
   const incidencesAlreadyCreated = Boolean(report?.incidencesCreatedAt);
   const canCreateIncidences =
     house && report?.issues?.length > 0 && !incidencesAlreadyCreated;
+  const dashboardReport = report?.dashboardReport || {};
+  const summaryText =
+    report.summary ||
+    dashboardReport?.summary?.transcriptionSummary ||
+    report.transcription ||
+    '';
+  const reportHeader = report.reportHeader || dashboardReport.report_header || {};
+  const tasksPerformed = Array.isArray(report.tasksPerformed)
+    ? report.tasksPerformed
+    : Array.isArray(dashboardReport.tasks_performed)
+      ? dashboardReport.tasks_performed
+      : [];
+  const consolidatedActions = Array.isArray(report.consolidatedActions)
+    ? report.consolidatedActions
+    : Array.isArray(dashboardReport.consolidated_actions)
+      ? dashboardReport.consolidated_actions
+      : [];
+  const finalStatus =
+    report.finalStatus || dashboardReport.final_status || null;
+  const professionalIssues = Array.isArray(dashboardReport.issues)
+    ? dashboardReport.issues
+    : report.issues || [];
+  const groupedIssues = professionalIssues.reduce((acc, issue) => {
+    const key = issue.location || 'Sin ubicación';
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(issue);
+    return acc;
+  }, {});
+  const globalPriority = dashboardReport?.summary?.overall_priority || 'none';
 
   const handleStartEdit = () => {
     setEditSummary(report.summary ?? report.transcription ?? '');
@@ -338,56 +367,106 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
             </div>
           ) : (
             <>
-              {(report.summary || report.transcription) && (
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Cabecera</p>
+                <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 space-y-1">
+                  <p className="font-semibold text-gray-900">
+                    {reportHeader.title || `INFORME DE REVISIÓN - ${report.propertyName || 'PROPIEDAD'}`}
+                  </p>
+                  <p>Fecha: {formatReportDate(reportHeader.date || report.createdAt)}</p>
+                  <p>Responsable: {reportHeader.responsible || '—'}</p>
+                  <p>Ubicación: {reportHeader.location || report.propertyName || '—'}</p>
+                </div>
+              </div>
+              {summaryText && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{report.summary ? 'Resumen' : 'Transcripción'}</p>
+                  <p className="text-xs text-gray-500 mb-1">Resumen general</p>
                   <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 whitespace-pre-wrap">
-                    {report.summary || report.transcription}
+                    {summaryText}
                   </div>
                 </div>
               )}
-              {report.issues?.length > 0 && (
+              {tasksPerformed.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-2">Incidencias detectadas ({report.issues.length})</p>
+                  <p className="text-xs text-gray-500 mb-2">Tareas realizadas</p>
                   <ul className="space-y-2">
-                    {report.issues.map((issue, i) => {
-                      const photoUrls = report.photoUrls || [];
-                      const indices = Array.isArray(issue.photoIndices) ? issue.photoIndices : [];
-                      const relatedPhotos = indices.map((idx) => photoUrls[idx]).filter(Boolean);
-                      return (
-                        <li key={i} className="flex items-start gap-2 rounded-lg border border-gray-100 p-3">
-                          <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                          <div className="min-w-0 flex-1">
-                            <p className="font-medium text-gray-900">{issue.title}</p>
-                            {issue.description && (
-                              <p className="text-sm text-gray-500 mt-0.5">{issue.description}</p>
-                            )}
-                            {relatedPhotos.length > 0 && (
-                              <div className="flex gap-1 mt-2 flex-wrap">
-                                {relatedPhotos.map((url, j) => (
-                                  <a
-                                    key={j}
-                                    href={url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block w-10 h-10 rounded border border-gray-200 overflow-hidden flex-shrink-0"
-                                  >
-                                    <img src={getSafeImageUrl(url)} alt="" className="w-full h-full object-cover" />
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
+                    {tasksPerformed.map((task, i) => (
+                      <li key={i} className="text-sm text-gray-700 flex items-start gap-2">
+                        <span className="text-emerald-600 mt-0.5">✓</span>
+                        <span>{task}</span>
+                      </li>
+                    ))}
                   </ul>
+                </div>
+              )}
+              {professionalIssues.length > 0 && (
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">Incidencias detectadas ({professionalIssues.length})</p>
+                  <div className="space-y-3">
+                    {Object.entries(groupedIssues).map(([location, locIssues]) => (
+                      <div key={location}>
+                        <p className="text-sm font-medium text-gray-900 mb-2">{location}</p>
+                        <ul className="space-y-2">
+                          {locIssues.map((issue, i) => {
+                            const photoUrls = report.photoUrls || [];
+                            const indices = Array.isArray(issue.photoIndices) ? issue.photoIndices : [];
+                            const relatedPhotos = indices.map((idx) => photoUrls[idx]).filter(Boolean);
+                            return (
+                              <li key={`${location}-${i}`} className="flex items-start gap-2 rounded-lg border border-gray-100 p-3">
+                                <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <p className="font-medium text-gray-900">{issue.title}</p>
+                                    {issue.priority && (
+                                      <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-700">
+                                        {issue.priority}
+                                      </span>
+                                    )}
+                                    {issue.category && (
+                                      <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">
+                                        {issue.category}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {(issue.description || issue.impact) && (
+                                    <p className="text-sm text-gray-500 mt-0.5">
+                                      {issue.description || issue.impact}
+                                    </p>
+                                  )}
+                                  {issue.recommended_action && (
+                                    <p className="text-sm text-gray-700 mt-1">
+                                      <strong>Acción:</strong> {issue.recommended_action}
+                                    </p>
+                                  )}
+                                  {relatedPhotos.length > 0 && (
+                                    <div className="flex gap-1 mt-2 flex-wrap">
+                                      {relatedPhotos.map((url, j) => (
+                                        <a
+                                          key={j}
+                                          href={url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="block w-10 h-10 rounded border border-gray-200 overflow-hidden flex-shrink-0"
+                                        >
+                                          <img src={getSafeImageUrl(url)} alt="" className="w-full h-full object-cover" />
+                                        </a>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
               {report.photoUrls?.length > 0 && (
                 <div>
                   <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
-                    <Camera className="w-4 h-4" /> Fotos ({report.photoUrls.length})
+                    <Camera className="w-4 h-4" /> Material gráfico ({report.photoUrls.length})
                   </p>
                   <div className="grid grid-cols-3 gap-2">
                     {report.photoUrls.map((url, i) => (
@@ -406,6 +485,32 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
                       </a>
                     ))}
                   </div>
+                </div>
+              )}
+              {consolidatedActions.length > 0 && (
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">Acciones recomendadas</p>
+                  <ol className="space-y-2 list-decimal list-inside text-sm text-gray-700">
+                    {consolidatedActions.map((action, i) => (
+                      <li key={i}>{action}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+              {finalStatus && (
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">Estado final</p>
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-emerald-100 text-emerald-700">
+                    {finalStatus}
+                  </span>
+                </div>
+              )}
+              {!finalStatus && globalPriority !== 'none' && (
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">Prioridad global</p>
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-700">
+                    {globalPriority}
+                  </span>
                 </div>
               )}
             </>
@@ -492,6 +597,12 @@ export default function ReportesPage() {
         <div className="space-y-3">
           {reports.map((report) => {
             const issueCount = report.issues?.length ?? 0;
+            const overallPriority =
+              report.dashboardReport?.summary?.overall_priority || 'none';
+            const finalStatus =
+              report.finalStatus ||
+              report.dashboardReport?.final_status ||
+              null;
             return (
               <Card
                 key={report.id}
@@ -508,6 +619,11 @@ export default function ReportesPage() {
                       {formatReportDate(report.createdAt)}
                       {issueCount > 0 && ` · ${issueCount} incidencia${issueCount !== 1 ? 's' : ''}`}
                     </p>
+                    {(finalStatus || overallPriority !== 'none') && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {finalStatus || `Prioridad global: ${overallPriority}`}
+                      </p>
+                    )}
                     {(report.summary || report.transcription) && (
                       <p className="text-sm text-gray-500 line-clamp-2 mt-1">{report.summary || report.transcription}</p>
                     )}

@@ -19,7 +19,7 @@ Si del transcript se menciona el nombre de la propiedad o zona, inclúyelo en pr
 Responde ÚNICAMENTE con un JSON válido.`;
 
 function extractionUserMessage(transcript) {
-  return `Transcript de la inspección:\n\n${transcript}\n\nExtrae todos los hechos observables. Devuelve JSON con esta forma exacta:\n{\n  "propertyName": "string o vacío",\n  "location": "zona general si se menciona",\n  "facts": [\n    { "factId": "f1", "source": "audio", "kind": "issue", "text": "...", "location": "...", "object": "...", "confidence": 0.9 }\n  ]\n}`;
+  return `Transcript de la inspección:\n\n${transcript}\n\nExtrae todos los hechos observables y también las tareas realizadas por el trabajador.\n\nReglas para tasksPerformed:\n- Incluye acciones de revisión o trabajo ya ejecutadas (ej: "revisión de limpieza", "comprobación de toallas").\n- Devuelve frases breves en infinitivo o sustantivo de acción.\n- No inventes tareas que no estén en el transcript.\n- Si no hay tareas claras, devuelve array vacío.\n\nDevuelve JSON con esta forma exacta:\n{\n  "propertyName": "string o vacío",\n  "location": "zona general si se menciona",\n  "facts": [\n    { "factId": "f1", "source": "audio", "kind": "issue", "text": "...", "location": "...", "object": "...", "confidence": 0.9 }\n  ],\n  "tasksPerformed": [\n    "Revisión de limpieza general",\n    "Comprobación de ropa de cama"\n  ]\n}`;
 }
 
 module.exports = {
