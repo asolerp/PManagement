@@ -237,7 +237,7 @@ exports.updateHouseImageJobs = onDocumentUpdated(
 );
 
 exports.deletePhotoCloudinary = onCall(
-  { region: REGION, timeoutSeconds: 540, memory: '2GiB' },
+  { region: REGION, timeoutSeconds: 540, memory: '2GiB', invoker: 'public' },
   async request => {
     if (!cloudinary) {
       cloudinary = require('cloudinary').v2;
@@ -257,7 +257,7 @@ exports.deletePhotoCloudinary = onCall(
 );
 
 exports.recursiveDelete = onCall(
-  { region: REGION, timeoutSeconds: 540, memory: '2GiB' },
+  { region: REGION, timeoutSeconds: 540, memory: '2GiB', invoker: 'public' },
   async request => {
     const firebase_tools = require('firebase-tools');
     const { path, collection } = request.data;

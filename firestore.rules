@@ -12,12 +12,10 @@ service cloud.firestore {
     }
 
     // ——— users ———
-    // Lectura: cualquier autenticado (app lista workers/owners, dashboard lista todos).
-    // Escritura: solo el propio documento o admin (crear solo el propio al registrarse).
+    // Single-tenant: cualquier autenticado puede leer y escribir usuarios.
+    // El dashboard (solo admins) gestiona todos los perfiles.
     match /users/{userId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update, delete: if isOwnerOrAdmin(userId);
+      allow read, write: if isSignedIn();
     }
 
     // ——— houses ———

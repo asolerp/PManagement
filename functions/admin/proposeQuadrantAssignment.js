@@ -101,7 +101,7 @@ function minutesToTime(min) {
 }
 
 exports.proposeQuadrantAssignment = onCall(
-  { region: REGION, timeoutSeconds: 60, memory: '256MiB' },
+  { region: REGION, timeoutSeconds: 60, memory: '256MiB', invoker: 'public' },
   async request => {
     if (!request.auth) {
       throw new HttpsError('unauthenticated', 'User must be authenticated.');

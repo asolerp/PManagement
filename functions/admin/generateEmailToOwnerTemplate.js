@@ -71,6 +71,7 @@ const generateEmailToOwnerTemplate = onCall(
     region: REGION,
     timeoutSeconds: 60,
     memory: '256MiB',
+    invoker: 'public',
     secrets: [OPENAI_API_KEY]
   },
   async request => {

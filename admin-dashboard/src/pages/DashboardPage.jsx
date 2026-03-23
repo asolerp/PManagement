@@ -13,9 +13,10 @@ import { Users, Clock, CheckCircle, AlertCircle, AlertTriangle, RefreshCw, Calen
 import { Card, CardContent } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { useWorkShiftStats, useWorkShifts } from '@/hooks/useWorkShifts';
-import { useChecklists, useIncidences, useJobs } from '@/hooks/useFirestore';
+import { useChecklists, useIncidences, useJobs, useHouses, useWorkersFirestore } from '@/hooks/useFirestore';
 import { useNavigate, Link } from 'react-router-dom';
 import ChecklistDetailPanel from '@/components/ChecklistDetailPanel';
+import IncidenceDetailPanel from '@/components/IncidenceDetailPanel';
 import ShiftDetailPanel from '@/components/ShiftDetailPanel';
 import { getIncidenceSlaStatus, getJobSlaStatus } from '@/utils/sla';
 import {
@@ -495,6 +496,9 @@ function EstadoDelDiaPanel() {
   const shiftsInProgress = useMemo(() => (shiftsData?.shifts || []).filter((s) => !s.lastExit), [shiftsData?.shifts]);
 
   const [selectedChecklist, setSelectedChecklist] = useState(null);
+  const [selectedIncidence, setSelectedIncidence] = useState(null);
+  const { data: houses = [] } = useHouses();
+  const { data: allWorkers = [] } = useWorkersFirestore();
   const isLoading = loadingIncidences || loadingJobs || loadingChecklists || loadingShifts;
 
   if (isLoading) {
@@ -556,7 +560,7 @@ function EstadoDelDiaPanel() {
                       <li key={inc.id}>
                         <button
                           type="button"
-                          onClick={() => navigate('/incidencias')}
+                          onClick={() => setSelectedIncidence(inc)}
                           className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors"
                         >
                           <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
@@ -731,6 +735,17 @@ function EstadoDelDiaPanel() {
           onClose={() => setSelectedChecklist(null)}
         />
       )}
+      {selectedIncidence && (
+        <IncidenceDetailPanel
+          incidence={selectedIncidence}
+          onClose={() => setSelectedIncidence(null)}
+          onIncidenceUpdated={(updated) => setSelectedIncidence(updated)}
+          onIncidenceDeleted={() => setSelectedIncidence(null)}
+          allOpenIncidences={openIncidences}
+          allWorkers={allWorkers}
+          allHouses={houses}
+        />
+      )}
     </>
   );
 }
@@ -740,6 +755,9 @@ function SlaEnRiesgoWidget() {
   const today = todayStr();
   const { data: openIncidences = [], isLoading: loadingIncidences } = useIncidences({ done: false });
   const { data: allJobs = [], isLoading: loadingJobs } = useJobs();
+  const { data: houses = [] } = useHouses();
+  const { data: allWorkers = [] } = useWorkersFirestore();
+  const [selectedIncidence, setSelectedIncidence] = useState(null);
 
   const { incidencesAtRisk, jobsAtRisk } = useMemo(() => {
     const jobsToday = (allJobs || []).filter((j) => isJobToday(j, today));
@@ -805,8 +823,9 @@ function SlaEnRiesgoWidget() {
                   const sla = getIncidenceSlaStatus(inc);
                   return (
                     <li key={inc.id}>
-                      <Link
-                        to="/incidencias"
+                      <button
+                        type="button"
+                        onClick={() => setSelectedIncidence(inc)}
                         className="w-full flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors group"
                       >
                         <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
@@ -819,7 +838,7 @@ function SlaEnRiesgoWidget() {
                           </span>
                         )}
                         <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                      </Link>
+                      </button>
                     </li>
                   );
                 })}
@@ -866,6 +885,18 @@ function SlaEnRiesgoWidget() {
           )}
         </div>
       )}
+
+      {selectedIncidence && (
+        <IncidenceDetailPanel
+          incidence={selectedIncidence}
+          onClose={() => setSelectedIncidence(null)}
+          onIncidenceUpdated={(updated) => setSelectedIncidence(updated)}
+          onIncidenceDeleted={() => setSelectedIncidence(null)}
+          allOpenIncidences={openIncidences}
+          allWorkers={allWorkers}
+          allHouses={houses}
+        />
+      )}
     </Card>
   );
 }
@@ -876,6 +907,9 @@ function CierreDelDiaSection() {
   const { data: shiftsData } = useWorkShifts({ startDate: today, endDate: today, limit: 500 });
   const { data: allJobs = [] } = useJobs();
   const { data: openIncidences = [] } = useIncidences({ done: false });
+  const { data: houses = [] } = useHouses();
+  const { data: allWorkers = [] } = useWorkersFirestore();
+  const [selectedIncidence, setSelectedIncidence] = useState(null);
 
   const shiftsOpen = useMemo(
     () => (shiftsData?.shifts || []).filter((s) => !s.lastExit),
@@ -957,9 +991,13 @@ function CierreDelDiaSection() {
               <ul className="space-y-1">
                 {incidencesBreached.slice(0, 5).map((inc) => (
                   <li key={inc.id}>
-                    <Link to="/incidencias" className="text-sm text-turquoise-600 hover:underline">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedIncidence(inc)}
+                      className="text-sm text-turquoise-600 hover:underline"
+                    >
                       {inc.house?.houseName || inc.houseName || inc.title || 'Incidencia'}
-                    </Link>
+                    </button>
                   </li>
                 ))}
                 {incidencesBreached.length > 5 && (
@@ -969,6 +1007,18 @@ function CierreDelDiaSection() {
             </div>
           )}
         </div>
+      )}
+
+      {selectedIncidence && (
+        <IncidenceDetailPanel
+          incidence={selectedIncidence}
+          onClose={() => setSelectedIncidence(null)}
+          onIncidenceUpdated={(updated) => setSelectedIncidence(updated)}
+          onIncidenceDeleted={() => setSelectedIncidence(null)}
+          allOpenIncidences={openIncidences}
+          allWorkers={allWorkers}
+          allHouses={houses}
+        />
       )}
     </Card>
   );

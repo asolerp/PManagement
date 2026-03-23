@@ -242,9 +242,13 @@ const telegramWebhook = onRequest(
       const user = await resolveUserByTelegramId(fromId);
       if (!user) {
         await send(
-          `Aún no tienes acceso al bot.\n\n` +
-            `Tu ID de Telegram es: <code>${fromId}</code>\n\n` +
-            `Copia este número y pásaselo al administrador. Él lo añadirá a tu usuario en el dashboard y podrás usar el bot.`
+          `👋 <b>¡Bienvenido a Port Management!</b>\n\n` +
+            `Soy el asistente de inteligencia artificial de Port Management. ` +
+            `Puedo ayudarte a gestionar propiedades, crear informes de inspección, ` +
+            `consultar incidencias y mucho más.\n\n` +
+            `Para empezar a usar el bot, necesitas que un administrador vincule tu cuenta.\n\n` +
+            `📋 <b>Tu ID de Telegram:</b> <code>${fromId}</code>\n\n` +
+            `Copia este ID y envíaselo a tu administrador para que lo asocie a tu usuario en el panel de gestión.`
         );
         res.status(200).send('OK');
         return;
@@ -269,10 +273,53 @@ const telegramWebhook = onRequest(
         await send(
           '<b>Comandos:</b>\n' +
             '• <b>/start</b> — Bienvenida\n' +
+            '• <b>/menu</b> — Menú principal\n' +
             '• <b>/help</b> — Esta ayuda\n' +
             '• <b>/cancel</b> — Cancelar informe pendiente o modo fotos\n\n' +
             '<b>Informes:</b> Envía nota de voz indicando la casa y lo revisado. Luego fotos si quieres. Escribe <b>Crear informe</b> para generarlo.\n\n' +
             '<b>Consultas:</b> Pregunta por incidencias, cuadrante, trabajos, propiedades, etc.'
+        );
+        res.status(200).send('OK');
+        return;
+      }
+      if (cmd === '/menu') {
+        const menuKeyboard = [
+          [
+            {
+              text: '🏠 Listar casas',
+              callback_data: 'menu_list_houses'
+            }
+          ],
+          [
+            {
+              text: '⚠️ Incidencias abiertas',
+              callback_data: 'menu_open_incidents'
+            }
+          ],
+          [
+            {
+              text: '📋 Cuadrante del día',
+              callback_data: 'menu_today_quadrant'
+            }
+          ],
+          [
+            {
+              text: '🎙️ Nuevo informe (audio)',
+              callback_data: 'menu_new_report'
+            }
+          ],
+          [
+            {
+              text: '❓ Ayuda',
+              callback_data: 'menu_help'
+            }
+          ]
+        ];
+        await sendMessageWithKeyboard(
+          botToken,
+          chatId,
+          '<b>📌 Menú Principal</b>\n\nElige una opción o escríbeme directamente lo que necesites:',
+          menuKeyboard
         );
         res.status(200).send('OK');
         return;
@@ -302,6 +349,81 @@ const telegramWebhook = onRequest(
         const callbackId = callbackQuery.id;
         const data = callbackQuery.data || '';
         await answerCallbackQuery(botToken, callbackId);
+
+        // ——— Callbacks del menú principal ———
+        if (data === 'menu_list_houses') {
+          await sendTypingAction(botToken, chatId);
+          const openAITools = getOpenAITools();
+          const runToolFn = (toolName, args) => runTool(null, toolName, args);
+          const answer = await askWithTools(
+            apiKey,
+            'Lista todas las casas/propiedades disponibles',
+            openAITools,
+            runToolFn,
+            '',
+            []
+          );
+          await send(answer);
+          res.status(200).send('OK');
+          return;
+        }
+        if (data === 'menu_open_incidents') {
+          await sendTypingAction(botToken, chatId);
+          const openAITools = getOpenAITools();
+          const runToolFn = (toolName, args) => runTool(null, toolName, args);
+          const answer = await askWithTools(
+            apiKey,
+            '¿Qué incidencias hay abiertas actualmente?',
+            openAITools,
+            runToolFn,
+            '',
+            []
+          );
+          await send(answer);
+          res.status(200).send('OK');
+          return;
+        }
+        if (data === 'menu_today_quadrant') {
+          await sendTypingAction(botToken, chatId);
+          const openAITools = getOpenAITools();
+          const runToolFn = (toolName, args) => runTool(null, toolName, args);
+          const answer = await askWithTools(
+            apiKey,
+            '¿Cuál es el cuadrante de trabajo de hoy?',
+            openAITools,
+            runToolFn,
+            '',
+            []
+          );
+          await send(answer);
+          res.status(200).send('OK');
+          return;
+        }
+        if (data === 'menu_new_report') {
+          await send(
+            '🎙️ <b>Nuevo informe de inspección</b>\n\n' +
+              'Envía una <b>nota de voz</b> indicando:\n' +
+              '• La <b>casa</b> que has inspeccionado\n' +
+              '• Lo que has <b>revisado</b> y observado\n\n' +
+              'Después podrás subir <b>fotos</b> y escribir <b>Crear informe</b> para generarlo.'
+          );
+          res.status(200).send('OK');
+          return;
+        }
+        if (data === 'menu_help') {
+          await send(
+            '<b>Comandos:</b>\n' +
+              '• <b>/start</b> — Bienvenida\n' +
+              '• <b>/menu</b> — Menú principal\n' +
+              '• <b>/help</b> — Esta ayuda\n' +
+              '• <b>/cancel</b> — Cancelar flujo en curso\n\n' +
+              '<b>Informes:</b> Envía nota de voz indicando la casa y lo revisado. Luego fotos si quieres. Escribe <b>Crear informe</b> para generarlo.\n\n' +
+              '<b>Consultas:</b> Pregunta por incidencias, cuadrante, trabajos, propiedades, etc.'
+          );
+          res.status(200).send('OK');
+          return;
+        }
+
         const session = await getSession(chatId);
         if (data === 'report_confirm' && session?.pendingReportConfirmation) {
           const { pipelineResult, overrideProperty } =
