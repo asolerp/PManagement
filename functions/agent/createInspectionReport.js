@@ -190,17 +190,25 @@ async function createReportFromPipeline(
   const reportHeader = {
     title:
       dashboardReport?.report_header?.title ||
-      'INFORME DE REVISIÓN' + (finalPropertyName ? ` - ${finalPropertyName}` : ''),
+      'INFORME DE REVISIÓN' +
+        (finalPropertyName ? ` - ${finalPropertyName}` : ''),
     date: new Date().toISOString(),
     responsible:
-      reportMeta?.responsibleName || dashboardReport?.report_header?.responsible || '',
+      reportMeta?.responsibleName ||
+      dashboardReport?.report_header?.responsible ||
+      '',
     location:
-      dashboardReport?.report_header?.location || overrideProperty?.propertyName || finalPropertyName || ''
+      dashboardReport?.report_header?.location ||
+      overrideProperty?.propertyName ||
+      finalPropertyName ||
+      ''
   };
   const tasksPerformed = Array.isArray(dashboardReport?.tasks_performed)
     ? dashboardReport.tasks_performed
     : [];
-  const consolidatedActions = Array.isArray(dashboardReport?.consolidated_actions)
+  const consolidatedActions = Array.isArray(
+    dashboardReport?.consolidated_actions
+  )
     ? dashboardReport.consolidated_actions
     : [];
   const finalStatus = dashboardReport?.final_status || '';
