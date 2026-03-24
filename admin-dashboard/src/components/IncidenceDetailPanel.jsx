@@ -213,6 +213,45 @@ const INCIDENCE_STATE_OPTIONS = [
   { value: 'cancelada', label: 'Cancelada' },
 ];
 
+const PRIORITY_OPTIONS = [
+  { value: 'critical', label: 'Crítica', bg: 'bg-red-100', text: 'text-red-700', dot: 'bg-red-500' },
+  { value: 'high', label: 'Alta', bg: 'bg-orange-100', text: 'text-orange-700', dot: 'bg-orange-500' },
+  { value: 'medium', label: 'Media', bg: 'bg-amber-100', text: 'text-amber-700', dot: 'bg-amber-500' },
+  { value: 'low', label: 'Baja', bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-500' },
+  { value: '', label: 'Sin prioridad', bg: 'bg-gray-100', text: 'text-gray-600', dot: 'bg-gray-400' },
+];
+
+const CATEGORY_OPTIONS = [
+  { value: 'safety', label: 'Seguridad' },
+  { value: 'cleanliness', label: 'Limpieza' },
+  { value: 'maintenance', label: 'Mantenimiento' },
+  { value: 'amenities', label: 'Equipamiento' },
+  { value: 'cosmetic', label: 'Estético' },
+  { value: '', label: 'Sin categoría' },
+];
+
+export function PriorityBadge({ priority }) {
+  if (!priority) return null;
+  const style = PRIORITY_OPTIONS.find((p) => p.value === priority) || PRIORITY_OPTIONS[4];
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full ${style.bg} ${style.text}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
+      {style.label}
+    </span>
+  );
+}
+
+export function CategoryBadge({ category }) {
+  if (!category) return null;
+  const opt = CATEGORY_OPTIONS.find((c) => c.value === category);
+  if (!opt || !opt.value) return null;
+  return (
+    <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+      {opt.label}
+    </span>
+  );
+}
+
 export default function IncidenceDetailPanel({
   incidence,
   onClose,
@@ -229,6 +268,8 @@ export default function IncidenceDetailPanel({
   const [editDescription, setEditDescription] = useState('');
   const [editHouseId, setEditHouseId] = useState('');
   const [editState, setEditState] = useState('iniciada');
+  const [editPriority, setEditPriority] = useState('');
+  const [editCategory, setEditCategory] = useState('');
   const [editWorkerIds, setEditWorkerIds] = useState(new Set());
   const [editError, setEditError] = useState(null);
   const updateIncidence = useUpdateIncidence();
@@ -250,6 +291,8 @@ export default function IncidenceDetailPanel({
     setEditDescription(incidence.incidence || incidence.description || '');
     setEditHouseId(currentHouseId);
     setEditState(incidence.state || (incidence.done ? 'done' : 'iniciada'));
+    setEditPriority(incidence.priority || '');
+    setEditCategory(incidence.category || '');
     setEditWorkerIds(new Set((incidence.workersId || []).filter(Boolean)));
     setEditError(null);
     setIsEditing(false);
@@ -318,6 +361,8 @@ export default function IncidenceDetailPanel({
     setEditDescription(incidence.incidence || incidence.description || '');
     setEditHouseId(currentHouseId);
     setEditState(incidence.state || (incidence.done ? 'done' : 'iniciada'));
+    setEditPriority(incidence.priority || '');
+    setEditCategory(incidence.category || '');
     setEditWorkerIds(new Set((incidence.workersId || []).filter(Boolean)));
     setEditError(null);
     setIsEditing(true);
@@ -355,6 +400,8 @@ export default function IncidenceDetailPanel({
         house: selectedHouse,
         state: editState,
         done: toDone,
+        priority: editPriority || null,
+        category: editCategory || null,
         workersId: normalizedWorkers.map((w) => w.id),
         workers: normalizedWorkers,
       });
@@ -376,6 +423,8 @@ export default function IncidenceDetailPanel({
         house: selectedHouse,
         state: editState,
         done: toDone,
+        priority: editPriority || null,
+        category: editCategory || null,
         workersId: normalizedWorkers.map((w) => w.id),
         workers: normalizedWorkers,
       });
@@ -495,6 +544,8 @@ export default function IncidenceDetailPanel({
 
                 <div className="flex flex-wrap items-center gap-2">
                   <StateBadge state={incidence.state} done={incidence.done} />
+                  <PriorityBadge priority={incidence.priority} />
+                  <CategoryBadge category={incidence.category} />
                   <SlaBadge doc={incidence} />
                   <StaleBadge doc={incidence} />
                   {!incidence.done && (
@@ -637,6 +688,38 @@ export default function IncidenceDetailPanel({
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500 focus:border-transparent bg-white"
                   >
                     {INCIDENCE_STATE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Prioridad
+                  </label>
+                  <select
+                    value={editPriority}
+                    onChange={(e) => setEditPriority(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500 focus:border-transparent bg-white"
+                  >
+                    {PRIORITY_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Categoría
+                  </label>
+                  <select
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500 focus:border-transparent bg-white"
+                  >
+                    {CATEGORY_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>
                         {o.label}
                       </option>

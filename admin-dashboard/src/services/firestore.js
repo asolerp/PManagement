@@ -99,7 +99,7 @@ export async function createIncidence(payload) {
   const responseDueAt = new Date(now.getTime() + responseH * 60 * 60 * 1000);
   const resolutionDueAt = new Date(now.getTime() + resolutionH * 60 * 60 * 1000);
   const colRef = collection(db, COLLECTIONS.INCIDENCES);
-  const docRef = await addDoc(colRef, {
+  const docData = {
     title: payload.title.trim(),
     incidence: (payload.incidence || payload.description || '').trim() || null,
     houseId: payload.houseId,
@@ -113,7 +113,10 @@ export async function createIncidence(payload) {
     resolutionDueAt,
     createdBy: payload.createdBy || null,
     stateUpdatedAt: serverTimestamp(),
-  });
+  };
+  if (payload.priority) docData.priority = payload.priority;
+  if (payload.category) docData.category = payload.category;
+  const docRef = await addDoc(colRef, docData);
   return docRef.id;
 }
 
@@ -634,6 +637,15 @@ export async function getOwners() {
   return snapshot.docs
     .map((d) => ({ id: d.id, ...d.data() }))
     .sort((a, b) => (a.firstName || '').localeCompare(b.firstName || ''));
+}
+
+// ——— Upload fotos de incidencia ———
+export async function uploadIncidencePhoto(file) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `incidences/uploads/${Date.now()}_${safeName}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
 }
 
 // ——— Upload de imágenes a Firebase Storage ———

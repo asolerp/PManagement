@@ -10,11 +10,33 @@ import {
   useUpdateInspectionReport,
   useDeleteInspectionReport
 } from '@/hooks/useFirestore';
-import { FileText, Home, X, Camera, AlertCircle, Loader2, Pencil, Trash2 } from 'lucide-react';
+import { FileText, Home, X, Camera, AlertCircle, Loader2, Pencil, Trash2, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { serverTimestamp } from 'firebase/firestore';
 import { getSafeImageUrl } from '@/utils/getSafeImageUrl';
+
+const PRIORITY_OPTIONS = [
+  { value: 'critical', label: 'Crítica', bg: 'bg-red-100', text: 'text-red-700', dot: 'bg-red-500' },
+  { value: 'high', label: 'Alta', bg: 'bg-orange-100', text: 'text-orange-700', dot: 'bg-orange-500' },
+  { value: 'medium', label: 'Media', bg: 'bg-amber-100', text: 'text-amber-700', dot: 'bg-amber-500' },
+  { value: 'low', label: 'Baja', bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-500' },
+  { value: 'none', label: 'Sin prioridad', bg: 'bg-gray-100', text: 'text-gray-600', dot: 'bg-gray-400' },
+];
+
+function getPriorityStyle(priority) {
+  return PRIORITY_OPTIONS.find((p) => p.value === priority) || PRIORITY_OPTIONS[4];
+}
+
+function PriorityBadge({ priority, className = '' }) {
+  const style = getPriorityStyle(priority);
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-medium rounded-full ${style.bg} ${style.text} ${className}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
+      {style.label}
+    </span>
+  );
+}
 
 function formatReportDate(value) {
   if (!value) return '—';
@@ -41,9 +63,12 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [photoAssignments, setPhotoAssignments] = useState({});
+  const [showPhotoAssign, setShowPhotoAssign] = useState(false);
   const [editSummary, setEditSummary] = useState('');
   const [editIssues, setEditIssues] = useState([]);
   const [editPropertyId, setEditPropertyId] = useState('');
+  const [editPriority, setEditPriority] = useState('none');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
@@ -59,6 +84,16 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
           : []
       );
       setEditPropertyId(report.propertyId || '');
+      setEditPriority(
+        report.overallPriority ||
+        report.dashboardReport?.summary?.overall_priority ||
+        'none'
+      );
+      const assignments = {};
+      (report.issues || []).forEach((issue, idx) => {
+        assignments[idx] = Array.isArray(issue.photoIndices) ? [...issue.photoIndices] : [];
+      });
+      setPhotoAssignments(assignments);
     }
   }, [report]);
 
@@ -107,7 +142,10 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
     acc[key].push(issue);
     return acc;
   }, {});
-  const globalPriority = dashboardReport?.summary?.overall_priority || 'none';
+  const globalPriority =
+    report.overallPriority ||
+    dashboardReport?.summary?.overall_priority ||
+    'none';
 
   const handleStartEdit = () => {
     setEditSummary(report.summary ?? report.transcription ?? '');
@@ -121,6 +159,11 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
         : []
     );
     setEditPropertyId(report.propertyId || (house?.id) || '');
+    setEditPriority(
+      report.overallPriority ||
+      report.dashboardReport?.summary?.overall_priority ||
+      'none'
+    );
     setIsEditing(true);
     setError(null);
   };
@@ -134,6 +177,7 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
         propertyId: editPropertyId || null,
         propertyName: selectedHouse ? (selectedHouse.houseName || selectedHouse.address || '') : (report.propertyName || ''),
         summary: editSummary.trim() || null,
+        overallPriority: editPriority || 'none',
         issues: editIssues.filter((i) => i.title.trim()).map((i) => ({
           title: i.title.trim(),
           description: (i.description || '').trim(),
@@ -176,22 +220,42 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
     }
   };
 
+  const handleTogglePhotoForIssue = async (issueIdx, photoIdx) => {
+    setPhotoAssignments((prev) => {
+      const current = prev[issueIdx] || [];
+      const set = new Set(current);
+      if (set.has(photoIdx)) set.delete(photoIdx);
+      else set.add(photoIdx);
+      const next = { ...prev, [issueIdx]: [...set].sort((a, b) => a - b) };
+      const updatedIssues = (report.issues || []).map((issue, i) => ({
+        ...issue,
+        photoIndices: next[i] || [],
+      }));
+      updateReport.mutateAsync({ id: report.id, issues: updatedIssues }).catch(() => {});
+      return next;
+    });
+  };
+
   const handleCreateIncidences = async () => {
     if (!canCreateIncidences) return;
     setError(null);
     setCreating(true);
     try {
       const photoUrls = report.photoUrls || [];
-      for (const issue of report.issues) {
-        const issuePhotos = Array.isArray(issue.photoIndices)
-          ? issue.photoIndices.map((i) => photoUrls[i]).filter(Boolean)
-          : [];
+      const pipelineIssues = dashboardReport?.issues || [];
+      for (let idx = 0; idx < report.issues.length; idx++) {
+        const issue = report.issues[idx];
+        const pipelineIssue = pipelineIssues[idx] || {};
+        const indices = photoAssignments[idx] || issue.photoIndices || [];
+        const issuePhotos = indices.map((i) => photoUrls[i]).filter(Boolean);
         await createIncidence.mutateAsync({
           title: issue.title,
           incidence: issue.description || undefined,
           houseId: house.id,
           house,
           photos: issuePhotos,
+          priority: pipelineIssue.priority || undefined,
+          category: pipelineIssue.category || undefined,
         });
       }
       await updateReport.mutateAsync({
@@ -288,6 +352,21 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
                 </select>
               </div>
               <div>
+                <label className="block text-xs text-gray-500 mb-1">Prioridad global</label>
+                <div className="relative">
+                  <select
+                    value={editPriority}
+                    onChange={(e) => setEditPriority(e.target.value)}
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm appearance-none pr-8"
+                  >
+                    {PRIORITY_OPTIONS.map((p) => (
+                      <option key={p.value} value={p.value}>{p.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+              <div>
                 <label className="block text-xs text-gray-500 mb-1">Resumen</label>
                 <textarea
                   value={editSummary}
@@ -376,6 +455,10 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
                   <p>Fecha: {formatReportDate(reportHeader.date || report.createdAt)}</p>
                   <p>Responsable: {reportHeader.responsible || '—'}</p>
                   <p>Ubicación: {reportHeader.location || report.propertyName || '—'}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-gray-500">Prioridad:</span>
+                    <PriorityBadge priority={globalPriority} />
+                  </div>
                 </div>
               </div>
               {summaryText && (
@@ -487,6 +570,58 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
                   </div>
                 </div>
               )}
+              {report.photoUrls?.length > 0 && report.issues?.length > 0 && !incidencesAlreadyCreated && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPhotoAssign((v) => !v)}
+                    className="flex items-center gap-2 text-sm font-medium text-turquoise-600 hover:text-turquoise-700"
+                  >
+                    <Camera className="w-4 h-4" />
+                    {showPhotoAssign ? 'Ocultar asignación de fotos' : 'Asignar fotos a incidencias'}
+                  </button>
+                  {showPhotoAssign && (
+                    <div className="mt-3 space-y-4">
+                      <p className="text-xs text-gray-500">
+                        Pulsa en las fotos para asignarlas a cada incidencia. Se guardan automáticamente.
+                      </p>
+                      {(report.issues || []).map((issue, issueIdx) => {
+                        const assigned = photoAssignments[issueIdx] || [];
+                        return (
+                          <div key={issueIdx} className="rounded-lg border border-gray-200 p-3">
+                            <p className="text-sm font-medium text-gray-900 mb-2">{issue.title || `Incidencia ${issueIdx + 1}`}</p>
+                            <div className="flex flex-wrap gap-2">
+                              {report.photoUrls.map((url, photoIdx) => {
+                                const selected = assigned.includes(photoIdx);
+                                return (
+                                  <button
+                                    key={photoIdx}
+                                    type="button"
+                                    onClick={() => handleTogglePhotoForIssue(issueIdx, photoIdx)}
+                                    className={`w-14 h-14 rounded-lg border-2 overflow-hidden flex-shrink-0 transition-all ${
+                                      selected
+                                        ? 'border-turquoise-500 ring-2 ring-turquoise-500/30'
+                                        : 'border-gray-200 opacity-60 hover:opacity-100'
+                                    }`}
+                                    title={selected ? 'Quitar foto de esta incidencia' : 'Asignar foto a esta incidencia'}
+                                  >
+                                    <img src={getSafeImageUrl(url)} alt="" className="w-full h-full object-cover" />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {assigned.length > 0 && (
+                              <p className="text-xs text-turquoise-600 mt-1">
+                                {assigned.length} foto{assigned.length !== 1 ? 's' : ''} asignada{assigned.length !== 1 ? 's' : ''}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
               {consolidatedActions.length > 0 && (
                 <div>
                   <p className="text-xs text-gray-500 mb-2">Acciones recomendadas</p>
@@ -505,14 +640,10 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
                   </span>
                 </div>
               )}
-              {!finalStatus && globalPriority !== 'none' && (
-                <div>
-                  <p className="text-xs text-gray-500 mb-2">Prioridad global</p>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-700">
-                    {globalPriority}
-                  </span>
-                </div>
-              )}
+              <div>
+                <p className="text-xs text-gray-500 mb-2">Prioridad global</p>
+                <PriorityBadge priority={globalPriority} />
+              </div>
             </>
           )}
         </div>
@@ -598,11 +729,9 @@ export default function ReportesPage() {
           {reports.map((report) => {
             const issueCount = report.issues?.length ?? 0;
             const overallPriority =
-              report.dashboardReport?.summary?.overall_priority || 'none';
-            const finalStatus =
-              report.finalStatus ||
-              report.dashboardReport?.final_status ||
-              null;
+              report.overallPriority ||
+              report.dashboardReport?.summary?.overall_priority ||
+              'none';
             return (
               <Card
                 key={report.id}
@@ -614,16 +743,14 @@ export default function ReportesPage() {
                     <FileText className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900">{report.propertyName || 'Sin propiedad'}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium text-gray-900">{report.propertyName || 'Sin propiedad'}</p>
+                      <PriorityBadge priority={overallPriority} />
+                    </div>
                     <p className="text-sm text-gray-500 mt-0.5">
                       {formatReportDate(report.createdAt)}
                       {issueCount > 0 && ` · ${issueCount} incidencia${issueCount !== 1 ? 's' : ''}`}
                     </p>
-                    {(finalStatus || overallPriority !== 'none') && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        {finalStatus || `Prioridad global: ${overallPriority}`}
-                      </p>
-                    )}
                     {(report.summary || report.transcription) && (
                       <p className="text-sm text-gray-500 line-clamp-2 mt-1">{report.summary || report.transcription}</p>
                     )}

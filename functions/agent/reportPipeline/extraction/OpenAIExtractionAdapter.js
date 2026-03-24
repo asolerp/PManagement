@@ -61,9 +61,14 @@ async function extractWithOpenAI(apiKey, transcript) {
         .map(f => ({
           factId: String(f.factId).trim(),
           source: f.source === 'visual' ? 'visual' : 'audio',
-          kind: ['issue', 'state', 'missing_item', 'damage', 'hazard'].includes(
-            f.kind
-          )
+          kind: [
+            'issue',
+            'state',
+            'observation',
+            'missing_item',
+            'damage',
+            'hazard'
+          ].includes(f.kind)
             ? f.kind
             : 'issue',
           text: String(f.text).trim(),

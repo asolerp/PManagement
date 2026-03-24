@@ -77,6 +77,10 @@ const {
 
 // Agent (Telegram Bot + AI)
 const { telegramWebhook } = require('./agent');
+const {
+  scheduledDailySummary,
+  sendDailySummaryNow
+} = require('./agent/scheduledDailySummary');
 
 // Work Shifts
 const {
@@ -160,6 +164,8 @@ exports.generateEmailToOwnerTemplate = generateEmailToOwnerTemplate;
 
 // AGENT
 exports.telegramWebhook = telegramWebhook;
+exports.scheduledDailySummary = scheduledDailySummary;
+exports.sendDailySummaryNow = sendDailySummaryNow;
 
 // TIME TRACKING
 

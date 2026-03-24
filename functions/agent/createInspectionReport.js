@@ -170,10 +170,16 @@ async function createReportFromPipeline(
 ) {
   const db = admin.firestore();
   const { propertyName, dashboardReport } = pipelineResult;
-  const issues = (dashboardReport?.issues || []).map(i => ({
-    title: i.title || 'Sin título',
-    description: [i.description, i.impact].filter(Boolean).join(' ') || ''
-  }));
+  const issues = (dashboardReport?.issues || []).map(i => {
+    const entry = {
+      title: i.title || 'Sin título',
+      description: [i.description, i.impact].filter(Boolean).join(' ') || ''
+    };
+    if (Array.isArray(i.photoIndices) && i.photoIndices.length > 0) {
+      entry.photoIndices = i.photoIndices;
+    }
+    return entry;
+  });
 
   const propertyId =
     overrideProperty?.propertyId != null
@@ -213,6 +219,8 @@ async function createReportFromPipeline(
     : [];
   const finalStatus = dashboardReport?.final_status || '';
 
+  const overallPriority = dashboardReport?.summary?.overall_priority || 'none';
+
   const docRef = await db.collection('inspectionReports').add({
     propertyName: finalPropertyName,
     propertyId: propertyId || null,
@@ -226,7 +234,8 @@ async function createReportFromPipeline(
     reportHeader,
     tasksPerformed,
     consolidatedActions,
-    finalStatus
+    finalStatus,
+    overallPriority
   });
 
   const count = issues.length;

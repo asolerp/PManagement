@@ -43,6 +43,9 @@ const {
   findPropertiesByCompanyAndName,
   findSimilarPropertiesByCompanyAndName
 } = require('./createInspectionReport');
+const {
+  matchPhotosToIssues
+} = require('./reportPipeline/vision/matchPhotosToIssues');
 const { uploadPhotoToStorage } = require('./uploadPhotoToStorage');
 const { getCompanyContext } = require('./getCompanyContext');
 const {
@@ -85,7 +88,8 @@ function buildProfessionalReportMessage({
   issues,
   photoCount,
   consolidatedActions,
-  finalStatus
+  finalStatus,
+  rawTranscription
 }) {
   const lines = [];
   lines.push(
@@ -97,6 +101,15 @@ function buildProfessionalReportMessage({
     `👤 ${escapeHtml(reportHeader?.responsible || 'Equipo Port Management')}`
   );
   lines.push(`📍 ${escapeHtml(reportHeader?.location || propertyName || '—')}`);
+  if (rawTranscription) {
+    lines.push('');
+    lines.push('🎙️ <b>Audio transcrito</b>');
+    const truncated =
+      rawTranscription.length > 400
+        ? `${rawTranscription.slice(0, 400)}…`
+        : rawTranscription;
+    lines.push(`<i>${escapeHtml(truncated)}</i>`);
+  }
   if (summaryText) {
     lines.push('');
     lines.push('📝 <b>Resumen general</b>');
@@ -540,7 +553,8 @@ const telegramWebhook = onRequest(
               photoCount: session.photoUrls?.length || 0,
               consolidatedActions:
                 pipelineResult.dashboardReport?.consolidated_actions || [],
-              finalStatus: pipelineResult.dashboardReport?.final_status || ''
+              finalStatus: pipelineResult.dashboardReport?.final_status || '',
+              rawTranscription: session.lastTranscription || ''
             });
             const result = await createReportFromPipeline(
               null,
@@ -679,10 +693,23 @@ const telegramWebhook = onRequest(
           buffer,
           `voice.${extension}`
         );
+        console.log(
+          `[REPORT_PIPELINE] chatId=${chatId} WHISPER_TRANSCRIPTION (${transcription.length} chars): "${transcription.slice(0, 500)}"`
+        );
         await setTranscription(chatId, SINGLE_TENANT_ID, transcription);
 
         const db = admin.firestore();
         const extraction = await extractWithOpenAI(apiKey, transcription);
+        console.log(
+          `[REPORT_PIPELINE] chatId=${chatId} EXTRACTION_RESULT:`,
+          JSON.stringify({
+            propertyName: extraction.propertyName,
+            factsCount: extraction.facts?.length,
+            facts: extraction.facts?.map(f => f.text),
+            tasksCount: extraction.tasksPerformed?.length,
+            tasks: extraction.tasksPerformed
+          })
+        );
         const { matchCount, matches } = await findPropertiesByCompanyAndName(
           db,
           null,
@@ -1237,7 +1264,8 @@ const telegramWebhook = onRequest(
               photoCount: session.photoUrls?.length || 0,
               consolidatedActions:
                 pipelineResult.dashboardReport?.consolidated_actions || [],
-              finalStatus: pipelineResult.dashboardReport?.final_status || ''
+              finalStatus: pipelineResult.dashboardReport?.final_status || '',
+              rawTranscription: session.lastTranscription || ''
             });
             const result = await createReportFromPipeline(
               null,
@@ -1388,6 +1416,9 @@ const telegramWebhook = onRequest(
         );
         await send(generatingMsg || 'Generando resumen del informe…');
         try {
+          console.log(
+            `[REPORT_PIPELINE] chatId=${chatId} CREATE_REPORT transcription (${session.lastTranscription.length} chars): "${session.lastTranscription.slice(0, 500)}"`
+          );
           const pipelineResult = await runReportPipeline(
             apiKey,
             session.lastTranscription,
@@ -1397,6 +1428,21 @@ const telegramWebhook = onRequest(
               reportDate: new Date().toISOString(),
               location: session.selectedPropertyName || ''
             }
+          );
+          console.log(
+            `[REPORT_PIPELINE] chatId=${chatId} PIPELINE_OUTPUT:`,
+            JSON.stringify({
+              extractionFacts: pipelineResult.extractionResult?.facts?.map(
+                f => f.text
+              ),
+              extractionTasks: pipelineResult.extractionResult?.tasksPerformed,
+              reasoningSummary: pipelineResult.assessment?.transcriptionSummary,
+              reasoningIssues: pipelineResult.assessment?.issues?.map(
+                i => i.title
+              ),
+              reasoningTasks: pipelineResult.assessment?.tasksPerformed,
+              finalStatus: pipelineResult.assessment?.finalStatus
+            })
           );
           const overrideProperty =
             session.selectedPropertyId != null
@@ -1408,10 +1454,57 @@ const telegramWebhook = onRequest(
           const propertyName =
             overrideProperty?.propertyName || pipelineResult.propertyName || '';
           const issues = pipelineResult.dashboardReport?.issues || [];
+          const photoUrls = session.photoUrls || [];
+
+          let visionPhotoAssignments = null;
+          if (photoUrls.length > 0 && issues.length > 0) {
+            try {
+              const visionResult = await matchPhotosToIssues(
+                apiKey,
+                photoUrls,
+                issues.map(i => ({
+                  title: i.title,
+                  description: i.description,
+                  location: i.location
+                }))
+              );
+              visionPhotoAssignments = visionResult.assignments || {};
+              const vu = visionResult.usage;
+              console.log(
+                `[VISION] chatId=${chatId} photo-issue matching:`,
+                JSON.stringify({
+                  photos: photoUrls.length,
+                  issues: issues.length,
+                  matched: Object.keys(visionPhotoAssignments).length,
+                  promptTk: vu?.promptTokens,
+                  compTk: vu?.completionTokens,
+                  totalTk: vu?.totalTokens,
+                  costUSD: vu?.estimatedCostUSD?.toFixed(6)
+                })
+              );
+              if (pipelineResult.dashboardReport?.issues) {
+                for (const [issueIdx, photoIdxs] of Object.entries(
+                  visionPhotoAssignments
+                )) {
+                  const idx = parseInt(issueIdx, 10);
+                  if (pipelineResult.dashboardReport.issues[idx]) {
+                    pipelineResult.dashboardReport.issues[idx].photoIndices =
+                      photoIdxs;
+                  }
+                }
+              }
+            } catch (visionErr) {
+              console.warn(
+                `[VISION] chatId=${chatId} photo matching failed (non-blocking):`,
+                visionErr.message
+              );
+            }
+          }
+
           const summaryText =
             pipelineResult.dashboardReport?.summary?.transcriptionSummary?.trim() ||
             '';
-          const photoCount = session.photoUrls?.length || 0;
+          const photoCount = photoUrls.length;
           const reportHeader = {
             title:
               pipelineResult.dashboardReport?.report_header?.title ||
@@ -1436,7 +1529,8 @@ const telegramWebhook = onRequest(
             issues,
             photoCount,
             consolidatedActions,
-            finalStatus
+            finalStatus,
+            rawTranscription: session.lastTranscription || ''
           });
           await setPendingReportConfirmation(chatId, {
             pipelineResult: {

@@ -1,8 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import { useIncidences, useHouses, useCreateIncidence, useWorkersFirestore, useSettings } from '@/hooks/useFirestore';
-import IncidenceDetailPanel, { StateBadge, SlaBadge, StaleBadge } from '@/components/IncidenceDetailPanel';
+import { uploadIncidencePhoto } from '@/services/firestore';
+import { useAuth } from '@/hooks/useAuth';
+import IncidenceDetailPanel, { StateBadge, SlaBadge, StaleBadge, PriorityBadge, CategoryBadge } from '@/components/IncidenceDetailPanel';
 import {
   AlertCircle,
   AlertTriangle,
@@ -260,6 +262,8 @@ export default function IncidencesPage() {
                       </span>
                     )}
                     <StateBadge state={inc.state} done={inc.done} />
+                    <PriorityBadge priority={inc.priority} />
+                    <CategoryBadge category={inc.category} />
                     <SlaBadge doc={inc} />
                     <StaleBadge doc={inc} />
                     {(inc.workers || []).map((w, i) => (
@@ -311,28 +315,60 @@ function CreateIncidenceModal({ houses, onClose, onCreated }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [houseId, setHouseId] = useState('');
+  const [priority, setPriority] = useState('');
+  const [category, setCategory] = useState('');
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const house = houses.find((h) => h.id === houseId);
   const canSubmit = title.trim() && houseId;
+
+  const handlePhotoChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const newFiles = [...photoFiles, ...files].slice(0, 8);
+    setPhotoFiles(newFiles);
+    const previews = newFiles.map((f) => URL.createObjectURL(f));
+    setPhotoPreviews(previews);
+    e.target.value = '';
+  };
+
+  const removePhoto = (idx) => {
+    URL.revokeObjectURL(photoPreviews[idx]);
+    setPhotoFiles((prev) => prev.filter((_, i) => i !== idx));
+    setPhotoPreviews((prev) => prev.filter((_, i) => i !== idx));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!canSubmit) return;
     try {
+      setUploading(true);
+      const photoUrls = await Promise.all(photoFiles.map((f) => uploadIncidencePhoto(f)));
       await createIncidence.mutateAsync({
         title: title.trim(),
         incidence: description.trim() || undefined,
         houseId: house.id,
         house: house,
+        priority: priority || undefined,
+        category: category || undefined,
+        photos: photoUrls,
         createdBy: user && userData ? { uid: user.uid, email: userData.email || '' } : undefined,
         slaResponseHours: settings?.slaIncidenceResponseHours ?? 24,
         slaResolutionHours: settings?.slaIncidenceResolutionHours ?? 72,
       });
+      photoPreviews.forEach((url) => URL.revokeObjectURL(url));
       onCreated();
     } catch (err) {
       console.error('Error creating incidence', err);
+    } finally {
+      setUploading(false);
     }
   };
+
+  const isSubmitting = uploading || createIncidence.isPending;
 
   return (
     <Modal open onClose={onClose} title="Nueva incidencia">
@@ -370,12 +406,94 @@ function CreateIncidenceModal({ houses, onClose, onCreated }) {
             ))}
           </select>
         </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Prioridad</label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500 focus:border-transparent"
+            >
+              <option value="">Sin prioridad</option>
+              <option value="critical">Crítica</option>
+              <option value="high">Alta</option>
+              <option value="medium">Media</option>
+              <option value="low">Baja</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500 focus:border-transparent"
+            >
+              <option value="">Sin categoría</option>
+              <option value="safety">Seguridad</option>
+              <option value="cleanliness">Limpieza</option>
+              <option value="maintenance">Mantenimiento</option>
+              <option value="amenities">Equipamiento</option>
+              <option value="cosmetic">Estético</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Fotos */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Fotos <span className="text-gray-400 font-normal">(máx. 8)</span>
+          </label>
+          {photoPreviews.length > 0 && (
+            <div className="grid grid-cols-4 gap-2 mb-3">
+              {photoPreviews.map((src, idx) => (
+                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                  <img src={src} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(idx)}
+                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              {photoFiles.length < 8 && (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-turquoise-400 hover:text-turquoise-500 transition-colors"
+                >
+                  <Plus size={20} />
+                </button>
+              )}
+            </div>
+          )}
+          {photoPreviews.length === 0 && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full border-2 border-dashed border-gray-300 rounded-lg py-4 flex flex-col items-center gap-1 text-gray-400 hover:border-turquoise-400 hover:text-turquoise-500 transition-colors"
+            >
+              <Camera size={22} />
+              <span className="text-xs">Añadir fotos</span>
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handlePhotoChange}
+          />
+        </div>
+
         <div className="flex gap-2 justify-end pt-2">
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={!canSubmit || createIncidence.isPending}>
-            {createIncidence.isPending ? 'Creando…' : 'Crear incidencia'}
+          <Button type="submit" disabled={!canSubmit || isSubmitting}>
+            {uploading ? `Subiendo fotos… (${photoFiles.length})` : isSubmitting ? 'Creando…' : 'Crear incidencia'}
           </Button>
         </div>
       </form>
