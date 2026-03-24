@@ -11,7 +11,7 @@ export function CardHeader({ className = '', children }) {
 }
 
 export function CardTitle({ className = '', children }) {
-  return <h3 className={`font-heading text-lg font-semibold text-stone-900 ${className}`}>{children}</h3>;
+  return <h3 className={`font-heading text-lg font-semibold text-stone-900 dark:text-stone-100 ${className}`}>{children}</h3>;
 }
 
 export function CardContent({ className = '', children }) {

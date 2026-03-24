@@ -32,10 +32,10 @@ import {
 
 function StatCard({ icon: Icon, label, value, subvalue, color }) {
   const colors = {
-    primary: 'bg-turquoise-50 text-turquoise-600',
-    secondary: 'bg-turquoise-100/80 text-turquoise-700',
-    accent: 'bg-turquoise-50 text-turquoise-600',
-    warning: 'bg-amber-50 text-amber-600',
+    primary: 'bg-turquoise-50 dark:bg-turquoise-900/30 text-turquoise-600 dark:text-turquoise-400',
+    secondary: 'bg-turquoise-100/80 dark:bg-turquoise-900/40 text-turquoise-700 dark:text-turquoise-400',
+    accent: 'bg-turquoise-50 dark:bg-turquoise-900/30 text-turquoise-600 dark:text-turquoise-400',
+    warning: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
   };
 
   return (
@@ -65,8 +65,8 @@ function RecentShiftsTable({ shifts, onShiftClick }) {
   if (!shifts?.length) {
     return (
       <div className="flex flex-col items-center justify-center py-14 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-turquoise-50 flex items-center justify-center mb-4">
-          <Clock className="w-8 h-8 text-turquoise-500" />
+        <div className="w-16 h-16 rounded-2xl bg-turquoise-50 dark:bg-turquoise-900/30 flex items-center justify-center mb-4">
+          <Clock className="w-8 h-8 text-turquoise-500 dark:text-turquoise-400" />
         </div>
         <p className="font-heading text-stone-800 font-medium mb-1">No hay jornadas registradas</p>
         <p className="text-sm text-stone-500">Selecciona otro periodo o fecha</p>
@@ -263,8 +263,8 @@ function WorkerSummaryCards({ workerStats }) {
   if (!workerStats?.length) {
     return (
       <div className="flex flex-col items-center justify-center py-14 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-turquoise-50 flex items-center justify-center mb-4">
-          <Users className="w-8 h-8 text-turquoise-500" />
+        <div className="w-16 h-16 rounded-2xl bg-turquoise-50 dark:bg-turquoise-900/30 flex items-center justify-center mb-4">
+          <Users className="w-8 h-8 text-turquoise-500 dark:text-turquoise-400" />
         </div>
         <p className="font-heading text-stone-800 font-medium mb-1">No hay datos de trabajadores</p>
         <p className="text-sm text-stone-500">Para este periodo no hay jornadas registradas</p>
@@ -505,8 +505,8 @@ function EstadoDelDiaPanel() {
     return (
       <Card>
         <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-turquoise-50">
-            <Activity className="w-5 h-5 text-turquoise-600" />
+          <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
+            <Activity className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
           </div>
           <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">Estado del día</h2>
         </div>
@@ -522,8 +522,8 @@ function EstadoDelDiaPanel() {
       <Card>
         <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-turquoise-50">
-              <Activity className="w-5 h-5 text-turquoise-600" />
+            <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
+              <Activity className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
             </div>
             <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">Estado del día</h2>
           </div>
@@ -933,8 +933,8 @@ function CierreDelDiaSection() {
     <Card>
       <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-turquoise-50">
-            <ClipboardCheck className="w-5 h-5 text-turquoise-600" />
+          <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
+            <ClipboardCheck className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
           </div>
           <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">Cierre del día</h2>
         </div>
@@ -1253,8 +1253,8 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-turquoise-50">
-                  <TrendingUp className="w-5 h-5 text-turquoise-600" />
+                <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
+                  <TrendingUp className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
                 </div>
                 <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">
                   Horas por trabajador
@@ -1266,8 +1266,8 @@ export default function DashboardPage() {
             </Card>
             <Card>
               <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-turquoise-50">
-                  <Users className="w-5 h-5 text-turquoise-600" />
+                <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
+                  <Users className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
                 </div>
                 <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">
                   Resumen por trabajador
@@ -1284,8 +1284,8 @@ export default function DashboardPage() {
           <Card>
             <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-turquoise-50">
-                  <Users className="w-5 h-5 text-turquoise-600" />
+                <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
+                  <Users className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
                 </div>
                 <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">
                   Todos los trabajadores

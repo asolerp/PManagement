@@ -2,9 +2,9 @@ import { forwardRef } from 'react';
 
 const variants = {
   primary: 'bg-turquoise-500 hover:bg-turquoise-600 text-white shadow-sm',
-  secondary: 'bg-turquoise-50 text-turquoise-700 hover:bg-turquoise-100 border border-turquoise-200',
-  outline: 'border border-stone-300 bg-white hover:bg-stone-50 text-stone-700',
-  ghost: 'hover:bg-stone-100 text-stone-700',
+  secondary: 'bg-turquoise-50 dark:bg-turquoise-900/30 text-turquoise-700 dark:text-turquoise-400 hover:bg-turquoise-100 dark:hover:bg-turquoise-900/50 border border-turquoise-200 dark:border-turquoise-800',
+  outline: 'border border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-800 hover:bg-stone-50 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200',
+  ghost: 'hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300',
   danger: 'bg-red-500 hover:bg-red-600 text-white',
 };
 
@@ -23,6 +23,7 @@ const Button = forwardRef(
           inline-flex items-center justify-center font-medium
           transition-colors duration-200
           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-turquoise-500
+          dark:focus:ring-offset-stone-900
           disabled:opacity-50 disabled:cursor-not-allowed
           ${variants[variant]}
           ${sizes[size]}

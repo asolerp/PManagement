@@ -292,6 +292,7 @@ const telegramWebhook = onRequest(
     region: REGION,
     timeoutSeconds: 60,
     memory: '256MiB',
+    minInstances: 1,
     invoker: 'public',
     secrets: [telegramBotToken, openaiApiKey]
   },

@@ -18,8 +18,11 @@ import {
   HelpCircle,
   User,
   FileText,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth.jsx';
+import { useTheme } from '@/context/ThemeContext';
 import { getSafeImageUrl } from '@/utils/getSafeImageUrl';
 
 const navGroups = [
@@ -59,6 +62,7 @@ const navGroups = [
 
 export default function Sidebar({ open, onClose }) {
   const { signOut, userData, company } = useAuth();
+  const { isDark, toggle } = useTheme();
   const [avatarError, setAvatarError] = useState(false);
   const avatarUrl = getSafeImageUrl(userData?.profileImage?.small);
   const showAvatar = avatarUrl && !avatarError;
@@ -88,13 +92,13 @@ export default function Sidebar({ open, onClose }) {
             <div className="w-9 h-9 rounded-xl bg-turquoise-500 flex items-center justify-center flex-shrink-0 shadow-sm">
               <span className="text-white font-heading font-bold text-sm">P</span>
             </div>
-            <span className="font-heading font-semibold text-stone-900 truncate text-sm" title={companyName}>
+            <span className="font-heading font-semibold text-stone-900 dark:text-stone-100 truncate text-sm" title={companyName}>
               {companyName}
             </span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-stone-100 transition-colors lg:hidden text-stone-500"
+            className="p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors lg:hidden text-stone-500 dark:text-stone-400"
           >
             <X className="w-5 h-5" />
           </button>
@@ -107,7 +111,7 @@ export default function Sidebar({ open, onClose }) {
               className={groupIndex > 0 ? 'mt-6' : ''}
             >
               {group.label && (
-                <p className="px-3 mb-1.5 text-[11px] font-semibold text-stone-400 uppercase tracking-wider">
+                <p className="px-3 mb-1.5 text-[11px] font-semibold text-stone-400 dark:text-stone-600 uppercase tracking-wider">
                   {group.label}
                 </p>
               )}
@@ -121,8 +125,8 @@ export default function Sidebar({ open, onClose }) {
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
                         isActive
-                          ? 'bg-turquoise-50 text-turquoise-700 font-medium'
-                          : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                          ? 'bg-turquoise-50 dark:bg-turquoise-900/30 text-turquoise-700 dark:text-turquoise-400 font-medium'
+                          : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100'
                       }`
                     }
                   >
@@ -137,7 +141,7 @@ export default function Sidebar({ open, onClose }) {
 
         <div className="p-4 border-t border-[var(--border-soft)] space-y-0.5">
           <div className="flex items-center gap-3 px-2 py-3 mb-1">
-            <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center flex-shrink-0 overflow-hidden">
               {showAvatar ? (
                 <img
                   src={avatarUrl}
@@ -146,20 +150,30 @@ export default function Sidebar({ open, onClose }) {
                   onError={() => setAvatarError(true)}
                 />
               ) : (
-                <span className="text-stone-500 font-medium text-sm">
+                <span className="text-stone-500 dark:text-stone-400 font-medium text-sm">
                   {displayName.charAt(0) || 'A'}
                 </span>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-stone-900 truncate">{displayName}</p>
-              <p className="text-xs text-stone-500 truncate">{userData?.email}</p>
+              <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">{displayName}</p>
+              <p className="text-xs text-stone-500 dark:text-stone-500 truncate">{userData?.email}</p>
             </div>
           </div>
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggle}
+            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60 rounded-xl transition-colors text-left"
+          >
+            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+            {isDark ? 'Modo claro' : 'Modo oscuro'}
+          </button>
+
           <NavLink
             to="/mi-cuenta"
             onClick={onClose}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-600 hover:bg-stone-50 rounded-xl transition-colors"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60 rounded-xl transition-colors"
           >
             <User className="w-4 h-4" />
             Mi cuenta
@@ -167,14 +181,14 @@ export default function Sidebar({ open, onClose }) {
           <NavLink
             to="/ayuda"
             onClick={onClose}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-600 hover:bg-stone-50 rounded-xl transition-colors"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60 rounded-xl transition-colors"
           >
             <HelpCircle className="w-4 h-4" />
             Ayuda
           </NavLink>
           <button
             onClick={signOut}
-            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-600 hover:bg-stone-50 rounded-xl transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60 rounded-xl transition-colors text-left"
           >
             <LogOut className="w-4 h-4" />
             Cerrar sesión

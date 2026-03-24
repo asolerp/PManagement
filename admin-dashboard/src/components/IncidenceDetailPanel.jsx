@@ -1,7 +1,8 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.jsx';
 import { useUpdateIncidence, useDeleteIncidence, useAddActivity } from '@/hooks/useFirestore';
+import { uploadIncidencePhoto } from '@/services/firestore';
 import Timeline from '@/components/Timeline';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -20,6 +21,7 @@ import {
   Hourglass,
   Trash2,
   Pencil,
+  Plus,
 } from 'lucide-react';
 
 function formatDate(value) {
@@ -271,7 +273,12 @@ export default function IncidenceDetailPanel({
   const [editPriority, setEditPriority] = useState('');
   const [editCategory, setEditCategory] = useState('');
   const [editWorkerIds, setEditWorkerIds] = useState(new Set());
+  const [editPhotos, setEditPhotos] = useState([]);
+  const [editNewFiles, setEditNewFiles] = useState([]);
+  const [editNewPreviews, setEditNewPreviews] = useState([]);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
   const [editError, setEditError] = useState(null);
+  const photoInputRef = useRef(null);
   const updateIncidence = useUpdateIncidence();
   const deleteIncidence = useDeleteIncidence();
   const addActivity = useAddActivity();
@@ -294,6 +301,9 @@ export default function IncidenceDetailPanel({
     setEditPriority(incidence.priority || '');
     setEditCategory(incidence.category || '');
     setEditWorkerIds(new Set((incidence.workersId || []).filter(Boolean)));
+    setEditPhotos(incidence.photos || []);
+    setEditNewFiles([]);
+    setEditNewPreviews([]);
     setEditError(null);
     setIsEditing(false);
   }, [incidence, currentHouseId]);
@@ -364,8 +374,33 @@ export default function IncidenceDetailPanel({
     setEditPriority(incidence.priority || '');
     setEditCategory(incidence.category || '');
     setEditWorkerIds(new Set((incidence.workersId || []).filter(Boolean)));
+    setEditPhotos(incidence.photos || []);
+    setEditNewFiles([]);
+    setEditNewPreviews([]);
     setEditError(null);
     setIsEditing(true);
+  };
+
+  const handleEditPhotoFileChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const totalAllowed = 8 - editPhotos.length;
+    const toAdd = files.slice(0, Math.max(0, totalAllowed - editNewFiles.length));
+    if (!toAdd.length) return;
+    const newPreviews = toAdd.map((f) => URL.createObjectURL(f));
+    setEditNewFiles((prev) => [...prev, ...toAdd]);
+    setEditNewPreviews((prev) => [...prev, ...newPreviews]);
+    e.target.value = '';
+  };
+
+  const removeExistingPhoto = (idx) => {
+    setEditPhotos((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const removeNewPhoto = (idx) => {
+    URL.revokeObjectURL(editNewPreviews[idx]);
+    setEditNewFiles((prev) => prev.filter((_, i) => i !== idx));
+    setEditNewPreviews((prev) => prev.filter((_, i) => i !== idx));
   };
 
   const handleSaveEdit = async () => {
@@ -391,6 +426,11 @@ export default function IncidenceDetailPanel({
       profileImage: w.profileImage || null,
     }));
     try {
+      setUploadingPhotos(editNewFiles.length > 0);
+      const uploadedUrls = await Promise.all(editNewFiles.map((f) => uploadIncidencePhoto(f)));
+      setUploadingPhotos(false);
+      const finalPhotos = [...editPhotos, ...uploadedUrls];
+      editNewPreviews.forEach((url) => URL.revokeObjectURL(url));
       await updateIncidence.mutateAsync({
         id: incidence.id,
         title: editTitle.trim(),
@@ -402,6 +442,7 @@ export default function IncidenceDetailPanel({
         done: toDone,
         priority: editPriority || null,
         category: editCategory || null,
+        photos: finalPhotos,
         workersId: normalizedWorkers.map((w) => w.id),
         workers: normalizedWorkers,
       });
@@ -425,11 +466,15 @@ export default function IncidenceDetailPanel({
         done: toDone,
         priority: editPriority || null,
         category: editCategory || null,
+        photos: finalPhotos,
         workersId: normalizedWorkers.map((w) => w.id),
         workers: normalizedWorkers,
       });
+      setEditNewFiles([]);
+      setEditNewPreviews([]);
       setIsEditing(false);
     } catch (err) {
+      setUploadingPhotos(false);
       console.error('Error al guardar incidencia', err);
       setEditError('No se pudo guardar la incidencia. Inténtalo de nuevo.');
     }
@@ -726,6 +771,58 @@ export default function IncidenceDetailPanel({
                     ))}
                   </select>
                 </div>
+                {/* Fotos */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fotos <span className="text-gray-400 font-normal">(máx. 8)</span>
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {editPhotos.map((url, idx) => (
+                      <div key={`ex-${idx}`} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeExistingPhoto(idx)}
+                          className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    {editNewPreviews.map((src, idx) => (
+                      <div key={`new-${idx}`} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-turquoise-300">
+                        <img src={src} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeNewPhoto(idx)}
+                          className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                        <span className="absolute bottom-1 left-1 bg-turquoise-500 text-white text-[10px] px-1 rounded">nueva</span>
+                      </div>
+                    ))}
+                    {editPhotos.length + editNewFiles.length < 8 && (
+                      <button
+                        type="button"
+                        onClick={() => photoInputRef.current?.click()}
+                        className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 hover:border-turquoise-400 hover:text-turquoise-500 transition-colors gap-1"
+                      >
+                        <Plus size={18} />
+                        <span className="text-[10px]">Añadir</span>
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={photoInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handleEditPhotoFileChange}
+                  />
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Trabajadores asignados
@@ -775,9 +872,13 @@ export default function IncidenceDetailPanel({
                   <Button
                     type="button"
                     onClick={handleSaveEdit}
-                    disabled={updateIncidence.isPending}
+                    disabled={updateIncidence.isPending || uploadingPhotos}
                   >
-                    {updateIncidence.isPending ? 'Guardando…' : 'Guardar cambios'}
+                    {uploadingPhotos
+                      ? `Subiendo fotos… (${editNewFiles.length})`
+                      : updateIncidence.isPending
+                        ? 'Guardando…'
+                        : 'Guardar cambios'}
                   </Button>
                 </div>
               </>
