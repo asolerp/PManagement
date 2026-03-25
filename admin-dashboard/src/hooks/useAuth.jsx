@@ -6,6 +6,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/config/firebase';
+import { clientLogError } from '@/lib/clientLog';
 
 const AuthContext = createContext(null);
 
@@ -42,13 +43,9 @@ export function AuthProvider({ children }) {
             setUserData(null);
           }
         } catch (err) {
-          console.error('Error fetching user data:', {
-            code: err?.code,
-            message: err?.message,
-            name: err?.name,
+          clientLogError('auth_fetch_user_failed', err, {
             uid: firebaseUser?.uid,
-            path: firebaseUser ? `users/${firebaseUser.uid}` : null,
-            fullError: err
+            path: firebaseUser ? `users/${firebaseUser.uid}` : null
           });
           const isPermissionError = err?.code === 'permission-denied' || err?.message?.includes('permission');
           if (isPermissionError) {
@@ -83,7 +80,7 @@ export function AuthProvider({ children }) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
-      console.error('Sign in error:', err);
+      clientLogError('auth_sign_in_failed', err, { email: email?.slice(0, 80) });
       setLoading(false);
       if (err.code === 'auth/invalid-credential') {
         setError('Email o contraseña incorrectos.');
@@ -102,7 +99,7 @@ export function AuthProvider({ children }) {
     try {
       await firebaseSignOut(auth);
     } catch (err) {
-      console.error('Sign out error:', err);
+      clientLogError('auth_sign_out_failed', err);
     }
   };
 

@@ -11,6 +11,7 @@
  */
 
 const OPENAI_API = 'https://api.openai.com/v1/chat/completions';
+const { logMetric } = require('../../../lib/obsLogger');
 const MODEL = 'gpt-4o-mini';
 const MAX_PHOTOS = 10;
 const MAX_OUTPUT_TOKENS = 500;
@@ -37,6 +38,7 @@ async function matchPhotosToIssues(apiKey, photoUrls, issues) {
     return { assignments: {}, usage: null };
   }
 
+  const t0 = Date.now();
   const photos = photoUrls.slice(0, MAX_PHOTOS);
 
   const issueList = issues
@@ -87,6 +89,7 @@ async function matchPhotosToIssues(apiKey, photoUrls, issues) {
   }
 
   const data = await res.json();
+  const latencyMs = Date.now() - t0;
   const rawUsage = data.usage || {};
   const promptTokens = rawUsage.prompt_tokens || 0;
   const completionTokens = rawUsage.completion_tokens || 0;
@@ -99,6 +102,16 @@ async function matchPhotosToIssues(apiKey, photoUrls, issues) {
     totalTokens,
     estimatedCostUSD
   };
+
+  logMetric('vision', {
+    model: MODEL,
+    promptTokens,
+    completionTokens,
+    costUSD: estimatedCostUSD,
+    latencyMs,
+    photoCount: photos.length,
+    issueCount: issues.length
+  });
 
   const content = data.choices?.[0]?.message?.content?.trim();
   if (!content) {

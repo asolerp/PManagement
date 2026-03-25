@@ -1,9 +1,23 @@
 /**
  * Llama al LLM (OpenAI) con contexto y mensaje del usuario.
  * Soporta modo simple (solo contexto) y modo con tools (el modelo puede llamar funciones).
+ *
+ * Todas las funciones devuelven { text, usage } donde usage contiene
+ * promptTokens, completionTokens, costUSD y latencyMs.
  */
 
 const OPENAI_API = 'https://api.openai.com/v1/chat/completions';
+const { logMetric } = require('../lib/obsLogger');
+
+const COST_PER_1M_INPUT = 0.15;
+const COST_PER_1M_OUTPUT = 0.6;
+
+function estimateCostUSD(promptTokens, completionTokens) {
+  return (
+    (promptTokens / 1_000_000) * COST_PER_1M_INPUT +
+    (completionTokens / 1_000_000) * COST_PER_1M_OUTPUT
+  );
+}
 
 const SYSTEM_WITH_TOOLS = `Eres un asistente del panel de administración de PortManagement (gestión de propiedades, cuadrantes, incidencias y revisiones).
 Tienes herramientas para: consultar incidencias, cuadrante, trabajos, propiedades, trabajadores, checklists; y para crear una incidencia (createIncidence). Para crear una incidencia: el usuario suele dar el nombre de la propiedad (propertyName), no el ID. Llama createIncidence con title y propertyName; si la herramienta devuelve varias opciones numeradas (1, 2, …), pide al usuario que confirme con el número o el ID y luego llama createIncidence de nuevo con ese propertyId y el mismo título/descripción.
@@ -12,6 +26,9 @@ Formato para Telegram: evita Markdown (no uses **texto**). Si necesitas resaltar
 
 const MAX_TOOL_ROUNDS = 5;
 
+/**
+ * @returns {Promise<{ text: string, usage: object }>}
+ */
 async function ask(apiKey, systemContext, userMessage) {
   const system = `Eres un asistente del panel de administración de PortManagement.
 Responde en español, breve y claro. Solo usa la información del contexto. No inventes datos.
@@ -19,6 +36,7 @@ Responde en español, breve y claro. Solo usa la información del contexto. No i
 Contexto:
 ${systemContext}`;
 
+  const t0 = Date.now();
   const res = await fetch(OPENAI_API, {
     method: 'POST',
     headers: {
@@ -42,11 +60,23 @@ ${systemContext}`;
   }
 
   const data = await res.json();
+  const latencyMs = Date.now() - t0;
   const content = data.choices?.[0]?.message?.content?.trim();
   if (!content) throw new Error('Empty response from OpenAI');
-  return content;
+
+  const promptTokens = data.usage?.prompt_tokens || 0;
+  const completionTokens = data.usage?.completion_tokens || 0;
+  const costUSD = estimateCostUSD(promptTokens, completionTokens);
+  const usage = { promptTokens, completionTokens, costUSD, latencyMs };
+
+  logMetric('llm', { model: 'gpt-4o-mini', function: 'ask', ...usage });
+
+  return { text: content, usage };
 }
 
+/**
+ * @returns {Promise<{ text: string, usage: object }>}
+ */
 async function askWithTools(
   apiKey,
   userMessage,
@@ -69,6 +99,10 @@ async function askWithTools(
     ...historyMessages,
     { role: 'user', content: userMessage }
   ];
+
+  const t0 = Date.now();
+  let totalPromptTokens = 0;
+  let totalCompletionTokens = 0;
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     const res = await fetch(OPENAI_API, {
@@ -93,6 +127,9 @@ async function askWithTools(
     }
 
     const data = await res.json();
+    totalPromptTokens += data.usage?.prompt_tokens || 0;
+    totalCompletionTokens += data.usage?.completion_tokens || 0;
+
     const msg = data.choices?.[0]?.message;
     if (!msg) throw new Error('Empty response from OpenAI');
 
@@ -104,7 +141,26 @@ async function askWithTools(
 
     if (!msg.tool_calls || msg.tool_calls.length === 0) {
       const text = (msg.content || '').trim();
-      if (text) return text;
+      if (text) {
+        const latencyMs = Date.now() - t0;
+        const costUSD = estimateCostUSD(
+          totalPromptTokens,
+          totalCompletionTokens
+        );
+        const usage = {
+          promptTokens: totalPromptTokens,
+          completionTokens: totalCompletionTokens,
+          costUSD,
+          latencyMs,
+          rounds: round + 1
+        };
+        logMetric('llm', {
+          model: 'gpt-4o-mini',
+          function: 'askWithTools',
+          ...usage
+        });
+        return { text, usage };
+      }
       throw new Error('Empty final response from OpenAI');
     }
 
@@ -126,7 +182,11 @@ async function askWithTools(
   throw new Error('Too many tool rounds');
 }
 
+/**
+ * @returns {Promise<{ text: string|null, usage: object|null }>}
+ */
 async function naturalReply(apiKey, situation) {
+  const t0 = Date.now();
   const res = await fetch(OPENAI_API, {
     method: 'POST',
     headers: {
@@ -151,9 +211,25 @@ async function naturalReply(apiKey, situation) {
       temperature: 0.7
     })
   });
-  if (!res.ok) return null;
+  if (!res.ok) return { text: null, usage: null };
+
   const data = await res.json();
-  return data.choices?.[0]?.message?.content?.trim() || null;
+  const latencyMs = Date.now() - t0;
+  const text = data.choices?.[0]?.message?.content?.trim() || null;
+
+  const promptTokens = data.usage?.prompt_tokens || 0;
+  const completionTokens = data.usage?.completion_tokens || 0;
+  const costUSD = estimateCostUSD(promptTokens, completionTokens);
+  const usage = { promptTokens, completionTokens, costUSD, latencyMs };
+
+  if (text)
+    logMetric('llm', {
+      model: 'gpt-4o-mini',
+      function: 'naturalReply',
+      ...usage
+    });
+
+  return { text, usage };
 }
 
 module.exports = {

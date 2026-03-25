@@ -8,6 +8,10 @@ const {
   EXTRACTION_SYSTEM,
   extractionUserMessage
 } = require('../prompts/extractionPrompt');
+const { logMetric } = require('../../../lib/obsLogger');
+
+const COST_PER_1M_INPUT = 0.15;
+const COST_PER_1M_OUTPUT = 0.6;
 
 /**
  * @param {string} apiKey
@@ -15,6 +19,7 @@ const {
  * @returns {Promise<{ propertyName?: string, location?: string, facts: Array<{ factId: string, source: string, kind: string, text: string, location?: string, object?: string, confidence?: number }>, tasksPerformed?: string[] }>}
  */
 async function extractWithOpenAI(apiKey, transcript) {
+  const t0 = Date.now();
   const res = await fetch(OPENAI_API, {
     method: 'POST',
     headers: {
@@ -39,6 +44,19 @@ async function extractWithOpenAI(apiKey, transcript) {
   }
 
   const data = await res.json();
+  const latencyMs = Date.now() - t0;
+  const promptTokens = data.usage?.prompt_tokens || 0;
+  const completionTokens = data.usage?.completion_tokens || 0;
+  const costUSD =
+    (promptTokens / 1_000_000) * COST_PER_1M_INPUT +
+    (completionTokens / 1_000_000) * COST_PER_1M_OUTPUT;
+  logMetric('pipeline_extraction', {
+    model: 'gpt-4o-mini',
+    promptTokens,
+    completionTokens,
+    costUSD,
+    latencyMs
+  });
   const content = data.choices?.[0]?.message?.content?.trim();
   if (!content) throw new Error('Empty extraction response');
 

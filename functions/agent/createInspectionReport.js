@@ -4,6 +4,7 @@
  */
 
 const admin = require('firebase-admin');
+const { logEvent } = require('../lib/obsLogger');
 
 const MAX_PROPERTIES_SEARCH = 100;
 const MAX_SIMILAR_SUGGESTIONS = 6;
@@ -239,6 +240,15 @@ async function createReportFromPipeline(
   });
 
   const count = issues.length;
+  logEvent('info', 'report', 'report_created', {
+    reportId: docRef.id,
+    propertyName: finalPropertyName,
+    propertyId: propertyId || null,
+    issueCount: count,
+    photoCount: (Array.isArray(photoUrls) ? photoUrls : []).length,
+    overallPriority
+  });
+
   const message =
     count > 0
       ? `Informe creado con ${count} incidencia${count !== 1 ? 's' : ''} detectada${count !== 1 ? 's' : ''}. Puedes verlo en Reportes en el dashboard y crear las incidencias cuando quieras.`

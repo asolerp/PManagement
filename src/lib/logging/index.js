@@ -111,10 +111,38 @@ const logToCrashlytics = (level, message, context) => {
   if (!crashlytics) return;
 
   try {
-    // Add log entry
-    crashLog(crashlytics, `[${level}] ${message}`);
+    const payload = {
+      type: 'client_log',
+      source: 'mobile',
+      level,
+      message,
+      ts: new Date().toISOString()
+    };
+    if (context && typeof context === 'object') {
+      for (const [key, value] of Object.entries(context)) {
+        if (key in payload) continue;
+        let s;
+        if (value == null) s = '';
+        else if (typeof value === 'object') {
+          try {
+            s = JSON.stringify(value);
+          } catch {
+            s = String(value);
+          }
+        } else {
+          s = String(value);
+        }
+        payload[key] = s.slice(0, 240);
+      }
+    }
+    let line;
+    try {
+      line = JSON.stringify(payload);
+    } catch {
+      line = `[${level}] ${message}`;
+    }
+    crashLog(crashlytics, line.slice(0, 1500));
 
-    // Add context as attributes if provided
     if (context && typeof context === 'object') {
       Object.entries(context).forEach(([key, value]) => {
         setAttribute(crashlytics, key, String(value));

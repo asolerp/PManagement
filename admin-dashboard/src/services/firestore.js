@@ -1,3 +1,4 @@
+import { clientLogError } from '@/lib/clientLog';
 import {
   collection,
   doc,
@@ -201,7 +202,7 @@ export async function getChecklistsPage({ filters = {}, pageParam = null } = {})
     const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
     return { docs, lastDoc, hasMore: snapshot.docs.length === PAGE_SIZE };
   } catch (e) {
-    console.error('getChecklistsPage', e);
+    clientLogError('firestore_get_checklists_page_failed', e);
     return { docs: [], lastDoc: null, hasMore: false };
   }
 }
@@ -225,7 +226,7 @@ export async function getChecklists(filters = {}) {
     const snapshot = await getDocs(q);
     return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   } catch (e) {
-    console.error('getChecklists', e);
+    clientLogError('firestore_get_checklists_failed', e, { filters });
     throw e;
   }
 }
@@ -643,6 +644,15 @@ export async function getOwners() {
 export async function uploadIncidencePhoto(file) {
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const path = `incidences/uploads/${Date.now()}_${safeName}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
+}
+
+/** Fotos añadidas manualmente desde el admin para un informe de inspección (se guardan en photoUrls). */
+export async function uploadInspectionReportPhoto(file) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `inspectionReports/uploads/${Date.now()}_${safeName}`;
   const storageRef = ref(storage, path);
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);

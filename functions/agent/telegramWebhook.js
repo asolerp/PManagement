@@ -7,7 +7,14 @@
 const admin = require('firebase-admin');
 const { onRequest } = require('firebase-functions/v2/https');
 const { REGION } = require('../utils');
-const { telegramBotToken, openaiApiKey } = require('./config');
+const {
+  telegramBotToken,
+  openaiApiKey,
+  grafanaLokiUrl,
+  grafanaLokiUser,
+  grafanaLokiToken
+} = require('./config');
+const { logEvent } = require('../lib/obsLogger');
 const {
   sendMessage,
   sendMessageWithKeyboard,
@@ -294,7 +301,13 @@ const telegramWebhook = onRequest(
     memory: '256MiB',
     minInstances: 1,
     invoker: 'public',
-    secrets: [telegramBotToken, openaiApiKey]
+    secrets: [
+      telegramBotToken,
+      openaiApiKey,
+      grafanaLokiUrl,
+      grafanaLokiUser,
+      grafanaLokiToken
+    ]
   },
   async (req, res) => {
     if (req.method !== 'POST') {
@@ -455,7 +468,7 @@ const telegramWebhook = onRequest(
           await sendTypingAction(botToken, chatId);
           const openAITools = getOpenAITools();
           const runToolFn = (toolName, args) => runTool(null, toolName, args);
-          const answer = await askWithTools(
+          const { text: answer } = await askWithTools(
             apiKey,
             'Lista todas las casas/propiedades disponibles',
             openAITools,
@@ -471,7 +484,7 @@ const telegramWebhook = onRequest(
           await sendTypingAction(botToken, chatId);
           const openAITools = getOpenAITools();
           const runToolFn = (toolName, args) => runTool(null, toolName, args);
-          const answer = await askWithTools(
+          const { text: answer } = await askWithTools(
             apiKey,
             '¿Qué incidencias hay abiertas actualmente?',
             openAITools,
@@ -487,7 +500,7 @@ const telegramWebhook = onRequest(
           await sendTypingAction(botToken, chatId);
           const openAITools = getOpenAITools();
           const runToolFn = (toolName, args) => runTool(null, toolName, args);
-          const answer = await askWithTools(
+          const { text: answer } = await askWithTools(
             apiKey,
             '¿Cuál es el cuadrante de trabajo de hoy?',
             openAITools,
@@ -679,7 +692,7 @@ const telegramWebhook = onRequest(
       // ——— Nota de voz ———
       if (voice?.file_id) {
         await sendTypingAction(botToken, chatId);
-        const analyzingMsg = await naturalReply(
+        const { text: analyzingMsg } = await naturalReply(
           apiKey,
           'El usuario acaba de enviar una nota de voz. Genera un mensaje breve y amigable indicando que estás analizando el audio para el informe (1 frase).'
         );
@@ -718,7 +731,7 @@ const telegramWebhook = onRequest(
         );
 
         if (!extraction.propertyName?.trim()) {
-          const reply = await naturalReply(
+          const { text: reply } = await naturalReply(
             apiKey,
             'He analizado el audio del usuario pero no he conseguido detectar el nombre de ninguna casa/propiedad. Necesito que vuelva a grabar mencionando la propiedad. El audio previo ya está guardado.'
           );
@@ -763,7 +776,7 @@ const telegramWebhook = onRequest(
               );
             });
           } else {
-            const reply = await naturalReply(
+            const { text: reply } = await naturalReply(
               apiKey,
               `El usuario dijo "${extraction.propertyName.trim()}" pero no existe ninguna casa con ese nombre ni parecidas en la base de datos.`
             );
@@ -811,7 +824,7 @@ const telegramWebhook = onRequest(
           singleMatch.houseName || extraction.propertyName
         );
         const houseName = singleMatch.houseName || extraction.propertyName;
-        const reply = await naturalReply(
+        const { text: reply } = await naturalReply(
           apiKey,
           `He identificado la casa "${houseName}" del audio del usuario. Ahora puede enviar fotos o escribir "Crear informe" para generar el reporte.`
         );
@@ -874,7 +887,7 @@ const telegramWebhook = onRequest(
             }
           } else {
             if (!session?.lastTranscription) {
-              const reply = await naturalReply(
+              const { text: reply } = await naturalReply(
                 apiKey,
                 'El usuario envió una foto pero no tiene ningún informe activo ni incidencia seleccionada. Necesita primero enviar una nota de voz para iniciar un informe, o indicar a qué incidencia quiere adjuntar fotos.'
               );
@@ -922,7 +935,7 @@ const telegramWebhook = onRequest(
       }
 
       if (!text) {
-        const reply = await naturalReply(
+        const { text: reply } = await naturalReply(
           apiKey,
           'El usuario ha enviado algo que no es texto ni audio ni foto. Necesito explicarle que puede enviarme texto para consultas, notas de voz para informes de inspección, o fotos.'
         );
@@ -1088,7 +1101,7 @@ const telegramWebhook = onRequest(
           return;
         }
         await sendTypingAction(botToken, chatId);
-        const recoveringMsg = await naturalReply(
+        const { text: recoveringMsg } = await naturalReply(
           apiKey,
           'El usuario quiere recuperar su informe pendiente. Genera un mensaje breve (1 frase) indicando que estás recuperándolo.'
         );
@@ -1341,7 +1354,7 @@ const telegramWebhook = onRequest(
           );
         if (!isGeneralQuery) {
           if (isCreateReportCommand) {
-            const reply = await naturalReply(
+            const { text: reply } = await naturalReply(
               apiKey,
               'El usuario quiere crear el informe pero aún no ha elegido la casa. Debe elegir una de la lista primero.'
             );
@@ -1375,7 +1388,7 @@ const telegramWebhook = onRequest(
               chosen.houseName || chosen.id
             );
             const houseName = chosen.houseName || chosen.id;
-            const reply = await naturalReply(
+            const { text: reply } = await naturalReply(
               apiKey,
               `El usuario ha elegido la casa "${houseName}". Confirmar que el audio del informe se ha asociado a esa casa. Ahora puede subir fotos y después escribir "Crear informe".`
             );
@@ -1387,7 +1400,7 @@ const telegramWebhook = onRequest(
             const list = suggestedMatches
               .map((m, i) => `${i + 1}) ${m.houseName}`)
               .join(', ');
-            const reply = await naturalReply(
+            const { text: reply } = await naturalReply(
               apiKey,
               `El usuario escribió "${text}" pero no coincide con ninguna de las casas sugeridas: ${list}. Puedo listarle todas las casas si lo necesita, o que elija de la lista.`
             );
@@ -1411,7 +1424,7 @@ const telegramWebhook = onRequest(
           return;
         }
         await sendTypingAction(botToken, chatId);
-        const generatingMsg = await naturalReply(
+        const { text: generatingMsg } = await naturalReply(
           apiKey,
           'El usuario va a crear un informe. Genera un mensaje breve (1 frase) indicando que estás generando el resumen.'
         );
@@ -1574,7 +1587,8 @@ const telegramWebhook = onRequest(
         () => ''
       );
       const history = session?.conversationHistory || [];
-      const answer = await askWithTools(
+      const t0 = Date.now();
+      const { text: answer } = await askWithTools(
         apiKey,
         text,
         openAITools,
@@ -1582,15 +1596,23 @@ const telegramWebhook = onRequest(
         systemContext,
         history
       );
+      logEvent('info', 'webhook', 'request_complete', {
+        userId: user?.uid,
+        durationMs: Date.now() - t0,
+        fromId
+      });
       await send(answer);
       await appendConversationToHistory(chatId, 'user', text);
       await appendConversationToHistory(chatId, 'assistant', answer);
     } catch (err) {
-      console.error('Agent error:', err);
-      const errReply = await naturalReply(
+      logEvent('error', 'webhook', err.message, {
+        stack: err.stack?.slice(0, 500),
+        fromId
+      });
+      const { text: errReply } = await naturalReply(
         apiKey,
         'Ha ocurrido un error interno. Genera un mensaje breve y amigable pidiendo disculpas y sugiriendo que intente de nuevo en unos minutos.'
-      ).catch(() => null);
+      ).catch(() => ({ text: null }));
       await send(
         errReply ||
           'Lo siento, ha ocurrido un error. Inténtalo de nuevo en unos minutos.'

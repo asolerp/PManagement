@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/Card';
@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { serverTimestamp } from 'firebase/firestore';
 import { getSafeImageUrl } from '@/utils/getSafeImageUrl';
+import { uploadInspectionReportPhoto } from '@/services/firestore';
 
 const PRIORITY_OPTIONS = [
   { value: 'critical', label: 'Crítica', bg: 'bg-red-100', text: 'text-red-700', dot: 'bg-red-500' },
@@ -70,6 +71,18 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
   const [editPropertyId, setEditPropertyId] = useState('');
   const [editPriority, setEditPriority] = useState('none');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingReportFiles, setPendingReportFiles] = useState([]);
+  const [pendingReportPreviews, setPendingReportPreviews] = useState([]);
+  const reportPhotoInputRef = useRef(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  useEffect(() => {
+    setPendingReportPreviews((prev) => {
+      prev.forEach((url) => URL.revokeObjectURL(url));
+      return [];
+    });
+    setPendingReportFiles([]);
+  }, [report?.id]);
 
   useEffect(() => {
     if (report) {
@@ -133,21 +146,53 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
       : [];
   const finalStatus =
     report.finalStatus || dashboardReport.final_status || null;
-  const professionalIssues = Array.isArray(dashboardReport.issues)
-    ? dashboardReport.issues
-    : report.issues || [];
-  const groupedIssues = professionalIssues.reduce((acc, issue) => {
-    const key = issue.location || 'Sin ubicación';
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(issue);
-    return acc;
-  }, {});
+  const professionalIssues = useMemo(() => {
+    const dash = Array.isArray(dashboardReport?.issues) ? dashboardReport.issues : [];
+    const rep = Array.isArray(report?.issues) ? report.issues : [];
+    if (!dash.length) return rep;
+    if (!rep.length) return dash;
+    const maxLen = Math.max(dash.length, rep.length);
+    const out = [];
+    for (let i = 0; i < maxLen; i++) {
+      const d = dash[i];
+      const r = rep[i];
+      if (r && d) {
+        out.push({
+          ...d,
+          ...r,
+          title: r.title ?? d.title,
+          description: r.description ?? d.description,
+          photoIndices: Array.isArray(r.photoIndices) ? r.photoIndices : d.photoIndices,
+        });
+      } else {
+        out.push(r || d);
+      }
+    }
+    return out;
+  }, [report]);
+  const groupedIssues = useMemo(() => {
+    return professionalIssues.reduce((acc, issue) => {
+      const key = issue.location || 'Sin ubicación';
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(issue);
+      return acc;
+    }, {});
+  }, [professionalIssues]);
+  const editModePhotoUrls = useMemo(
+    () => [...(report?.photoUrls || []), ...pendingReportPreviews],
+    [report?.photoUrls, pendingReportPreviews]
+  );
   const globalPriority =
     report.overallPriority ||
     dashboardReport?.summary?.overall_priority ||
     'none';
 
   const handleStartEdit = () => {
+    setPendingReportPreviews((prev) => {
+      prev.forEach((url) => URL.revokeObjectURL(url));
+      return [];
+    });
+    setPendingReportFiles([]);
     setEditSummary(report.summary ?? report.transcription ?? '');
     setEditIssues(
       Array.isArray(report.issues)
@@ -168,25 +213,78 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
     setError(null);
   };
 
+  const handleCancelEdit = () => {
+    setPendingReportPreviews((prev) => {
+      prev.forEach((url) => URL.revokeObjectURL(url));
+      return [];
+    });
+    setPendingReportFiles([]);
+    setIsEditing(false);
+    setError(null);
+  };
+
+  const handleReportPhotosSelected = (e) => {
+    const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith('image/'));
+    if (!files.length) return;
+    setPendingReportFiles((prev) => [...prev, ...files]);
+    setPendingReportPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+    e.target.value = '';
+  };
+
+  const removePendingReportPhoto = (pendingIdx) => {
+    const base = report.photoUrls?.length ?? 0;
+    const removedGlobalIdx = base + pendingIdx;
+    setPendingReportPreviews((prev) => {
+      const url = prev[pendingIdx];
+      if (url) URL.revokeObjectURL(url);
+      return prev.filter((_, i) => i !== pendingIdx);
+    });
+    setPendingReportFiles((f) => f.filter((_, i) => i !== pendingIdx));
+    setEditIssues((issues) =>
+      issues.map((issue) => ({
+        ...issue,
+        photoIndices: (issue.photoIndices || [])
+          .filter((idx) => idx !== removedGlobalIdx)
+          .map((idx) => (idx > removedGlobalIdx ? idx - 1 : idx)),
+      }))
+    );
+  };
+
   const handleSaveEdit = async () => {
     setError(null);
     const selectedHouse = editPropertyId ? houses?.find((h) => h.id === editPropertyId) : null;
+    setSavingEdit(true);
     try {
+      let photoUrls = [...(report.photoUrls || [])];
+      if (pendingReportFiles.length > 0) {
+        const uploaded = await Promise.all(
+          pendingReportFiles.map((file) => uploadInspectionReportPhoto(file))
+        );
+        photoUrls = [...photoUrls, ...uploaded];
+      }
       await updateReport.mutateAsync({
         id: report.id,
         propertyId: editPropertyId || null,
         propertyName: selectedHouse ? (selectedHouse.houseName || selectedHouse.address || '') : (report.propertyName || ''),
         summary: editSummary.trim() || null,
         overallPriority: editPriority || 'none',
+        photoUrls,
         issues: editIssues.filter((i) => i.title.trim()).map((i) => ({
           title: i.title.trim(),
           description: (i.description || '').trim(),
           photoIndices: Array.isArray(i.photoIndices) ? i.photoIndices : [],
         })),
       });
+      setPendingReportPreviews((prev) => {
+        prev.forEach((url) => URL.revokeObjectURL(url));
+        return [];
+      });
+      setPendingReportFiles([]);
       setIsEditing(false);
     } catch (err) {
       setError(err?.message ?? 'Error al guardar');
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -377,6 +475,58 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
                 />
               </div>
               <div>
+                <label className="block text-xs text-gray-500 mb-1">Fotos del informe</label>
+                <p className="text-xs text-gray-400 mb-2">
+                  Se guardarán al pulsar Guardar. Luego puedes asignarlas a cada incidencia abajo.
+                </p>
+                <input
+                  ref={reportPhotoInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleReportPhotosSelected}
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="text-xs py-1 gap-1.5"
+                  onClick={() => reportPhotoInputRef.current?.click()}
+                >
+                  <Camera className="w-4 h-4" />
+                  Añadir fotos
+                </Button>
+                {editModePhotoUrls.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {editModePhotoUrls.map((url, i) => {
+                      const baseLen = report.photoUrls?.length ?? 0;
+                      const isPending = i >= baseLen;
+                      const pendingIdx = i - baseLen;
+                      return (
+                        <div
+                          key={isPending ? `p-${pendingIdx}` : `e-${i}`}
+                          className={`relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border ${
+                            isPending ? 'border-dashed border-turquoise-400' : 'border-gray-200'
+                          }`}
+                        >
+                          <img src={getSafeImageUrl(url)} alt="" className="w-full h-full object-cover" />
+                          {isPending && (
+                            <button
+                              type="button"
+                              onClick={() => removePendingReportPhoto(pendingIdx)}
+                              className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center bg-black/60 text-white text-xs rounded-bl"
+                              title="Quitar"
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs text-gray-500">Incidencias</label>
                   <Button variant="secondary" onClick={handleAddIssue} className="text-xs py-1">
@@ -399,11 +549,11 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
                         rows={2}
                         className="w-full rounded border border-gray-200 px-2 py-1 text-sm"
                       />
-                      {(report?.photoUrls?.length ?? 0) > 0 && (
+                      {editModePhotoUrls.length > 0 && (
                         <div>
                           <p className="text-xs text-gray-500 mb-1">Fotos relacionadas con esta incidencia</p>
                           <div className="flex flex-wrap gap-2">
-                            {report.photoUrls.map((url, photoIdx) => {
+                            {editModePhotoUrls.map((url, photoIdx) => {
                               const selected = (issue.photoIndices || []).includes(photoIdx);
                               return (
                                 <button
@@ -438,10 +588,10 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
                 </ul>
               </div>
               <div className="flex gap-2">
-                <Button onClick={handleSaveEdit} disabled={updateReport.isPending}>
-                  {updateReport.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Guardar'}
+                <Button onClick={handleSaveEdit} disabled={updateReport.isPending || savingEdit}>
+                  {updateReport.isPending || savingEdit ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Guardar'}
                 </Button>
-                <Button variant="secondary" onClick={() => setIsEditing(false)}>Cancelar</Button>
+                <Button variant="secondary" onClick={handleCancelEdit}>Cancelar</Button>
               </div>
             </div>
           ) : (

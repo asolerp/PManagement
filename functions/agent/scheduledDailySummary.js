@@ -10,7 +10,13 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { sendMessage } = require('./telegramApi');
-const { telegramBotToken } = require('./config');
+const {
+  telegramBotToken,
+  grafanaLokiUrl,
+  grafanaLokiUser,
+  grafanaLokiToken
+} = require('./config');
+const { logEvent } = require('../lib/obsLogger');
 const { defineSecret } = require('firebase-functions/params');
 const { REGION } = require('../utils');
 
@@ -177,13 +183,14 @@ async function runDailySummary(botToken) {
     .filter(u => u.telegramId);
 
   if (telegramUsers.length === 0) {
-    console.log('[DAILY_SUMMARY] No users with telegramId. Skipping.');
+    logEvent('info', 'daily_summary', 'no_users', { today });
     return { sent: 0, failed: 0, total: 0 };
   }
 
-  console.log(
-    `[DAILY_SUMMARY] Sending to ${telegramUsers.length} user(s): ${telegramUsers.map(u => u.name).join(', ')}`
-  );
+  logEvent('info', 'daily_summary', 'start', {
+    today,
+    total: telegramUsers.length
+  });
 
   const message = await buildDailySummaryHtml(db, today);
 
@@ -195,14 +202,20 @@ async function runDailySummary(botToken) {
       sent++;
     } catch (err) {
       failed++;
-      console.warn(
-        `[DAILY_SUMMARY] Failed to send to ${user.name} (${user.telegramId}):`,
-        err.message
-      );
+      logEvent('warn', 'daily_summary', 'send_failed', {
+        userId: user.uid,
+        userName: user.name,
+        error: err.message
+      });
     }
   }
 
-  console.log(`[DAILY_SUMMARY] Done. Sent: ${sent}, Failed: ${failed}`);
+  logEvent('info', 'daily_summary', 'done', {
+    today,
+    sent,
+    failed,
+    total: telegramUsers.length
+  });
   return { sent, failed, total: telegramUsers.length };
 }
 
@@ -213,7 +226,12 @@ exports.scheduledDailySummary = functions
   .runWith({
     timeoutSeconds: 120,
     memory: '256MB',
-    secrets: [telegramBotToken]
+    secrets: [
+      telegramBotToken,
+      grafanaLokiUrl,
+      grafanaLokiUser,
+      grafanaLokiToken
+    ]
   })
   .pubsub.schedule('0 9 * * 1-6')
   .timeZone('Europe/Madrid')
@@ -235,7 +253,13 @@ exports.sendDailySummaryNow = functions
   .runWith({
     timeoutSeconds: 120,
     memory: '256MB',
-    secrets: [telegramBotToken, dailySummarySecret]
+    secrets: [
+      telegramBotToken,
+      dailySummarySecret,
+      grafanaLokiUrl,
+      grafanaLokiUser,
+      grafanaLokiToken
+    ]
   })
   .https.onRequest(async (req, res) => {
     if (req.method !== 'POST') {

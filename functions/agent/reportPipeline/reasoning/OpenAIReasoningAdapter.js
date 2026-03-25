@@ -8,6 +8,10 @@ const {
   REASONING_SYSTEM,
   reasoningUserMessage
 } = require('../prompts/reasoningPrompt');
+const { logMetric } = require('../../../lib/obsLogger');
+
+const COST_PER_1M_INPUT = 0.15;
+const COST_PER_1M_OUTPUT = 0.6;
 
 const VALID_PRIORITIES = ['critical', 'high', 'medium', 'low', 'none'];
 const VALID_CATEGORIES = [
@@ -63,6 +67,7 @@ async function reasonWithOpenAI(
   transcript = ''
 ) {
   const metadataStr = JSON.stringify(metadata, null, 2);
+  const t0 = Date.now();
   const res = await fetch(OPENAI_API, {
     method: 'POST',
     headers: {
@@ -94,6 +99,19 @@ async function reasonWithOpenAI(
   }
 
   const data = await res.json();
+  const latencyMs = Date.now() - t0;
+  const promptTokens = data.usage?.prompt_tokens || 0;
+  const completionTokens = data.usage?.completion_tokens || 0;
+  const costUSD =
+    (promptTokens / 1_000_000) * COST_PER_1M_INPUT +
+    (completionTokens / 1_000_000) * COST_PER_1M_OUTPUT;
+  logMetric('pipeline_reasoning', {
+    model: 'gpt-4o-mini',
+    promptTokens,
+    completionTokens,
+    costUSD,
+    latencyMs
+  });
   const content = data.choices?.[0]?.message?.content?.trim();
   if (!content) throw new Error('Empty reasoning response');
 
