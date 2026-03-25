@@ -474,9 +474,68 @@ function isJobToday(job, today) {
 
 const SLA_BADGE_CLASS = {
   ok: 'bg-emerald-50 text-emerald-700',
-  at_risk: 'bg-amber-50 text-amber-700',
-  breached: 'bg-red-50 text-red-700',
+  at_risk: 'bg-amber-100 text-amber-800 border border-amber-200',
+  breached: 'bg-red-100 text-red-700 border border-red-200',
 };
+
+function ActivitySummaryBar({ openIncidences = [], jobsToday = [], checklistsInProgress = [], shiftsInProgress = [] }) {
+  const navigate = useNavigate();
+  const pills = [
+    {
+      label: 'Incidencias abiertas',
+      count: openIncidences.length,
+      dot: 'bg-red-400',
+      bg: 'bg-red-50 dark:bg-red-900/20',
+      text: 'text-red-700 dark:text-red-400',
+      border: 'border-red-200 dark:border-red-800/50',
+      to: '/incidencias',
+    },
+    {
+      label: 'Trabajos hoy',
+      count: jobsToday.length,
+      dot: 'bg-blue-400',
+      bg: 'bg-blue-50 dark:bg-blue-900/20',
+      text: 'text-blue-700 dark:text-blue-400',
+      border: 'border-blue-200 dark:border-blue-800/50',
+      to: '/trabajos',
+    },
+    {
+      label: 'Revisiones',
+      count: checklistsInProgress.length,
+      dot: 'bg-turquoise-400',
+      bg: 'bg-turquoise-50 dark:bg-turquoise-900/20',
+      text: 'text-turquoise-700 dark:text-turquoise-400',
+      border: 'border-turquoise-200 dark:border-turquoise-800/50',
+      to: '/checklists',
+    },
+    {
+      label: 'Jornadas abiertas',
+      count: shiftsInProgress.length,
+      dot: 'bg-amber-400',
+      bg: 'bg-amber-50 dark:bg-amber-900/20',
+      text: 'text-amber-700 dark:text-amber-400',
+      border: 'border-amber-200 dark:border-amber-800/50',
+      to: '/jornadas',
+    },
+  ];
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {pills.map(({ label, count, dot, bg, text, border, to }) => (
+        <button
+          key={label}
+          type="button"
+          onClick={() => navigate(to)}
+          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${bg} ${text} ${border} hover:opacity-80 transition-opacity cursor-pointer`}
+        >
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dot}`} />
+          <span className="font-semibold text-sm">{count}</span>
+          <span>{label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function EstadoDelDiaPanel() {
   const navigate = useNavigate();
@@ -508,14 +567,204 @@ function EstadoDelDiaPanel() {
           <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
             <Activity className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
           </div>
-          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">Estado del día</h2>
+          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">Estado del día</h2>
         </div>
-        <div className="p-6 text-center text-stone-500 text-sm">Cargando...</div>
+        <div className="p-6 space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-10 rounded-xl bg-stone-100 dark:bg-stone-800 animate-pulse" />
+          ))}
+        </div>
       </Card>
     );
   }
 
   const hasContent = openIncidences.length > 0 || jobsToday.length > 0 || checklistsInProgress.length > 0 || shiftsInProgress.length > 0;
+
+  const sections = [
+    {
+      key: 'incidencias',
+      icon: AlertCircle,
+      label: 'Incidencias abiertas',
+      count: openIncidences.length,
+      dot: 'bg-red-400',
+      countBg: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+      linkTo: '/incidencias',
+      linkLabel: 'Ver todas',
+      emptyLabel: 'Sin incidencias abiertas',
+      content: openIncidences.length === 0 ? null : (
+        <ul className="space-y-1">
+          {openIncidences.slice(0, 5).map((inc) => {
+            const sla = getIncidenceSlaStatus(inc);
+            return (
+              <li key={inc.id}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedIncidence(inc)}
+                  className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+                >
+                  <Home className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                  <span className="text-sm text-stone-900 dark:text-stone-100 truncate flex-1 group-hover:text-turquoise-600">
+                    {inc.house?.houseName || inc.houseName || 'Sin casa'}
+                  </span>
+                  {sla && sla.status !== 'ok' && (
+                    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold flex-shrink-0 ${SLA_BADGE_CLASS[sla.status]}`}>
+                      {sla.status === 'breached' && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />}
+                      {sla.label}
+                    </span>
+                  )}
+                  <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
+                </button>
+              </li>
+            );
+          })}
+          {openIncidences.length > 5 && (
+            <li>
+              <Link to="/incidencias" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-0.5">
+                +{openIncidences.length - 5} más
+              </Link>
+            </li>
+          )}
+        </ul>
+      ),
+    },
+    {
+      key: 'trabajos',
+      icon: Briefcase,
+      label: 'Trabajos de hoy',
+      count: jobsToday.length,
+      dot: 'bg-blue-400',
+      countBg: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+      linkTo: '/trabajos',
+      linkLabel: 'Ver todos',
+      emptyLabel: 'Sin trabajos programados hoy',
+      subtext: jobsToday.length > 0 ? `${jobsTodayPending.length} pendiente${jobsTodayPending.length !== 1 ? 's' : ''} · ${jobsTodayCompleted.length} completado${jobsTodayCompleted.length !== 1 ? 's' : ''}` : null,
+      content: jobsToday.length === 0 ? null : (
+        <ul className="space-y-1">
+          {jobsToday.slice(0, 5).map((job) => {
+            const sla = getJobSlaStatus(job);
+            const isDone = job.done || job.status === 'done' || job.status === 'completed';
+            return (
+              <li key={job.id}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/trabajos')}
+                  className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+                >
+                  <Home className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                  <span className={`text-sm truncate flex-1 group-hover:text-turquoise-600 ${isDone ? 'line-through text-stone-400 dark:text-stone-600' : 'text-stone-900 dark:text-stone-100'}`}>
+                    {job.house?.houseName || job.houseName || job.title || 'Trabajo'}
+                  </span>
+                  {!isDone && sla && sla.status !== 'ok' && (
+                    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold flex-shrink-0 ${SLA_BADGE_CLASS[sla.status]}`}>
+                      {sla.status === 'breached' && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />}
+                      {sla.label}
+                    </span>
+                  )}
+                  <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
+                </button>
+              </li>
+            );
+          })}
+          {jobsToday.length > 5 && (
+            <li>
+              <Link to="/trabajos" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-0.5">
+                +{jobsToday.length - 5} más
+              </Link>
+            </li>
+          )}
+        </ul>
+      ),
+    },
+    {
+      key: 'checklists',
+      icon: CheckSquare,
+      label: 'Revisiones en curso',
+      count: checklistsInProgress.length,
+      dot: 'bg-turquoise-400',
+      countBg: 'bg-turquoise-100 dark:bg-turquoise-900/30 text-turquoise-700 dark:text-turquoise-400',
+      linkTo: '/checklists',
+      linkLabel: 'Ver todas',
+      emptyLabel: 'Sin revisiones activas',
+      content: checklistsInProgress.length === 0 ? null : (
+        <ul className="space-y-2">
+          {checklistsInProgress.slice(0, 5).map((cl) => {
+            const houseName = cl.house?.[0]?.houseName || cl.houseName || 'Sin casa';
+            const done = cl.done || 0;
+            const total = cl.total || 0;
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            return (
+              <li key={cl.id}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedChecklist(cl)}
+                  className="w-full text-left flex flex-col gap-1 py-1.5 px-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+                >
+                  <div className="flex items-center gap-2">
+                    <Home className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                    <span className="text-sm text-stone-900 dark:text-stone-100 truncate flex-1 group-hover:text-turquoise-600">{houseName}</span>
+                    <span className="text-xs text-turquoise-600 font-semibold flex-shrink-0">{pct}%</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
+                  </div>
+                  <div className="ml-5.5 h-1.5 rounded-full bg-stone-100 dark:bg-stone-700 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-turquoise-500 transition-all duration-300"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <p className="ml-5.5 text-[10px] text-stone-400 dark:text-stone-600">{done} de {total} ítems</p>
+                </button>
+              </li>
+            );
+          })}
+          {checklistsInProgress.length > 5 && (
+            <li>
+              <button type="button" onClick={() => navigate('/checklists')} className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-0.5">
+                +{checklistsInProgress.length - 5} más
+              </button>
+            </li>
+          )}
+        </ul>
+      ),
+    },
+    {
+      key: 'jornadas',
+      icon: Clock,
+      label: 'Jornadas abiertas',
+      count: shiftsInProgress.length,
+      dot: 'bg-amber-400',
+      countBg: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+      linkTo: '/jornadas',
+      linkLabel: 'Ver todas',
+      emptyLabel: 'Sin jornadas en curso',
+      content: shiftsInProgress.length === 0 ? null : (
+        <ul className="space-y-1">
+          {shiftsInProgress.slice(0, 5).map((shift) => (
+            <li key={shift.id}>
+              <button
+                type="button"
+                onClick={() => navigate('/jornadas')}
+                className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+              >
+                <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                <span className="text-sm text-stone-900 dark:text-stone-100 truncate flex-1 group-hover:text-turquoise-600">{shift.workerName || 'Trabajador'}</span>
+                <span className="text-xs text-stone-400 dark:text-stone-500 flex-shrink-0">
+                  {shift.firstEntry ? format(new Date(shift.firstEntry), 'HH:mm') : '—'}
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
+              </button>
+            </li>
+          ))}
+          {shiftsInProgress.length > 5 && (
+            <li>
+              <Link to="/jornadas" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-0.5">
+                +{shiftsInProgress.length - 5} más
+              </Link>
+            </li>
+          )}
+        </ul>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -525,206 +774,54 @@ function EstadoDelDiaPanel() {
             <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
               <Activity className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
             </div>
-            <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">Estado del día</h2>
+            <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">Estado del día</h2>
           </div>
           {!hasContent && (
-            <span className="text-sm text-stone-500">Sin actividad activa</span>
+            <span className="text-xs text-emerald-600 font-medium bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">Todo al día</span>
           )}
         </div>
 
         {!hasContent ? (
-          <div className="p-6 sm:p-8 text-center">
-            <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-turquoise-500 mx-auto mb-2" />
-            <p className="text-stone-500 text-sm">No hay incidencias abiertas, trabajos de hoy, revisiones en curso ni jornadas abiertas</p>
+          <div className="p-8 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mx-auto mb-3">
+              <CheckCircle className="w-6 h-6 text-emerald-500" />
+            </div>
+            <p className="text-stone-700 dark:text-stone-300 font-medium text-sm">Sin actividad pendiente</p>
+            <p className="text-stone-400 dark:text-stone-600 text-xs mt-1">No hay incidencias, trabajos, revisiones ni jornadas abiertas</p>
           </div>
         ) : (
-          <div className="divide-y divide-[var(--border-soft)]">
-            {/* Incidencias abiertas */}
-            <div className="px-5 py-3">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 text-turquoise-600" />
-                  Incidencias abiertas
-                </h3>
-                {openIncidences.length > 0 && (
-                  <Link to="/incidencias" className="text-xs font-medium text-turquoise-600 hover:underline">Ver todas</Link>
+          <div className="p-4 space-y-3">
+            {sections.map(({ key, icon: Icon, label, count, dot, countBg, linkTo, linkLabel, emptyLabel, subtext, content }) => (
+              <div
+                key={key}
+                className="rounded-xl border border-[var(--border-soft)] bg-[var(--surface)] overflow-hidden"
+              >
+                <div className="flex items-center justify-between px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dot}`} />
+                    <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wide">{label}</span>
+                    <span className={`text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center ${countBg}`}>
+                      {count}
+                    </span>
+                  </div>
+                  {count > 0 && (
+                    <Link to={linkTo} className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium transition-colors">
+                      {linkLabel} →
+                    </Link>
+                  )}
+                </div>
+                {content ? (
+                  <div className="px-3 pb-2.5">
+                    {content}
+                    {subtext && (
+                      <p className="text-[10px] text-stone-400 dark:text-stone-600 mt-1 pl-2">{subtext}</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="px-3 pb-2.5 text-xs text-stone-400 dark:text-stone-600">{emptyLabel}</p>
                 )}
               </div>
-              {openIncidences.length === 0 ? (
-                <p className="text-xs text-gray-400">Ninguna</p>
-              ) : (
-                <ul className="space-y-1.5">
-                  {openIncidences.slice(0, 6).map((inc) => {
-                    const sla = getIncidenceSlaStatus(inc);
-                    return (
-                      <li key={inc.id}>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedIncidence(inc)}
-                          className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                          <span className="text-sm text-gray-900 truncate flex-1">{inc.house?.houseName || inc.houseName || 'Sin casa'}</span>
-                          {sla && (
-                            <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0 ${SLA_BADGE_CLASS[sla.status] || ''}`}>
-                              {sla.label}
-                            </span>
-                          )}
-                          <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                        </button>
-                      </li>
-                    );
-                  })}
-                  {openIncidences.length > 6 && (
-                    <li>
-                      <Link to="/incidencias" className="text-xs text-turquoise-600 font-medium hover:underline pl-2">
-                        +{openIncidences.length - 6} más
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              )}
-            </div>
-
-            {/* Trabajos de hoy */}
-            <div className="px-5 py-3">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5 text-turquoise-600" />
-                  Trabajos de hoy
-                </h3>
-                {jobsToday.length > 0 && (
-                  <Link to="/trabajos" className="text-xs font-medium text-turquoise-600 hover:underline">Ver todos</Link>
-                )}
-              </div>
-              {jobsToday.length === 0 ? (
-                <p className="text-xs text-gray-400">Ninguno</p>
-              ) : (
-                <ul className="space-y-1.5">
-                  {jobsToday.slice(0, 6).map((job) => {
-                    const sla = getJobSlaStatus(job);
-                    const isDone = job.done || job.status === 'done' || job.status === 'completed';
-                    return (
-                      <li key={job.id}>
-                        <button
-                          type="button"
-                          onClick={() => navigate('/trabajos')}
-                          className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                          <span className="text-sm text-gray-900 truncate flex-1">{job.house?.houseName || job.houseName || job.title || 'Trabajo'}</span>
-                          {!isDone && sla && (
-                            <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0 ${SLA_BADGE_CLASS[sla.status] || ''}`}>
-                              {sla.label}
-                            </span>
-                          )}
-                          <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                        </button>
-                      </li>
-                    );
-                  })}
-                  {jobsToday.length > 6 && (
-                    <li>
-                      <Link to="/trabajos" className="text-xs text-turquoise-600 font-medium hover:underline pl-2">
-                        +{jobsToday.length - 6} más
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              )}
-              {jobsToday.length > 0 && (
-                <p className="text-[10px] text-gray-500 mt-1 pl-2">
-                  {jobsTodayPending.length} pendientes, {jobsTodayCompleted.length} completados
-                </p>
-              )}
-            </div>
-
-            {/* Revisiones en curso (checklists) */}
-            <div className="px-5 py-3">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                  <CheckSquare className="w-3.5 h-3.5 text-turquoise-600" />
-                  Revisiones en curso
-                </h3>
-                {checklistsInProgress.length > 0 && (
-                  <Link to="/checklists" className="text-xs font-medium text-turquoise-600 hover:underline">Ver todas</Link>
-                )}
-              </div>
-              {checklistsInProgress.length === 0 ? (
-                <p className="text-xs text-gray-400">Ninguna</p>
-              ) : (
-                <ul className="space-y-1.5">
-                  {checklistsInProgress.slice(0, 6).map((cl) => {
-                    const houseName = cl.house?.[0]?.houseName || cl.houseName || 'Sin casa';
-                    const done = cl.done || 0;
-                    const total = cl.total || 0;
-                    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-                    return (
-                      <li key={cl.id}>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedChecklist(cl)}
-                          className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                          <span className="text-sm text-gray-900 truncate flex-1">{houseName}</span>
-                          <span className="text-xs text-turquoise-600 font-medium flex-shrink-0">{done}/{total} ({pct}%)</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                        </button>
-                      </li>
-                    );
-                  })}
-                  {checklistsInProgress.length > 6 && (
-                    <li>
-                      <button type="button" onClick={() => navigate('/checklists')} className="text-xs text-turquoise-600 font-medium hover:underline pl-2">
-                        +{checklistsInProgress.length - 6} más
-                      </button>
-                    </li>
-                  )}
-                </ul>
-              )}
-            </div>
-
-            {/* Jornadas en curso */}
-            <div className="px-5 py-3">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-turquoise-600" />
-                  Jornadas en curso
-                </h3>
-                {shiftsInProgress.length > 0 && (
-                  <Link to="/jornadas" className="text-xs font-medium text-turquoise-600 hover:underline">Ver todas</Link>
-                )}
-              </div>
-              {shiftsInProgress.length === 0 ? (
-                <p className="text-xs text-gray-400">Ninguna</p>
-              ) : (
-                <ul className="space-y-1.5">
-                  {shiftsInProgress.slice(0, 6).map((shift) => (
-                    <li key={shift.id}>
-                      <button
-                        type="button"
-                        onClick={() => navigate('/jornadas')}
-                        className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        <span className="text-sm text-gray-900 truncate flex-1">{shift.workerName || 'Trabajador'}</span>
-                        <span className="text-[10px] text-gray-500">
-                          {shift.firstEntry ? format(new Date(shift.firstEntry), 'HH:mm') : '—'} entrada
-                        </span>
-                        <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                      </button>
-                    </li>
-                  ))}
-                  {shiftsInProgress.length > 6 && (
-                    <li>
-                      <Link to="/jornadas" className="text-xs text-turquoise-600 font-medium hover:underline pl-2">
-                        +{shiftsInProgress.length - 6} más
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              )}
-            </div>
+            ))}
           </div>
         )}
       </Card>
@@ -775,112 +872,140 @@ function SlaEnRiesgoWidget() {
   const isLoading = loadingIncidences || loadingJobs;
   const hasAny = incidencesAtRisk.length > 0 || jobsAtRisk.length > 0;
 
+  const hasBreached = incidencesAtRisk.some((i) => getIncidenceSlaStatus(i)?.status === 'breached')
+    || jobsAtRisk.some((j) => getJobSlaStatus(j)?.status === 'breached');
+
   if (isLoading) {
     return (
       <Card>
         <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-amber-50">
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
+          <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-900/20">
+            <AlertTriangle className="w-5 h-5 text-amber-500" />
           </div>
-          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">Plazos en riesgo hoy</h2>
+          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">Plazos en riesgo</h2>
         </div>
-        <div className="p-6 text-center text-stone-500 text-sm">Cargando...</div>
+        <div className="p-6 space-y-3">
+          {[1, 2].map((i) => (
+            <div key={i} className="h-10 rounded-xl bg-stone-100 dark:bg-stone-800 animate-pulse" />
+          ))}
+        </div>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-amber-50">
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
+    <Card className={hasAny ? 'border-amber-200 dark:border-amber-800/50' : ''}>
+      <div className={`px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between ${hasAny ? 'bg-gradient-to-r from-amber-50 to-transparent dark:from-amber-900/10' : ''}`}>
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-xl ${hasBreached ? 'bg-red-100 dark:bg-red-900/30' : hasAny ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-stone-100 dark:bg-stone-800'}`}>
+            <AlertTriangle className={`w-5 h-5 ${hasBreached ? 'text-red-600' : hasAny ? 'text-amber-500' : 'text-stone-400'}`} />
           </div>
-          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">Plazos en riesgo hoy</h2>
+          <div>
+            <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100 leading-none">Plazos en riesgo</h2>
+            {hasAny && (
+              <p className="text-xs text-stone-500 dark:text-stone-500 mt-0.5">Incidencias y trabajos con SLA comprometido</p>
+            )}
+          </div>
         </div>
         {hasAny && (
-          <span className="text-xs sm:text-sm text-amber-600 font-medium">
-            {incidencesAtRisk.length + jobsAtRisk.length} en riesgo o incumplidos
-          </span>
+          <div className="text-right flex-shrink-0">
+            <span className={`text-2xl font-bold font-heading leading-none ${hasBreached ? 'text-red-600' : 'text-amber-500'}`}>
+              {incidencesAtRisk.length + jobsAtRisk.length}
+            </span>
+            <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-0.5">en riesgo</p>
+          </div>
         )}
       </div>
 
       {!hasAny ? (
-        <div className="p-6 sm:p-8 text-center">
-          <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-turquoise-500 mx-auto mb-2" />
-          <p className="text-gray-500 text-sm">Ninguna incidencia ni trabajo con plazo en riesgo o fuera de plazo</p>
+        <div className="p-8 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mx-auto mb-3">
+            <CheckCircle className="w-6 h-6 text-emerald-500" />
+          </div>
+          <p className="text-stone-700 dark:text-stone-300 font-medium text-sm">Todos los plazos al día</p>
+          <p className="text-stone-400 dark:text-stone-600 text-xs mt-1">Sin incidencias ni trabajos con SLA en riesgo</p>
         </div>
       ) : (
-        <div className="divide-y divide-[var(--border-soft)]">
+        <div className="p-4 space-y-4">
           {incidencesAtRisk.length > 0 && (
-            <div className="px-5 py-3">
-              <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5">
-                <AlertCircle className="w-3.5 h-3.5 text-turquoise-600" />
-                Incidencias
-              </h3>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  Incidencias ({incidencesAtRisk.length})
+                </h3>
+                <Link to="/incidencias" className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium">Ver todas →</Link>
+              </div>
               <ul className="space-y-1.5">
                 {incidencesAtRisk.map((inc) => {
                   const sla = getIncidenceSlaStatus(inc);
+                  const isBreached = sla?.status === 'breached';
                   return (
                     <li key={inc.id}>
                       <button
                         type="button"
                         onClick={() => setSelectedIncidence(inc)}
-                        className="w-full flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                        className={`w-full text-left flex items-center gap-2 py-2 px-3 rounded-xl border transition-all group ${
+                          isBreached
+                            ? 'bg-red-50 dark:bg-red-900/15 border-red-200 dark:border-red-800/40 hover:border-red-300'
+                            : 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30 hover:border-amber-300'
+                        }`}
                       >
-                        <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                        <span className="text-sm text-gray-900 truncate flex-1 group-hover:text-turquoise-600">
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isBreached ? 'bg-red-500 animate-pulse' : 'bg-amber-400'}`} />
+                        <span className={`text-sm font-medium min-w-0 flex-1 truncate ${isBreached ? 'text-red-800 dark:text-red-300' : 'text-amber-800 dark:text-amber-300'}`}>
                           {inc.house?.houseName || inc.houseName || 'Sin casa'}
                         </span>
                         {sla && (
-                          <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0 ${SLA_BADGE_CLASS[sla.status] || ''}`}>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 ml-auto ${SLA_BADGE_CLASS[sla.status]}`}>
                             {sla.label}
                           </span>
                         )}
-                        <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                        <ChevronRight className="w-3.5 h-3.5 text-stone-400 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
                       </button>
                     </li>
                   );
                 })}
               </ul>
-              <Link to="/incidencias" className="text-xs font-medium text-turquoise-600 hover:underline mt-1.5 inline-block">
-                Ver todas las incidencias
-              </Link>
             </div>
           )}
           {jobsAtRisk.length > 0 && (
-            <div className="px-5 py-3">
-              <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5">
-                <Briefcase className="w-3.5 h-3.5 text-turquoise-600" />
-                Trabajos
-              </h3>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5" />
+                  Trabajos ({jobsAtRisk.length})
+                </h3>
+                <Link to="/trabajos" className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium">Ver todos →</Link>
+              </div>
               <ul className="space-y-1.5">
                 {jobsAtRisk.map((job) => {
                   const sla = getJobSlaStatus(job);
+                  const isBreached = sla?.status === 'breached';
                   return (
                     <li key={job.id}>
                       <Link
                         to="/trabajos"
-                        className="w-full flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                        className={`w-full flex items-center gap-2 py-2 px-3 rounded-xl border transition-all group ${
+                          isBreached
+                            ? 'bg-red-50 dark:bg-red-900/15 border-red-200 dark:border-red-800/40 hover:border-red-300'
+                            : 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30 hover:border-amber-300'
+                        }`}
                       >
-                        <Home className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                        <span className="text-sm text-gray-900 truncate flex-1 group-hover:text-turquoise-600">
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isBreached ? 'bg-red-500 animate-pulse' : 'bg-amber-400'}`} />
+                        <span className={`text-sm font-medium min-w-0 flex-1 truncate ${isBreached ? 'text-red-800 dark:text-red-300' : 'text-amber-800 dark:text-amber-300'}`}>
                           {job.house?.houseName || job.houseName || job.title || 'Trabajo'}
                         </span>
                         {sla && (
-                          <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0 ${SLA_BADGE_CLASS[sla.status] || ''}`}>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 ml-auto ${SLA_BADGE_CLASS[sla.status]}`}>
                             {sla.label}
                           </span>
                         )}
-                        <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                        <ChevronRight className="w-3.5 h-3.5 text-stone-400 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
                       </Link>
                     </li>
                   );
                 })}
               </ul>
-              <Link to="/trabajos" className="text-xs font-medium text-turquoise-600 hover:underline mt-1.5 inline-block">
-                Ver todos los trabajos
-              </Link>
             </div>
           )}
         </div>
@@ -930,82 +1055,129 @@ function CierreDelDiaSection() {
   const hasAny = shiftsOpen.length > 0 || jobsTodayPending.length > 0 || incidencesBreached.length > 0;
 
   return (
-    <Card>
-      <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
-            <ClipboardCheck className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
+    <Card className={hasAny ? 'border-red-200 dark:border-red-800/30' : 'border-emerald-200 dark:border-emerald-800/30'}>
+      <div className={`px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between ${hasAny ? 'bg-gradient-to-r from-red-50/60 to-transparent dark:from-red-900/10' : 'bg-gradient-to-r from-emerald-50/60 to-transparent dark:from-emerald-900/10'}`}>
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-xl ${hasAny ? 'bg-red-100 dark:bg-red-900/30' : 'bg-emerald-100 dark:bg-emerald-900/30'}`}>
+            <ClipboardCheck className={`w-5 h-5 ${hasAny ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`} />
           </div>
-          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900">Cierre del día</h2>
+          <div>
+            <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100 leading-none">Cierre del día</h2>
+            <p className="text-xs text-stone-500 dark:text-stone-500 mt-0.5">
+              {hasAny ? 'Elementos pendientes de cerrar antes de finalizar la jornada' : 'Resumen de jornada'}
+            </p>
+          </div>
         </div>
         {hasAny && (
-          <span className="text-xs sm:text-sm text-amber-600 font-medium">
-            {shiftsOpen.length + jobsTodayPending.length + incidencesBreached.length} pendiente(s)
-          </span>
+          <div className="flex items-center gap-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-3 py-1.5 rounded-full flex-shrink-0">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="text-xs font-semibold">{shiftsOpen.length + jobsTodayPending.length + incidencesBreached.length} pendiente{shiftsOpen.length + jobsTodayPending.length + incidencesBreached.length !== 1 ? 's' : ''}</span>
+          </div>
         )}
       </div>
+
       {!hasAny ? (
-        <div className="p-6 sm:p-8 text-center">
-          <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-turquoise-500 mx-auto mb-2" />
-          <p className="text-gray-500 text-sm">Todo cerrado: no hay jornadas abiertas, trabajos pendientes ni incidencias fuera de plazo</p>
+        <div className="px-6 py-6 flex items-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center flex-shrink-0 border border-emerald-200 dark:border-emerald-800/30">
+            <CheckCircle className="w-7 h-7 text-emerald-500" />
+          </div>
+          <div>
+            <p className="font-semibold text-stone-900 dark:text-stone-100 text-sm">Día cerrado correctamente</p>
+            <p className="text-stone-400 dark:text-stone-600 text-xs mt-0.5">No hay jornadas abiertas, trabajos pendientes ni incidencias fuera de plazo</p>
+          </div>
         </div>
       ) : (
-        <div className="divide-y divide-[var(--border-soft)]">
-          {shiftsOpen.length > 0 && (
-            <div className="px-5 py-3">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Jornadas sin salida</h3>
-              <ul className="space-y-1">
-                {shiftsOpen.slice(0, 5).map((s) => (
-                  <li key={s.id}>
-                    <Link to="/jornadas" className="text-sm text-turquoise-600 hover:underline">
-                      {s.workerName || 'Trabajador'} — entrada {s.firstEntry ? format(new Date(s.firstEntry), 'HH:mm') : '—'}
-                    </Link>
-                  </li>
-                ))}
-                {shiftsOpen.length > 5 && (
-                  <li><Link to="/jornadas" className="text-xs text-turquoise-600 hover:underline">+{shiftsOpen.length - 5} más</Link></li>
-                )}
-              </ul>
+        <div className="p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Jornadas sin salida */}
+            <div className={`rounded-xl border p-3 ${shiftsOpen.length > 0 ? 'border-amber-200 dark:border-amber-800/30 bg-amber-50/50 dark:bg-amber-900/10' : 'border-[var(--border-soft)] bg-[var(--surface)]'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <Clock className={`w-3.5 h-3.5 ${shiftsOpen.length > 0 ? 'text-amber-500' : 'text-stone-400'}`} />
+                  <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wide">Jornadas</span>
+                </div>
+                <span className={`text-sm font-bold ${shiftsOpen.length > 0 ? 'text-amber-600' : 'text-emerald-500'}`}>{shiftsOpen.length}</span>
+              </div>
+              {shiftsOpen.length === 0 ? (
+                <p className="text-xs text-stone-400 dark:text-stone-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" /> Todo cerrado</p>
+              ) : (
+                <ul className="space-y-1">
+                  {shiftsOpen.slice(0, 3).map((s) => (
+                    <li key={s.id}>
+                      <Link to="/jornadas" className="flex items-center gap-1.5 group">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
+                        <span className="text-xs text-stone-700 dark:text-stone-300 truncate group-hover:text-turquoise-600">{s.workerName || 'Trabajador'}</span>
+                        <span className="text-[10px] text-stone-400 ml-auto flex-shrink-0">{s.firstEntry ? format(new Date(s.firstEntry), 'HH:mm') : '—'}</span>
+                      </Link>
+                    </li>
+                  ))}
+                  {shiftsOpen.length > 3 && (
+                    <li><Link to="/jornadas" className="text-[10px] text-turquoise-600 hover:underline">+{shiftsOpen.length - 3} más</Link></li>
+                  )}
+                </ul>
+              )}
             </div>
-          )}
-          {jobsTodayPending.length > 0 && (
-            <div className="px-5 py-3">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Trabajos de hoy pendientes</h3>
-              <ul className="space-y-1">
-                {jobsTodayPending.slice(0, 5).map((j) => (
-                  <li key={j.id}>
-                    <Link to="/trabajos" className="text-sm text-turquoise-600 hover:underline">
-                      {j.house?.houseName || j.houseName || 'Trabajo'}
-                    </Link>
-                  </li>
-                ))}
-                {jobsTodayPending.length > 5 && (
-                  <li><Link to="/trabajos" className="text-xs text-turquoise-600 hover:underline">+{jobsTodayPending.length - 5} más</Link></li>
-                )}
-              </ul>
+
+            {/* Trabajos pendientes */}
+            <div className={`rounded-xl border p-3 ${jobsTodayPending.length > 0 ? 'border-blue-200 dark:border-blue-800/30 bg-blue-50/50 dark:bg-blue-900/10' : 'border-[var(--border-soft)] bg-[var(--surface)]'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <Briefcase className={`w-3.5 h-3.5 ${jobsTodayPending.length > 0 ? 'text-blue-500' : 'text-stone-400'}`} />
+                  <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wide">Trabajos</span>
+                </div>
+                <span className={`text-sm font-bold ${jobsTodayPending.length > 0 ? 'text-blue-600' : 'text-emerald-500'}`}>{jobsTodayPending.length}</span>
+              </div>
+              {jobsTodayPending.length === 0 ? (
+                <p className="text-xs text-stone-400 dark:text-stone-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" /> Todo completado</p>
+              ) : (
+                <ul className="space-y-1">
+                  {jobsTodayPending.slice(0, 3).map((j) => (
+                    <li key={j.id}>
+                      <Link to="/trabajos" className="flex items-center gap-1.5 group">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                        <span className="text-xs text-stone-700 dark:text-stone-300 truncate group-hover:text-turquoise-600">{j.house?.houseName || j.houseName || 'Trabajo'}</span>
+                      </Link>
+                    </li>
+                  ))}
+                  {jobsTodayPending.length > 3 && (
+                    <li><Link to="/trabajos" className="text-[10px] text-turquoise-600 hover:underline">+{jobsTodayPending.length - 3} más</Link></li>
+                  )}
+                </ul>
+              )}
             </div>
-          )}
-          {incidencesBreached.length > 0 && (
-            <div className="px-5 py-3">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Incidencias fuera de plazo</h3>
-              <ul className="space-y-1">
-                {incidencesBreached.slice(0, 5).map((inc) => (
-                  <li key={inc.id}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedIncidence(inc)}
-                      className="text-sm text-turquoise-600 hover:underline"
-                    >
-                      {inc.house?.houseName || inc.houseName || inc.title || 'Incidencia'}
-                    </button>
-                  </li>
-                ))}
-                {incidencesBreached.length > 5 && (
-                  <li><Link to="/incidencias" className="text-xs text-turquoise-600 hover:underline">+{incidencesBreached.length - 5} más</Link></li>
-                )}
-              </ul>
+
+            {/* Incidencias fuera de plazo */}
+            <div className={`rounded-xl border p-3 ${incidencesBreached.length > 0 ? 'border-red-200 dark:border-red-800/30 bg-red-50/50 dark:bg-red-900/10' : 'border-[var(--border-soft)] bg-[var(--surface)]'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <AlertCircle className={`w-3.5 h-3.5 ${incidencesBreached.length > 0 ? 'text-red-500' : 'text-stone-400'}`} />
+                  <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wide">Vencidas</span>
+                </div>
+                <span className={`text-sm font-bold ${incidencesBreached.length > 0 ? 'text-red-600' : 'text-emerald-500'}`}>{incidencesBreached.length}</span>
+              </div>
+              {incidencesBreached.length === 0 ? (
+                <p className="text-xs text-stone-400 dark:text-stone-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" /> Sin vencidas</p>
+              ) : (
+                <ul className="space-y-1">
+                  {incidencesBreached.slice(0, 3).map((inc) => (
+                    <li key={inc.id}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedIncidence(inc)}
+                        className="w-full flex items-center gap-1.5 group text-left"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+                        <span className="text-xs text-stone-700 dark:text-stone-300 truncate group-hover:text-turquoise-600">{inc.house?.houseName || inc.houseName || 'Incidencia'}</span>
+                      </button>
+                    </li>
+                  ))}
+                  {incidencesBreached.length > 3 && (
+                    <li><Link to="/incidencias" className="text-[10px] text-turquoise-600 hover:underline">+{incidencesBreached.length - 3} más</Link></li>
+                  )}
+                </ul>
+              )}
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -1021,6 +1193,42 @@ function CierreDelDiaSection() {
         />
       )}
     </Card>
+  );
+}
+
+/**
+ * Contenedor de la sección "Actividad y alertas".
+ * Carga los datos compartidos una sola vez y los distribuye a los hijos.
+ */
+function ActivitySection() {
+  const today = todayStr();
+  const { data: openIncidences = [] } = useIncidences({ done: false });
+  const { data: allJobs = [] } = useJobs();
+  const { data: checklistsInProgress = [] } = useChecklists({ finished: false });
+  const { data: shiftsData } = useWorkShifts({ startDate: today, endDate: today, limit: 500 });
+
+  const jobsToday = useMemo(() => allJobs.filter((j) => isJobToday(j, today)), [allJobs, today]);
+  const shiftsInProgress = useMemo(() => (shiftsData?.shifts || []).filter((s) => !s.lastExit), [shiftsData?.shifts]);
+
+  return (
+    <section className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="font-heading text-xs font-semibold text-stone-500 uppercase tracking-wider">
+          Actividad y alertas
+        </h2>
+      </div>
+      <ActivitySummaryBar
+        openIncidences={openIncidences}
+        jobsToday={jobsToday}
+        checklistsInProgress={checklistsInProgress}
+        shiftsInProgress={shiftsInProgress}
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <EstadoDelDiaPanel />
+        <SlaEnRiesgoWidget />
+      </div>
+      <CierreDelDiaSection />
+    </section>
   );
 }
 
@@ -1232,16 +1440,7 @@ export default function DashboardPage() {
       </section>
 
       {/* ——— Sección: Actividad y alertas (2 columnas en desktop) ——— */}
-      <section className="space-y-3">
-        <h2 className="font-heading text-xs font-semibold text-stone-500 uppercase tracking-wider">
-          Actividad y alertas
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <EstadoDelDiaPanel />
-          <SlaEnRiesgoWidget />
-        </div>
-        <CierreDelDiaSection />
-      </section>
+      <ActivitySection />
 
       {/* ——— Sección: Jornadas y trabajadores ——— */}
       <section className="space-y-3">
