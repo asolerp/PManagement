@@ -6,13 +6,15 @@ import {
   CHECK_STACK_KEY,
   ENTRANCES_MANAGER_SCREEN_KEY,
   ENTRANCE_DETAIL_SCREEN_KEY,
-  HOME_OWNER_STACK_KEY
+  HOME_OWNER_STACK_KEY,
+  PROFILE_SCREEN_KEY
 } from '../Router/utils/routerKeys';
 import HomeOwner from './HomeOwner';
 import Check from './Check';
 import { CheckPhotosScreen } from '../Screens/CheckPhotos';
 import { EntrancesManager } from '../Screens/EntrancesManager';
 import EntranceDetailScreen from '../Screens/EntrancesManager/EntranceDetailScreen';
+import ProfileScreen from '../Screens/Profile/ProfileScreen';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -31,5 +33,6 @@ export const MainOwner = () => (
       name={ENTRANCE_DETAIL_SCREEN_KEY}
       component={EntranceDetailScreen}
     />
+    <Screen name={PROFILE_SCREEN_KEY} component={ProfileScreen} />
   </Navigator>
 );
