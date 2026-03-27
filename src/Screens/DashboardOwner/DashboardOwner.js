@@ -3,229 +3,387 @@ import {
   View,
   StyleSheet,
   Text,
-  ImageBackground,
-  Image,
   ScrollView,
-  TouchableOpacity
+  ActivityIndicator
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
-// Components
 import ProfileBar from '../../components/ProfileBar';
-
-// UI
 import PageLayout from '../../components/PageLayout';
-
-// Utils
-import moment from 'moment';
-import { useTheme } from '../../Theme';
-
+import { OwnerChecks } from '../../components/Check/OwnerChecks';
 import { Colors } from '../../Theme/Variables';
-
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../Store/User/userSlice';
-import { useGetHouseById } from './hooks/useGetHouseById';
-import theme from '../../Theme/Theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Badge from '../../components/Elements/Badge';
-import { OwnerChecks } from '../../components/Check/OwnerChecks';
-import FastImage from 'react-native-fast-image';
-import { openScreenWithPush } from '../../Router/utils/actions';
-import {
-  TIME_TRACKING_SCREEN_KEY,
-  ENTRANCES_MANAGER_SCREEN_KEY
-} from '../../Router/utils/routerKeys';
+import { useOwnerDashboard } from './hooks/useOwnerDashboard';
 
-const DEFAULT_BACKGROUND_IMAGE =
+const DEFAULT_HOUSE_IMAGE =
   'https://res.cloudinary.com/enalbis/image/upload/v1663600847/PortManagement/varios/w0n2hq4uhhgjdrlhlnns.jpg';
 
-const DashboardOwner = () => {
-  const { Layout } = useTheme();
+function formatChecklistDate(value) {
+  if (!value) return '—';
+  try {
+    const date =
+      value?.toDate ? value.toDate() : new Date(value?.seconds * 1000 ?? value);
+    if (isNaN(date.getTime())) return '—';
+    return format(date, "d 'de' MMMM yyyy", { locale: es });
+  } catch {
+    return '—';
+  }
+}
 
-  const user = useSelector(userSelector);
-  const [date] = React.useState(moment(new Date()).format('LL').split(' '));
-  date[2] = date[2][0].toUpperCase() + date[2].slice(1);
+const INCIDENCE_STATE_LABELS = {
+  initiate: 'Iniciada',
+  process: 'En proceso',
+  done: 'Resuelta'
+};
 
-  const { house, checklist, checksFromChecklist } = useGetHouseById(user?.id);
+const INCIDENCE_STATE_COLORS = {
+  initiate: Colors.warning,
+  process: Colors.primary,
+  done: Colors.success
+};
+
+function IncidenceCard({ incidence }) {
+  const state = incidence?.state || 'initiate';
+  const color = INCIDENCE_STATE_COLORS[state] || Colors.warning;
+  const label = INCIDENCE_STATE_LABELS[state] || state;
 
   return (
-    <>
-      <PageLayout
-        statusBar="light-content"
-        withTitle={false}
-        withPadding={false}
+    <View style={styles.incidenceCard}>
+      <View style={[styles.incidenceStateBar, { backgroundColor: color }]} />
+      <View style={styles.incidenceContent}>
+        <Text style={styles.incidenceTitle} numberOfLines={2}>
+          {incidence?.title || 'Sin título'}
+        </Text>
+        {incidence?.incidence ? (
+          <Text style={styles.incidenceDescription} numberOfLines={1}>
+            {incidence.incidence}
+          </Text>
+        ) : null}
+        <View style={[styles.incidenceBadge, { backgroundColor: color + '20' }]}>
+          <View style={[styles.incidenceDot, { backgroundColor: color }]} />
+          <Text style={[styles.incidenceBadgeText, { color }]}>{label}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function SectionHeader({ icon, title }) {
+  return (
+    <View style={styles.sectionHeader}>
+      <Icon name={icon} size={18} color={Colors.primary} />
+      <Text style={styles.sectionTitle}>{title}</Text>
+    </View>
+  );
+}
+
+
+const DashboardOwner = () => {
+  const user = useSelector(userSelector);
+  const { house, checklist, checks, incidences, loading } =
+    useOwnerDashboard(user?.id);
+
+  return (
+    <PageLayout statusBar="light-content" withTitle={false} withPadding={false}>
+      <ProfileBar />
+
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        {/* <ActionButtons /> */}
-        <ScrollView style={Layout.grow} showsVerticalScrollIndicator={false}>
-          <ImageBackground
-            imageStyle={[styles.profileImageContainerStyle]}
-            source={{
-              uri: house?.houseImage?.original || DEFAULT_BACKGROUND_IMAGE
-            }}
-            style={styles.profileBarContainerStyle}
-          >
-            <SafeAreaView edges={['top']} style={theme.flexGrow}>
-              <View style={[theme.flexRow, theme.justifyCenter]}>
-                <Image
-                  source={require('../../assets/images/logo_pm_servicios.png')}
-                  style={{ height: 30, resizeMode: 'contain' }}
-                />
-              </View>
-              <View>
-                <ProfileBar role="owner" />
-              </View>
-              <View
-                style={[theme.flexGrow, theme.justifyEnd, theme.mB3, theme.pX8]}
-              />
-            </SafeAreaView>
-          </ImageBackground>
-
-          {/* Time Tracking Button */}
-          <View style={theme.p4}>
-            <TouchableOpacity
-              style={styles.timeTrackingButton}
-              onPress={() => openScreenWithPush(TIME_TRACKING_SCREEN_KEY)}
-            >
-              <View style={[theme.flexRow, theme.itemsCenter]}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.iconText}>📊</Text>
-                </View>
-                <View style={theme.flex1}>
-                  <Text style={[theme.fontSansBold, theme.textBase]}>
-                    Registro de Jornada
-                  </Text>
-                  <Text style={[theme.textGray600, theme.textSm]}>
-                    Ver fichajes y exportar registros
-                  </Text>
-                </View>
-                <Text style={styles.arrow}>›</Text>
-              </View>
-            </TouchableOpacity>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.primary} />
           </View>
-
-          {/* Entrances Manager Button */}
-          <View style={[theme.pX4, theme.pB4]}>
-            <TouchableOpacity
-              style={styles.timeTrackingButton}
-              onPress={() => openScreenWithPush(ENTRANCES_MANAGER_SCREEN_KEY)}
-            >
-              <View style={[theme.flexRow, theme.itemsCenter]}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.iconText}>📍</Text>
-                </View>
-                <View style={theme.flex1}>
-                  <Text style={[theme.fontSansBold, theme.textBase]}>
-                    Entradas y Salidas
-                  </Text>
-                  <Text style={[theme.textGray600, theme.textSm]}>
-                    Ver registro de entradas y salidas de trabajadores
-                  </Text>
-                </View>
-                <Text style={styles.arrow}>›</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          {checklist?.finished ? (
-            <View style={theme.p4}>
-              <Text style={[theme.fontSansNormal, theme.textXl]}>
-                Last report
-              </Text>
-              <View style={theme.mT4}>
-                <View
-                  style={[theme.flexRow, theme.flexWrap, theme.itemsCenter]}
-                >
-                  <Text style={theme.mR1}>We checked on</Text>
-                  <Badge
-                    text={moment(checklist?.date?.toDate()).format('LL')}
+        ) : (
+          <>
+            {/* Tarjeta de propiedad */}
+            {house && (
+              <View style={styles.section}>
+                <SectionHeader icon="home" title="Tu propiedad" />
+                <View style={styles.houseCard}>
+                  <FastImage
+                    source={{
+                      uri: house?.houseImage?.original || DEFAULT_HOUSE_IMAGE,
+                      priority: FastImage.priority.normal
+                    }}
+                    style={styles.houseImage}
+                    resizeMode={FastImage.resizeMode.cover}
                   />
-                  <Text style={theme.mY1}>
-                    the functioning and state of your Villa located in{' '}
-                  </Text>
-                  <Badge text={house?.street} variant="purple" />
+                  <View style={styles.houseInfo}>
+                    <Text style={styles.houseName}>
+                      {house.houseName || '—'}
+                    </Text>
+                    {(house.street || house.address) && (
+                      <View style={styles.houseAddressRow}>
+                        <Icon name="location-on" size={13} color={Colors.gray400} />
+                        <Text style={styles.houseAddress}>
+                          {house.street || house.address}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
               </View>
-              <OwnerChecks
-                checklist={checklist}
-                checksFromChecklist={checksFromChecklist}
-              />
+            )}
+
+            {/* Incidencias abiertas */}
+            <View style={styles.section}>
+              <SectionHeader icon="warning" title="Incidencias abiertas" />
+              {incidences.length === 0 ? (
+                <View style={styles.emptyCard}>
+                  <Icon name="check-circle" size={32} color={Colors.success} />
+                  <Text style={styles.emptyTitle}>Todo en orden</Text>
+                  <Text style={styles.emptySubtitle}>
+                    No hay incidencias abiertas en tu propiedad.
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.incidenceList}>
+                  {incidences.map(inc => (
+                    <IncidenceCard key={inc.id} incidence={inc} />
+                  ))}
+                </View>
+              )}
             </View>
-          ) : (
-            <View style={theme.p4}>
-              <Text style={[theme.fontSansNormal, theme.textXl]}>
-                Working on your Villa
-              </Text>
-              <View style={theme.mB4} />
-              <Text style={theme.mY1}>
-                We are currently working on your Villa. We will inform you when
-                we finish the report.
-              </Text>
-              <FastImage
-                source={{
-                  uri: 'https://firebasestorage.googleapis.com/v0/b/port-management-9bd53.appspot.com/o/other%2Fworking.png?alt=media&token=71271f2f-5d48-414b-ab17-9931abff842a',
-                  priority: FastImage.priority.normal
-                }}
-                style={{ width: '100%', height: 300 }}
-                resizeMode={FastImage.resizeMode.contain}
-              />
+
+            {/* Último informe de inspección */}
+            <View style={styles.section}>
+              <SectionHeader icon="assignment" title="Último informe" />
+              {!checklist ? (
+                <View style={styles.emptyCard}>
+                  <Icon name="hourglass-empty" size={32} color={Colors.gray300} />
+                  <Text style={styles.emptyTitle}>Sin informes aún</Text>
+                  <Text style={styles.emptySubtitle}>
+                    Aún no hay ningún informe de inspección registrado.
+                  </Text>
+                </View>
+              ) : checklist.finished ? (
+                <View style={styles.checklistCard}>
+                  <View style={styles.checklistHeader}>
+                    <View style={styles.checklistStatusBadge}>
+                      <Icon name="check-circle" size={14} color={Colors.success} />
+                      <Text style={styles.checklistStatusText}>Completado</Text>
+                    </View>
+                    <Text style={styles.checklistDate}>
+                      {formatChecklistDate(checklist?.date)}
+                    </Text>
+                  </View>
+                  {house?.street || house?.address ? (
+                    <Text style={styles.checklistAddress}>
+                      {house.street || house.address}
+                    </Text>
+                  ) : null}
+                  <OwnerChecks
+                    checklist={checklist}
+                    checksFromChecklist={checks}
+                  />
+                </View>
+              ) : (
+                <View style={styles.checklistCard}>
+                  <View style={styles.checklistHeader}>
+                    <View style={[styles.checklistStatusBadge, styles.checklistInProgressBadge]}>
+                      <Icon name="autorenew" size={14} color={Colors.primary} />
+                      <Text style={[styles.checklistStatusText, styles.checklistInProgressText]}>
+                        En curso
+                      </Text>
+                    </View>
+                    <Text style={styles.checklistDate}>
+                      {formatChecklistDate(checklist?.date)}
+                    </Text>
+                  </View>
+                  <Text style={styles.checklistInProgressMessage}>
+                    Estamos trabajando en tu propiedad. Te avisaremos cuando el
+                    informe esté listo.
+                  </Text>
+                </View>
+              )}
             </View>
-          )}
-        </ScrollView>
-      </PageLayout>
-    </>
+
+          </>
+        )}
+      </ScrollView>
+    </PageLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  arrow: {
-    color: Colors.gray400,
-    fontSize: 32,
-    fontWeight: '300'
+  checklistAddress: {
+    color: Colors.gray500,
+    fontSize: 13,
+    marginBottom: 12,
+    marginTop: 2
   },
-  container: {
-    paddingHorizontal: 0
-  },
-  iconContainer: {
-    alignItems: 'center',
-    backgroundColor: Colors.primary + '20',
-    borderRadius: 24,
-    height: 48,
-    justifyContent: 'center',
-    marginRight: 12,
-    width: 48
-  },
-  iconText: {
-    fontSize: 24
-  },
-  indicatorStyle: {
-    backgroundColor: Colors.primary,
-    borderRadius: 5,
-    height: 5
-  },
-  profileBarContainerStyle: {
-    backgroundColor: Colors.primary,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    height: 200
-  },
-  profileImageContainerStyle: {
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25
-  },
-  tabBarContainerStyle: {
-    backgroundColor: null
-  },
-  tabTextStyle: {
-    fontWeight: '500'
-  },
-  timeTrackingButton: {
+  checklistCard: {
     backgroundColor: Colors.white,
+    borderColor: Colors.gray200,
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 16
+  },
+  checklistDate: {
+    color: Colors.gray500,
+    fontSize: 13
+  },
+  checklistHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8
+  },
+  checklistInProgressBadge: {
+    backgroundColor: Colors.primaryLow
+  },
+  checklistInProgressMessage: {
+    color: Colors.gray600,
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 8
+  },
+  checklistInProgressText: {
+    color: Colors.primary
+  },
+  checklistStatusBadge: {
+    alignItems: 'center',
+    backgroundColor: Colors.successLight,
+    borderRadius: 20,
+    flexDirection: 'row',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4
+  },
+  checklistStatusText: {
+    color: Colors.success,
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  emptyCard: {
+    alignItems: 'center',
+    backgroundColor: Colors.gray50,
+    borderColor: Colors.gray200,
+    borderRadius: 14,
+    borderWidth: 1,
+    gap: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 24
+  },
+  emptySubtitle: {
+    color: Colors.gray400,
+    fontSize: 13,
+    textAlign: 'center'
+  },
+  emptyTitle: {
+    color: Colors.gray600,
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: 4
+  },
+  houseAddress: {
+    color: Colors.gray500,
+    fontSize: 13,
+    marginLeft: 3
+  },
+  houseAddressRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 4
+  },
+  houseCard: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.gray200,
+    borderRadius: 14,
+    borderWidth: 1,
+    overflow: 'hidden'
+  },
+  houseImage: {
+    height: 160,
+    width: '100%'
+  },
+  houseInfo: {
+    padding: 14
+  },
+  houseName: {
+    color: Colors.gray900,
+    fontSize: 17,
+    fontWeight: '700'
+  },
+  incidenceBadge: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    borderRadius: 20,
+    flexDirection: 'row',
+    gap: 5,
+    marginTop: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 3
+  },
+  incidenceBadgeText: {
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  incidenceCard: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.gray200,
     borderRadius: 12,
-    elevation: 3,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4
+    borderWidth: 1,
+    flexDirection: 'row',
+    overflow: 'hidden'
+  },
+  incidenceContent: {
+    flex: 1,
+    padding: 12
+  },
+  incidenceDescription: {
+    color: Colors.gray500,
+    fontSize: 13,
+    marginTop: 2
+  },
+  incidenceDot: {
+    borderRadius: 4,
+    height: 7,
+    width: 7
+  },
+  incidenceList: {
+    gap: 8
+  },
+  incidenceStateBar: {
+    width: 4
+  },
+  incidenceTitle: {
+    color: Colors.gray800,
+    fontSize: 14,
+    fontWeight: '600'
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60
+  },
+  scroll: {
+    flex: 1
+  },
+  scrollContent: {
+    paddingBottom: 32
+  },
+  section: {
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingTop: 20
+  },
+  sectionHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8
+  },
+  sectionTitle: {
+    color: Colors.gray800,
+    fontSize: 16,
+    fontWeight: '700'
   }
 });
 

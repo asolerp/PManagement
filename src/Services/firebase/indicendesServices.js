@@ -3,6 +3,7 @@ import {
   collection,
   query,
   where,
+  orderBy,
   getDocs
 } from '@react-native-firebase/firestore';
 
@@ -44,4 +45,23 @@ const fetchIncidences = async params => {
   }
 };
 
-export { fetchIncidences };
+const fetchIncidencesByHouseId = async houseId => {
+  try {
+    const db = getFirestore();
+    const q = query(
+      collection(db, INCIDENCES),
+      where('houseId', '==', houseId),
+      where('done', '==', false),
+      orderBy('date', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (error) {
+    Logger.error('Error fetching incidences by houseId', error, {
+      service: 'incidencesServices'
+    });
+    throw error;
+  }
+};
+
+export { fetchIncidences, fetchIncidencesByHouseId };

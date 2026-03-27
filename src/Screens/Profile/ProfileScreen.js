@@ -277,7 +277,7 @@ const ProfileScreen = ({ route }) => {
         }
         footer={renderFooter()}
         titleLefSide={true}
-        backButton={currentUser?.role === 'admin'}
+        backButton={currentUser?.role === 'admin' || currentUser?.role === 'owner'}
       >
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}

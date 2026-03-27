@@ -8,6 +8,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../Theme/Variables';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -20,6 +21,7 @@ import { userSelector } from '../Store/User/userSlice';
 import { DEFAULT_IMAGE } from '../constants/general';
 
 const ProfileBar = () => {
+  const insets = useSafeAreaInsets();
   const user = useSelector(userSelector);
   const today = format(new Date(), 'iii d MMMM yyyy', { locale: es });
 
@@ -33,7 +35,7 @@ const ProfileBar = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       <LinearGradient
         colors={[Colors.gradientStart, Colors.gradientMiddle, Colors.gradientEnd]}
         start={{ x: 0, y: 0 }}
@@ -61,13 +63,19 @@ const ProfileBar = () => {
                 name={
                   userProfile.role === 'admin'
                     ? 'admin-panel-settings'
-                    : 'person'
+                    : userProfile.role === 'owner'
+                      ? 'home-work'
+                      : 'person'
                 }
                 size={12}
                 color="#55A5AD"
               />
               <Text style={styles.roleText}>
-                {userProfile.role === 'admin' ? 'Administrador' : 'Trabajador'}
+                {userProfile.role === 'admin'
+                  ? 'Administrador'
+                  : userProfile.role === 'owner'
+                    ? 'Propietario'
+                    : 'Trabajador'}
               </Text>
             </View>
           )}
@@ -76,9 +84,8 @@ const ProfileBar = () => {
         {/* Right side: Avatar */}
         <Pressable
           onPress={() =>
-            userProfile?.role === 'admin' &&
             openScreenWithPush(PROFILE_SCREEN_KEY, {
-              mode: 'admin',
+              mode: userProfile?.role === 'admin' ? 'admin' : 'owner',
               user: userProfile
             })
           }
@@ -95,11 +102,9 @@ const ProfileBar = () => {
             resizeMode={FastImage.resizeMode.cover}
           />
           <View style={styles.avatarBorder} />
-          {userProfile?.role === 'admin' && (
-            <View style={styles.editIndicator}>
-              <Icon name="edit" size={14} color="#FFFFFF" />
-            </View>
-          )}
+          <View style={styles.editIndicator}>
+            <Icon name="person" size={14} color="#FFFFFF" />
+          </View>
         </Pressable>
       </View>
     </View>
@@ -126,11 +131,10 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.95 }]
   },
   container: {
-    minHeight: 160,
+    minHeight: 120,
     overflow: 'hidden',
     paddingBottom: 20,
     paddingHorizontal: 20,
-    paddingTop: 60,
     position: 'relative'
   },
   date: {
