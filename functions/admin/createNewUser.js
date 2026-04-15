@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 const { genPassword, REGION } = require('../utils');
 const {
@@ -8,14 +8,15 @@ const {
 const DEFAULT_PHOTO_URL =
   'https://res.cloudinary.com/enalbis/image/upload/v1639415421/PortManagement/varios/port_logo_pv4jqk.png';
 
-const createNewUser = functions
-  .region(REGION)
-  .runWith({
+const createNewUser = onCall(
+  {
+    region: REGION,
     timeoutSeconds: 540,
-    memory: '2GB'
-  })
-  .https.onCall(async data => {
-    const { name, surname, email, phone, gender, language, role } = data;
+    memory: '2GiB'
+  },
+  async request => {
+    const { name, surname, email, phone, gender, language, role } =
+      request.data;
     const password = genPassword();
 
     try {
@@ -49,9 +50,10 @@ const createNewUser = functions
         sendNewUserConfirmationEmail({ email, password });
       }
     } catch (err) {
-      throw new Error(err);
+      throw new HttpsError('internal', err.message || String(err));
     }
-  });
+  }
+);
 
 module.exports = {
   createNewUser

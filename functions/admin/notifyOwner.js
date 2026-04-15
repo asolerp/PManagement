@@ -1,17 +1,44 @@
-const functions = require('firebase-functions');
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 
 const { sendResumeChecklistOwner } = require('./sendResumeChecklistOwner');
 const { REGION } = require('../utils');
 
-const notifyOwner = functions
-  .region(REGION)
-  .runWith({
+const notifyOwner = onCall(
+  {
+    region: REGION,
     timeoutSeconds: 540,
-    memory: '2GB'
-  })
-  .https.onCall(async data => {
-    const { checkId } = data;
+    memory: '2GiB',
+    invoker: 'public'
+  },
+  async request => {
+    if (!request.auth) {
+      throw new HttpsError(
+        'unauthenticated',
+        'Debes estar autenticado para realizar esta acción.'
+      );
+    }
+
+    const { checkId } = request.data;
+    if (!checkId) {
+      throw new HttpsError('invalid-argument', 'Se requiere checkId.');
+    }
+
+    const userDoc = await admin
+      .firestore()
+      .collection('users')
+      .doc(request.auth.uid)
+      .get();
+    const userRole = userDoc.exists ? userDoc.data()?.role : null;
+    if (userRole !== 'admin') {
+      console.warn(
+        `Usuario ${request.auth.uid} (rol=${userRole}) intentó notifyOwner para ${checkId}`
+      );
+      throw new HttpsError(
+        'permission-denied',
+        'No tienes permisos para realizar esta acción.'
+      );
+    }
 
     try {
       const checklistRef = await admin
@@ -72,7 +99,8 @@ const notifyOwner = functions
     } catch (err) {
       console.log(err);
     }
-  });
+  }
+);
 
 module.exports = {
   notifyOwner
