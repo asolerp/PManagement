@@ -2,7 +2,7 @@ export default {
   expo: {
     name: 'Port Management',
     slug: 'portmanagement',
-    version: '2.0.1',
+    version: '2.1.0',
     orientation: 'portrait',
     icon: './assets/icon/icon.png',
     userInterfaceStyle: 'automatic',
@@ -19,7 +19,7 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.port.management', // iOS usa com.port.management
-      buildNumber: '30',
+      buildNumber: '31',
       googleServicesFile:
         './native-backup/Firebase/Prod/GoogleService-Info.plist',
       infoPlist: {
@@ -45,7 +45,7 @@ export default {
         backgroundColor: '#26b45f'
       },
       package: 'com.portmanagement', // Android usa com.portmanagement
-      versionCode: 30,
+      versionCode: 31,
       permissions: [
         'CAMERA',
         'READ_EXTERNAL_STORAGE',
