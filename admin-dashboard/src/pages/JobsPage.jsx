@@ -12,14 +12,14 @@ import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import Timeline from '@/components/Timeline';
 
-const statusLabels = {
+export const statusLabels = {
   pending: 'Pendiente',
   in_progress: 'En curso',
   done: 'Finalizado',
   cancelled: 'Cancelado'
 };
 
-const statusColors = {
+export const statusColors = {
   pending: 'bg-amber-100 text-amber-700',
   in_progress: 'bg-[#126D9B]/10 text-[#126D9B]',
   done: 'bg-[#67B26F]/10 text-[#67B26F]',
@@ -33,7 +33,7 @@ const JOB_STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelado' },
 ];
 
-function JobDetailPanel({ job, houses = [], onClose, onJobUpdated, onDeleted }) {
+export function JobDetailPanel({ job, houses = [], onClose, onJobUpdated, onDeleted }) {
   const { user, userData } = useAuth();
   const updateJob = useUpdateJob();
   const deleteJob = useDeleteJob();
