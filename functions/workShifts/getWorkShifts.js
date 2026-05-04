@@ -35,8 +35,13 @@ exports.getWorkShifts = onCall(CALLABLE_OPTS, async request => {
       );
     }
 
-    const { startDate, endDate, workerId, status, limit = 100 } =
-      request.data || {};
+    const {
+      startDate,
+      endDate,
+      workerId,
+      status,
+      limit = 100
+    } = request.data || {};
 
     let query = db.collection('workShifts');
 
@@ -70,7 +75,11 @@ exports.getWorkShifts = onCall(CALLABLE_OPTS, async request => {
   } catch (error) {
     console.error('Error in getWorkShifts:', error);
     if (error instanceof HttpsError) throw error;
-    throw new HttpsError('internal', 'Failed to get work shifts.', error.message);
+    throw new HttpsError(
+      'internal',
+      'Failed to get work shifts.',
+      error.message
+    );
   }
 });
 

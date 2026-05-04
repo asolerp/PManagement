@@ -42,11 +42,13 @@ const PRIORITY_LABEL = {
 function toJsDate(value) {
   if (!value) return null;
   try {
-    if (value.toDate && typeof value.toDate === 'function') return value.toDate();
-    if (value.seconds) return new Date(value.seconds * 1000);
-    if (value._d) return value._d;
-    const d = new Date(value);
-    return isNaN(d.getTime()) ? null : d;
+    let d = null;
+    if (value.toDate && typeof value.toDate === 'function') d = value.toDate();
+    else if (value.seconds != null) d = new Date(value.seconds * 1000);
+    else if (value._d instanceof Date) d = value._d;
+    else d = new Date(value);
+    if (!(d instanceof Date) || isNaN(d.getTime())) return null;
+    return d;
   } catch {
     return null;
   }

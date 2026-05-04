@@ -853,10 +853,13 @@ const PILL_FOR_PRIORITY = {
 function reportToDate(v) {
   if (!v) return null;
   try {
-    if (v.toDate) return v.toDate();
-    if (v.seconds) return new Date(v.seconds * 1000);
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? null : d;
+    let d = null;
+    if (v.toDate && typeof v.toDate === 'function') d = v.toDate();
+    else if (v.seconds != null) d = new Date(v.seconds * 1000);
+    else if (v._d instanceof Date) d = v._d;
+    else d = new Date(v);
+    if (!(d instanceof Date) || isNaN(d.getTime())) return null;
+    return d;
   } catch { return null; }
 }
 
