@@ -10,6 +10,7 @@ import {
   Mail,
   Phone,
   User,
+  Users,
   Plus,
   X,
   Save,
@@ -22,6 +23,10 @@ import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import { getSafeImageUrl } from '@/utils/getSafeImageUrl';
 import { geocodeAddress, toLocationObject } from '@/utils/geocoding';
+import { DataTable } from '@/components/ui/DataTable';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { FilterBar } from '@/components/ui/FilterBar';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 function WorkerAvatar({ photo, name, size = 'md' }) {
   const [imgError, setImgError] = useState(false);
@@ -424,6 +429,7 @@ export default function WorkersPage() {
   const { data: workers = [], isLoading } = useWorkersFirestore();
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const openId = location.state?.openWorkerId;
@@ -433,92 +439,125 @@ export default function WorkersPage() {
     }
   }, [location.state?.openWorkerId, workers]);
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return workers;
+    return workers.filter((w) => {
+      const name = `${w.firstName ?? ''} ${w.lastName ?? ''}`.toLowerCase();
+      return name.includes(q) || (w.email ?? '').toLowerCase().includes(q) || (w.phone ?? '').includes(q);
+    });
+  }, [workers, search]);
+
+  const columns = useMemo(
+    () => [
+      {
+        key: 'worker',
+        label: 'Trabajador',
+        sortable: true,
+        sortAccessor: (w) => `${w.firstName ?? ''} ${w.lastName ?? ''}`.trim(),
+        render: (w) => {
+          const fullName = `${w.firstName || ''} ${w.lastName || ''}`.trim() || 'Sin nombre';
+          return (
+            <div className="flex items-center gap-3 min-w-0">
+              <WorkerAvatar photo={getWorkerPhoto(w)} name={fullName} size="md" />
+              <span className="font-medium text-stone-900 dark:text-stone-100 truncate">{fullName}</span>
+            </div>
+          );
+        },
+      },
+      {
+        key: 'email',
+        label: 'Email',
+        sortable: true,
+        render: (w) =>
+          w.email ? (
+            <span className="inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-300 truncate">
+              <Mail className="w-3.5 h-3.5 text-stone-400" />
+              <span className="truncate">{w.email}</span>
+            </span>
+          ) : (
+            <span className="text-stone-400">—</span>
+          ),
+      },
+      {
+        key: 'phone',
+        label: 'Teléfono',
+        render: (w) =>
+          w.phone ? (
+            <span className="inline-flex items-center gap-1.5 font-mono tabular-nums text-stone-600 dark:text-stone-300">
+              <Phone className="w-3.5 h-3.5 text-stone-400" />
+              {w.phone}
+            </span>
+          ) : (
+            <span className="text-stone-400">—</span>
+          ),
+      },
+      {
+        key: 'actions',
+        label: '',
+        align: 'right',
+        render: (w) => (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedWorker(w);
+            }}
+            className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
+            title="Editar perfil"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+        ),
+      },
+    ],
+    []
+  );
+
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="font-heading text-xl sm:text-2xl font-bold text-gray-900">Trabajadores</h1>
-          <p className="text-sm sm:text-base text-gray-500 hidden sm:block">
-            Lista de trabajadores registrados en el sistema
-          </p>
-        </div>
-        <Button onClick={() => setShowCreate(true)} className="flex-shrink-0 !px-2.5 sm:!px-4">
-          <Plus className="w-4 h-4 sm:mr-2" />
-          <span className="hidden sm:inline">Nuevo trabajador</span>
-        </Button>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Gestión', 'Trabajadores']}
+        title="Trabajadores"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${workers.length} ${workers.length === 1 ? 'trabajador registrado' : 'trabajadores registrados'}`
+        }
+        actions={
+          <Button onClick={() => setShowCreate(true)}>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Nuevo trabajador
+          </Button>
+        }
+      />
 
-      {/* Stats */}
-      {!isLoading && workers.length > 0 && (
-        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
-          <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          <span>{workers.length} trabajadores registrados</span>
-        </div>
-      )}
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nombre, email o teléfono…"
+      />
 
-      {/* Workers grid */}
-      {isLoading ? (
-        <div className="text-center py-12 text-gray-500 text-sm">Cargando...</div>
-      ) : workers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-14 text-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#126D9B]/20 to-[#67B26F]/20 flex items-center justify-center mb-4">
-            <Users className="w-8 h-8 text-[#126D9B]" />
-          </div>
-          <p className="font-heading text-gray-800 font-medium mb-1">No hay trabajadores registrados</p>
-          <p className="text-sm text-gray-500">Añade trabajadores desde la sección correspondiente</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {workers.map((worker) => {
-            const fullName =
-              `${worker.firstName || ''} ${worker.lastName || ''}`.trim() ||
-              'Sin nombre';
-            const photo = getWorkerPhoto(worker);
-
-            return (
-              <Card
-                key={worker.id}
-                className="p-3 sm:p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div
-                    className="flex-1 flex items-center gap-3 sm:gap-4 min-w-0 cursor-pointer"
-                    onClick={() => navigate(`/trabajadores/${worker.id}`)}
-                  >
-                    <WorkerAvatar photo={photo} name={fullName} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
-                        {fullName}
-                      </p>
-                      {worker.email && (
-                        <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 mt-0.5">
-                          <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
-                          <span className="truncate">{worker.email}</span>
-                        </div>
-                      )}
-                      {worker.phone && (
-                        <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 mt-0.5 hidden sm:flex">
-                          <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                          <span className="truncate">{worker.phone}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setSelectedWorker(worker); }}
-                    className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
-                    title="Editar perfil"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+      <Card className="overflow-hidden p-0">
+        {isLoading ? (
+          <div className="py-16 text-center text-stone-500">Cargando…</div>
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={filtered}
+            getRowKey={(w) => w.id}
+            onRowClick={(w) => navigate(`/trabajadores/${w.id}`)}
+            initialSort={{ key: 'worker', dir: 'asc' }}
+            emptyState={
+              <EmptyState
+                icon={Users}
+                title={search ? 'Sin resultados' : 'No hay trabajadores'}
+                description={search ? 'Prueba con otros términos.' : 'Añade trabajadores desde el botón superior.'}
+              />
+            }
+          />
+        )}
+      </Card>
 
       {selectedWorker && (
         <WorkerDetailPanel
@@ -527,11 +566,7 @@ export default function WorkersPage() {
         />
       )}
 
-      {/* Modal crear */}
-      <CreateWorkerModal
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-      />
+      <CreateWorkerModal open={showCreate} onClose={() => setShowCreate(false)} />
     </div>
   );
 }

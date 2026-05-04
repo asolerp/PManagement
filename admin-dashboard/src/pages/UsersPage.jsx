@@ -1,5 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
+import { DataTable } from '@/components/ui/DataTable';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { FilterBar, FilterChip } from '@/components/ui/FilterBar';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { useUsers, useCreateUser, useUpdateUser, useChangePassword, useUploadUserImage } from '@/hooks/useFirestore';
 import { useAuth } from '@/hooks/useAuth.jsx';
 import {
@@ -485,107 +489,138 @@ export default function UsersPage() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [filterRole, setFilterRole] = useState('all');
+  const [search, setSearch] = useState('');
 
-  const filteredUsers =
-    filterRole === 'all'
-      ? users
-      : users.filter((u) => u.role === filterRole);
+  const filtered = useMemo(() => {
+    let list = filterRole === 'all' ? users : users.filter((u) => u.role === filterRole);
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter((u) => {
+        const name = `${u.firstName ?? ''} ${u.lastName ?? ''}`.toLowerCase();
+        return name.includes(q) || (u.email ?? '').toLowerCase().includes(q);
+      });
+    }
+    return list;
+  }, [users, filterRole, search]);
+
+  const columns = useMemo(
+    () => [
+      {
+        key: 'user',
+        label: 'Usuario',
+        sortable: true,
+        sortAccessor: (u) => `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
+        render: (u) => {
+          const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Sin nombre';
+          return (
+            <div className="flex items-center gap-3 min-w-0">
+              <UserAvatar
+                photo={getSafeImageUrl(u.profileImage?.small || u.profileImage?.original)}
+                name={name}
+                size="sm"
+              />
+              <span className="font-medium text-stone-900 dark:text-stone-100 truncate">{name}</span>
+            </div>
+          );
+        },
+      },
+      {
+        key: 'email',
+        label: 'Email',
+        sortable: true,
+        render: (u) =>
+          u.email ? (
+            <span className="inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-300 truncate">
+              <Mail className="w-3.5 h-3.5 text-stone-400" />
+              <span className="truncate">{u.email}</span>
+            </span>
+          ) : (
+            <span className="text-stone-400">—</span>
+          ),
+      },
+      {
+        key: 'phone',
+        label: 'Teléfono',
+        render: (u) =>
+          u.phone ? (
+            <span className="font-mono tabular-nums text-stone-600 dark:text-stone-300">{u.phone}</span>
+          ) : (
+            <span className="text-stone-400">—</span>
+          ),
+      },
+      {
+        key: 'role',
+        label: 'Rol',
+        sortable: true,
+        sortAccessor: (u) => u.role || '',
+        render: (u) => <RoleBadge role={u.role} />,
+      },
+    ],
+    []
+  );
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="font-heading text-xl sm:text-2xl font-bold text-gray-900">Usuarios</h1>
-          <p className="text-sm sm:text-base text-gray-500 hidden sm:block">
-            Invita a tu equipo y gestiona administradores, trabajadores y propietarios
-          </p>
-        </div>
-        <Button onClick={() => setShowCreate(true)} className="flex-shrink-0 !px-2.5 sm:!px-4">
-          <Plus className="w-4 h-4 sm:mr-2" />
-          <span className="hidden sm:inline">Invitar usuario</span>
-          <span className="sm:hidden">Invitar</span>
-        </Button>
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Gestión', 'Usuarios']}
+        title="Usuarios"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${users.length} ${users.length === 1 ? 'usuario' : 'usuarios'} con acceso al sistema`
+        }
+        actions={
+          <Button onClick={() => setShowCreate(true)}>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Invitar usuario
+          </Button>
+        }
+      />
+
+      <div className="flex flex-wrap items-center gap-2">
+        {[{ value: 'all', label: 'Todos' }, ...ROLES].map((r) => (
+          <FilterChip
+            key={r.value}
+            active={filterRole === r.value}
+            onClick={() => setFilterRole(r.value)}
+            count={r.value === 'all' ? users.length : users.filter((u) => u.role === r.value).length}
+          >
+            {r.label}
+          </FilterChip>
+        ))}
       </div>
 
-      {/* Filtros */}
-      {!isLoading && users.length > 0 && (
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0">
-          {[
-            { value: 'all', label: 'Todos' },
-            ...ROLES,
-          ].map((r) => (
-            <button
-              key={r.value}
-              onClick={() => setFilterRole(r.value)}
-              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
-                filterRole === r.value
-                  ? 'bg-[#126D9B] text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {r.label}
-            </button>
-          ))}
-          <span className="ml-auto text-xs sm:text-sm text-gray-500 whitespace-nowrap flex-shrink-0">
-            {filteredUsers.length} usuarios
-          </span>
-        </div>
-      )}
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nombre o email…"
+      />
 
-      {/* Lista */}
-      {isLoading ? (
-        <div className="text-center py-12 text-gray-500 text-sm">Cargando...</div>
-      ) : filteredUsers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-14 text-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#126D9B]/20 to-[#67B26F]/20 flex items-center justify-center mb-4">
-            <Users className="w-8 h-8 text-[#126D9B]" />
-          </div>
-          <p className="font-heading text-gray-800 font-medium mb-1">No hay usuarios registrados</p>
-          <p className="text-sm text-gray-500">Invita al primer usuario desde el botón superior</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {filteredUsers.map((u) => {
-            const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim();
-            return (
-              <Card
-                key={u.id}
-                className="p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedUser(u)}
-              >
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <UserAvatar
-                    photo={getSafeImageUrl(u.profileImage?.small || u.profileImage?.original)}
-                    name={fullName}
-                    size="sm"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
-                      {fullName || 'Sin nombre'}
-                    </p>
-                    {u.email && (
-                      <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 mt-0.5">
-                        <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
-                        <span className="truncate">{u.email}</span>
-                      </div>
-                    )}
-                    {u.phone && (
-                      <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 mt-0.5 hidden sm:flex">
-                        <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                        <span className="truncate">{u.phone}</span>
-                      </div>
-                    )}
-                    <div className="mt-1 sm:mt-1.5">
-                      <RoleBadge role={u.role} />
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+      <Card className="overflow-hidden p-0">
+        {isLoading ? (
+          <div className="py-16 text-center text-stone-500">Cargando…</div>
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={filtered}
+            getRowKey={(u) => u.id}
+            onRowClick={(u) => setSelectedUser(u)}
+            selectedRowKey={selectedUser?.id}
+            initialSort={{ key: 'user', dir: 'asc' }}
+            emptyState={
+              <EmptyState
+                icon={Users}
+                title={search || filterRole !== 'all' ? 'Sin resultados' : 'No hay usuarios'}
+                description={
+                  search || filterRole !== 'all'
+                    ? 'Prueba con otros filtros.'
+                    : 'Invita al primer usuario desde el botón superior.'
+                }
+              />
+            }
+          />
+        )}
+      </Card>
 
       {/* Sidebar detalle */}
       {selectedUser && (

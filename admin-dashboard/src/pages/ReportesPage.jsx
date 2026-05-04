@@ -10,9 +10,14 @@ import {
   useUpdateInspectionReport,
   useDeleteInspectionReport
 } from '@/hooks/useFirestore';
-import { FileText, Home, X, Camera, AlertCircle, Loader2, Pencil, Trash2, ChevronDown } from 'lucide-react';
-import { format } from 'date-fns';
+import { FileText, Home, X, Camera, AlertCircle, AlertTriangle, Loader2, Pencil, Trash2, ChevronDown, CheckCircle2, Clock } from 'lucide-react';
+import { format, formatDistanceToNowStrict, isToday } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { DataTable } from '@/components/ui/DataTable';
+import { Pill } from '@/components/ui/Pill';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { FilterBar, FilterChip } from '@/components/ui/FilterBar';
 import { serverTimestamp } from 'firebase/firestore';
 import { getSafeImageUrl } from '@/utils/getSafeImageUrl';
 import { uploadInspectionReportPhoto } from '@/services/firestore';
@@ -57,7 +62,7 @@ function formatReportDate(value) {
   }
 }
 
-function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, houses }) {
+export function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, houses }) {
   const createIncidence = useCreateIncidence();
   const updateReport = useUpdateInspectionReport();
   const deleteReport = useDeleteInspectionReport();
@@ -837,80 +842,324 @@ function ReportDetailPanel({ report, onClose, onCreatedIncidences, onDeleted, ho
   );
 }
 
+const PILL_FOR_PRIORITY = {
+  critical: 'critical',
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+  none: 'neutral',
+};
+
+function reportToDate(v) {
+  if (!v) return null;
+  try {
+    if (v.toDate) return v.toDate();
+    if (v.seconds) return new Date(v.seconds * 1000);
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  } catch { return null; }
+}
+
+function relativeWhen(v) {
+  const d = reportToDate(v);
+  if (!d) return '—';
+  if (isToday(d)) return `hoy ${format(d, 'HH:mm')}`;
+  return formatDistanceToNowStrict(d, { addSuffix: true, locale: es });
+}
+
 export default function ReportesPage() {
   const queryClient = useQueryClient();
   const { data: reports = [], isLoading, isError, error } = useInspectionReports();
   const { data: houses = [] } = useHouses();
   const [selectedReportId, setSelectedReportId] = useState(null);
+  const [search, setSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all'); // all | pending | processed
+  const [filterCritical, setFilterCritical] = useState(false);
+  const [filterHouseId, setFilterHouseId] = useState('');
+
   const selectedReport = useMemo(() => {
     if (!selectedReportId) return null;
     return reports.find((r) => r.id === selectedReportId) || null;
   }, [selectedReportId, reports]);
 
+  const housesById = useMemo(() => {
+    const map = new Map();
+    (houses || []).forEach((h) => map.set(h.id, h));
+    return map;
+  }, [houses]);
+
+  const resolveHouse = (r) => {
+    if (!r) return null;
+    if (r.propertyId && housesById.has(r.propertyId)) return housesById.get(r.propertyId);
+    const name = (r.propertyName || '').toLowerCase().trim();
+    if (!name) return null;
+    return (
+      (houses || []).find((h) => {
+        const hn = (h.houseName || '').toLowerCase();
+        const addr = (h.address || h.street || '').toLowerCase();
+        return hn === name || hn.includes(name) || addr.includes(name);
+      }) || null
+    );
+  };
+
+  const counts = useMemo(() => {
+    const total = reports.length;
+    const processed = reports.filter((r) => r.incidencesCreatedAt).length;
+    const pending = total - processed;
+    const critical = reports.filter((r) => {
+      const p = r.overallPriority || r.dashboardReport?.summary?.overall_priority;
+      return p === 'critical';
+    }).length;
+    return { total, processed, pending, critical };
+  }, [reports]);
+
+  const filteredReports = useMemo(() => {
+    let list = reports;
+    if (filterStatus === 'pending') list = list.filter((r) => !r.incidencesCreatedAt);
+    if (filterStatus === 'processed') list = list.filter((r) => r.incidencesCreatedAt);
+    if (filterCritical) {
+      list = list.filter((r) => {
+        const p = r.overallPriority || r.dashboardReport?.summary?.overall_priority;
+        return p === 'critical';
+      });
+    }
+    if (filterHouseId) {
+      list = list.filter((r) => {
+        const h = resolveHouse(r);
+        return h?.id === filterHouseId;
+      });
+    }
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter((r) => {
+        return (
+          (r.propertyName || '').toLowerCase().includes(q) ||
+          (r.summary || '').toLowerCase().includes(q) ||
+          (r.transcription || '').toLowerCase().includes(q) ||
+          (r.issues || []).some((i) => (i.title || '').toLowerCase().includes(q))
+        );
+      });
+    }
+    return list;
+  }, [reports, filterStatus, filterCritical, filterHouseId, search, housesById]);
+
+  const hasFilters = filterCritical || !!filterHouseId || !!search.trim();
+
+  const columns = useMemo(
+    () => [
+      {
+        key: 'property',
+        label: 'Propiedad',
+        sortable: true,
+        sortAccessor: (r) => r.propertyName || '',
+        render: (r) => {
+          const h = resolveHouse(r);
+          return (
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="w-8 h-8 rounded-lg bg-turquoise-50 dark:bg-turquoise-900/30 text-turquoise-600 dark:text-turquoise-300 flex items-center justify-center flex-shrink-0">
+                <FileText className="w-4 h-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="font-medium text-stone-900 dark:text-stone-100 truncate">
+                  {r.propertyName || 'Sin propiedad'}
+                </p>
+                {h ? (
+                  <Link
+                    to={`/casas/${h.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1 text-[11px] text-stone-500 hover:text-turquoise-700 dark:hover:text-turquoise-300 truncate"
+                  >
+                    <Home className="w-3 h-3" />
+                    <span className="truncate">{h.houseName || h.address}</span>
+                  </Link>
+                ) : (
+                  (r.summary || r.transcription) && (
+                    <p className="text-xs text-stone-500 truncate">{r.summary || r.transcription}</p>
+                  )
+                )}
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        key: 'priority',
+        label: 'Prioridad',
+        sortable: true,
+        sortAccessor: (r) => {
+          const p = r.overallPriority || r.dashboardReport?.summary?.overall_priority || 'none';
+          return ({ critical: 0, high: 1, medium: 2, low: 3, none: 4 }[p] ?? 5);
+        },
+        render: (r) => {
+          const p = r.overallPriority || r.dashboardReport?.summary?.overall_priority || 'none';
+          if (p === 'none') return <span className="text-stone-400 text-xs">—</span>;
+          const label = PRIORITY_OPTIONS.find((o) => o.value === p)?.label || '—';
+          return <Pill variant={PILL_FOR_PRIORITY[p] ?? 'neutral'} dot>{label}</Pill>;
+        },
+      },
+      {
+        key: 'issues',
+        label: 'Incidencias',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (r) => r.issues?.length ?? 0,
+        render: (r) => {
+          const c = r.issues?.length ?? 0;
+          if (c === 0) return <span className="text-stone-400 text-xs">—</span>;
+          return (
+            <span className="inline-flex items-center gap-1 text-stone-700 dark:text-stone-200">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+              <span className="font-mono tabular-nums">{c}</span>
+            </span>
+          );
+        },
+      },
+      {
+        key: 'photos',
+        label: 'Fotos',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (r) => r.photoUrls?.length ?? 0,
+        render: (r) => {
+          const c = r.photoUrls?.length ?? 0;
+          if (c === 0) return <span className="text-stone-400 text-xs">—</span>;
+          return (
+            <span className="inline-flex items-center gap-1 text-stone-600 dark:text-stone-300">
+              <Camera className="w-3.5 h-3.5 text-stone-400" />
+              <span className="font-mono tabular-nums">{c}</span>
+            </span>
+          );
+        },
+      },
+      {
+        key: 'state',
+        label: 'Estado',
+        sortable: true,
+        sortAccessor: (r) => (r.incidencesCreatedAt ? 1 : 0),
+        render: (r) =>
+          r.incidencesCreatedAt ? (
+            <Pill variant="resolved">
+              <CheckCircle2 className="w-3 h-3" />
+              Procesado
+            </Pill>
+          ) : (
+            <Pill variant="info">
+              <Clock className="w-3 h-3" />
+              Pendiente
+            </Pill>
+          ),
+      },
+      {
+        key: 'when',
+        label: 'Creado',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (r) => reportToDate(r.createdAt)?.getTime() ?? 0,
+        render: (r) => (
+          <span className="font-mono tabular-nums text-xs text-stone-500">
+            {relativeWhen(r.createdAt)}
+          </span>
+        ),
+      },
+    ],
+    [housesById]
+  );
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-gray-900">Reportes de inspección</h1>
-        <p className="text-gray-500">
-          Reportes creados desde el bot (voz + fotos). Abre uno y crea las incidencias cuando quieras.
-        </p>
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Operaciones', 'Reportes']}
+        title="Reportes de inspección"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${counts.pending} pendiente${counts.pending !== 1 ? 's' : ''} · ${counts.critical} crítico${counts.critical !== 1 ? 's' : ''} · ${counts.processed} procesado${counts.processed !== 1 ? 's' : ''}`
+        }
+      />
+
+      {isError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-700 dark:text-red-300">
+          Error al cargar reportes: {error?.message || 'Error desconocido'}
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center gap-2">
+        <FilterChip active={filterStatus === 'all'} onClick={() => setFilterStatus('all')} count={counts.total}>
+          Todos
+        </FilterChip>
+        <FilterChip active={filterStatus === 'pending'} onClick={() => setFilterStatus('pending')} count={counts.pending}>
+          <Clock className="w-3.5 h-3.5" />
+          Pendientes
+        </FilterChip>
+        <FilterChip active={filterCritical} onClick={() => setFilterCritical((v) => !v)} count={counts.critical}>
+          <AlertTriangle className="w-3.5 h-3.5" />
+          Críticos
+        </FilterChip>
+        <FilterChip active={filterStatus === 'processed'} onClick={() => setFilterStatus('processed')} count={counts.processed}>
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          Procesados
+        </FilterChip>
       </div>
 
-      {!isLoading && reports.length > 0 && (
-        <p className="text-sm text-gray-500">{reports.length} reporte{reports.length !== 1 ? 's' : ''}</p>
-      )}
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por propiedad, resumen o incidencia…"
+        right={
+          <select
+            value={filterHouseId}
+            onChange={(e) => setFilterHouseId(e.target.value)}
+            className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500/30"
+          >
+            <option value="">Todas las casas</option>
+            {houses.map((h) => (
+              <option key={h.id} value={h.id}>
+                {h.houseName || 'Sin nombre'}
+              </option>
+            ))}
+          </select>
+        }
+      >
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={() => {
+              setFilterCritical(false);
+              setFilterHouseId('');
+              setSearch('');
+            }}
+            className="text-xs text-turquoise-600 hover:underline"
+          >
+            Quitar filtros
+          </button>
+        )}
+      </FilterBar>
 
-      {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Cargando...</div>
-      ) : isError ? (
-        <div className="text-center py-12 text-red-600 bg-red-50 rounded-lg border border-red-200 px-4 max-w-md mx-auto space-y-2">
-          <p className="font-medium">Error al cargar reportes</p>
-          <p className="text-sm">{error?.message || 'Error desconocido'}</p>
-        </div>
-      ) : reports.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 space-y-4 max-w-md mx-auto">
-          <p className="font-medium">No hay reportes en la lista.</p>
-          <p className="text-sm">
-            Envía un audio al bot indicando la casa y las incidencias, luego escribe &quot;Crear incidencias&quot;.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {reports.map((report) => {
-            const issueCount = report.issues?.length ?? 0;
-            const overallPriority =
-              report.overallPriority ||
-              report.dashboardReport?.summary?.overall_priority ||
-              'none';
-            return (
-              <Card
-                key={report.id}
-                className="p-4 border border-gray-200 cursor-pointer hover:border-turquoise-300 hover:bg-turquoise-50/50 transition-colors"
-                onClick={() => setSelectedReportId(report.id)}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-turquoise-50 text-turquoise-600">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-gray-900">{report.propertyName || 'Sin propiedad'}</p>
-                      <PriorityBadge priority={overallPriority} />
-                    </div>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      {formatReportDate(report.createdAt)}
-                      {issueCount > 0 && ` · ${issueCount} incidencia${issueCount !== 1 ? 's' : ''}`}
-                    </p>
-                    {(report.summary || report.transcription) && (
-                      <p className="text-sm text-gray-500 line-clamp-2 mt-1">{report.summary || report.transcription}</p>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+      <Card className="overflow-hidden p-0">
+        {isLoading ? (
+          <div className="py-16 text-center text-stone-500">Cargando reportes…</div>
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={filteredReports}
+            getRowKey={(r) => r.id}
+            onRowClick={(r) => setSelectedReportId(r.id)}
+            selectedRowKey={selectedReport?.id}
+            initialSort={{ key: 'when', dir: 'desc' }}
+            emptyState={
+              <EmptyState
+                icon={FileText}
+                title={hasFilters || filterStatus !== 'all' ? 'Sin resultados con estos filtros' : 'No hay reportes'}
+                description={
+                  hasFilters || filterStatus !== 'all'
+                    ? 'Prueba a ajustar los filtros para ampliar la búsqueda.'
+                    : 'Envía un audio al bot indicando la casa y las incidencias, luego escribe «Crear incidencias».'
+                }
+              />
+            }
+          />
+        )}
+      </Card>
 
       {selectedReport && (
         <ReportDetailPanel

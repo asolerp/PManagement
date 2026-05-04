@@ -30,6 +30,8 @@ import { useWorkShifts, useWorkers, useDeleteWorkShift } from '@/hooks/useWorkSh
 import CreateShiftModal from '@/components/WorkShifts/CreateShiftModal';
 import EditShiftModal from '@/components/WorkShifts/EditShiftModal';
 import ShiftDetailPanel from '@/components/ShiftDetailPanel';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { Pill } from '@/components/ui/Pill';
 
 // Opciones de periodo predefinidas
 const periodOptions = [
@@ -326,39 +328,32 @@ export default function WorkShiftsPage() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex items-start sm:items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="font-heading text-xl sm:text-2xl font-bold text-gray-900">Jornadas</h1>
-          <p className="text-sm sm:text-base text-gray-500 hidden sm:block">
-            Gestiona las jornadas laborales de los trabajadores
-          </p>
-        </div>
-        <div className="flex gap-2 sm:gap-3 flex-shrink-0">
-          <Button
-            variant="outline"
-            onClick={exportToExcel}
-            disabled={!shifts.length}
-            className="!px-2.5 sm:!px-4"
-          >
-            <Download className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Exportar Excel</span>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className="!px-2.5 sm:!px-4"
-          >
-            <Filter className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Filtros</span>
-          </Button>
-          <Button onClick={() => setCreateModalOpen(true)} className="!px-2.5 sm:!px-4">
-            <Plus className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Nueva jornada</span>
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Gestión', 'Jornadas']}
+        title="Jornadas"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${shifts.length} jornadas · ${completedCount} completadas · ${Math.floor(totalHours / 60)}h ${totalHours % 60}m totales`
+        }
+        actions={
+          <>
+            <Button variant="outline" onClick={exportToExcel} disabled={!shifts.length}>
+              <Download className="w-4 h-4 mr-1.5" />
+              Exportar
+            </Button>
+            <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+              <Filter className="w-4 h-4 mr-1.5" />
+              Filtros
+            </Button>
+            <Button onClick={() => setCreateModalOpen(true)}>
+              <Plus className="w-4 h-4 mr-1.5" />
+              Nueva jornada
+            </Button>
+          </>
+        }
+      />
 
       {/* Period selector */}
       <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0">
@@ -447,26 +442,6 @@ export default function WorkShiftsPage() {
         </Card>
       )}
 
-      {/* Summary */}
-      {!isLoading && shifts.length > 0 && (
-        <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm">
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-gray-100 rounded-lg">
-            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" />
-            <span className="text-gray-600">{shifts.length} jornadas</span>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-green-50 rounded-lg">
-            <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600" />
-            <span className="text-green-700">{completedCount} completadas</span>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-blue-50 rounded-lg">
-            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
-            <span className="text-blue-700">
-              {Math.floor(totalHours / 60)}h {totalHours % 60}m total
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* Table */}
       <Card>
         <div className="overflow-x-auto -mx-px">
@@ -544,26 +519,11 @@ export default function WorkShiftsPage() {
                       {formatDuration(shift.totalMinutes)}
                     </td>
                     <td className="py-2.5 sm:py-3 px-2.5 sm:px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
-                          shift.status === 'completed'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-amber-100 text-amber-700'
-                        }`}
-                      >
-                        {shift.status === 'completed' ? (
-                          <>
-                            <CheckCircle className="w-3 h-3" />
-                            <span className="hidden sm:inline">Completada</span>
-                            <span className="sm:hidden">OK</span>
-                          </>
-                        ) : (
-                          <>
-                            <Clock className="w-3 h-3" />
-                            <span className="hidden sm:inline">En curso</span>
-                          </>
-                        )}
-                      </span>
+                      {shift.status === 'completed' ? (
+                        <Pill variant="resolved">Completada</Pill>
+                      ) : (
+                        <Pill variant="info">En curso</Pill>
+                      )}
                     </td>
                     <td className="py-2.5 sm:py-3 px-2.5 sm:px-4">
                       <div className="flex justify-end gap-1 sm:gap-2">
