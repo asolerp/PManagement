@@ -12,13 +12,19 @@ import {
   useJobs,
 } from '@/hooks/useFirestore';
 import { useAuth } from '@/hooks/useAuth.jsx';
-import { Home, X, MapPin, User, Save, Plus, Camera, ChevronDown, Check, CheckSquare, AlertCircle, Briefcase, CheckCircle, ChevronRight, ExternalLink } from 'lucide-react';
-import { format } from 'date-fns';
+import { Home, X, MapPin, User, Save, Plus, Camera, ChevronDown, Check, CheckSquare, AlertCircle, Briefcase, CheckCircle, ChevronRight, ExternalLink, LayoutGrid, Rows3 } from 'lucide-react';
+import { format, formatDistanceToNowStrict, isToday, isYesterday } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import ChecklistDetailPanel from '@/components/ChecklistDetailPanel';
+import { DataTable } from '@/components/ui/DataTable';
+import { Pill } from '@/components/ui/Pill';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { FilterBar } from '@/components/ui/FilterBar';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { QualityBar } from '@/components/ui/QualityBar';
 import { geocodeAddress, toLocationObject } from '@/utils/geocoding';
 
 const PLACEHOLDER_IMAGE = '/placeholder-house.png';
@@ -727,14 +733,50 @@ function CreateHouseModal({ open, onClose }) {
   );
 }
 
+function HouseAvatar({ house }) {
+  const [error, setError] = useState(false);
+  const src = house.houseImage?.thumbnail || house.houseImage?.original;
+  const initials = (house.houseName || '?').slice(0, 2).toUpperCase();
+  if (src && !error) {
+    return (
+      <img
+        src={src}
+        alt=""
+        className="w-9 h-9 rounded-lg object-cover bg-stone-100 flex-shrink-0"
+        onError={() => setError(true)}
+      />
+    );
+  }
+  return (
+    <div
+      className="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center text-[11px] font-semibold text-white"
+      style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, var(--color-turquoise-600) 100%)' }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+function formatRelative(date) {
+  if (!date) return '—';
+  if (isToday(date)) return `hoy ${format(date, 'HH:mm')}`;
+  if (isYesterday(date)) return 'ayer';
+  return formatDistanceToNowStrict(date, { addSuffix: true, locale: es });
+}
+
 export default function HousesPage() {
   const { company } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { data: houses = [], isLoading } = useHouses();
+  const { data: incidences = [] } = useIncidences();
+  const { data: jobs = [] } = useJobs();
+  const { data: checklists = [] } = useChecklists();
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [selectedChecklist, setSelectedChecklist] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [view, setView] = useState('list');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const openHouseId = location.state?.openHouseId;
@@ -746,65 +788,240 @@ export default function HousesPage() {
     }
   }, [location.state?.openHouseId, houses, navigate]);
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-gray-900">Casas</h1>
-          <p className="text-gray-500">
-            Propiedades o viviendas gestionadas en el sistema
-          </p>
-        </div>
-        <Button onClick={() => setShowCreate(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva casa
-        </Button>
-      </div>
+  const stats = useMemo(() => {
+    const map = new Map();
+    houses.forEach((h) => {
+      map.set(h.id, { openIncidences: 0, activeJobs: 0, lastActivity: null, qualitySum: 0, qualityCount: 0 });
+    });
+    incidences.forEach((inc) => {
+      const id = getIncidenceHouseId(inc);
+      const s = map.get(id);
+      if (!s) return;
+      if (!inc.done) s.openIncidences += 1;
+      const d = toDate(inc.date || inc.createdAt);
+      if (d && (!s.lastActivity || d > s.lastActivity)) s.lastActivity = d;
+    });
+    jobs.forEach((job) => {
+      const s = map.get(job.houseId);
+      if (!s) return;
+      if (job.status !== 'completed') s.activeJobs += 1;
+      const d = toDate(job.createdAt);
+      if (d && (!s.lastActivity || d > s.lastActivity)) s.lastActivity = d;
+    });
+    checklists.forEach((cl) => {
+      const s = map.get(cl.houseId);
+      if (!s) return;
+      const total = cl.total ?? 0;
+      const done = cl.done ?? 0;
+      if (total > 0) {
+        s.qualitySum += (done / total) * 100;
+        s.qualityCount += 1;
+      }
+      const d = toDate(cl.date);
+      if (d && (!s.lastActivity || d > s.lastActivity)) s.lastActivity = d;
+    });
+    return map;
+  }, [houses, incidences, jobs, checklists]);
 
-      {!isLoading && houses.length > 0 && (
-        <p className="text-sm text-gray-500">
-          {houses.length} casas registradas
-        </p>
-      )}
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return houses;
+    return houses.filter((h) => {
+      const ownerName = h.owner ? `${h.owner.firstName ?? ''} ${h.owner.lastName ?? ''}` : '';
+      return [h.houseName, h.street, h.municipio, ownerName]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    });
+  }, [houses, search]);
+
+  const columns = useMemo(
+    () => [
+      {
+        key: 'house',
+        label: 'Casa',
+        sortable: true,
+        sortAccessor: (h) => h.houseName || '',
+        render: (h) => (
+          <div className="flex items-center gap-3 min-w-0">
+            <HouseAvatar house={h} />
+            <div className="min-w-0">
+              <p className="font-medium text-stone-900 dark:text-stone-100 truncate">
+                {h.houseName || 'Sin nombre'}
+              </p>
+              {(h.street || h.municipio) && (
+                <p className="text-xs text-stone-500 truncate">
+                  {[h.street, h.municipio].filter(Boolean).join(' · ')}
+                </p>
+              )}
+            </div>
+          </div>
+        ),
+      },
+      {
+        key: 'owner',
+        label: 'Propietario',
+        sortable: true,
+        sortAccessor: (h) => `${h.owner?.firstName ?? ''} ${h.owner?.lastName ?? ''}`.trim() || 'zzz',
+        render: (h) =>
+          h.owner ? (
+            <span className="text-stone-700 dark:text-stone-200">
+              {h.owner.firstName} {h.owner.lastName}
+            </span>
+          ) : (
+            <span className="text-stone-400">—</span>
+          ),
+      },
+      {
+        key: 'incidences',
+        label: 'Pendientes',
+        sortable: true,
+        sortAccessor: (h) => stats.get(h.id)?.openIncidences ?? 0,
+        render: (h) => {
+          const n = stats.get(h.id)?.openIncidences ?? 0;
+          if (n === 0) return <span className="text-stone-400">Ninguno</span>;
+          return <Pill variant={n > 1 ? 'high' : 'medium'} dot>{n} {n === 1 ? 'pendiente' : 'pendientes'}</Pill>;
+        },
+      },
+      {
+        key: 'jobs',
+        label: 'Trabajos activos',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (h) => stats.get(h.id)?.activeJobs ?? 0,
+        render: (h) => {
+          const n = stats.get(h.id)?.activeJobs ?? 0;
+          return <span className={`font-mono tabular-nums ${n === 0 ? 'text-stone-400' : 'text-stone-700 dark:text-stone-200'}`}>{n}</span>;
+        },
+      },
+      {
+        key: 'quality',
+        label: 'Calidad',
+        sortable: true,
+        sortAccessor: (h) => {
+          const s = stats.get(h.id);
+          return s && s.qualityCount > 0 ? s.qualitySum / s.qualityCount : -1;
+        },
+        render: (h) => {
+          const s = stats.get(h.id);
+          if (!s || s.qualityCount === 0) return <span className="text-stone-400 text-xs">Sin datos</span>;
+          return <QualityBar value={s.qualitySum / s.qualityCount} />;
+        },
+      },
+      {
+        key: 'last',
+        label: 'Última',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (h) => stats.get(h.id)?.lastActivity?.getTime() ?? 0,
+        render: (h) => (
+          <span className="font-mono tabular-nums text-xs text-stone-500">
+            {formatRelative(stats.get(h.id)?.lastActivity)}
+          </span>
+        ),
+      },
+    ],
+    [stats]
+  );
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Gestión', 'Casas']}
+        title="Casas"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${houses.length} ${houses.length === 1 ? 'propiedad' : 'propiedades'} gestionadas`
+        }
+        actions={
+          <>
+            <div className="inline-flex rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] p-0.5">
+              <button
+                type="button"
+                onClick={() => setView('list')}
+                className={`inline-flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs font-medium transition ${
+                  view === 'list'
+                    ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100'
+                    : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-200'
+                }`}
+              >
+                <Rows3 className="w-3.5 h-3.5" />
+                Lista
+              </button>
+              <button
+                type="button"
+                onClick={() => setView('grid')}
+                className={`inline-flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs font-medium transition ${
+                  view === 'grid'
+                    ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100'
+                    : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-200'
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                Cuadrícula
+              </button>
+            </div>
+            <Button onClick={() => setShowCreate(true)}>
+              <Plus className="w-4 h-4 mr-1.5" />
+              Nueva casa
+            </Button>
+          </>
+        }
+      />
+
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nombre, propietario o ubicación…"
+      />
 
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Cargando...</div>
-      ) : houses.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-14 text-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#126D9B]/20 to-[#67B26F]/20 flex items-center justify-center mb-4">
-            <Home className="w-8 h-8 text-[#126D9B]" />
-          </div>
-          <p className="font-heading text-gray-800 font-medium mb-1">No hay casas registradas</p>
-          <p className="text-sm text-gray-500">Añade la primera propiedad desde el botón superior</p>
-        </div>
+        <Card className="py-16 text-center text-stone-500">Cargando casas…</Card>
+      ) : view === 'list' ? (
+        <Card className="overflow-hidden p-0">
+          <DataTable
+            columns={columns}
+            rows={filtered}
+            getRowKey={(h) => h.id}
+            onRowClick={(h) => navigate(`/casas/${h.id}`)}
+            selectedRowKey={selectedHouse?.id}
+            initialSort={{ key: 'house', dir: 'asc' }}
+            emptyState={
+              <EmptyState
+                icon={Home}
+                title={search ? 'Sin resultados' : 'No hay casas registradas'}
+                description={
+                  search
+                    ? 'Prueba con otros términos de búsqueda.'
+                    : 'Añade la primera propiedad desde el botón superior.'
+                }
+              />
+            }
+          />
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {houses.map((house) => (
+          {filtered.map((house) => (
             <Card
               key={house.id}
               className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => setSelectedHouse(house)}
+              onClick={() => navigate(`/casas/${house.id}`)}
             >
-              {/* Foto */}
               <HouseImage src={house.houseImage?.original} size="lg" />
-
-              {/* Info */}
               <div className="p-4">
-                <p className="font-semibold text-gray-900 truncate">
+                <p className="font-semibold text-stone-900 dark:text-stone-100 truncate">
                   {house.houseName || 'Sin nombre'}
                 </p>
                 {(house.street || house.municipio) && (
-                  <div className="flex items-center gap-1.5 mt-1 text-sm text-gray-500">
+                  <div className="flex items-center gap-1.5 mt-1 text-sm text-stone-500">
                     <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                     <span className="truncate">
-                      {[house.street, house.municipio]
-                        .filter(Boolean)
-                        .join(', ')}
+                      {[house.street, house.municipio].filter(Boolean).join(', ')}
                     </span>
                   </div>
                 )}
                 {house.owner && (
-                  <div className="flex items-center gap-1.5 mt-1 text-sm text-gray-500">
+                  <div className="flex items-center gap-1.5 mt-1 text-sm text-stone-500">
                     <User className="w-3.5 h-3.5 flex-shrink-0" />
                     <span className="truncate">
                       {house.owner.firstName} {house.owner.lastName}
@@ -817,7 +1034,6 @@ export default function HousesPage() {
         </div>
       )}
 
-      {/* Sidebar de detalle */}
       {selectedHouse && (
         <HouseDetailPanel
           house={selectedHouse}
@@ -833,11 +1049,7 @@ export default function HousesPage() {
         />
       )}
 
-      {/* Modal crear casa */}
-      <CreateHouseModal
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-      />
+      <CreateHouseModal open={showCreate} onClose={() => setShowCreate(false)} />
     </div>
   );
 }

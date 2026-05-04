@@ -39,9 +39,14 @@
   --color-state-resolved: #0d9488;
   --color-state-resolved-bg: #f0fdfa;
 
+  /* Marca extendida — navy del logo Port Management */
+  --color-brand-navy: #0F2C4D;
+  --color-brand-navy-soft: #1B3D63;
+
   /* Tipografía */
   --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
   --font-heading: "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 /* -----------------------------------------------------------------------------
@@ -73,6 +78,13 @@
   --badge-low-text: var(--color-state-low);
   --badge-resolved-bg: var(--color-state-resolved-bg);
   --badge-resolved-text: var(--color-state-resolved);
+
+  /* Table tokens — Notion-style density */
+  --table-row-h: 40px;
+  --table-cell-px: 14px;
+  --table-divider: var(--color-border-soft);
+  --row-hover: var(--color-surface-subtle);
+  --row-selected: var(--color-turquoise-50);
 }
 
 /* -----------------------------------------------------------------------------
@@ -101,6 +113,10 @@
   --badge-low-text: #86efac;
   --badge-resolved-bg: rgba(13, 148, 136, 0.2);
   --badge-resolved-text: #5eead4;
+
+  --table-divider: #292524;
+  --row-hover: rgba(255, 255, 255, 0.03);
+  --row-selected: rgba(20, 184, 166, 0.12);
 }
 
 /* -----------------------------------------------------------------------------
@@ -150,6 +166,128 @@ body.sidebar-open {
 .badge-resolved {
   background-color: var(--badge-resolved-bg);
   color: var(--badge-resolved-text);
+}
+
+/* -----------------------------------------------------------------------------
+   Tipografía utilitaria — mono para IDs, horas, números
+   ----------------------------------------------------------------------------- */
+.font-mono {
+  font-family: var(--font-mono);
+}
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* -----------------------------------------------------------------------------
+   Tabla — estilo Notion (divisores horizontales, sin verticales)
+   ----------------------------------------------------------------------------- */
+.dt-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13.5px;
+}
+.dt-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface-elevated);
+  text-align: left;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #78716c;
+  padding: 10px var(--table-cell-px);
+  border-bottom: 1px solid var(--table-divider);
+  white-space: nowrap;
+}
+.dark .dt-table thead th {
+  color: #a8a29e;
+}
+.dt-table tbody td {
+  padding: 10px var(--table-cell-px);
+  border-bottom: 1px solid var(--table-divider);
+  vertical-align: middle;
+  color: #1c1917;
+}
+.dark .dt-table tbody td {
+  color: #e7e5e4;
+}
+.dt-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+.dt-table tbody tr:hover {
+  background-color: var(--row-hover);
+}
+.dt-table tbody tr.is-selected {
+  background-color: var(--row-selected);
+}
+.dt-table tbody tr.is-clickable {
+  cursor: pointer;
+}
+
+/* -----------------------------------------------------------------------------
+   Quality bar 0–100
+   ----------------------------------------------------------------------------- */
+.quality-bar {
+  display: inline-block;
+  width: 80px;
+  height: 4px;
+  background: var(--color-border-soft);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+.dark .quality-bar { background: #292524; }
+.quality-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-state-low);
+  transition: width 0.3s ease;
+}
+.quality-bar-fill[data-level="warn"] { background: var(--color-state-medium); }
+.quality-bar-fill[data-level="bad"] { background: var(--color-state-critical); }
+
+/* -----------------------------------------------------------------------------
+   Pill (dot + texto)
+   ----------------------------------------------------------------------------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  height: 22px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  line-height: 1;
+}
+.pill-md { height: 26px; font-size: 12.5px; padding: 0 10px; }
+.pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.pill-neutral {
+  background: var(--color-surface-subtle);
+  color: #57534e;
+}
+.dark .pill-neutral {
+  background: #292524;
+  color: #d6d3d1;
+}
+.pill-info {
+  background: rgba(20, 184, 166, 0.1);
+  color: var(--color-turquoise-700);
+}
+.dark .pill-info {
+  background: rgba(20, 184, 166, 0.18);
+  color: #5eead4;
 }
 
 /* -----------------------------------------------------------------------------

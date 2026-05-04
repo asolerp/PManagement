@@ -254,6 +254,40 @@ export function CategoryBadge({ category }) {
   );
 }
 
+function PrioritySelector({ value, onChange, disabled = false }) {
+  const opts = PRIORITY_OPTIONS.filter((o) => o.value !== '');
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Prioridad"
+      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-stone-700 bg-white dark:bg-stone-900 p-0.5"
+    >
+      {opts.map((o) => {
+        const active = o.value === value;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            disabled={disabled}
+            onClick={() => onChange(active ? '' : o.value)}
+            title={o.label}
+            className={`inline-flex items-center gap-1.5 h-6 px-2 rounded-md text-[11px] font-medium transition-colors disabled:opacity-50 ${
+              active
+                ? `${o.bg} ${o.text}`
+                : 'text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800'
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${o.dot}`} aria-hidden="true" />
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function IncidenceDetailPanel({
   incidence,
   onClose,
@@ -324,6 +358,19 @@ export default function IncidenceDetailPanel({
       .sort((a, b) => (countByWorker[a.id] ?? 0) - (countByWorker[b.id] ?? 0));
     return sorted[0] || null;
   }, [allWorkers, allOpenIncidences]);
+
+  const handlePriorityChange = async (e) => {
+    const toPriority = e.target.value || null;
+    if (toPriority === (incidence.priority || null)) return;
+    try {
+      await updateIncidence.mutateAsync({
+        id: incidence.id,
+        priority: toPriority,
+      });
+    } catch (err) {
+      console.error('Error updating priority', err);
+    }
+  };
 
   const handleStateChange = async (e) => {
     const toState = e.target.value;
@@ -606,6 +653,15 @@ export default function IncidenceDetailPanel({
                         </option>
                       ))}
                     </select>
+                  )}
+                  {!incidence.done && (
+                    <PrioritySelector
+                      value={incidence.priority || ''}
+                      disabled={updateIncidence.isPending}
+                      onChange={(v) =>
+                        handlePriorityChange({ target: { value: v } })
+                      }
+                    />
                   )}
                 </div>
 

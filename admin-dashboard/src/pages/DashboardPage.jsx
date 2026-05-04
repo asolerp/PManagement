@@ -6,11 +6,13 @@ import {
   startOfYear,
   endOfYear,
   subMonths,
-  subDays
+  subDays,
+  formatDistanceToNowStrict,
 } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Users, Clock, CheckCircle, AlertCircle, AlertTriangle, RefreshCw, Calendar, TrendingUp, ArrowUpDown, ArrowUp, ArrowDown, CheckSquare, Home, Camera, FileText, ChevronRight, Briefcase, Activity, ClipboardCheck } from 'lucide-react';
+import { Users, Clock, CheckCircle, AlertCircle, AlertTriangle, RefreshCw, Calendar, TrendingUp, ArrowUpDown, ArrowUp, ArrowDown, CheckSquare, Home, Camera, FileText, ChevronRight, Briefcase, Activity, ClipboardCheck, UserX } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
+import { EmptyState } from '@/components/ui/EmptyState';
 import Button from '@/components/ui/Button';
 import { useWorkShiftStats, useWorkShifts } from '@/hooks/useWorkShifts';
 import { useChecklists, useIncidences, useJobs, useHouses, useWorkersFirestore } from '@/hooks/useFirestore';
@@ -27,8 +29,13 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell
+  Cell,
+  PieChart,
+  Pie,
+  Legend,
 } from 'recharts';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { Pill } from '@/components/ui/Pill';
 
 function StatCard({ icon: Icon, label, value, subvalue, color }) {
   const colors = {
@@ -472,65 +479,133 @@ function isJobToday(job, today) {
   return false;
 }
 
-const SLA_BADGE_CLASS = {
-  ok: 'bg-emerald-50 text-emerald-700',
-  at_risk: 'bg-amber-100 text-amber-800 border border-amber-200',
-  breached: 'bg-red-100 text-red-700 border border-red-200',
+const SLA_PILL_VARIANT = {
+  ok: 'low',
+  at_risk: 'high',
+  breached: 'critical',
 };
+
+const PRIORITY_PILL_VARIANT = {
+  critical: 'critical',
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+};
+const PRIORITY_LABEL = {
+  critical: 'Crítica',
+  high: 'Alta',
+  medium: 'Media',
+  low: 'Baja',
+};
+
+function toJsDateSafe(value) {
+  if (!value) return null;
+  try {
+    if (value.toDate && typeof value.toDate === 'function') return value.toDate();
+    if (value.seconds != null) return new Date(value.seconds * 1000);
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  } catch {
+    return null;
+  }
+}
+
+function relativeAge(value) {
+  const d = toJsDateSafe(value);
+  if (!d) return null;
+  return formatDistanceToNowStrict(d, { addSuffix: false, locale: es });
+}
+
+function workerInitials(worker) {
+  if (!worker) return '?';
+  const name = worker.firstName || worker.name || worker.displayName || '';
+  return (name.charAt(0) || '?').toUpperCase();
+}
+
+function workerDisplayName(worker) {
+  if (!worker) return 'Trabajador';
+  const first = worker.firstName || '';
+  const last = worker.lastName || '';
+  const full = `${first} ${last}`.trim();
+  return full || worker.name || worker.displayName || 'Trabajador';
+}
+
+function AssignedAvatars({ workers = [], unassignedLabel = 'Sin asignar' }) {
+  if (!workers || workers.length === 0) {
+    return (
+      <span className="inline-flex items-center gap-1 text-[11px] text-stone-400 dark:text-stone-500">
+        <UserX className="w-3 h-3" />
+        {unassignedLabel}
+      </span>
+    );
+  }
+  const visible = workers.slice(0, 2);
+  const rest = workers.length - visible.length;
+  return (
+    <span className="inline-flex items-center -space-x-1.5 flex-shrink-0" title={workers.map(workerDisplayName).join(', ')}>
+      {visible.map((w, i) => (
+        <span
+          key={w.id || i}
+          className="w-5 h-5 rounded-full bg-turquoise-100 dark:bg-turquoise-900/40 text-turquoise-700 dark:text-turquoise-300 text-[10px] font-semibold flex items-center justify-center ring-2 ring-[var(--surface-elevated)]"
+        >
+          {workerInitials(w)}
+        </span>
+      ))}
+      {rest > 0 && (
+        <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-[10px] font-semibold flex items-center justify-center ring-2 ring-[var(--surface-elevated)]">
+          +{rest}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function SlaPill({ sla }) {
+  if (!sla || sla.status === 'ok') return null;
+  return (
+    <Pill variant={SLA_PILL_VARIANT[sla.status] ?? 'neutral'} dot={sla.status === 'breached'}>
+      {sla.label}
+    </Pill>
+  );
+}
+
+function SectionHead({ icon: Icon, iconClassName = 'text-stone-400', title, hint, right }) {
+  return (
+    <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2.5 min-w-0">
+        {Icon && <Icon className={`w-4 h-4 flex-shrink-0 ${iconClassName}`} strokeWidth={1.75} />}
+        <h2 className="font-heading text-base font-semibold text-stone-900 dark:text-stone-100 truncate">
+          {title}
+        </h2>
+        {hint && <span className="text-xs text-stone-400 truncate hidden sm:inline">· {hint}</span>}
+      </div>
+      {right && <div className="flex items-center gap-2 flex-shrink-0">{right}</div>}
+    </div>
+  );
+}
 
 function ActivitySummaryBar({ openIncidences = [], jobsToday = [], checklistsInProgress = [], shiftsInProgress = [] }) {
   const navigate = useNavigate();
-  const pills = [
-    {
-      label: 'Incidencias abiertas',
-      count: openIncidences.length,
-      dot: 'bg-red-400',
-      bg: 'bg-red-50 dark:bg-red-900/20',
-      text: 'text-red-700 dark:text-red-400',
-      border: 'border-red-200 dark:border-red-800/50',
-      to: '/incidencias',
-    },
-    {
-      label: 'Trabajos hoy',
-      count: jobsToday.length,
-      dot: 'bg-blue-400',
-      bg: 'bg-blue-50 dark:bg-blue-900/20',
-      text: 'text-blue-700 dark:text-blue-400',
-      border: 'border-blue-200 dark:border-blue-800/50',
-      to: '/trabajos',
-    },
-    {
-      label: 'Revisiones',
-      count: checklistsInProgress.length,
-      dot: 'bg-turquoise-400',
-      bg: 'bg-turquoise-50 dark:bg-turquoise-900/20',
-      text: 'text-turquoise-700 dark:text-turquoise-400',
-      border: 'border-turquoise-200 dark:border-turquoise-800/50',
-      to: '/checklists',
-    },
-    {
-      label: 'Jornadas abiertas',
-      count: shiftsInProgress.length,
-      dot: 'bg-amber-400',
-      bg: 'bg-amber-50 dark:bg-amber-900/20',
-      text: 'text-amber-700 dark:text-amber-400',
-      border: 'border-amber-200 dark:border-amber-800/50',
-      to: '/jornadas',
-    },
+  const items = [
+    { label: 'Incidencias abiertas', count: openIncidences.length, variant: openIncidences.length > 0 ? 'critical' : 'neutral', to: '/incidencias' },
+    { label: 'Trabajos hoy', count: jobsToday.length, variant: jobsToday.length > 0 ? 'info' : 'neutral', to: '/trabajos' },
+    { label: 'Revisiones', count: checklistsInProgress.length, variant: checklistsInProgress.length > 0 ? 'info' : 'neutral', to: '/checklists' },
+    { label: 'Jornadas abiertas', count: shiftsInProgress.length, variant: shiftsInProgress.length > 0 ? 'medium' : 'neutral', to: '/jornadas' },
   ];
 
   return (
     <div className="flex flex-wrap gap-2">
-      {pills.map(({ label, count, dot, bg, text, border, to }) => (
+      {items.map(({ label, count, variant, to }) => (
         <button
           key={label}
           type="button"
           onClick={() => navigate(to)}
-          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${bg} ${text} ${border} hover:opacity-80 transition-opacity cursor-pointer`}
+          className="rounded-full transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-turquoise-500/40"
         >
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dot}`} />
-          <span className="font-semibold text-sm">{count}</span>
-          <span>{label}</span>
+          <Pill variant={variant} size="md" dot={count > 0}>
+            <span className="font-semibold tabular-nums">{count}</span>
+            <span className="font-normal opacity-90">{label}</span>
+          </Pill>
         </button>
       ))}
     </div>
@@ -563,15 +638,10 @@ function EstadoDelDiaPanel() {
   if (isLoading) {
     return (
       <Card>
-        <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
-            <Activity className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
-          </div>
-          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">Estado del día</h2>
-        </div>
-        <div className="p-6 space-y-3">
+        <SectionHead icon={Activity} title="Estado del día" />
+        <div className="p-5 space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-10 rounded-xl bg-stone-100 dark:bg-stone-800 animate-pulse" />
+            <div key={i} className="h-9 rounded-lg bg-[var(--color-surface-subtle)] dark:bg-stone-800 animate-pulse" />
           ))}
         </div>
       </Card>
@@ -583,35 +653,58 @@ function EstadoDelDiaPanel() {
   const sections = [
     {
       key: 'incidencias',
-      icon: AlertCircle,
       label: 'Incidencias abiertas',
       count: openIncidences.length,
-      dot: 'bg-red-400',
-      countBg: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+      variant: 'critical',
       linkTo: '/incidencias',
       linkLabel: 'Ver todas',
       emptyLabel: 'Sin incidencias abiertas',
       content: openIncidences.length === 0 ? null : (
-        <ul className="space-y-1">
+        <ul className="space-y-0.5">
           {openIncidences.slice(0, 5).map((inc) => {
             const sla = getIncidenceSlaStatus(inc);
+            const title = inc.title || inc.description?.slice(0, 60) || 'Sin título';
+            const houseName = inc.house?.houseName || inc.houseName || 'Sin casa';
+            const age = relativeAge(inc.date || inc.createdAt);
+            const photos = inc.photos?.length || 0;
+            const workers = inc.workers || [];
             return (
               <li key={inc.id}>
                 <button
                   type="button"
                   onClick={() => setSelectedIncidence(inc)}
-                  className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+                  className="w-full text-left flex items-center gap-2.5 py-2 px-2 rounded-lg hover:bg-[var(--color-surface-subtle)] dark:hover:bg-stone-800 transition-colors group"
                 >
-                  <Home className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
-                  <span className="text-sm text-stone-900 dark:text-stone-100 truncate flex-1 group-hover:text-turquoise-600">
-                    {inc.house?.houseName || inc.houseName || 'Sin casa'}
-                  </span>
-                  {sla && sla.status !== 'ok' && (
-                    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold flex-shrink-0 ${SLA_BADGE_CLASS[sla.status]}`}>
-                      {sla.status === 'breached' && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />}
-                      {sla.label}
-                    </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate group-hover:text-turquoise-600">
+                        {title}
+                      </span>
+                      {photos > 0 && (
+                        <span className="inline-flex items-center gap-0.5 text-[10px] text-amber-600 dark:text-amber-400 flex-shrink-0">
+                          <Camera className="w-3 h-3" />
+                          {photos}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                      <Home className="w-3 h-3 text-stone-400 flex-shrink-0" />
+                      <span className="truncate">{houseName}</span>
+                      {age && (
+                        <>
+                          <span className="text-stone-300 dark:text-stone-600">·</span>
+                          <span className="font-mono tabular-nums whitespace-nowrap">hace {age}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  {inc.priority && (
+                    <Pill variant={PRIORITY_PILL_VARIANT[inc.priority] ?? 'neutral'} dot>
+                      {PRIORITY_LABEL[inc.priority] ?? inc.priority}
+                    </Pill>
                   )}
+                  <AssignedAvatars workers={workers} />
+                  <SlaPill sla={sla} />
                   <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
                 </button>
               </li>
@@ -619,7 +712,7 @@ function EstadoDelDiaPanel() {
           })}
           {openIncidences.length > 5 && (
             <li>
-              <Link to="/incidencias" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-0.5">
+              <Link to="/incidencias" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-1">
                 +{openIncidences.length - 5} más
               </Link>
             </li>
@@ -629,17 +722,15 @@ function EstadoDelDiaPanel() {
     },
     {
       key: 'trabajos',
-      icon: Briefcase,
       label: 'Trabajos de hoy',
       count: jobsToday.length,
-      dot: 'bg-blue-400',
-      countBg: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+      variant: 'info',
       linkTo: '/trabajos',
       linkLabel: 'Ver todos',
       emptyLabel: 'Sin trabajos programados hoy',
       subtext: jobsToday.length > 0 ? `${jobsTodayPending.length} pendiente${jobsTodayPending.length !== 1 ? 's' : ''} · ${jobsTodayCompleted.length} completado${jobsTodayCompleted.length !== 1 ? 's' : ''}` : null,
       content: jobsToday.length === 0 ? null : (
-        <ul className="space-y-1">
+        <ul className="space-y-0.5">
           {jobsToday.slice(0, 5).map((job) => {
             const sla = getJobSlaStatus(job);
             const isDone = job.done || job.status === 'done' || job.status === 'completed';
@@ -648,18 +739,14 @@ function EstadoDelDiaPanel() {
                 <button
                   type="button"
                   onClick={() => navigate('/trabajos')}
-                  className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+                  className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-[var(--color-surface-subtle)] dark:hover:bg-stone-800 transition-colors group"
                 >
                   <Home className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
                   <span className={`text-sm truncate flex-1 group-hover:text-turquoise-600 ${isDone ? 'line-through text-stone-400 dark:text-stone-600' : 'text-stone-900 dark:text-stone-100'}`}>
                     {job.house?.houseName || job.houseName || job.title || 'Trabajo'}
                   </span>
-                  {!isDone && sla && sla.status !== 'ok' && (
-                    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold flex-shrink-0 ${SLA_BADGE_CLASS[sla.status]}`}>
-                      {sla.status === 'breached' && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />}
-                      {sla.label}
-                    </span>
-                  )}
+                  {!isDone && <SlaPill sla={sla} />}
+                  {isDone && <Pill variant="resolved">Hecho</Pill>}
                   <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
                 </button>
               </li>
@@ -667,7 +754,7 @@ function EstadoDelDiaPanel() {
           })}
           {jobsToday.length > 5 && (
             <li>
-              <Link to="/trabajos" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-0.5">
+              <Link to="/trabajos" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-1">
                 +{jobsToday.length - 5} más
               </Link>
             </li>
@@ -677,48 +764,75 @@ function EstadoDelDiaPanel() {
     },
     {
       key: 'checklists',
-      icon: CheckSquare,
       label: 'Revisiones en curso',
       count: checklistsInProgress.length,
-      dot: 'bg-turquoise-400',
-      countBg: 'bg-turquoise-100 dark:bg-turquoise-900/30 text-turquoise-700 dark:text-turquoise-400',
+      variant: 'info',
       linkTo: '/checklists',
       linkLabel: 'Ver todas',
       emptyLabel: 'Sin revisiones activas',
       content: checklistsInProgress.length === 0 ? null : (
-        <ul className="space-y-2">
+        <ul className="space-y-1">
           {checklistsInProgress.slice(0, 5).map((cl) => {
             const houseName = cl.house?.[0]?.houseName || cl.houseName || 'Sin casa';
-            const done = cl.done || 0;
+            const done = Math.min(cl.done || 0, cl.total || 0);
             const total = cl.total || 0;
             const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            const remaining = Math.max(0, total - done);
+            const workers = cl.workers || [];
+            const age = relativeAge(cl.date || cl.createdAt || cl.startedAt);
+            const stalled = pct < 25 && age && /d|mes|año/.test(age);
             return (
               <li key={cl.id}>
                 <button
                   type="button"
                   onClick={() => setSelectedChecklist(cl)}
-                  className="w-full text-left flex flex-col gap-1 py-1.5 px-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+                  className="w-full text-left flex flex-col gap-1.5 py-2 px-2 rounded-lg hover:bg-[var(--color-surface-subtle)] dark:hover:bg-stone-800 transition-colors group"
                 >
-                  <div className="flex items-center gap-2">
-                    <Home className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
-                    <span className="text-sm text-stone-900 dark:text-stone-100 truncate flex-1 group-hover:text-turquoise-600">{houseName}</span>
-                    <span className="text-xs text-turquoise-600 font-semibold flex-shrink-0">{pct}%</span>
+                  <div className="flex items-center gap-2.5">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <Home className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                        <span className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate group-hover:text-turquoise-600">
+                          {houseName}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[11px] text-stone-500 dark:text-stone-400 mt-0.5 ml-5">
+                        <span className="font-mono tabular-nums">{done}/{total} ítems</span>
+                        {remaining > 0 && (
+                          <>
+                            <span className="text-stone-300 dark:text-stone-600">·</span>
+                            <span className="whitespace-nowrap">{remaining} restantes</span>
+                          </>
+                        )}
+                        {age && (
+                          <>
+                            <span className="text-stone-300 dark:text-stone-600">·</span>
+                            <span className="font-mono tabular-nums whitespace-nowrap">hace {age}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {stalled && <Pill variant="high" dot>Estancada</Pill>}
+                    <AssignedAvatars workers={workers} unassignedLabel="Sin asignar" />
+                    <span className={`text-xs font-semibold tabular-nums flex-shrink-0 ${pct >= 75 ? 'text-emerald-600' : pct >= 40 ? 'text-amber-600' : 'text-stone-500'}`}>
+                      {pct}%
+                    </span>
                     <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
                   </div>
-                  <div className="ml-5.5 h-1.5 rounded-full bg-stone-100 dark:bg-stone-700 overflow-hidden">
+                  <div className="quality-bar" style={{ width: '100%' }}>
                     <div
-                      className="h-full rounded-full bg-turquoise-500 transition-all duration-300"
+                      className="quality-bar-fill"
+                      data-level={pct >= 75 ? 'good' : pct >= 40 ? 'warn' : 'bad'}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <p className="ml-5.5 text-[10px] text-stone-400 dark:text-stone-600">{done} de {total} ítems</p>
                 </button>
               </li>
             );
           })}
           {checklistsInProgress.length > 5 && (
             <li>
-              <button type="button" onClick={() => navigate('/checklists')} className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-0.5">
+              <button type="button" onClick={() => navigate('/checklists')} className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-1">
                 +{checklistsInProgress.length - 5} más
               </button>
             </li>
@@ -728,26 +842,24 @@ function EstadoDelDiaPanel() {
     },
     {
       key: 'jornadas',
-      icon: Clock,
       label: 'Jornadas abiertas',
       count: shiftsInProgress.length,
-      dot: 'bg-amber-400',
-      countBg: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+      variant: 'medium',
       linkTo: '/jornadas',
       linkLabel: 'Ver todas',
       emptyLabel: 'Sin jornadas en curso',
       content: shiftsInProgress.length === 0 ? null : (
-        <ul className="space-y-1">
+        <ul className="space-y-0.5">
           {shiftsInProgress.slice(0, 5).map((shift) => (
             <li key={shift.id}>
               <button
                 type="button"
                 onClick={() => navigate('/jornadas')}
-                className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors group"
+                className="w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-[var(--color-surface-subtle)] dark:hover:bg-stone-800 transition-colors group"
               >
-                <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                <Clock className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
                 <span className="text-sm text-stone-900 dark:text-stone-100 truncate flex-1 group-hover:text-turquoise-600">{shift.workerName || 'Trabajador'}</span>
-                <span className="text-xs text-stone-400 dark:text-stone-500 flex-shrink-0">
+                <span className="text-xs font-mono tabular-nums text-stone-500 dark:text-stone-400 flex-shrink-0">
                   {shift.firstEntry ? format(new Date(shift.firstEntry), 'HH:mm') : '—'}
                 </span>
                 <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
@@ -756,7 +868,7 @@ function EstadoDelDiaPanel() {
           ))}
           {shiftsInProgress.length > 5 && (
             <li>
-              <Link to="/jornadas" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-0.5">
+              <Link to="/jornadas" className="text-xs text-turquoise-600 font-medium hover:underline pl-2 inline-block mt-1">
                 +{shiftsInProgress.length - 5} más
               </Link>
             </li>
@@ -769,56 +881,40 @@ function EstadoDelDiaPanel() {
   return (
     <>
       <Card>
-        <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-turquoise-50 dark:bg-turquoise-900/30">
-              <Activity className="w-5 h-5 text-turquoise-600 dark:text-turquoise-400" />
-            </div>
-            <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">Estado del día</h2>
-          </div>
-          {!hasContent && (
-            <span className="text-xs text-emerald-600 font-medium bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">Todo al día</span>
-          )}
-        </div>
+        <SectionHead
+          icon={Activity}
+          title="Estado del día"
+          right={!hasContent ? <Pill variant="resolved" dot>Todo al día</Pill> : null}
+        />
 
         {!hasContent ? (
-          <div className="p-8 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mx-auto mb-3">
-              <CheckCircle className="w-6 h-6 text-emerald-500" />
-            </div>
-            <p className="text-stone-700 dark:text-stone-300 font-medium text-sm">Sin actividad pendiente</p>
-            <p className="text-stone-400 dark:text-stone-600 text-xs mt-1">No hay incidencias, trabajos, revisiones ni jornadas abiertas</p>
-          </div>
+          <EmptyState
+            icon={CheckCircle}
+            title="Sin actividad pendiente"
+            description="No hay incidencias, trabajos, revisiones ni jornadas abiertas"
+          />
         ) : (
-          <div className="p-4 space-y-3">
-            {sections.map(({ key, icon: Icon, label, count, dot, countBg, linkTo, linkLabel, emptyLabel, subtext, content }) => (
-              <div
-                key={key}
-                className="rounded-xl border border-[var(--border-soft)] bg-[var(--surface)] overflow-hidden"
-              >
-                <div className="flex items-center justify-between px-3 py-2.5">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dot}`} />
-                    <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wide">{label}</span>
-                    <span className={`text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center ${countBg}`}>
-                      {count}
+          <div className="divide-y divide-[var(--border-soft)]">
+            {sections.map(({ key, label, count, variant, linkTo, linkLabel, emptyLabel, subtext, content }) => (
+              <div key={key} className="px-5 py-3.5">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider truncate">
+                      {label}
                     </span>
+                    <Pill variant={count > 0 ? variant : 'neutral'}>{count}</Pill>
                   </div>
                   {count > 0 && (
-                    <Link to={linkTo} className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium transition-colors">
+                    <Link to={linkTo} className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium transition-colors flex-shrink-0">
                       {linkLabel} →
                     </Link>
                   )}
                 </div>
-                {content ? (
-                  <div className="px-3 pb-2.5">
-                    {content}
-                    {subtext && (
-                      <p className="text-[10px] text-stone-400 dark:text-stone-600 mt-1 pl-2">{subtext}</p>
-                    )}
-                  </div>
-                ) : (
-                  <p className="px-3 pb-2.5 text-xs text-stone-400 dark:text-stone-600">{emptyLabel}</p>
+                {content || (
+                  <p className="text-xs text-stone-400 dark:text-stone-600 pl-2">{emptyLabel}</p>
+                )}
+                {subtext && (
+                  <p className="text-[11px] text-stone-400 dark:text-stone-600 mt-1.5 pl-2">{subtext}</p>
                 )}
               </div>
             ))}
@@ -878,89 +974,87 @@ function SlaEnRiesgoWidget() {
   if (isLoading) {
     return (
       <Card>
-        <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-900/20">
-            <AlertTriangle className="w-5 h-5 text-amber-500" />
-          </div>
-          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">Plazos en riesgo</h2>
-        </div>
-        <div className="p-6 space-y-3">
+        <SectionHead icon={AlertTriangle} title="Plazos en riesgo" />
+        <div className="p-5 space-y-2">
           {[1, 2].map((i) => (
-            <div key={i} className="h-10 rounded-xl bg-stone-100 dark:bg-stone-800 animate-pulse" />
+            <div key={i} className="h-9 rounded-lg bg-[var(--color-surface-subtle)] dark:bg-stone-800 animate-pulse" />
           ))}
         </div>
       </Card>
     );
   }
 
+  const totalAtRisk = incidencesAtRisk.length + jobsAtRisk.length;
+
   return (
-    <Card className={hasAny ? 'border-amber-200 dark:border-amber-800/50' : ''}>
-      <div className={`px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between ${hasAny ? 'bg-gradient-to-r from-amber-50 to-transparent dark:from-amber-900/10' : ''}`}>
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${hasBreached ? 'bg-red-100 dark:bg-red-900/30' : hasAny ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-stone-100 dark:bg-stone-800'}`}>
-            <AlertTriangle className={`w-5 h-5 ${hasBreached ? 'text-red-600' : hasAny ? 'text-amber-500' : 'text-stone-400'}`} />
-          </div>
-          <div>
-            <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100 leading-none">Plazos en riesgo</h2>
-            {hasAny && (
-              <p className="text-xs text-stone-500 dark:text-stone-500 mt-0.5">Incidencias y trabajos con SLA comprometido</p>
-            )}
-          </div>
-        </div>
-        {hasAny && (
-          <div className="text-right flex-shrink-0">
-            <span className={`text-2xl font-bold font-heading leading-none ${hasBreached ? 'text-red-600' : 'text-amber-500'}`}>
-              {incidencesAtRisk.length + jobsAtRisk.length}
-            </span>
-            <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-0.5">en riesgo</p>
-          </div>
-        )}
-      </div>
+    <Card>
+      <SectionHead
+        icon={AlertTriangle}
+        iconClassName={hasBreached ? 'text-red-500' : hasAny ? 'text-amber-500' : 'text-stone-400'}
+        title="Plazos en riesgo"
+        hint={hasAny ? 'SLA comprometido' : null}
+        right={
+          hasAny
+            ? <Pill variant={hasBreached ? 'critical' : 'high'} dot={hasBreached}>{totalAtRisk}</Pill>
+            : <Pill variant="resolved" dot>Al día</Pill>
+        }
+      />
 
       {!hasAny ? (
-        <div className="p-8 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mx-auto mb-3">
-            <CheckCircle className="w-6 h-6 text-emerald-500" />
-          </div>
-          <p className="text-stone-700 dark:text-stone-300 font-medium text-sm">Todos los plazos al día</p>
-          <p className="text-stone-400 dark:text-stone-600 text-xs mt-1">Sin incidencias ni trabajos con SLA en riesgo</p>
-        </div>
+        <EmptyState
+          icon={CheckCircle}
+          title="Todos los plazos al día"
+          description="Sin incidencias ni trabajos con SLA en riesgo"
+        />
       ) : (
-        <div className="p-4 space-y-4">
+        <div className="divide-y divide-[var(--border-soft)]">
           {incidencesAtRisk.length > 0 && (
-            <div>
+            <div className="px-5 py-3.5">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5" />
-                  Incidencias ({incidencesAtRisk.length})
-                </h3>
-                <Link to="/incidencias" className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium">Ver todas →</Link>
+                <div className="flex items-center gap-2 min-w-0">
+                  <AlertCircle className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                  <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Incidencias</span>
+                  <Pill variant="high">{incidencesAtRisk.length}</Pill>
+                </div>
+                <Link to="/incidencias" className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium flex-shrink-0">Ver todas →</Link>
               </div>
-              <ul className="space-y-1.5">
+              <ul className="space-y-0.5">
                 {incidencesAtRisk.map((inc) => {
                   const sla = getIncidenceSlaStatus(inc);
-                  const isBreached = sla?.status === 'breached';
+                  const title = inc.title || inc.description?.slice(0, 60) || 'Sin título';
+                  const houseName = inc.house?.houseName || inc.houseName || 'Sin casa';
+                  const age = relativeAge(inc.date || inc.createdAt);
+                  const workers = inc.workers || [];
                   return (
                     <li key={inc.id}>
                       <button
                         type="button"
                         onClick={() => setSelectedIncidence(inc)}
-                        className={`w-full text-left flex items-center gap-2 py-2 px-3 rounded-xl border transition-all group ${
-                          isBreached
-                            ? 'bg-red-50 dark:bg-red-900/15 border-red-200 dark:border-red-800/40 hover:border-red-300'
-                            : 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30 hover:border-amber-300'
-                        }`}
+                        className="w-full text-left flex items-center gap-2.5 py-2 px-2 rounded-lg hover:bg-[var(--color-surface-subtle)] dark:hover:bg-stone-800 transition-colors group"
                       >
-                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isBreached ? 'bg-red-500 animate-pulse' : 'bg-amber-400'}`} />
-                        <span className={`text-sm font-medium min-w-0 flex-1 truncate ${isBreached ? 'text-red-800 dark:text-red-300' : 'text-amber-800 dark:text-amber-300'}`}>
-                          {inc.house?.houseName || inc.houseName || 'Sin casa'}
-                        </span>
-                        {sla && (
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 ml-auto ${SLA_BADGE_CLASS[sla.status]}`}>
-                            {sla.label}
+                        <div className="min-w-0 flex-1">
+                          <span className="block text-sm font-medium text-stone-900 dark:text-stone-100 truncate group-hover:text-turquoise-600">
+                            {title}
                           </span>
+                          <div className="flex items-center gap-1.5 text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                            <Home className="w-3 h-3 text-stone-400 flex-shrink-0" />
+                            <span className="truncate">{houseName}</span>
+                            {age && (
+                              <>
+                                <span className="text-stone-300 dark:text-stone-600">·</span>
+                                <span className="font-mono tabular-nums whitespace-nowrap">hace {age}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        {inc.priority && (
+                          <Pill variant={PRIORITY_PILL_VARIANT[inc.priority] ?? 'neutral'} dot>
+                            {PRIORITY_LABEL[inc.priority] ?? inc.priority}
+                          </Pill>
                         )}
-                        <ChevronRight className="w-3.5 h-3.5 text-stone-400 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
+                        <AssignedAvatars workers={workers} />
+                        <SlaPill sla={sla} />
+                        <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
                       </button>
                     </li>
                   );
@@ -969,38 +1063,30 @@ function SlaEnRiesgoWidget() {
             </div>
           )}
           {jobsAtRisk.length > 0 && (
-            <div>
+            <div className="px-5 py-3.5">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5" />
-                  Trabajos ({jobsAtRisk.length})
-                </h3>
-                <Link to="/trabajos" className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium">Ver todos →</Link>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Briefcase className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                  <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Trabajos</span>
+                  <Pill variant="high">{jobsAtRisk.length}</Pill>
+                </div>
+                <Link to="/trabajos" className="text-xs text-turquoise-600 hover:text-turquoise-700 font-medium flex-shrink-0">Ver todos →</Link>
               </div>
-              <ul className="space-y-1.5">
+              <ul className="space-y-0.5">
                 {jobsAtRisk.map((job) => {
                   const sla = getJobSlaStatus(job);
-                  const isBreached = sla?.status === 'breached';
                   return (
                     <li key={job.id}>
                       <Link
                         to="/trabajos"
-                        className={`w-full flex items-center gap-2 py-2 px-3 rounded-xl border transition-all group ${
-                          isBreached
-                            ? 'bg-red-50 dark:bg-red-900/15 border-red-200 dark:border-red-800/40 hover:border-red-300'
-                            : 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30 hover:border-amber-300'
-                        }`}
+                        className="w-full flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-[var(--color-surface-subtle)] dark:hover:bg-stone-800 transition-colors group"
                       >
-                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isBreached ? 'bg-red-500 animate-pulse' : 'bg-amber-400'}`} />
-                        <span className={`text-sm font-medium min-w-0 flex-1 truncate ${isBreached ? 'text-red-800 dark:text-red-300' : 'text-amber-800 dark:text-amber-300'}`}>
+                        <Home className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                        <span className="text-sm text-stone-900 dark:text-stone-100 truncate flex-1 group-hover:text-turquoise-600">
                           {job.house?.houseName || job.houseName || job.title || 'Trabajo'}
                         </span>
-                        {sla && (
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 ml-auto ${SLA_BADGE_CLASS[sla.status]}`}>
-                            {sla.label}
-                          </span>
-                        )}
-                        <ChevronRight className="w-3.5 h-3.5 text-stone-400 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
+                        <SlaPill sla={sla} />
+                        <ChevronRight className="w-3.5 h-3.5 text-stone-300 dark:text-stone-600 flex-shrink-0 group-hover:text-turquoise-500 transition-colors" />
                       </Link>
                     </li>
                   );
@@ -1053,131 +1139,129 @@ function CierreDelDiaSection() {
   );
 
   const hasAny = shiftsOpen.length > 0 || jobsTodayPending.length > 0 || incidencesBreached.length > 0;
+  const totalPending = shiftsOpen.length + jobsTodayPending.length + incidencesBreached.length;
+
+  const columns = [
+    {
+      key: 'jornadas',
+      label: 'Jornadas',
+      count: shiftsOpen.length,
+      variant: 'medium',
+      emptyText: 'Todo cerrado',
+      items: shiftsOpen.slice(0, 3).map((s) => ({
+        id: s.id,
+        to: '/jornadas',
+        label: s.workerName || 'Trabajador',
+        meta: s.firstEntry ? format(new Date(s.firstEntry), 'HH:mm') : '—',
+      })),
+      remaining: Math.max(0, shiftsOpen.length - 3),
+      moreTo: '/jornadas',
+    },
+    {
+      key: 'trabajos',
+      label: 'Trabajos',
+      count: jobsTodayPending.length,
+      variant: 'info',
+      emptyText: 'Todo completado',
+      items: jobsTodayPending.slice(0, 3).map((j) => ({
+        id: j.id,
+        to: '/trabajos',
+        label: j.house?.houseName || j.houseName || 'Trabajo',
+      })),
+      remaining: Math.max(0, jobsTodayPending.length - 3),
+      moreTo: '/trabajos',
+    },
+    {
+      key: 'vencidas',
+      label: 'Vencidas',
+      count: incidencesBreached.length,
+      variant: 'critical',
+      emptyText: 'Sin vencidas',
+      items: incidencesBreached.slice(0, 3).map((inc) => ({
+        id: inc.id,
+        onClick: () => setSelectedIncidence(inc),
+        label: inc.house?.houseName || inc.houseName || 'Incidencia',
+      })),
+      remaining: Math.max(0, incidencesBreached.length - 3),
+      moreTo: '/incidencias',
+    },
+  ];
 
   return (
-    <Card className={hasAny ? 'border-red-200 dark:border-red-800/30' : 'border-emerald-200 dark:border-emerald-800/30'}>
-      <div className={`px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between ${hasAny ? 'bg-gradient-to-r from-red-50/60 to-transparent dark:from-red-900/10' : 'bg-gradient-to-r from-emerald-50/60 to-transparent dark:from-emerald-900/10'}`}>
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${hasAny ? 'bg-red-100 dark:bg-red-900/30' : 'bg-emerald-100 dark:bg-emerald-900/30'}`}>
-            <ClipboardCheck className={`w-5 h-5 ${hasAny ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`} />
-          </div>
-          <div>
-            <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100 leading-none">Cierre del día</h2>
-            <p className="text-xs text-stone-500 dark:text-stone-500 mt-0.5">
-              {hasAny ? 'Elementos pendientes de cerrar antes de finalizar la jornada' : 'Resumen de jornada'}
-            </p>
-          </div>
-        </div>
-        {hasAny && (
-          <div className="flex items-center gap-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-3 py-1.5 rounded-full flex-shrink-0">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-xs font-semibold">{shiftsOpen.length + jobsTodayPending.length + incidencesBreached.length} pendiente{shiftsOpen.length + jobsTodayPending.length + incidencesBreached.length !== 1 ? 's' : ''}</span>
-          </div>
-        )}
-      </div>
+    <Card>
+      <SectionHead
+        icon={ClipboardCheck}
+        iconClassName={hasAny ? 'text-red-500' : 'text-emerald-500'}
+        title="Cierre del día"
+        hint={hasAny ? 'Pendiente de cerrar' : 'Resumen de jornada'}
+        right={
+          hasAny
+            ? <Pill variant="critical" dot>{totalPending} pendiente{totalPending !== 1 ? 's' : ''}</Pill>
+            : <Pill variant="resolved" dot>Día cerrado</Pill>
+        }
+      />
 
       {!hasAny ? (
-        <div className="px-6 py-6 flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center flex-shrink-0 border border-emerald-200 dark:border-emerald-800/30">
-            <CheckCircle className="w-7 h-7 text-emerald-500" />
-          </div>
-          <div>
-            <p className="font-semibold text-stone-900 dark:text-stone-100 text-sm">Día cerrado correctamente</p>
-            <p className="text-stone-400 dark:text-stone-600 text-xs mt-0.5">No hay jornadas abiertas, trabajos pendientes ni incidencias fuera de plazo</p>
-          </div>
-        </div>
+        <EmptyState
+          icon={CheckCircle}
+          title="Día cerrado correctamente"
+          description="No hay jornadas abiertas, trabajos pendientes ni incidencias fuera de plazo"
+        />
       ) : (
-        <div className="p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Jornadas sin salida */}
-            <div className={`rounded-xl border p-3 ${shiftsOpen.length > 0 ? 'border-amber-200 dark:border-amber-800/30 bg-amber-50/50 dark:bg-amber-900/10' : 'border-[var(--border-soft)] bg-[var(--surface)]'}`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
-                  <Clock className={`w-3.5 h-3.5 ${shiftsOpen.length > 0 ? 'text-amber-500' : 'text-stone-400'}`} />
-                  <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wide">Jornadas</span>
-                </div>
-                <span className={`text-sm font-bold ${shiftsOpen.length > 0 ? 'text-amber-600' : 'text-emerald-500'}`}>{shiftsOpen.length}</span>
+        <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {columns.map((col) => (
+            <div key={col.key} className="rounded-xl border border-[var(--border-soft)] bg-[var(--surface-elevated)] p-3">
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider">{col.label}</span>
+                <Pill variant={col.count > 0 ? col.variant : 'resolved'} dot={col.count === 0}>
+                  {col.count}
+                </Pill>
               </div>
-              {shiftsOpen.length === 0 ? (
-                <p className="text-xs text-stone-400 dark:text-stone-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" /> Todo cerrado</p>
+              {col.count === 0 ? (
+                <p className="text-xs text-stone-400 dark:text-stone-600">{col.emptyText}</p>
               ) : (
-                <ul className="space-y-1">
-                  {shiftsOpen.slice(0, 3).map((s) => (
-                    <li key={s.id}>
-                      <Link to="/jornadas" className="flex items-center gap-1.5 group">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
-                        <span className="text-xs text-stone-700 dark:text-stone-300 truncate group-hover:text-turquoise-600">{s.workerName || 'Trabajador'}</span>
-                        <span className="text-[10px] text-stone-400 ml-auto flex-shrink-0">{s.firstEntry ? format(new Date(s.firstEntry), 'HH:mm') : '—'}</span>
+                <ul className="space-y-0.5">
+                  {col.items.map((item) => {
+                    const inner = (
+                      <>
+                        <span className="text-sm text-stone-700 dark:text-stone-300 truncate flex-1 group-hover:text-turquoise-600">{item.label}</span>
+                        {item.meta && (
+                          <span className="text-[11px] font-mono tabular-nums text-stone-400 flex-shrink-0">{item.meta}</span>
+                        )}
+                      </>
+                    );
+                    return (
+                      <li key={item.id}>
+                        {item.onClick ? (
+                          <button
+                            type="button"
+                            onClick={item.onClick}
+                            className="w-full text-left flex items-center gap-2 py-1 px-1.5 rounded-md hover:bg-[var(--color-surface-subtle)] dark:hover:bg-stone-800 transition-colors group"
+                          >
+                            {inner}
+                          </button>
+                        ) : (
+                          <Link
+                            to={item.to}
+                            className="flex items-center gap-2 py-1 px-1.5 rounded-md hover:bg-[var(--color-surface-subtle)] dark:hover:bg-stone-800 transition-colors group"
+                          >
+                            {inner}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
+                  {col.remaining > 0 && (
+                    <li>
+                      <Link to={col.moreTo} className="text-[11px] text-turquoise-600 hover:underline pl-1.5 inline-block mt-0.5">
+                        +{col.remaining} más
                       </Link>
                     </li>
-                  ))}
-                  {shiftsOpen.length > 3 && (
-                    <li><Link to="/jornadas" className="text-[10px] text-turquoise-600 hover:underline">+{shiftsOpen.length - 3} más</Link></li>
                   )}
                 </ul>
               )}
             </div>
-
-            {/* Trabajos pendientes */}
-            <div className={`rounded-xl border p-3 ${jobsTodayPending.length > 0 ? 'border-blue-200 dark:border-blue-800/30 bg-blue-50/50 dark:bg-blue-900/10' : 'border-[var(--border-soft)] bg-[var(--surface)]'}`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
-                  <Briefcase className={`w-3.5 h-3.5 ${jobsTodayPending.length > 0 ? 'text-blue-500' : 'text-stone-400'}`} />
-                  <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wide">Trabajos</span>
-                </div>
-                <span className={`text-sm font-bold ${jobsTodayPending.length > 0 ? 'text-blue-600' : 'text-emerald-500'}`}>{jobsTodayPending.length}</span>
-              </div>
-              {jobsTodayPending.length === 0 ? (
-                <p className="text-xs text-stone-400 dark:text-stone-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" /> Todo completado</p>
-              ) : (
-                <ul className="space-y-1">
-                  {jobsTodayPending.slice(0, 3).map((j) => (
-                    <li key={j.id}>
-                      <Link to="/trabajos" className="flex items-center gap-1.5 group">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
-                        <span className="text-xs text-stone-700 dark:text-stone-300 truncate group-hover:text-turquoise-600">{j.house?.houseName || j.houseName || 'Trabajo'}</span>
-                      </Link>
-                    </li>
-                  ))}
-                  {jobsTodayPending.length > 3 && (
-                    <li><Link to="/trabajos" className="text-[10px] text-turquoise-600 hover:underline">+{jobsTodayPending.length - 3} más</Link></li>
-                  )}
-                </ul>
-              )}
-            </div>
-
-            {/* Incidencias fuera de plazo */}
-            <div className={`rounded-xl border p-3 ${incidencesBreached.length > 0 ? 'border-red-200 dark:border-red-800/30 bg-red-50/50 dark:bg-red-900/10' : 'border-[var(--border-soft)] bg-[var(--surface)]'}`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
-                  <AlertCircle className={`w-3.5 h-3.5 ${incidencesBreached.length > 0 ? 'text-red-500' : 'text-stone-400'}`} />
-                  <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wide">Vencidas</span>
-                </div>
-                <span className={`text-sm font-bold ${incidencesBreached.length > 0 ? 'text-red-600' : 'text-emerald-500'}`}>{incidencesBreached.length}</span>
-              </div>
-              {incidencesBreached.length === 0 ? (
-                <p className="text-xs text-stone-400 dark:text-stone-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" /> Sin vencidas</p>
-              ) : (
-                <ul className="space-y-1">
-                  {incidencesBreached.slice(0, 3).map((inc) => (
-                    <li key={inc.id}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedIncidence(inc)}
-                        className="w-full flex items-center gap-1.5 group text-left"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
-                        <span className="text-xs text-stone-700 dark:text-stone-300 truncate group-hover:text-turquoise-600">{inc.house?.houseName || inc.houseName || 'Incidencia'}</span>
-                      </button>
-                    </li>
-                  ))}
-                  {incidencesBreached.length > 3 && (
-                    <li><Link to="/incidencias" className="text-[10px] text-turquoise-600 hover:underline">+{incidencesBreached.length - 3} más</Link></li>
-                  )}
-                </ul>
-              )}
-            </div>
-          </div>
+          ))}
         </div>
       )}
 
@@ -1298,6 +1382,226 @@ const getDateRange = (periodId, selectedYear, selectedMonth) => {
   }
 };
 
+function toJsDateLoose(value) {
+  if (!value) return null;
+  try {
+    let d = null;
+    if (value.toDate && typeof value.toDate === 'function') d = value.toDate();
+    else if (value.seconds != null) d = new Date(value.seconds * 1000);
+    else if (value._d) d = value._d;
+    else d = new Date(value);
+    if (!(d instanceof Date) || isNaN(d.getTime())) return null;
+    return d;
+  } catch {
+    return null;
+  }
+}
+
+function CargaOperativaWidget() {
+  const [range, setRange] = useState('week');
+  const days = range === 'week' ? 7 : range === 'month' ? 30 : 90;
+
+  const { data: incidences = [] } = useIncidences();
+  const { data: allJobs = [] } = useJobs();
+  const { data: checklists = [] } = useChecklists();
+
+  const data = useMemo(() => {
+    const buckets = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      buckets.push({
+        key: format(d, 'yyyy-MM-dd'),
+        label: days <= 7 ? format(d, 'EEE', { locale: es }) : format(d, 'd MMM', { locale: es }),
+        revisiones: 0,
+        trabajos: 0,
+        incidencias: 0,
+      });
+    }
+    const idx = new Map(buckets.map((b, i) => [b.key, i]));
+    const inRange = (d) => {
+      if (!d || !(d instanceof Date) || isNaN(d.getTime())) return -1;
+      const k = format(d, 'yyyy-MM-dd');
+      return idx.has(k) ? idx.get(k) : -1;
+    };
+    incidences.forEach((inc) => {
+      const i = inRange(toJsDateLoose(inc.date || inc.createdAt));
+      if (i >= 0) buckets[i].incidencias += 1;
+    });
+    allJobs.forEach((j) => {
+      const i = inRange(toJsDateLoose(j.date || j.createdAt));
+      if (i >= 0) buckets[i].trabajos += 1;
+    });
+    checklists.forEach((c) => {
+      const i = inRange(toJsDateLoose(c.date));
+      if (i >= 0) buckets[i].revisiones += 1;
+    });
+    return buckets;
+  }, [incidences, allJobs, checklists, days]);
+
+  const max = Math.max(1, ...data.map((d) => d.revisiones + d.trabajos + d.incidencias));
+
+  return (
+    <Card>
+      <div className="px-5 py-4 border-b border-[var(--border-soft)] flex items-center justify-between gap-3 flex-wrap">
+        <div className="min-w-0">
+          <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">Carga operativa</h2>
+          <p className="text-xs text-stone-500 mt-0.5">Revisiones, trabajos e incidencias por día</p>
+        </div>
+        <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5">
+          {[
+            { id: 'week', label: 'Semana' },
+            { id: 'month', label: 'Mes' },
+            { id: 'quarter', label: 'Trimestre' },
+          ].map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setRange(opt.id)}
+              className={`px-2.5 h-7 rounded-md text-xs font-medium transition ${
+                range === opt.id
+                  ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100'
+                  : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-200'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="p-5">
+        <ResponsiveContainer width="100%" height={240}>
+          <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-soft)" vertical={false} />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 11, fill: '#78716c' }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              domain={[0, Math.ceil(max * 1.1)]}
+              tick={{ fontSize: 11, fill: '#78716c' }}
+              axisLine={false}
+              tickLine={false}
+              width={32}
+            />
+            <Tooltip
+              cursor={{ fill: 'rgba(20,184,166,0.06)' }}
+              contentStyle={{
+                background: 'var(--surface-elevated)',
+                border: '1px solid var(--border)',
+                borderRadius: 12,
+                fontSize: 12,
+              }}
+            />
+            <Bar dataKey="revisiones" stackId="a" fill="#14b8a6" radius={[0, 0, 0, 0]} name="Revisiones" />
+            <Bar dataKey="trabajos" stackId="a" fill="#0F2C4D" name="Trabajos" />
+            <Bar dataKey="incidencias" stackId="a" fill="#f97316" radius={[6, 6, 0, 0]} name="Incidencias" />
+          </BarChart>
+        </ResponsiveContainer>
+        <div className="flex items-center gap-4 mt-3 text-xs text-stone-500">
+          <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: '#14b8a6' }} />Revisiones</span>
+          <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: '#0F2C4D' }} />Trabajos</span>
+          <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: '#f97316' }} />Incidencias</span>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function CarteraWidget() {
+  const { data: houses = [] } = useHouses();
+  const { data: incidences = [] } = useIncidences();
+  const { data: allJobs = [] } = useJobs();
+
+  const stats = useMemo(() => {
+    const total = houses.length;
+    let conIncidencias = 0;
+    let conTrabajos = 0;
+    const housesWithOpenInc = new Set(
+      incidences
+        .filter((i) => !i.done)
+        .map((i) => i.houseId || i.house?.id || i.house?.[0]?.id)
+        .filter(Boolean)
+    );
+    const housesWithActiveJobs = new Set(
+      allJobs
+        .filter((j) => j.status !== 'completed' && j.status !== 'done' && j.status !== 'cancelled')
+        .map((j) => j.houseId)
+        .filter(Boolean)
+    );
+    houses.forEach((h) => {
+      if (housesWithOpenInc.has(h.id)) conIncidencias += 1;
+      else if (housesWithActiveJobs.has(h.id)) conTrabajos += 1;
+    });
+    const tranquilas = total - conIncidencias - conTrabajos;
+    return { total, conIncidencias, conTrabajos, tranquilas };
+  }, [houses, incidences, allJobs]);
+
+  const chartData = [
+    { name: 'Tranquilas', value: stats.tranquilas, color: '#14b8a6' },
+    { name: 'En trabajos', value: stats.conTrabajos, color: '#0F2C4D' },
+    { name: 'Con incidencias', value: stats.conIncidencias, color: '#f97316' },
+  ].filter((d) => d.value > 0);
+
+  const pct =
+    stats.total > 0 ? Math.round((stats.tranquilas / stats.total) * 100) : 0;
+
+  return (
+    <Card>
+      <div className="px-5 py-4 border-b border-[var(--border-soft)]">
+        <h2 className="font-heading text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">Cartera</h2>
+        <p className="text-xs text-stone-500 mt-0.5">Estado de las {stats.total} propiedades</p>
+      </div>
+      <div className="p-5 flex items-center gap-5">
+        <div className="relative w-32 h-32 flex-shrink-0">
+          {chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  innerRadius={42}
+                  outerRadius={60}
+                  paddingAngle={2}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {chartData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="w-full h-full rounded-full bg-stone-100 dark:bg-stone-800" />
+          )}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="font-heading text-2xl font-semibold text-stone-900 dark:text-stone-100 leading-none tabular-nums">{pct}%</span>
+            <span className="text-[10px] uppercase tracking-wider text-stone-400 mt-1">tranquilas</span>
+          </div>
+        </div>
+        <ul className="flex-1 space-y-2 min-w-0">
+          {[
+            { label: 'Tranquilas', value: stats.tranquilas, color: '#14b8a6' },
+            { label: 'En trabajos', value: stats.conTrabajos, color: '#0F2C4D' },
+            { label: 'Con incidencias', value: stats.conIncidencias, color: '#f97316' },
+          ].map((row) => (
+            <li key={row.label} className="flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 min-w-0">
+                <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: row.color }} />
+                <span className="text-sm text-stone-600 dark:text-stone-300 truncate">{row.label}</span>
+              </span>
+              <span className="font-mono tabular-nums text-sm font-medium text-stone-900 dark:text-stone-100">{row.value}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Card>
+  );
+}
+
 export default function DashboardPage() {
   const today = new Date();
   const [selectedPeriod, setSelectedPeriod] = useState('month');
@@ -1345,22 +1649,20 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-8 sm:space-y-10">
-      {/* Header */}
-      <div className="pb-5 sm:pb-6 border-b border-[var(--border-soft)]">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="font-heading text-xl sm:text-2xl font-bold text-stone-900">Dashboard</h1>
-            <p className="text-sm sm:text-base text-stone-500 truncate mt-0.5">
-              {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })}
-            </p>
-          </div>
-          <Button variant="outline" onClick={handleRefresh} className="flex-shrink-0">
-            <RefreshCw className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Actualizar</span>
+    <div className="space-y-6 sm:space-y-8">
+      <PageHeader
+        title="Panel"
+        subtitle={(() => {
+          const day = format(new Date(), "EEEE, d 'de' MMMM", { locale: es });
+          return `${day.charAt(0).toUpperCase()}${day.slice(1)} · ${stats.totalRegisteredWorkers || 0} trabajadores registrados`;
+        })()}
+        actions={
+          <Button variant="outline" onClick={handleRefresh}>
+            <RefreshCw className="w-4 h-4 mr-1.5" />
+            Actualizar
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Period selector */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
@@ -1437,6 +1739,14 @@ export default function DashboardPage() {
             color="secondary"
           />
         </div>
+      </section>
+
+      {/* ——— Carga operativa + Cartera ——— */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <CargaOperativaWidget />
+        </div>
+        <CarteraWidget />
       </section>
 
       {/* ——— Sección: Actividad y alertas (2 columnas en desktop) ——— */}

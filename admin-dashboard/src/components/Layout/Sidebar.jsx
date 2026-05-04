@@ -89,12 +89,20 @@ export default function Sidebar({ open, onClose }) {
       >
         <div className="h-18 flex items-center justify-between px-5 py-4 border-b border-[var(--border-soft)]">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-turquoise-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
+              style={{
+                background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, var(--color-turquoise-600) 100%)',
+              }}
+            >
               <span className="text-white font-heading font-bold text-sm">P</span>
             </div>
-            <span className="font-heading font-semibold text-stone-900 dark:text-stone-100 truncate text-sm" title={companyName}>
-              {companyName}
-            </span>
+            <div className="min-w-0 leading-tight">
+              <p className="font-heading font-semibold text-stone-900 dark:text-stone-100 truncate text-sm" title={companyName}>
+                {companyName}
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-stone-400 dark:text-stone-500">Admin</p>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -111,7 +119,7 @@ export default function Sidebar({ open, onClose }) {
               className={groupIndex > 0 ? 'mt-6' : ''}
             >
               {group.label && (
-                <p className="px-3 mb-1.5 text-[11px] font-semibold text-stone-400 dark:text-stone-600 uppercase tracking-wider">
+                <p className="px-3 mb-1 text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-[0.14em]">
                   {group.label}
                 </p>
               )}
@@ -123,15 +131,15 @@ export default function Sidebar({ open, onClose }) {
                     end={item.to === '/'}
                     onClick={onClose}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                      `relative flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                         isActive
-                          ? 'bg-turquoise-50 dark:bg-turquoise-900/30 text-turquoise-700 dark:text-turquoise-400 font-medium'
-                          : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100'
+                          ? 'bg-turquoise-100/70 dark:bg-turquoise-900/30 text-turquoise-800 dark:text-turquoise-300 font-medium'
+                          : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100/70 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100'
                       }`
                     }
                   >
-                    <item.icon className="w-5 h-5 shrink-0" />
-                    <span className="text-sm">{item.label}</span>
+                    <item.icon className="w-[18px] h-[18px] shrink-0" strokeWidth={1.75} />
+                    <span className="text-[13.5px]">{item.label}</span>
                   </NavLink>
                 ))}
               </div>

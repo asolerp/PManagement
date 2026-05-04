@@ -1,16 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import { useJobs, useHouses, useCreateJob, useWorkersFirestore, useUpdateJob, useDeleteJob, useAddActivity, useSettings } from '@/hooks/useFirestore';
 import { useAuth } from '@/hooks/useAuth.jsx';
 import { Briefcase, Plus, User, Home, X, Calendar, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { getJobSlaStatus } from '@/utils/sla';
-import { format } from 'date-fns';
+import { format, formatDistanceToNowStrict, isToday } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import Timeline from '@/components/Timeline';
+import { DataTable } from '@/components/ui/DataTable';
+import { Pill } from '@/components/ui/Pill';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { FilterBar } from '@/components/ui/FilterBar';
+import { EmptyState } from '@/components/ui/EmptyState';
+
+const STATUS_VARIANT = {
+  pending: 'medium',
+  in_progress: 'info',
+  done: 'resolved',
+  cancelled: 'neutral',
+};
+
+function jobToDate(value) {
+  if (!value) return null;
+  try {
+    if (value.toDate) return value.toDate();
+    if (value.seconds) return new Date(value.seconds * 1000);
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  } catch { return null; }
+}
 
 export const statusLabels = {
   pending: 'Pendiente',
@@ -331,114 +353,173 @@ export function JobDetailPanel({ job, houses = [], onClose, onJobUpdated, onDele
 export default function JobsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [search, setSearch] = useState('');
   const { data: jobs = [], isLoading } = useJobs();
   const { data: houses = [] } = useHouses();
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-gray-900">Trabajos</h1>
-          <p className="text-gray-500">
-            Trabajos o tareas asignadas a casas y trabajadores
-          </p>
-        </div>
-        <Button onClick={() => setShowCreateModal(true)} className="shrink-0">
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo trabajo
-        </Button>
-      </div>
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return jobs;
+    return jobs.filter((j) => {
+      const houseName = j.house?.[0]?.houseName || j.house?.houseName || '';
+      return [j.title, j.jobName, j.description, houseName]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    });
+  }, [jobs, search]);
 
-      {!isLoading && jobs.length > 0 && (
-        <p className="text-sm text-gray-500">
-          {jobs.length} trabajo{jobs.length !== 1 ? 's' : ''}
-        </p>
-      )}
-
-      {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Cargando...</div>
-      ) : jobs.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-14 text-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#126D9B]/20 to-[#67B26F]/20 flex items-center justify-center mb-4">
-            <Briefcase className="w-8 h-8 text-[#126D9B]" />
+  const columns = useMemo(
+    () => [
+      {
+        key: 'title',
+        label: 'Trabajo',
+        sortable: true,
+        sortAccessor: (j) => j.title || j.jobName || '',
+        render: (j) => (
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="w-8 h-8 rounded-lg bg-turquoise-50 dark:bg-turquoise-900/30 text-turquoise-600 dark:text-turquoise-300 flex items-center justify-center flex-shrink-0">
+              <Briefcase className="w-4 h-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-medium text-stone-900 dark:text-stone-100 truncate">
+                {j.title || j.jobName || 'Sin título'}
+              </p>
+              {j.description && (
+                <p className="text-xs text-stone-500 truncate">{j.description}</p>
+              )}
+            </div>
           </div>
-          <p className="font-heading text-gray-800 font-medium mb-1">No hay trabajos</p>
-          <p className="text-sm text-gray-500">Los trabajos creados aparecerán aquí</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {jobs.map((job) => {
-            const status = job.status || 'pending';
-            const label = statusLabels[status] || status;
-            const colorClass = statusColors[status] || statusColors.pending;
-            const slaInfo = getJobSlaStatus(job);
-            const slaClass = slaInfo
-              ? { ok: 'bg-emerald-50 text-emerald-700', at_risk: 'bg-amber-50 text-amber-700', breached: 'bg-red-50 text-red-700' }[slaInfo.status]
-              : null;
-            return (
-              <Card
-                key={job.id}
-                className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedJob(job)}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="p-2 rounded-lg bg-[#126D9B]/10 text-[#126D9B]">
-                    <Briefcase className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900">
-                      {job.title || job.jobName || 'Sin título'}
-                    </p>
-                    {job.description && (
-                      <p className="text-sm text-gray-500 line-clamp-2 mt-0.5">
-                        {job.description}
-                      </p>
-                    )}
-                    <div className="flex flex-wrap items-center gap-2 mt-2">
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${colorClass}`}
-                      >
-                        {label}
-                      </span>
-                      {slaInfo && (
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${slaClass}`} title={slaInfo.label}>
-                          {slaInfo.label}
-                        </span>
-                      )}
-                      {job.houseId && (
-                        <Link
-                          to={`/casas/${job.houseId}`}
-                          className="inline-flex items-center gap-1 text-xs text-[#126D9B] hover:underline"
-                        >
-                          <Home className="w-3 h-3" />
-                          {job.house?.[0]?.houseName || job.house?.houseName || 'Casa'}
-                        </Link>
-                      )}
-                      {(job.workers || []).map((w, i) => (
-                        <Link
-                          key={w.id || i}
-                          to={w.id ? `/trabajadores/${w.id}` : '#'}
-                          className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${w.id ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' : 'bg-gray-100 text-gray-600'}`}
-                        >
-                          <User className="w-3 h-3" />
-                          {`${w.firstName || ''} ${w.lastName || ''}`.trim() || 'Trabajador'}
-                        </Link>
-                      ))}
-                      {job.createdAt?.toDate && (
-                        <span className="text-xs text-gray-400">
-                          {format(job.createdAt.toDate(), "d MMM yyyy", {
-                            locale: es,
-                          })}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+        ),
+      },
+      {
+        key: 'house',
+        label: 'Casa',
+        sortable: true,
+        sortAccessor: (j) => j.house?.[0]?.houseName || j.house?.houseName || '',
+        render: (j) => {
+          if (!j.houseId) return <span className="text-stone-400">—</span>;
+          const name = j.house?.[0]?.houseName || j.house?.houseName || 'Casa';
+          return (
+            <Link
+              to={`/casas/${j.houseId}`}
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1.5 text-stone-700 dark:text-stone-200 hover:text-turquoise-700 dark:hover:text-turquoise-300 truncate"
+            >
+              <Home className="w-3.5 h-3.5 text-stone-400" />
+              <span className="truncate">{name}</span>
+            </Link>
+          );
+        },
+      },
+      {
+        key: 'status',
+        label: 'Estado',
+        sortable: true,
+        sortAccessor: (j) => ({ in_progress: 0, pending: 1, done: 2, cancelled: 3 }[j.status || 'pending'] ?? 4),
+        render: (j) => {
+          const status = j.status || 'pending';
+          return <Pill variant={STATUS_VARIANT[status] ?? 'neutral'} dot>{statusLabels[status] || status}</Pill>;
+        },
+      },
+      {
+        key: 'workers',
+        label: 'Trabajadores',
+        render: (j) => {
+          const ws = j.workers || [];
+          if (ws.length === 0) return <span className="text-stone-400 text-xs">Sin asignar</span>;
+          return (
+            <div className="flex items-center -space-x-1.5">
+              {ws.slice(0, 3).map((w, i) => (
+                <span
+                  key={w.id || i}
+                  title={`${w.firstName || ''} ${w.lastName || ''}`.trim()}
+                  className="w-6 h-6 rounded-full bg-turquoise-100 dark:bg-turquoise-900/40 text-turquoise-700 dark:text-turquoise-300 text-[10px] font-semibold flex items-center justify-center ring-2 ring-[var(--surface-elevated)]"
+                >
+                  {(w.firstName || '?').charAt(0).toUpperCase()}
+                </span>
+              ))}
+              {ws.length > 3 && (
+                <span className="ml-2 text-xs text-stone-500">+{ws.length - 3}</span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        key: 'sla',
+        label: 'Plazo',
+        render: (j) => {
+          const sla = getJobSlaStatus(j);
+          if (!sla) return <span className="text-stone-400 text-xs">—</span>;
+          const variant = sla.status === 'breached' ? 'critical' : sla.status === 'at_risk' ? 'high' : 'low';
+          return <Pill variant={variant}>{sla.label}</Pill>;
+        },
+      },
+      {
+        key: 'when',
+        label: 'Creado',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (j) => jobToDate(j.createdAt)?.getTime() ?? 0,
+        render: (j) => {
+          const d = jobToDate(j.createdAt);
+          if (!d) return <span className="text-stone-400">—</span>;
+          return (
+            <span className="font-mono tabular-nums text-xs text-stone-500">
+              {isToday(d) ? `hoy ${format(d, 'HH:mm')}` : formatDistanceToNowStrict(d, { addSuffix: true, locale: es })}
+            </span>
+          );
+        },
+      },
+    ],
+    []
+  );
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Operaciones', 'Trabajos']}
+        title="Trabajos"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${jobs.length} ${jobs.length === 1 ? 'trabajo' : 'trabajos'} asignados a casas y trabajadores`
+        }
+        actions={
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Nuevo trabajo
+          </Button>
+        }
+      />
+
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por título, descripción o casa…"
+      />
+
+      <Card className="overflow-hidden p-0">
+        {isLoading ? (
+          <div className="py-16 text-center text-stone-500">Cargando trabajos…</div>
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={filtered}
+            getRowKey={(j) => j.id}
+            onRowClick={(j) => setSelectedJob(j)}
+            selectedRowKey={selectedJob?.id}
+            initialSort={{ key: 'when', dir: 'desc' }}
+            emptyState={
+              <EmptyState
+                icon={Briefcase}
+                title={search ? 'Sin resultados' : 'No hay trabajos'}
+                description={search ? 'Prueba con otros términos.' : 'Los trabajos creados aparecerán aquí.'}
+              />
+            }
+          />
+        )}
+      </Card>
 
       {showCreateModal && (
         <CreateJobModal

@@ -1,6 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
+import { DataTable } from '@/components/ui/DataTable';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { FilterBar } from '@/components/ui/FilterBar';
+import { EmptyState } from '@/components/ui/EmptyState';
 import {
   useOwners,
   useHouses,
@@ -439,66 +443,127 @@ export default function OwnersPage() {
   const { data: owners = [], isLoading } = useOwners();
   const { data: houses = [] } = useHouses();
   const [selectedOwner, setSelectedOwner] = useState(null);
+  const [search, setSearch] = useState('');
 
   const getPropertyCount = (ownerId) => houses.filter((h) => h.owner?.id === ownerId).length;
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#126D9B] border-t-transparent" />
-      </div>
-    );
-  }
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return owners;
+    return owners.filter((o) => {
+      const name = `${o.firstName ?? ''} ${o.lastName ?? ''}`.toLowerCase();
+      return name.includes(q) || (o.email ?? '').toLowerCase().includes(q) || (o.phone ?? '').includes(q);
+    });
+  }, [owners, search]);
+
+  const columns = useMemo(
+    () => [
+      {
+        key: 'owner',
+        label: 'Propietario',
+        sortable: true,
+        sortAccessor: (o) => `${o.firstName ?? ''} ${o.lastName ?? ''}`.trim() || o.email || '',
+        render: (o) => {
+          const name = [o.firstName, o.lastName].filter(Boolean).join(' ') || o.email || 'Sin nombre';
+          return (
+            <div className="flex items-center gap-3 min-w-0">
+              <OwnerAvatar owner={o} size="sm" />
+              <span className="font-medium text-stone-900 dark:text-stone-100 truncate">{name}</span>
+            </div>
+          );
+        },
+      },
+      {
+        key: 'email',
+        label: 'Email',
+        sortable: true,
+        render: (o) =>
+          o.email ? (
+            <span className="text-stone-600 dark:text-stone-300 truncate">{o.email}</span>
+          ) : (
+            <span className="text-stone-400">—</span>
+          ),
+      },
+      {
+        key: 'phone',
+        label: 'Teléfono',
+        render: (o) =>
+          o.phone ? (
+            <span className="font-mono tabular-nums text-stone-600 dark:text-stone-300">{o.phone}</span>
+          ) : (
+            <span className="text-stone-400">—</span>
+          ),
+      },
+      {
+        key: 'count',
+        label: 'Casas',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (o) => getPropertyCount(o.id),
+        render: (o) => {
+          const c = getPropertyCount(o.id);
+          return (
+            <span className={`font-mono tabular-nums ${c === 0 ? 'text-stone-400' : 'text-stone-700 dark:text-stone-200'}`}>
+              {c}
+            </span>
+          );
+        },
+      },
+    ],
+    [houses]
+  );
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-gray-900">Propietarios</h1>
-        <p className="text-gray-600 mt-1">
-          Usuarios con rol propietario. Tienen acceso a su panel para ver sus propiedades y mantenimiento.
-        </p>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Gestión', 'Propietarios']}
+        title="Propietarios"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${owners.length} ${owners.length === 1 ? 'propietario' : 'propietarios'} con acceso a su panel`
+        }
+      />
 
-      {owners.length === 0 ? (
-        <Card className="p-8 text-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#126D9B]/20 to-[#67B26F]/20 flex items-center justify-center mx-auto mb-4">
-            <Building2 className="w-8 h-8 text-[#126D9B]" />
-          </div>
-          <p className="font-heading text-gray-800 font-medium mb-1">No hay propietarios registrados</p>
-          <p className="text-sm text-gray-500 mt-1">
-            Los propietarios se crean desde <Link to="/usuarios" className="text-[#126D9B] hover:underline">Usuarios</Link> asignando el rol &quot;Propietario&quot;.
-          </p>
-        </Card>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {owners.map((owner) => {
-            const name = [owner.firstName, owner.lastName].filter(Boolean).join(' ') || owner.email || 'Sin nombre';
-            const count = getPropertyCount(owner.id);
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nombre, email o teléfono…"
+      />
 
-            return (
-              <Card
-                key={owner.id}
-                className="p-4 cursor-pointer hover:shadow-md hover:border-[#126D9B]/30 transition-all"
-                onClick={() => setSelectedOwner(owner)}
-              >
-                <div className="flex items-start gap-4">
-                  <OwnerAvatar owner={owner} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{name}</p>
-                    {owner.email && (
-                      <p className="text-sm text-gray-500 truncate">{owner.email}</p>
-                    )}
-                    <p className="text-xs text-gray-500 mt-1">
-                      {count} {count === 1 ? 'propiedad' : 'propiedades'}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+      <Card className="overflow-hidden p-0">
+        {isLoading ? (
+          <div className="py-16 text-center text-stone-500">Cargando…</div>
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={filtered}
+            getRowKey={(o) => o.id}
+            onRowClick={(o) => setSelectedOwner(o)}
+            selectedRowKey={selectedOwner?.id}
+            initialSort={{ key: 'owner', dir: 'asc' }}
+            emptyState={
+              <EmptyState
+                icon={Building2}
+                title={search ? 'Sin resultados' : 'No hay propietarios registrados'}
+                description={
+                  search ? (
+                    'Prueba con otros términos de búsqueda.'
+                  ) : (
+                    <>
+                      Los propietarios se crean desde{' '}
+                      <Link to="/usuarios" className="text-turquoise-600 hover:underline">
+                        Usuarios
+                      </Link>{' '}
+                      asignando el rol &quot;Propietario&quot;.
+                    </>
+                  )
+                }
+              />
+            }
+          />
+        )}
+      </Card>
 
       {selectedOwner && (
         <OwnerDetailPanel

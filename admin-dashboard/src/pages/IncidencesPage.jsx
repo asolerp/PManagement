@@ -4,41 +4,61 @@ import { Card } from '@/components/ui/Card';
 import { useIncidences, useHouses, useCreateIncidence, useWorkersFirestore, useSettings } from '@/hooks/useFirestore';
 import { uploadIncidencePhoto } from '@/services/firestore';
 import { useAuth } from '@/hooks/useAuth';
-import IncidenceDetailPanel, { StateBadge, SlaBadge, StaleBadge, PriorityBadge, CategoryBadge } from '@/components/IncidenceDetailPanel';
+import IncidenceDetailPanel from '@/components/IncidenceDetailPanel';
 import {
   AlertCircle,
   AlertTriangle,
-  CheckCircle,
   Home,
   Camera,
-  Clock,
   Plus,
   Hourglass,
   UserX,
-  User,
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, formatDistanceToNowStrict, isToday } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import { getIncidenceSlaStatus, getIncidenceStaleInfo } from '@/utils/sla';
+import { DataTable } from '@/components/ui/DataTable';
+import { Pill } from '@/components/ui/Pill';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { FilterBar, FilterChip } from '@/components/ui/FilterBar';
+import { EmptyState } from '@/components/ui/EmptyState';
 
+const PRIORITY_VARIANT = {
+  critical: 'critical',
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+};
+const PRIORITY_LABEL = {
+  critical: 'Crítica',
+  high: 'Alta',
+  medium: 'Media',
+  low: 'Baja',
+};
 
-function formatDate(value) {
-  if (!value) return '—';
+function toJsDate(value) {
+  if (!value) return null;
   try {
-    let date;
-    if (value.toDate && typeof value.toDate === 'function') date = value.toDate();
-    else if (value.seconds) date = new Date(value.seconds * 1000);
-    else if (value._d) date = value._d;
-    else date = new Date(value);
-    if (isNaN(date.getTime())) return '—';
-    return format(date, 'd MMM yyyy, HH:mm', { locale: es });
+    if (value.toDate && typeof value.toDate === 'function') return value.toDate();
+    if (value.seconds) return new Date(value.seconds * 1000);
+    if (value._d) return value._d;
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
   } catch {
-    return '—';
+    return null;
   }
 }
+
+function relativeWhen(value) {
+  const d = toJsDate(value);
+  if (!d) return '—';
+  if (isToday(d)) return `hoy ${format(d, 'HH:mm')}`;
+  return formatDistanceToNowStrict(d, { addSuffix: true, locale: es });
+}
+
 
 export default function IncidencesPage() {
   const [filterDone, setFilterDone] = useState(undefined);
@@ -86,84 +106,192 @@ export default function IncidencesPage() {
 
   const hasQuickFilters = filterSlaRisk || filterUnassigned || filterStale || !!filterHouseId;
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-gray-900">Incidencias</h1>
-          <p className="text-gray-500">
-            Incidencias reportadas por trabajadores o administradores
-          </p>
-        </div>
-        <Button onClick={() => setShowCreateModal(true)} className="shrink-0">
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva incidencia
-        </Button>
-      </div>
+  const counts = useMemo(() => {
+    const total = incidences.length;
+    const open = incidences.filter((i) => !i.done).length;
+    const closed = total - open;
+    const critical = incidences.filter((i) => !i.done && i.priority === 'critical').length;
+    const unassigned = incidences.filter((i) => {
+      const has = (i.workersId && i.workersId.length > 0) || (i.workers && i.workers.length > 0);
+      return !i.done && !has;
+    }).length;
+    return { total, open, closed, critical, unassigned };
+  }, [incidences]);
 
-      <div className="flex gap-2 flex-wrap">
-        <Button
-          variant={filterDone === undefined ? 'primary' : 'outline'}
-          onClick={() => setFilterDone(undefined)}
-        >
-          Todas
-        </Button>
-        <Button
-          variant={filterDone === false ? 'primary' : 'outline'}
-          onClick={() => setFilterDone(false)}
-        >
-          Abiertas
-        </Button>
-        <Button
-          variant={filterDone === true ? 'primary' : 'outline'}
-          onClick={() => setFilterDone(true)}
-        >
-          Cerradas
-        </Button>
-      </div>
+  const columns = useMemo(
+    () => [
+      {
+        key: 'title',
+        label: 'Incidencia',
+        sortable: true,
+        sortAccessor: (i) => i.title || i.description || '',
+        render: (i) => (
+          <div className="min-w-0">
+            <p className="font-medium text-stone-900 dark:text-stone-100 truncate">
+              {i.title || i.description?.slice(0, 60) || 'Sin título'}
+            </p>
+            <p className="text-[11px] text-stone-400 font-mono tabular-nums truncate">
+              {i.id?.slice(0, 8)}
+              {i.photos?.length > 0 && (
+                <span className="ml-2 inline-flex items-center gap-0.5 text-amber-600 dark:text-amber-400">
+                  <Camera className="w-3 h-3" />
+                  {i.photos.length}
+                </span>
+              )}
+            </p>
+          </div>
+        ),
+      },
+      {
+        key: 'house',
+        label: 'Casa',
+        sortable: true,
+        sortAccessor: (i) => i.house?.houseName || i.house?.[0]?.houseName || '',
+        render: (i) => {
+          const hid = i.houseId || i.house?.id || i.house?.[0]?.id;
+          const name = i.house?.houseName || i.house?.[0]?.houseName || 'Casa';
+          if (!hid) return <span className="text-stone-400">—</span>;
+          return (
+            <Link
+              to={`/casas/${hid}`}
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1.5 text-stone-700 dark:text-stone-200 hover:text-turquoise-700 dark:hover:text-turquoise-300 transition-colors truncate"
+            >
+              <Home className="w-3.5 h-3.5 text-stone-400" />
+              <span className="truncate">{name}</span>
+            </Link>
+          );
+        },
+      },
+      {
+        key: 'priority',
+        label: 'Prioridad',
+        sortable: true,
+        sortAccessor: (i) => ({ critical: 0, high: 1, medium: 2, low: 3 }[i.priority] ?? 4),
+        render: (i) => {
+          if (!i.priority) return <span className="text-stone-400 text-xs">—</span>;
+          return (
+            <Pill variant={PRIORITY_VARIANT[i.priority] ?? 'neutral'} dot>
+              {PRIORITY_LABEL[i.priority] ?? i.priority}
+            </Pill>
+          );
+        },
+      },
+      {
+        key: 'state',
+        label: 'Estado',
+        sortable: true,
+        sortAccessor: (i) => (i.done ? 2 : i.state === 'in_progress' ? 1 : 0),
+        render: (i) => {
+          if (i.done) return <Pill variant="resolved">Resuelta</Pill>;
+          if (i.state === 'in_progress') return <Pill variant="info">En curso</Pill>;
+          return <Pill variant="neutral">Abierta</Pill>;
+        },
+      },
+      {
+        key: 'assigned',
+        label: 'Asignado',
+        render: (i) => {
+          const workers = i.workers || [];
+          if (workers.length === 0) {
+            return <span className="text-stone-400 text-xs">Sin asignar</span>;
+          }
+          const first = workers[0];
+          const name = `${first.firstName || ''} ${first.lastName || ''}`.trim() || 'Trabajador';
+          return (
+            <span className="inline-flex items-center gap-1.5 text-stone-700 dark:text-stone-200">
+              <span className="w-5 h-5 rounded-full bg-turquoise-100 dark:bg-turquoise-900/40 text-turquoise-700 dark:text-turquoise-300 text-[10px] font-semibold flex items-center justify-center">
+                {(first.firstName || '?').charAt(0).toUpperCase()}
+              </span>
+              <span className="truncate">{name}{workers.length > 1 && ` +${workers.length - 1}`}</span>
+            </span>
+          );
+        },
+      },
+      {
+        key: 'when',
+        label: 'Cuándo',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (i) => toJsDate(i.date || i.createdAt)?.getTime() ?? 0,
+        render: (i) => (
+          <span className="font-mono tabular-nums text-xs text-stone-500">
+            {relativeWhen(i.date || i.createdAt)}
+          </span>
+        ),
+      },
+    ],
+    []
+  );
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Operaciones', 'Incidencias']}
+        title="Incidencias"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${counts.open} abiertas · ${counts.critical} críticas · ${counts.closed} resueltas`
+        }
+        actions={
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Nueva incidencia
+          </Button>
+        }
+      />
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-gray-500 mr-1">Filtros rápidos:</span>
-        <Button
-          variant={filterSlaRisk ? 'primary' : 'outline'}
-          size="sm"
-          onClick={() => setFilterSlaRisk((v) => !v)}
-          title="Solo incidencias con plazo en riesgo o fuera de plazo"
-        >
-          <AlertTriangle className="w-4 h-4 mr-1" />
-          Plazo en riesgo
-        </Button>
-        <Button
-          variant={filterUnassigned ? 'primary' : 'outline'}
-          size="sm"
+        <FilterChip active={filterDone === undefined} onClick={() => setFilterDone(undefined)} count={counts.total}>
+          Todas
+        </FilterChip>
+        <FilterChip active={filterDone === false} onClick={() => setFilterDone(false)} count={counts.open}>
+          Abiertas
+        </FilterChip>
+        <FilterChip
+          active={filterUnassigned}
           onClick={() => setFilterUnassigned((v) => !v)}
-          title="Solo incidencias sin trabajador asignado"
+          count={counts.unassigned}
         >
-          <UserX className="w-4 h-4 mr-1" />
+          <UserX className="w-3.5 h-3.5" />
           Sin asignar
-        </Button>
-        <Button
-          variant={filterStale ? 'primary' : 'outline'}
-          size="sm"
+        </FilterChip>
+        <FilterChip
+          active={filterSlaRisk}
+          onClick={() => setFilterSlaRisk((v) => !v)}
+        >
+          <AlertTriangle className="w-3.5 h-3.5" />
+          Plazo en riesgo
+        </FilterChip>
+        <FilterChip
+          active={filterStale}
           onClick={() => setFilterStale((v) => !v)}
-          title="Solo incidencias estancadas (sin cambio de estado)"
         >
-          <Hourglass className="w-4 h-4 mr-1" />
+          <Hourglass className="w-3.5 h-3.5" />
           Estancadas
-        </Button>
-        <select
-          value={filterHouseId}
-          onChange={(e) => setFilterHouseId(e.target.value)}
-          className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500 focus:border-transparent bg-white min-w-[180px]"
-          title="Filtrar por propiedad"
-        >
-          <option value="">Por casa (todas)</option>
-          {houses.map((h) => (
-            <option key={h.id} value={h.id}>
-              {h.houseName || 'Sin nombre'}
-            </option>
-          ))}
-        </select>
+        </FilterChip>
+        <FilterChip active={filterDone === true} onClick={() => setFilterDone(true)} count={counts.closed}>
+          Resueltas
+        </FilterChip>
+      </div>
+
+      <FilterBar
+        right={
+          <select
+            value={filterHouseId}
+            onChange={(e) => setFilterHouseId(e.target.value)}
+            className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500/30"
+          >
+            <option value="">Todas las casas</option>
+            {houses.map((h) => (
+              <option key={h.id} value={h.id}>
+                {h.houseName || 'Sin nombre'}
+              </option>
+            ))}
+          </select>
+        }
+      >
         {hasQuickFilters && (
           <button
             type="button"
@@ -173,117 +301,38 @@ export default function IncidencesPage() {
               setFilterStale(false);
               setFilterHouseId('');
             }}
-            className="text-sm text-turquoise-600 hover:underline"
+            className="text-xs text-turquoise-600 hover:underline"
           >
-            Quitar filtros rápidos
+            Quitar filtros
           </button>
         )}
-      </div>
+      </FilterBar>
 
-      {!isLoading && filteredIncidences.length > 0 && (
-        <p className="text-sm text-gray-500">
-          {filteredIncidences.length} incidencia{filteredIncidences.length !== 1 ? 's' : ''}
-          {hasQuickFilters && incidences.length !== filteredIncidences.length && (
-            <span> (de {incidences.length})</span>
-          )}
-        </p>
-      )}
-
-      {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Cargando...</div>
-      ) : filteredIncidences.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-14 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-turquoise-50 flex items-center justify-center mb-4">
-            <AlertCircle className="w-8 h-8 text-turquoise-500" />
-          </div>
-          <p className="font-heading text-gray-800 font-medium mb-1">
-            {hasQuickFilters ? 'Ninguna incidencia con estos filtros' : 'No hay incidencias'}
-          </p>
-          <p className="text-sm text-gray-500">
-            {hasQuickFilters
-              ? 'Prueba a quitar filtros rápidos o cambiar criterios'
-              : 'Las incidencias aparecerán aquí cuando se creen'}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredIncidences.map((inc) => (
-            <Card
-              key={inc.id}
-              className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => setSelectedIncidence(inc)}
-            >
-              <div className="flex items-start gap-4">
-                <div
-                  className={`p-2 rounded-lg flex-shrink-0 ${
-                    inc.done
-                      ? 'bg-turquoise-50 text-turquoise-600'
-                      : 'bg-amber-100 text-amber-600'
-                  }`}
-                >
-                  {inc.done ? (
-                    <CheckCircle className="w-5 h-5" />
-                  ) : (
-                    <AlertCircle className="w-5 h-5" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-gray-900 line-clamp-1 flex-1">
-                      {inc.title || inc.description?.slice(0, 60) || 'Sin título'}
-                    </p>
-                    {inc.photos?.length > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded flex-shrink-0">
-                        <Camera className="w-3 h-3" />
-                        {inc.photos.length}
-                      </span>
-                    )}
-                  </div>
-                  {(inc.incidence || inc.description) && (
-                    <p className="text-sm text-gray-500 line-clamp-2 mt-0.5">
-                      {inc.incidence || inc.description}
-                    </p>
-                  )}
-                  <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-gray-400">
-                    {(inc.houseId || inc.house?.id || inc.house?.[0]?.id) && (
-                      <Link
-                        to={`/casas/${inc.houseId || inc.house?.id || inc.house?.[0]?.id}`}
-                        className="flex items-center gap-1 text-turquoise-600 hover:underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Home className="w-3 h-3" />
-                        {inc.house?.houseName || inc.house?.[0]?.houseName || 'Casa'}
-                      </Link>
-                    )}
-                    {(inc.createdAt || inc.date) && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {formatDate(inc.date || inc.createdAt)}
-                      </span>
-                    )}
-                    <StateBadge state={inc.state} done={inc.done} />
-                    <PriorityBadge priority={inc.priority} />
-                    <CategoryBadge category={inc.category} />
-                    <SlaBadge doc={inc} />
-                    <StaleBadge doc={inc} />
-                    {(inc.workers || []).map((w, i) => (
-                      <Link
-                        key={w.id || i}
-                        to={w.id ? `/trabajadores/${w.id}` : '#'}
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${w.id ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' : 'bg-gray-100 text-gray-600'}`}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <User className="w-3 h-3" />
-                        {`${w.firstName || ''} ${w.lastName || ''}`.trim() || 'Trabajador'}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
+      <Card className="overflow-hidden p-0">
+        {isLoading ? (
+          <div className="py-16 text-center text-stone-500">Cargando incidencias…</div>
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={filteredIncidences}
+            getRowKey={(i) => i.id}
+            onRowClick={(i) => setSelectedIncidence(i)}
+            selectedRowKey={selectedIncidence?.id}
+            initialSort={{ key: 'when', dir: 'desc' }}
+            emptyState={
+              <EmptyState
+                icon={AlertCircle}
+                title={hasQuickFilters ? 'Sin resultados con estos filtros' : 'No hay incidencias'}
+                description={
+                  hasQuickFilters
+                    ? 'Prueba a ajustar los filtros para ampliar la búsqueda.'
+                    : 'Las incidencias aparecerán aquí cuando se creen.'
+                }
+              />
+            }
+          />
+        )}
+      </Card>
 
       {selectedIncidence && (
         <IncidenceDetailPanel

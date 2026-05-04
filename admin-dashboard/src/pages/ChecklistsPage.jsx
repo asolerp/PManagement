@@ -1,14 +1,10 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import { useChecklistsPaginated, useHouses, useChecksCatalog, useCreateChecklist, useWorkersFirestore } from '@/hooks/useFirestore';
 import {
   CheckSquare,
-  CheckCircle,
   Home,
-  CalendarDays,
-  X,
-  ChevronDown,
   Loader2,
   Plus,
   User,
@@ -18,6 +14,12 @@ import { es } from 'date-fns/locale';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import ChecklistDetailPanel from '@/components/ChecklistDetailPanel';
+import { DataTable } from '@/components/ui/DataTable';
+import { Pill } from '@/components/ui/Pill';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { FilterBar, FilterChip } from '@/components/ui/FilterBar';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { QualityBar } from '@/components/ui/QualityBar';
 
 function toDate(value) {
   if (!value) return null;
@@ -60,15 +62,9 @@ export default function ChecklistsPage() {
   const [filterFinished, setFilterFinished] = useState(undefined);
   const [filterHouseId, setFilterHouseId] = useState('');
   const [filterMonth, setFilterMonth] = useState('');
-  const [showHouseDropdown, setShowHouseDropdown] = useState(false);
   const [selectedChecklist, setSelectedChecklist] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const sentinelRef = useRef(null);
-  const location = useLocation();
-
-  useEffect(() => {
-    setShowHouseDropdown(false);
-  }, [location.pathname]);
 
   const serverFilters = useMemo(() => {
     const f = {};
@@ -119,7 +115,6 @@ export default function ChecklistsPage() {
     return () => obs.disconnect();
   }, [handleObserver]);
 
-  const selectedHouse = houses.find((h) => h.id === filterHouseId);
   const hasActiveFilters = filterHouseId || filterMonth;
 
   const clearFilters = () => {
@@ -128,129 +123,147 @@ export default function ChecklistsPage() {
     setFilterFinished(undefined);
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-gray-900">Revisiones</h1>
-          <p className="text-gray-500">
-            Listas de comprobación por casa y fecha
-          </p>
-        </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva revisión
-        </Button>
-      </div>
-
-      {/* Filtros de estado */}
-      <div className="flex gap-2 flex-wrap">
-        <Button
-          variant={filterFinished === undefined ? 'primary' : 'outline'}
-          onClick={() => setFilterFinished(undefined)}
-        >
-          Todos
-        </Button>
-        <Button
-          variant={filterFinished === false ? 'primary' : 'outline'}
-          onClick={() => setFilterFinished(false)}
-        >
-          En curso
-        </Button>
-        <Button
-          variant={filterFinished === true ? 'primary' : 'outline'}
-          onClick={() => setFilterFinished(true)}
-        >
-          Finalizados
-        </Button>
-      </div>
-
-      {/* Filtros por casa y fecha */}
-      <div className="flex items-center gap-3 flex-wrap">
-        {/* Filtro por casa */}
-        <div className="relative">
-          <button
-            onClick={() => setShowHouseDropdown(!showHouseDropdown)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
-              filterHouseId
-                ? 'border-[#126D9B] bg-[#126D9B]/5 text-[#126D9B]'
-                : 'border-gray-300 text-gray-600 hover:border-gray-400'
-            }`}
-          >
-            <Home className="w-4 h-4" />
-            <span className="max-w-[180px] truncate">
-              {selectedHouse ? selectedHouse.houseName : 'Filtrar por casa'}
-            </span>
-            {filterHouseId ? (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFilterHouseId('');
-                  setShowHouseDropdown(false);
-                }}
-                className="ml-1 p-0.5 rounded-full hover:bg-[#126D9B]/20"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            ) : (
-              <ChevronDown className="w-3.5 h-3.5" />
-            )}
-          </button>
-
-          {showHouseDropdown && (
-            <>
-              <div
-                className="fixed inset-0 z-30 bg-black/20"
-                onClick={() => setShowHouseDropdown(false)}
-                aria-hidden
-              />
-              <div className="absolute top-full left-0 mt-1 z-40 w-64 max-h-60 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg">
-                <button
-                  onClick={() => {
-                    setFilterHouseId('');
-                    setShowHouseDropdown(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${
-                    !filterHouseId ? 'text-[#126D9B] font-medium bg-[#126D9B]/5' : 'text-gray-700'
-                  }`}
+  const columns = useMemo(
+    () => [
+      {
+        key: 'house',
+        label: 'Casa',
+        sortable: true,
+        sortAccessor: (cl) => getHouseName(cl),
+        render: (cl) => {
+          const name = getHouseName(cl);
+          const hid = cl.houseId || cl.house?.[0]?.id || cl.house?.id;
+          return (
+            <div className="min-w-0 flex items-center gap-2">
+              <Home className="w-4 h-4 text-stone-400 flex-shrink-0" />
+              {hid ? (
+                <Link
+                  to={`/casas/${hid}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="font-medium text-stone-900 dark:text-stone-100 hover:text-turquoise-700 dark:hover:text-turquoise-300 truncate"
                 >
-                  Todas las casas
-                </button>
-                {houses.map((h) => (
-                  <button
-                    key={h.id}
-                    onClick={() => {
-                      setFilterHouseId(h.id);
-                      setShowHouseDropdown(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${
-                      filterHouseId === h.id
-                        ? 'text-[#126D9B] font-medium bg-[#126D9B]/5'
-                        : 'text-gray-700'
-                    }`}
-                  >
-                    {h.houseName}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+                  {name}
+                </Link>
+              ) : (
+                <span className="font-medium text-stone-900 dark:text-stone-100 truncate">{name}</span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        key: 'progress',
+        label: 'Puntos',
+        sortable: true,
+        sortAccessor: (cl) => (cl.total > 0 ? (cl.done || 0) / cl.total : 0),
+        render: (cl) => {
+          if (!cl.total) return <span className="text-stone-400 text-xs">—</span>;
+          const pct = (Math.min(cl.done || 0, cl.total) / cl.total) * 100;
+          return (
+            <div className="flex items-center gap-2">
+              <span className="font-mono tabular-nums text-xs text-stone-700 dark:text-stone-200">
+                {Math.min(cl.done || 0, cl.total)}/{cl.total}
+              </span>
+              <QualityBar value={pct} showValue={false} />
+            </div>
+          );
+        },
+      },
+      {
+        key: 'workers',
+        label: 'Trabajadores',
+        render: (cl) => {
+          const ws = cl.workers || [];
+          if (ws.length === 0) return <span className="text-stone-400 text-xs">—</span>;
+          return (
+            <div className="flex items-center -space-x-1.5">
+              {ws.slice(0, 3).map((w, i) => (
+                <span
+                  key={w.id || i}
+                  title={`${w.firstName || ''} ${w.lastName || ''}`.trim()}
+                  className="w-6 h-6 rounded-full bg-turquoise-100 dark:bg-turquoise-900/40 text-turquoise-700 dark:text-turquoise-300 text-[10px] font-semibold flex items-center justify-center ring-2 ring-[var(--surface-elevated)]"
+                >
+                  {(w.firstName || '?').charAt(0).toUpperCase()}
+                </span>
+              ))}
+              {ws.length > 3 && <span className="ml-2 text-xs text-stone-500">+{ws.length - 3}</span>}
+            </div>
+          );
+        },
+      },
+      {
+        key: 'state',
+        label: 'Estado',
+        sortable: true,
+        sortAccessor: (cl) => (cl.finished ? 1 : 0),
+        render: (cl) =>
+          cl.finished ? <Pill variant="resolved">Finalizada</Pill> : <Pill variant="info">En curso</Pill>,
+      },
+      {
+        key: 'date',
+        label: 'Fecha',
+        sortable: true,
+        align: 'right',
+        sortAccessor: (cl) => toDate(cl.date)?.getTime() ?? 0,
+        render: (cl) => (
+          <span className="font-mono tabular-nums text-xs text-stone-500">
+            {formatChecklistDate(cl.date)}
+          </span>
+        ),
+      },
+    ],
+    []
+  );
 
-        {/* Filtro por mes */}
-        <div className="relative">
-          <div
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
-              filterMonth
-                ? 'border-[#126D9B] bg-[#126D9B]/5 text-[#126D9B]'
-                : 'border-gray-300 text-gray-600 hover:border-gray-400'
-            }`}
-          >
-            <CalendarDays className="w-4 h-4" />
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        breadcrumb={['Operaciones', 'Revisiones']}
+        title="Revisiones"
+        subtitle={
+          isLoading
+            ? 'Cargando…'
+            : `${checklists.length} ${checklists.length === 1 ? 'revisión' : 'revisiones'}${hasNextPage ? ' cargadas' : ''}`
+        }
+        actions={
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Plus className="w-4 h-4 mr-1.5" />
+            Nueva revisión
+          </Button>
+        }
+      />
+
+      <div className="flex flex-wrap items-center gap-2">
+        <FilterChip active={filterFinished === undefined} onClick={() => setFilterFinished(undefined)}>
+          Todas
+        </FilterChip>
+        <FilterChip active={filterFinished === false} onClick={() => setFilterFinished(false)}>
+          En curso
+        </FilterChip>
+        <FilterChip active={filterFinished === true} onClick={() => setFilterFinished(true)}>
+          Finalizadas
+        </FilterChip>
+      </div>
+
+      <FilterBar
+        right={
+          <>
+            <select
+              value={filterHouseId}
+              onChange={(e) => setFilterHouseId(e.target.value)}
+              className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500/30"
+            >
+              <option value="">Todas las casas</option>
+              {houses.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {h.houseName || 'Sin nombre'}
+                </option>
+              ))}
+            </select>
             <select
               value={filterMonth}
               onChange={(e) => setFilterMonth(e.target.value)}
-              className="bg-transparent outline-none cursor-pointer text-sm appearance-none pr-5"
+              className="h-9 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-turquoise-500/30"
             >
               <option value="">Todos los meses</option>
               {monthOptions.map((opt) => (
@@ -259,149 +272,58 @@ export default function ChecklistsPage() {
                 </option>
               ))}
             </select>
-            {filterMonth && (
+            {hasActiveFilters && (
               <button
-                onClick={() => setFilterMonth('')}
-                className="p-0.5 rounded-full hover:bg-[#126D9B]/20"
+                onClick={clearFilters}
+                className="text-xs text-turquoise-600 hover:underline"
               >
-                <X className="w-3 h-3" />
+                Limpiar
               </button>
             )}
-          </div>
-        </div>
+          </>
+        }
+      />
 
-        {hasActiveFilters && (
-          <button
-            onClick={clearFilters}
-            className="text-xs text-gray-500 hover:text-gray-700 underline"
-          >
-            Limpiar filtros
-          </button>
-        )}
-      </div>
-
-      {/* Contador */}
-      {!isLoading && (
-        <p className="text-sm text-gray-500">
-          {checklists.length} revisión
-          {checklists.length !== 1 ? 'es' : ''}
-          {hasNextPage && ' cargados'}
-        </p>
-      )}
-
-      {/* Lista */}
       {isError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-700 dark:text-red-300">
           Error al cargar revisiones: {error?.message || 'Error desconocido'}
         </div>
       )}
-      {isLoading ? (
-        <div className="flex items-center justify-center gap-2 py-12 text-gray-500">
-          <Loader2 className="w-5 h-5 animate-spin" />
-          Cargando...
-        </div>
-      ) : checklists.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-14 text-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#126D9B]/20 to-[#67B26F]/20 flex items-center justify-center mb-4">
-            <CheckSquare className="w-8 h-8 text-[#126D9B]" />
+
+      <Card className="overflow-hidden p-0">
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2 py-16 text-stone-500">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Cargando…
           </div>
-          <p className="font-heading text-gray-800 font-medium mb-1">
-            {hasActiveFilters ? 'No hay revisiones con estos filtros' : 'No hay revisiones'}
-          </p>
-          <p className="text-sm text-gray-500">
-            {hasActiveFilters ? 'Prueba a cambiar los filtros' : 'Crea la primera revisión desde el botón superior'}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {checklists.map((cl) => {
-            const houseName = getHouseName(cl);
-            const progress =
-              cl.total > 0
-                ? `${Math.min(cl.done || 0, cl.total)}/${cl.total}`
-                : '—';
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={checklists}
+            getRowKey={(cl) => cl.id}
+            onRowClick={(cl) => setSelectedChecklist(cl)}
+            selectedRowKey={selectedChecklist?.id}
+            initialSort={{ key: 'date', dir: 'desc' }}
+            emptyState={
+              <EmptyState
+                icon={CheckSquare}
+                title={hasActiveFilters ? 'Sin revisiones con estos filtros' : 'No hay revisiones'}
+                description={
+                  hasActiveFilters
+                    ? 'Prueba a cambiar los filtros para ampliar la búsqueda.'
+                    : 'Crea la primera revisión desde el botón superior.'
+                }
+              />
+            }
+          />
+        )}
+      </Card>
 
-            return (
-              <Card
-                key={cl.id}
-                className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedChecklist(cl)}
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`p-2 rounded-lg flex-shrink-0 ${
-                      cl.finished
-                        ? 'bg-[#67B26F]/10 text-[#67B26F]'
-                        : 'bg-[#126D9B]/10 text-[#126D9B]'
-                    }`}
-                  >
-                    {cl.finished ? (
-                      <CheckCircle className="w-5 h-5" />
-                    ) : (
-                      <CheckSquare className="w-5 h-5" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900">
-                      {(cl.houseId || cl.house?.[0]?.id || cl.house?.id) ? (
-                        <Link
-                          to={`/casas/${cl.houseId || cl.house?.[0]?.id || cl.house?.id}`}
-                          className="text-[#126D9B] hover:underline"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {houseName}
-                        </Link>
-                      ) : (
-                        houseName
-                      )}
-                    </p>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      Fecha: {formatChecklistDate(cl.date)} · {progress} puntos
-                    </p>
-                    {cl.observations && (
-                      <p className="text-sm text-gray-500 line-clamp-1 mt-1">
-                        {cl.observations}
-                      </p>
-                    )}
-                    <div className="flex flex-wrap items-center gap-2 mt-2 text-xs">
-                      {cl.finished && (
-                        <span className="text-[#67B26F] font-medium">
-                          Finalizado
-                        </span>
-                      )}
-                      {(cl.workers || []).map((w, i) => (
-                        <Link
-                          key={w.id || i}
-                          to={w.id ? `/trabajadores/${w.id}` : '#'}
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${w.id ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' : 'bg-gray-100 text-gray-600'}`}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <User className="w-3 h-3" />
-                          {`${w.firstName || ''} ${w.lastName || ''}`.trim() || 'Trabajador'}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-
-          {/* Sentinel para infinite scroll */}
-          <div ref={sentinelRef} className="h-4" />
-
-          {isFetchingNextPage && (
-            <div className="flex items-center justify-center gap-2 py-4 text-gray-400 text-sm">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Cargando más...
-            </div>
-          )}
-
-          {!hasNextPage && checklists.length > 0 && (
-            <p className="text-center text-xs text-gray-400 py-2">
-              No hay más revisiones
-            </p>
-          )}
+      <div ref={sentinelRef} className="h-4" />
+      {isFetchingNextPage && (
+        <div className="flex items-center justify-center gap-2 py-4 text-stone-400 text-sm">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Cargando más…
         </div>
       )}
 
