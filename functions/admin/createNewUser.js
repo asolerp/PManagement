@@ -12,7 +12,8 @@ const createNewUser = onCall(
   {
     region: REGION,
     timeoutSeconds: 540,
-    memory: '2GiB'
+    memory: '2GiB',
+    invoker: 'public'
   },
   async request => {
     const { name, surname, email, phone, gender, language, role } =

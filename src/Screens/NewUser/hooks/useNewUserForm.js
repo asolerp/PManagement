@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { LoadingModalContext } from '../../../context/loadinModalContext';
 import { getUser } from '../../../firebase/getUser';
-import { firebase } from '@react-native-firebase/firestore';
-import '@react-native-firebase/functions';
+import { getApp } from '@react-native-firebase/app';
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
 
 import { useUpdateFirebase } from '../../../hooks/useUpdateFirebase';
 import { useUploadCloudinaryImage } from '../../../hooks/useUploadCloudinaryImage';
@@ -20,10 +20,10 @@ export const useNewUserForm = docId => {
   const { updateFirebase } = useUpdateFirebase('users');
   const { upload } = useUploadCloudinaryImage();
 
-  const createNewUser = firebase
-    .app()
-    .functions(REGION)
-    .httpsCallable('createNewUser');
+  const createNewUser = httpsCallable(
+    getFunctions(getApp(), REGION),
+    'createNewUser'
+  );
 
   const isAllfilled =
     user?.firstName &&
@@ -59,7 +59,9 @@ export const useNewUserForm = docId => {
       setLoading(false);
       setVisible(false);
       error({
-        message: 'Comprueba que el email es correcto y no está en uso',
+        message:
+          err?.message ||
+          'Comprueba que el email es correcto y no está en uso',
         track: true,
         asToast: true
       });
