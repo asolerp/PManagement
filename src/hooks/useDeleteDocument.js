@@ -67,7 +67,13 @@ const useDeleteDocument = () => {
       } catch (err) {
         const errorMessage =
           err?.message || 'Error desconocido al eliminar el documento';
-        Logger.error('Error al eliminar documento', err, { collection, docId });
+        Logger.error('Error al eliminar documento', err, {
+          collection,
+          docId,
+          code: err?.code,
+          details: err?.details,
+          nativeErrorMessage: err?.nativeErrorMessage
+        });
         setError(errorMessage);
         return { success: false, error: errorMessage };
       } finally {
