@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m ' *)",
+      "Bash(firebase functions:list --project port-management-9bd53)",
+      "Bash(curl -i -X OPTIONS 'https://europe-west1-port-management-9bd53.cloudfunctions.net/getWorkShifts' -H 'Origin: https://admin-pm.vercel.app' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type,authorization')",
+      "Bash(curl -si -X OPTIONS \"https://europe-west1-port-management-9bd53.cloudfunctions.net/adminChangePassword\" -H \"Origin: https://admin-pm.vercel.app\" -H \"Access-Control-Request-Method: POST\" -H \"Access-Control-Request-Headers: content-type,authorization\" --max-time 15)"
+    ]
+  }
+}
